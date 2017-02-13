@@ -9,8 +9,6 @@ var s3 = new aws.S3();
 
 function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, datasetId, cb) {
 
-
-
     var file = fs.createReadStream(filePath);
     var params = {
         Bucket: bucket,
@@ -19,13 +17,29 @@ function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, data
         Body: file,
         ACL: "private"
     };
-
     s3.upload(params,cb);
     
 }
 module.exports.uploadDataSource = _uploadDataSource;
 
 
+function _copySampleDatasource(datasetToDuplicateId, datasetId, teamSubdomain, callback) {
+    // this will be the demo team
+    var params = {
+        Bucket: bucket,
+        CopySource: bucket + '/maitland/datasets/' + datasetToDuplicateId + '/datasources/pokemonGO.csv',
+        Key: teamSubdomain + '/datasets/' + datasetId + '/datasources/sample.csv'
+    };
+    s3.copyObject(params, function (err, data) {
+        if(err) {
+            console.log(err, err.stack)
+            callback(err)
+        } else {
+            console.log("success")
+        }
+    })
+}
+module.exports.copySampleDatasource = _copySampleDatasource;
 
 
 function _getDatasource(description) {

@@ -4,6 +4,7 @@ var mailer = require('../../libs/utils/nodemailer');
 var jwt = require('jsonwebtoken');
 var Batch = require('batch');
 var datasource_descriptions = require('../../models/descriptions');
+var sample_dataset = require('./sample_dataset');
 var winston = require('winston');
 
 module.exports.index = function (req, next) {
@@ -136,6 +137,7 @@ var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
 }
 
 module.exports.create = function (req, res) {
+    console.log("creating user")
     User.create(req.body, function (err, user) {
         if (err) {
             res.status(500).send(err);
@@ -231,6 +233,7 @@ module.exports.update = function (req, res) {
 
 
         Team.create(team, function (err, createdTeam) {
+            console.log("creating team over here")
             if (err) {
                 res.send(err);
             }
@@ -242,6 +245,12 @@ module.exports.update = function (req, res) {
                     } else if (!user) {
                         res.status(404).send('User not found');
                     } else {
+                        // create sample dataset
+                        sample_dataset.delegateDatasetDuplication(user, createdTeam, function (err) {
+                            if (err) {
+                                res.send({error: err})
+                            }
+                        }) ;
                         user.firstName = req.body.firstName;
                         user.lastName = req.body.lastName;
                         if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {

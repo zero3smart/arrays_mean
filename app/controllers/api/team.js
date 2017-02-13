@@ -6,6 +6,7 @@ var Batch = require('batch');
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var datasource_description = require('../../models/descriptions');
 var s3FileHosting = require('../../libs/utils/aws-datasource-files-hosting')
+var sample_dataset = require('./sample_dataset')
 
 
 module.exports.getAll = function (req, res) {
@@ -23,6 +24,7 @@ module.exports.getAll = function (req, res) {
 
 
 module.exports.create = function (req, res) {
+    console.log("creating team")
     Team.create(req.body, function (err, createdTeam) {
         if (err) {
             res.send({error: err.message});
@@ -38,9 +40,30 @@ module.exports.create = function (req, res) {
                     }
                 });
             }
+            
+            sample_dataset.delegateDatasetDuplication(req.user, createdTeam, function (err) {
+                if(err) {
+                    res.send({error: err})
+                }
+            });
+            // sample_dataset.getSampleDescriptionAndDuplicate('58a1e9b90f4d7a1976c65010', req.user, createdTeam, function (err, duplicatedDoc) {
+            //     if (err) {
+            //         res.send({error: err})
+            //     } else {
+            //         // update the new team with the duplicated dataset
+            //         sample_dataset.updateTeam(duplicatedDoc, createdTeam, function (err, savedTeam) {
+            //             if(err) {
+            //                res.send({error: err});
+            //             } else {
+            //                 // copy the csv file to new team's aws bucket
+            //                 datasource_file_service.copySampleDatasource(duplicatedDoc.id, savedTeam.subdomain);
+            //             }
+            //         });
+            //     }
+            // });
             res.json(createdTeam);
         }
-    })
+    });
 }
 
 
