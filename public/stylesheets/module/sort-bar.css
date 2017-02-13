@@ -51,6 +51,7 @@
 
 .sort-direction-icon {
 	color: black;
+    transition: color 0.15s;
 }
 
 .sort-control .dropdown-toggle {
