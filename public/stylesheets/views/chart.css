@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/views/chart.css */
 
 .array-chart .site-content .container-fluid {
@@ -59,7 +59,7 @@
 .legend-toggle {
     display: inline-block;
     margin-left: 20px;
-    color: var(--color-text-ultralight);
+    color: var(--color-text-dark);
 }
 
 .legend-open .legend-toggle {
@@ -69,7 +69,12 @@
 .legend-toggle > span {
     display: inline-block;
     width: 1em;
-    line-height: 40px;
+    /*line-height: 40px;*/
+}
+
+.sort-bar .dropdown-toggle span,
+.legend-toggle {
+    transition: color 0.15s;
 }
 
 .array-chart .array-content {
