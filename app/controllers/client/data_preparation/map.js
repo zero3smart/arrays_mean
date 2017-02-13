@@ -363,7 +363,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     coordRadiusValue: coordRadiusValue,
                     coordColor: dataSourceDescription.fe_views.views.map.coordColor,
                     mapBy: mapBy,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,

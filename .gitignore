@@ -117,6 +117,10 @@ dump.*
 *.csv
 
 
+### built files ###
+style.min.css
+public/vendors/
+
 # staging sever files# 
 config.json
 github-post-receive.sh
