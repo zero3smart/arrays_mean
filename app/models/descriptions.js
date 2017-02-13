@@ -454,19 +454,13 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
-    console.log(sourceKey)
-
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
-            // console.log(datasourceDescription)
-            // console.log(datasourceDescription._team)
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
-
-
 
             if (userId) {
                 User.findById(userId)
@@ -495,8 +489,6 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     });
             } else {
 
-                
-    
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
 
 
