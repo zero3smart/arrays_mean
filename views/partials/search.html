@@ -8,8 +8,8 @@
 
     <div class="mobile-search-popover dropdown-panel">
         <div class="dropdown sort-control search-control">
-            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
+            <a href="#" class="btn dropdown-toggle dropdown-toggle-button-has-caret ui-label visible-xs" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                Search by <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
             </a>
             <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
             {% if columnNames | length %}
@@ -23,8 +23,18 @@
 
         <div class="sort-control sort-control-right">
             <div class="dropdown-toggle">
-                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
-                <span class="icon-search search-icon hidden-xs"></span>
+                <span class="search-by-label hidden-xs">Search by {{ searchColToOutput }}</span>
+                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search by" autocomplete="off" value="{{ searchQ }}">
+                <a href="#" class="btn dropdown-toggle dropdown-toggle-button-has-caret ui-label hidden-xs" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                    <span class="icon-search search-icon hidden-xs"></span>
+                </a>
+                {% if columnNames | length %}
+                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                    {% for colName in columnNames %}
+                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
             </div>
         </div>
     </div>
