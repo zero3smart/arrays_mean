@@ -221,9 +221,9 @@ function _runQuery(query,fn) {
                 db.release(connObj,function(err) {
                     if (err || errorFromFuncions) {
 
-                        winston.error("Error reading remote data columns and records");
-                        console.log("err: %s", err);
-                        console.log("err from functions: %s",errorFromFuncions);
+                        winston.error("Error running query");
+                        console.log("err in releasing db : %s", err);
+                        console.log("err from function executing query : %s",errorFromFuncions);
                         fn(err);
                     } else {
                         fn(null,arrayOfData);
