@@ -38,7 +38,7 @@ function _delegateDatasetDuplicationTasks(user, createdTeam, callback) {
 module.exports.delegateDatasetDuplicationTasks = _delegateDatasetDuplicationTasks;
 
 function _getSampleDescriptionFromTeam(callback) {
-    Team.findOne({"title": "maitland"})
+    Team.findOne({"title": "sampleTeam"})
         .exec(function (err, sampleTeam) {
             if (err) {
                 callback(err, null);

@@ -244,12 +244,15 @@ module.exports.update = function (req, res) {
                     } else if (!user) {
                         res.status(404).send('User not found');
                     } else {
-                        // create sample dataset
-                        sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
-                            if (err) {
-                                res.send({error: err})
-                            }
-                        }) ;
+                        // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
+                        if(process.env.NODE_ENV == 'production') {
+                            // create sample dataset
+                            sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
+                                if (err) {
+                                    res.send({error: err})
+                                }
+                            });
+                        }
                         user.firstName = req.body.firstName;
                         user.lastName = req.body.lastName;
                         if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {

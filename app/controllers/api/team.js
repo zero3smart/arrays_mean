@@ -39,11 +39,14 @@ module.exports.create = function (req, res) {
                     }
                 });
             }
-            sample_dataset.delegateDatasetDuplicationTasks(req.user, createdTeam, function (err) {
-                if(err) {
-                    res.send({error: err})
-                }
-            });
+            // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
+            if (process.env.NODE_ENV === 'production') {
+                sample_dataset.delegateDatasetDuplicationTasks(req.user, createdTeam, function (err) {
+                    if(err) {
+                        res.send({error: err})
+                    }
+                });
+            }
             res.json(createdTeam);
         }
     });
