@@ -124,7 +124,7 @@ HorizontalBarChart.prototype.getXAxisTransform = function() {
 
 
 HorizontalBarChart.prototype.getYScale = function() {
-    
+
     return this._yScale = d3.scale.ordinal()
         .rangeBands([0, this._innerHeight], this._padding)
         .domain(this._categories);
@@ -135,6 +135,13 @@ HorizontalBarChart.prototype.getYAxis = function() {
 
     return d3.svg.axis()
         .scale(this.getYScale())
+        .tickFormat(function(d) {
+            var maxlength = 10;
+            if (d.length > maxlength) {
+                d = d.substring(0, maxlength) + '…'; // \u8230
+            }
+            return d;
+        })
         .orient('left');
 };
 

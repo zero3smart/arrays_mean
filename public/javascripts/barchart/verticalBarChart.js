@@ -14,7 +14,7 @@ VerticalBarChart.prototype = Object.create(BarChart.prototype);
 
 
 VerticalBarChart.prototype._animate = function () {
-    
+
     var self = this;
 
     this._bars.attr('width', function (d, i, j) {
@@ -71,8 +71,8 @@ VerticalBarChart.prototype._animateForSort = function () {
     this._bars.transition()
         .duration(750)
         .delay(delay)
-        .attr("x", function(d, i, j) { 
-            return x0(self._categories[j]); 
+        .attr("x", function(d, i, j) {
+            return x0(self._categories[j]);
         });
 
     this._categories = newCategories;
@@ -87,7 +87,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
     if(this._showXLabels) {
-        return this._xAxisContainer.selectAll("text")  
+        return this._xAxisContainer.selectAll("text")
             .attr("dx", "-.8em")
             .attr("dy", "-.2em")
             .style("text-anchor", "end")
@@ -109,6 +109,13 @@ VerticalBarChart.prototype.getXScale = function () {
 VerticalBarChart.prototype.getXAxis = function () {
     return d3.svg.axis()
         .scale(this.getXScale(this._innerWidth))
+        .tickFormat(function(d) {
+            var maxlength = 20;
+            if (d.length > maxlength) {
+                d = d.substring(0, maxlength) + '…'; // \u8230
+            }
+            return d;
+        })
         .orient('bottom');
 };
 
