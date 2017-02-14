@@ -9,6 +9,14 @@
         this.animating = false;
         this._separateSegments = (this._start.color !== this._end.color);
         this._segmentCount = 40;
+        
+        if (Math.abs(this._end.point.lng - this._start.point.lng) > 180) {
+            if (this._end.point.lng > this._start.point.lng) {
+                this._end.point.lng -= 360;
+            } else {
+                this._start.point.lng -= 360;
+            }
+        }
 
         if (this._separateSegments) {
             var color;
