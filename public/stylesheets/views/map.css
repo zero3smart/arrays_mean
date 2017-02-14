@@ -56,15 +56,7 @@
     position: relative;
     display: block;
     float: right;
-    /*margin-top: -15px;*/
-    /*margin-bottom: -15px;*/
-    /*padding-top: 4px;*/
-    /*padding-right: 23px;*/
-    /*padding-left: 23px;*/
     width: 12px;
-    /*height: 52px;*/
-    /*border-radius: 0 4px 4px 0;*/
-    /*background-color: var(--color-background);*/
     content: "▾";
     font-size: 18px;
 }

@@ -114,7 +114,6 @@
 	box-shadow: none;
 	vertical-align: baseline;
 	font-size: 18px;
-    /*simple fix until new functionality resolved*/
 	line-height: 25px;
 	font-family: var(--font-family-calibre);
 }
@@ -125,7 +124,6 @@
 
 .search-icon {
 	position: relative;
-	/*top: 2px;*/
 	display: inline-block;
 	margin-top: -3px;
 	margin-bottom: -3px;

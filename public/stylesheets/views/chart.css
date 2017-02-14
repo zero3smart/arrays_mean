@@ -14,7 +14,6 @@
 
 .array-chart .sort-bar {
     border-bottom-style: none;
-    /*padding-bottom: 0;*/
 }
 
 #chart {
@@ -26,7 +25,6 @@
         overflow: hidden;
         margin-right: auto;
         margin-left: auto;
-    /*    padding: 10px;*/
         max-width: 100%;
         width: calc(100vh - 260px);
         height: calc(100vh - 260px);
@@ -70,7 +68,6 @@
 .legend-toggle > span {
     display: inline-block;
     width: 1em;
-    /*line-height: 40px;*/
 }
 
 .sort-bar .dropdown-toggle span,
