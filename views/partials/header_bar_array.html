@@ -51,6 +51,12 @@
         color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
     }
 
+    .sort-direction:hover span,
+    .sort-direction:hover .sort-direction-icon,
+    .legend-toggle:hover {
+        color: {{ brandColor }};
+    }
+
     .input-subscribe,
     .input-subscribe:focus {
         border-color: {{ brandContentColor }};

@@ -97,24 +97,24 @@
 
                                 <div class="sort-bar-right pull-right">
                                     <div class="sort-control">
-                                        <div id="orientation" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
+                                        <div id="orientation" class="sort-direction" title="Toggle to view in horizontal or vertical mode">
                                             <span class="horizontal glyphicon glyphicon-align-left"></span>
                                             <span class="vertical glyphicon glyphicon-stats"></span>
                                         </div>
 
-                                        <div id="normalization" class="toggle-button" title="Toggle to view in absolute or relative mode">
+                                        <div id="normalization" class="sort-direction" title="Toggle to view in absolute or relative mode">
                                             <span class="absolute">#</span>
                                             <span class="relative">%</span>
                                         </div>
 
-                                        <div id="sort-direction" class="toggle-button" title="Toggle to sort by ascending or descending">
+                                        <div id="sort-direction" class="sort-direction" title="Toggle to sort by ascending or descending">
                                             <span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span>
                                             <span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span>
                                         </div>
                                     </div>
 
                                     {{
-                                    search.panel(
+                                    search.default(
                                         routePath_base,
                                         searchCol if searchCol else "Object Title",
                                         colNames_orderedForSortByDropdown,
@@ -125,9 +125,8 @@
                                     )
                                     }}
 
-                                    <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                        <span class="icon-legend" aria-hidden="true"></span>
-                                    </a>
+                                    {% include "../partials/legend-toggle.html" %}
+
                                 </div>
 
                             </div>
