@@ -77,7 +77,7 @@
             }
         });
         
-        var size = 1.3;
+        var size = 2;
         var altitude = this._bottomAltitude;
         _.each(config.points, function(point) {
             self._pointNodes.push(new GlobeMain.PointNode({
@@ -87,7 +87,7 @@
                 lng: point.lng,
                 size: size,
                 altitude: altitude,
-                color: '#fff',
+                color: '#FEB600',
                 opacity: 1
             }));
         });
@@ -96,11 +96,11 @@
             globe: this.globe,
             start: {
                 altitude: this._bottomAltitude,
-                color: GlobeMain.blue
+                color: '#888'
             },
             end: {
                 altitude: this._bottomAltitude,
-                color: GlobeMain.blue
+                color: '#888'
             }
         };
         

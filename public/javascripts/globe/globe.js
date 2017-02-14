@@ -99,30 +99,30 @@ DAT.Globe = function(container, opts) {
         scene.add(mesh);
 
         // Atmosphere
-        shader = Shaders.atmosphere;
-        uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-        material = new THREE.ShaderMaterial({
-            uniforms: uniforms,
-            attributes: shader.attributes,
-            vertexShader: shader.vertexShader,
-            fragmentShader: shader.fragmentShader,
-            side: THREE.BackSide,
-            blending: THREE.AdditiveBlending,
-            transparent: true
-        });
-
-        self.atmosphere = mesh = new THREE.Mesh(geometry, material);
-        mesh.scale.set( 1.5, 1.5, 1.5 );
-
-        var verts = mesh.geometry.vertices;
-        var values = shader.attributes.displacement.value;
-        for (var i = 0; i < verts.length; i++) {
-            values.push(1 + (Math.random() * 30));
-        }
-
-        scene.add(mesh);
-        // shader.attributes.displacement.needsUpdate = true;
-        // console.log(verts.length, geometry.vertices.length, values.length, shader);
+        // shader = Shaders.atmosphere;
+        // uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+        // material = new THREE.ShaderMaterial({
+        //     uniforms: uniforms,
+        //     attributes: shader.attributes,
+        //     vertexShader: shader.vertexShader,
+        //     fragmentShader: shader.fragmentShader,
+        //     side: THREE.BackSide,
+        //     blending: THREE.MultiplyBlending,
+        //     transparent: true
+        // });
+        //
+        // self.atmosphere = mesh = new THREE.Mesh(geometry, material);
+        // mesh.scale.set( 1.5, 1.5, 1.5 );
+        //
+        // var verts = mesh.geometry.vertices;
+        // var values = shader.attributes.displacement.value;
+        // for (var i = 0; i < verts.length; i++) {
+        //     values.push(1 + (Math.random() * 30));
+        // }
+        //
+        // scene.add(mesh);
+        // // shader.attributes.displacement.needsUpdate = true;
+        // // console.log(verts.length, geometry.vertices.length, values.length, shader);
 
         geometry = new THREE.BoxGeometry(0.75, 0.75, 1);
         geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,0,-0.5));
@@ -130,6 +130,7 @@ DAT.Globe = function(container, opts) {
         point = new THREE.Mesh(geometry);
 
         renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setClearColor(new THREE.Color(0xfafafa), 1);
         renderer.setSize(w, h);
 
         renderer.domElement.style.position = 'absolute';
