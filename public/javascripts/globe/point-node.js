@@ -68,7 +68,7 @@
 
         // ----------
         _update: function() {
-            this.node.material.color.setStyle(this._selected || !this._viewed ? GlobeMain.yellow : '#10516D');
+            this.node.material.color.setStyle(this._selected || !this._viewed ? '#f84' : '#10516D');
 
             this._setGlow(this._selected || !this._viewed);
         },

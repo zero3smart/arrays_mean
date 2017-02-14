@@ -1,6 +1,11 @@
 // ----------
 var GlobeMain = {
     blue: '#1fafcd',
+    darkBlue: '#105a69',
+    yellow: '#ffd953',
+    slowTime: 1000,
+    slowerTime: 2000,
+    fastTime: 400,
 
     // ----------
     init: function() {
@@ -9,6 +14,8 @@ var GlobeMain = {
         var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;
         document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - offsetY + "px";
 
+        this.scale = 1;
+        
         var lines = _.uniqBy(flightPaths, function(v, i) {
             return '' + v.origin.lat + 'x' + v.origin.lon + 'x' +
                 v.destination.lat + 'x' + v.destination.lon;
@@ -40,13 +47,10 @@ var GlobeMain = {
         this.globeView = new GlobeMain.GlobeView({
             $el: $('#globe'),
             points: points,
-            lines: lines
-            // onCityClick: function(cityNode) {
-            //   self.openStory(cityNode.story.key, cityNode.city);
-            // },
-            // onDeselectCity: function() {
-            //   self.closeStory();
-            // },
+            lines: lines,
+            onNodeClick: function(pointNode) {
+              pointNode.select();
+            }
         });
 
         this.globeView.start();

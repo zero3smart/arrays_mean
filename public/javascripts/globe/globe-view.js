@@ -4,8 +4,7 @@
     var component = GlobeMain.GlobeView = function(config) {
         var self = this;
 
-        this._onCityClick = config.onCityClick;
-        this._onDeselectCity = config.onDeselectCity;
+        this._onNodeClick = config.onNodeClick;
         this._onMouseDown = config.onMouseDown;
         this._onDrag = config.onDrag;
         this._onMouseUp = config.onMouseUp;
@@ -114,17 +113,14 @@
         var raycaster = new THREE.Raycaster();
         var mouse = new THREE.Vector2();
 
-        GlobeMain.on('mousedown', this.$el, function() {
-            self.deselectCity();
-        }, 'GlobeView');
-
         GlobeMain.on('click', this.$el, function(event) {
+            var offset = self.$el.offset();
             var x = event.clientX / GlobeMain.scale;
             var y = event.clientY / GlobeMain.scale;
             var width = self.$el.width();
             var height = self.$el.height();
-            mouse.x = (x / width) * 2 - 1;
-            mouse.y = - (y / height) * 2 + 1;
+            mouse.x = ((x - offset.left) / width) * 2 - 1;
+            mouse.y = - ((y - offset.top) / height) * 2 + 1;
 
             raycaster.setFromCamera( mouse, self.globe.camera );
 
@@ -138,8 +134,8 @@
             mouse.y = y;
             var best;
 
-            _.each(self._cityNodes, function(v, i) {
-                if (!v.story || v.disabled()) {
+            _.each(self._pointNodes, function(v, i) {
+                if (v.disabled()) {
                     return;
                 }
 
@@ -149,16 +145,14 @@
                 if (screenDistance < 10 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
                     best = {
                         screenDistance: screenDistance,
-                        cityNode: v,
+                        pointNode: v,
                         worldDistance: worldDistance
                     };
                 }
             });
 
             if (best) {
-                self._onCityClick(best.cityNode);
-            } else {
-                self.deselectCity();
+                self._onNodeClick(best.pointNode);
             }
         });
 
@@ -173,80 +167,11 @@
         },
 
         // ----------
-        selectCity: function(key, city) {
-            this.deselectCity();
-
-            var cityNode = _.find(this._cityNodes, function(v, i) {
-                return v.story && v.story.key === key && v.city === city;
-            });
-
-            // Rotate the globe
-            var twoPi = Math.PI * 2;
-            var percent = new zot.range(-180, 180).proportion(cityNode.lng);
-            var x = new zot.range(Math.PI * 0.5, Math.PI * 2.5).scale(percent);
-            if (x > twoPi) {
-                x -= twoPi;
-            }
-
-            // no doubt there is a slicker way to do this, but this works
-            var oldTarget = this.globe.rotationTarget();
-            var rotations = Math.floor(oldTarget.x / twoPi);
-            var best, v;
-            for (var i = rotations - 1; i < rotations + 2; i++) {
-                v = x + (i * twoPi);
-                distance = Math.abs(oldTarget.x - v);
-                if (!best || best.distance > distance) {
-                    best = {
-                        x: v,
-                        distance: distance
-                    };
-                }
-            }
-
-            percent = new zot.range(-90, 90).proportion(cityNode.lat);
-            var y = new zot.range(Math.PI * -0.5, Math.PI * 0.5).scale(percent);
-
-            this.globe.rotationTarget(best.x, y);
-
-            // Highlight the node
-            cityNode.select();
-
-            // Announce
-            this._selectedCityNode = cityNode;
-        },
-
-        // ----------
-        deselectCity: function(options) {
-            var self = this;
-
-            options = options || {};
-
-            if (!this._selectedCityNode) {
-                return;
-            }
-
-            if (options.viewed) {
-                _.each(this._cityNodes, function(v, i) {
-                    if (v.story === self._selectedCityNode.story) {
-                        v.viewed(true);
-                    }
-                });
-            }
-
-            this._selectedCityNode.deselect();
-            this._selectedCityNode = null;
-
-            if (!options.silent) {
-                this._onDeselectCity();
-            }
-        },
-
-        // ----------
         _toScreenXY: function ( position, camera, jqdiv ) {
             var pos = position.clone();
             var projScreenMat = new THREE.Matrix4();
             projScreenMat.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
-            pos.GlobeMainlyProjection(projScreenMat);
+            pos.applyProjection(projScreenMat);
 
             return new THREE.Vector2( ( pos.x + 1 ) * jqdiv.width() / 2 + jqdiv.offset().left,
                         ( - pos.y + 1) * jqdiv.height() / 2 + jqdiv.offset().top );
