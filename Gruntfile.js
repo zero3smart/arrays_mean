@@ -86,6 +86,8 @@ module.exports = function (grunt) {
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',
                     'jquery-ui/jquery-ui.min.js',
+                    'threejs/build/three.min.js',
+                    'tweenjs/src/Tween.js',
                     'bootstrap/dist/js/bootstrap.min.js'
                 ],
                 dest: 'public/vendors'
@@ -94,7 +96,7 @@ module.exports = function (grunt) {
 
 
 
-        // sass: {  
+        // sass: {
         //     bootstrap: {
         //         files: {
         //             'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
@@ -145,7 +147,7 @@ module.exports = function (grunt) {
 
     // custom task
     grunt.loadTasks('grunt-subgrunt');
-    
+
     // Default task.
     grunt.registerTask('default', ['jshint']);
 
