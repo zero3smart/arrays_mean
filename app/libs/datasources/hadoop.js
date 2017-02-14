@@ -35,8 +35,6 @@ var db;
 
 function _readColumnsAndSample(tableName,fn) {
 
-    // var data = [{name: "abc.molecule_name", sample:"abc"}];
-    // return fn(null,data);
 
     db.reserve(function(err,connObj) {
 
@@ -98,9 +96,6 @@ function _readColumnsAndSample(tableName,fn) {
 
 module.exports.readColumnsAndSample = function(body,tableName,fn) {
 
-    // var data = [{name: "abc.molecule_name", sample:"abc"}];
-    // return fn(null,data);
-
 
     if (db) {
 
@@ -121,13 +116,11 @@ module.exports.readColumnsAndSample = function(body,tableName,fn) {
 
 function _readAllTables(fn) {
 
-    console.log("ready to read tables");
-
     db.reserve(function(err,connObj) {
 
         if (connObj) {
 
-            console.log("Using connection: " + connObj. uuid);
+            console.log("Using connection: " + connObj. uuid + "for reading tables in this schema");
             var conn = connObj.conn;
 
             async.waterfall([
@@ -143,7 +136,6 @@ function _readAllTables(fn) {
                     statement.executeQuery("SHOW TABLES",function(err,results) {
                         if (err) callback(err);
                         else {
-                            console.log(results);
                             callback(null,results);
                         }
                     })
@@ -215,11 +207,6 @@ module.exports.initConnection = function(body,callback) {
 
     } else {
 
-      
-        // callback(null,[{"tab_name": "atlas_pd"}, {"tab_name": "bioreg"}]);
-
-
-
 
         _initConnection(body.url,function(err) {
 
@@ -249,7 +236,7 @@ function _runQuery(query,fn) {
 
         if (connObj) {
 
-            console.log("Using connection: " + connObj. uuid);
+            console.log("Using connection: " + connObj. uuid + " to run query");
             var conn = connObj.conn;
 
             async.waterfall([
