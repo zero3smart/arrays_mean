@@ -40,14 +40,8 @@
 
 .sort-direction {
 	margin-right: 0;
+    margin-left: 15px;
     cursor: pointer;
-}
-
-@media (min-width: 768px) {
-	.sort-direction {
-		margin-right: 0;
-		margin-left: 15px;
-	}
 }
 
 .sort-direction span,
