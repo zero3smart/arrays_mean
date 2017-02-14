@@ -569,13 +569,13 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 
 function intuitDataype(name, sample) {
     // check date
-    if (moment(sample).isValid()) {
+    if (moment(sample, moment.ISO_8601, true).isValid()) {
         console.log("name: " + name + " sample: " + sample + " date")
-        // check the name for the word "date"
     } else {
+        // if the sample has anything other than numbers and a "." it's a string
         var numberRE = /[^0-9|\.]/
         if(numberRE.test(sample)) {
-            console.log("name: " + name + " sample: " + sample + "is a string")
+            console.log("name: " + name + " sample: " + sample + " is a string")
         } else {
            console.log("name: " + name + "sample: " + sample + " is a number") 
         }
