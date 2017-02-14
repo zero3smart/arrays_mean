@@ -152,6 +152,8 @@
 
             <script type="text/javascript">
                 var flightPaths = {{ flightPathsCollection | dump | safe }};
+                var filterObj = {{ filterObj | dump | safe }};
+                var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {}) | safe }}";
                 // extract variables needed in /javascripts/globe.js
             </script>
 

@@ -49,7 +49,16 @@ var GlobeMain = {
             points: points,
             lines: lines,
             onNodeClick: function(pointNode) {
-              pointNode.select();
+                // TODO: We've hard-coded o_lat and o_lon here, but we should be getting it from the server
+                // TODO: Ultimately it would be good to be able to also include things by destination as well as origin
+                var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
+                var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
+                var latFilterString = $.param(constructedFilterObj(filterObj, 'o_lat', pointNode.lat, false));
+                var lonFilterString = $.param(constructedFilterObj(filterObj, 'o_lon', pointNode.lng, false));
+                var urlForFilterValue = routePath + queryParamJoinChar + latFilterString + '&' + lonFilterString;
+
+                window.location = urlForFilterValue;
+                // pointNode.select();
             }
         });
 
