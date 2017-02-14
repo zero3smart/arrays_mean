@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 
         var $parent = $(this).parent();
-       
+
         var default_view = $parent.find("[name='default_view']").val();
         if (default_view === undefined || default_view == 'undefined' || default_view == '') {
             default_view = 'gallery';
@@ -36,23 +36,23 @@ $(document).ready(function () {
         var baseUrl = $parent.find("[name='subdomainUrl']").val();
 
         if (typeof baseUrl == 'undefined') {
-            baseUrl = ""; 
+            baseUrl = "";
         }
 
         //toDo: get view from api
-        
-        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map-view', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+
+        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {
             return word.toLowerCase();
         }).join('-');
 
-         var href; 
+         var href;
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
-        
+
             href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
             window.location.href = href;
         } else {
@@ -127,6 +127,9 @@ $(document).ready(function () {
 
         $('.search-criteria').html(colname);
         $('.search-colname').attr('value', colname);
+
+        $('.search-by-label').html('Search by ' + colname + ':');
+        // $('.search-input').attr('placeholder', 'Type to search by ' + colname);
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
@@ -243,7 +246,7 @@ $(document).ready(function () {
      * Array description expand/collapse text
      */
     $('.array-description-expand').on('click', function (e) {
-      
+
         $('.array-description').css("display", "none");
         $('.array-description-full').css("display", "inline");
         $('.array-description-expand').css("display", "none");
@@ -260,11 +263,11 @@ $(document).ready(function () {
     $('#login').on('click', function (e) {
         e.preventDefault();
         window.location.href = '/auth/login';
-        
+
     });
 
     $('#logout').on('click',function(e) {
- 
+
         e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
@@ -276,14 +279,14 @@ $(document).ready(function () {
                 window.sessionStorage.removeItem('team');
                 window.sessionStorage.removeItem('teams');
                 window.location.reload();
-                
+
             }
 
         })
     })
 
 
-              
+
 
     $('#revealPassword').change(function(e) {
         if($(this).is(":checked")) {
@@ -327,7 +330,7 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
                 filterObj = returnFilterObject(existing_filterObj, this_filterCol, filterObj)
             } else {
                 //since this is currently only for the pie set, it's guaranteed that if this is an array, the filter values will also be an array whose indices match up to the indices of the cols
-                filterObj[this_filterCol[i]] = this_filterVal[i];   
+                filterObj[this_filterCol[i]] = this_filterVal[i];
             }
         }
 
@@ -370,7 +373,7 @@ function checkAgainstExistingFilters(existing_filterObj, this_filterCol) {
     for (var i = 0; i < existing_filterCols_length; i++) {
         var existing_filterCol = existing_filterCols[i];
         if (existing_filterCol == this_filterCol) {
-            return true; 
+            return true;
         }
     }
     return false;

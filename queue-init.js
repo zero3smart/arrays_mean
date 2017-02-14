@@ -42,7 +42,9 @@ module.exports = function() {
 
 		child.forEach(function(dataset,index) {
 
-            if (dirty == 1) {
+		
+
+            if (dirty == 1 || dataset.dirty == 1) {
 
                 if (task == 'scrapeImages' || task == 'importProcessed') {
 

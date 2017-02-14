@@ -5,6 +5,12 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.views = views;
 
+            if (!$scope.$parent.$parent.dataset.fe_views) {
+                $scope.$parent.$parent.dataset.fe_views = {};
+            }
+
+
+
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.viewsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -16,29 +22,7 @@ angular.module('arraysApp')
                 $scope.submitForm($scope.formValidity);
             };
 
-            $scope.customViews = [];
 
-            for (var i = 0; i < views.length; i++) {
-
-                if (views[i]._team) {
-
-                    $scope.customViews.push(views[i].name);
-
-                    if (!$scope.$parent.$parent.dataset.fe_views) {
-                        $scope.$parent.$parent.dataset.fe_views = {};
-                        $scope.$parent.$parent.dataset.fe_views.default_view = views[i].name;
-                    }
-                }
-            }
-
-
-            if (!$scope.$parent.$parent.dataset.fe_views) {
-                $scope.$parent.$parent.dataset.fe_views = {};
-                $scope.$parent.$parent.dataset.fe_views.default_view = 'gallery';
-                $scope.$parent.$parent.dataset.fe_views.views = {};
-                $scope.$parent.$parent.dataset.fe_views.views.gallery = {visible: true};
-
-            }
 
 
             $scope.$parent.$parent.currentNavItem = 'views';
@@ -66,12 +50,16 @@ angular.module('arraysApp')
 
             $scope.data.default_view = dataset.fe_views.default_view;
 
-            $scope.makeDefaultView = function(view) {
-                $scope.data.default_view = view.name;
+            $scope.makeDefaultView = function(viewName) {
+                $scope.data.default_view = viewName;
                 $scope.makeViewVisible();
             };
 
             $scope.makeViewVisible = function() {
+                if (!dataset.fe_views.views) {
+                    dataset.fe_views.views = {};
+                }
+
                 if (!dataset.fe_views.views[$scope.data.default_view]) {
                     dataset.fe_views.views[$scope.data.default_view] = {visible: true};
                 } else {
@@ -79,6 +67,27 @@ angular.module('arraysApp')
                 }
 
             };
+
+            $scope.customViews = [];
+
+            for (var i = 0; i < views.length; i++) {
+
+                if (views[i]._team) {
+
+                    $scope.customViews.push(views[i].name);
+
+                    if (!$scope.data.default_view) {
+                        $scope.makeDefaultView(views[i].name);
+                    }
+                }
+            }
+
+            if (!$scope.data.default_view) {
+                $scope.makeDefaultView('gallery');
+            }
+
+
+
 
 
             $scope.openViewDialog = function (evt, id) {

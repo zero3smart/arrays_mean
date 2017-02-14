@@ -6,6 +6,7 @@ var Batch = require('batch');
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var datasource_description = require('../../models/descriptions');
 var s3FileHosting = require('../../libs/utils/aws-datasource-files-hosting')
+var sample_dataset = require('./sample_dataset')
 
 
 module.exports.getAll = function (req, res) {
@@ -38,9 +39,18 @@ module.exports.create = function (req, res) {
                     }
                 });
             }
+            // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
+            // also, if we're creating sampleTeam for the first time
+            if (process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !=='sampleTeam') {
+                sample_dataset.delegateDatasetDuplicationTasks(req.user, createdTeam, function (err) {
+                    if(err) {
+                        res.send({error: err})
+                    }
+                });
+            }
             res.json(createdTeam);
         }
-    })
+    });
 }
 
 

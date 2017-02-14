@@ -42,13 +42,6 @@ module.exports = function (grunt) {
                 },
                 tasks: ['postcss']
             },
-            sass: {
-                files: ['public/stylesheets/scss/**/*.scss'],
-                options: {
-                    livereload: true
-                },
-                tasks: ['sass', 'postcss']
-            },
             js: {
                 files: ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/vendors/**/*.js'],
                 options: {
@@ -71,7 +64,7 @@ module.exports = function (grunt) {
                 src: [
                     'jquery/dist/jquery.min.js',
                     'd3/d3.js',
-                    'sharrre/jquery.sharrre.js',
+                    'sharrre/jquery.sharrre.min.js',
                     'scrollmagic/scrollmagic/minified/ScrollMagic.min.js',
                     'urijs/src/URI.min.js',
                     'lodash/dist/**',
@@ -92,19 +85,29 @@ module.exports = function (grunt) {
                     'tinycolor/dist/tinycolor-min.js',
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',
-                    'jquery-ui/jquery-ui.min.js'
+                    'jquery-ui/jquery-ui.min.js',
+                    'threejs/build/three.min.js',
+                    'tweenjs/src/Tween.js',
+                    'bootstrap/dist/js/bootstrap.min.js'
                 ],
                 dest: 'public/vendors'
+            },
+            fontello: {
+                src: 'public/fonts/custom-icon-font/css/fontello-embedded.css',
+                dest: 'public/stylesheets/base/fontello-embedded.css'
             }
         },
 
-        sass: {
-            bootstrap: {
-                files: {
-                    'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
-                }
-            }
-        },
+
+
+        // sass: {
+        //     bootstrap: {
+        //         files: {
+        //             'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
+        //         }
+        //     }
+        // },
+
 
         postcss: {
             options: {
@@ -138,7 +141,9 @@ module.exports = function (grunt) {
     // These plugins provide necessary tasks.
     // grunt.loadNpmTasks('grunt-contrib-concat');
     // grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+
+    // grunt.loadNpmTasks('grunt-contrib-sass');
+
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -146,10 +151,10 @@ module.exports = function (grunt) {
 
     // custom task
     grunt.loadTasks('grunt-subgrunt');
-    
+
     // Default task.
     grunt.registerTask('default', ['jshint']);
 
-    grunt.registerTask('build', ['copy', 'sass', 'postcss', 'subgrunt']);
+    grunt.registerTask('build', ['copy', 'postcss', 'subgrunt']);
 
 };

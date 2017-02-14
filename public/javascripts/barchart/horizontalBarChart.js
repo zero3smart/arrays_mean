@@ -55,7 +55,7 @@ HorizontalBarChart.prototype._animateForSort = function() {
 
     var self = this;
 
-    var newCategories = this._categoryData
+    var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
@@ -88,7 +88,7 @@ HorizontalBarChart.prototype._animateForSort = function() {
     this._bars.transition()
         .duration(750)
         .delay(delay)
-        .attr("y", function(d, i, j) { return y0(self._categoryData[j]); });
+        .attr("y", function(d, i, j) { return y0(self._categories[j]); });
 
     this._categories = newCategories;
 

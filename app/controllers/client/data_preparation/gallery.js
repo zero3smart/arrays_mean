@@ -22,7 +22,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+
+
 
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
@@ -161,7 +163,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
-
+         
 
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
@@ -230,6 +232,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+
+
                
                     done();
                 });
@@ -342,9 +346,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
 
-                if (err) return callback(err);        
+                if (err) return callback(err);     
 
-
+             
 
                 var data =
                 {
@@ -355,11 +359,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
+
+                
+
+
+
                     brandColor: dataSourceDescription.brandColor,
                     // brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor), 
                     sourceDoc: sourceDoc,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
 
 

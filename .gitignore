@@ -95,8 +95,6 @@ Temporary Items
 ### Espresso ###
 *.esproj
 
-## atlas folder for now
-atlas/
 
 ### JSHint ###
 *.jshintrc
@@ -119,8 +117,13 @@ dump.*
 *.csv
 
 
-# staging sever files# 
+### built files ###
+style.min.css
+public/vendors/
+
+# staging sever files#
 config.json
+!public/fonts/custom-icon-font/config.json
 github-post-receive.sh
 
 
