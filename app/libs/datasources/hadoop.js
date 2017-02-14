@@ -91,6 +91,71 @@ function _readColumnsAndSample(tableName,fn) {
     })
 }
 
+
+function _readAllTables(fn) {
+    console.log("ready to read tables");
+    db.reserve(function(err,connObj) {
+
+        if (connObj) {
+
+            console.log("Using connection: " + connObj. uuid);
+            var conn = connObj.conn;
+
+            async.waterfall([
+                function(callback) {
+                    conn.createStatement(function(err,statement) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,statement);
+                        }
+                    })
+                },
+                function(statement,callback) {
+                    statement.executeQuery("SHOW TABLES",function(err,results) {
+                        if (err) callback(err);
+                        else {
+                            console.log(results);
+                            callback(null,results);
+                        }
+                    })
+                },
+                function(results,callback) {
+                    results.toObjArray(function(err,obj) {
+                        console.log("object array");
+                        console.log(obj);
+                        // if (err) callback(err);
+                        // else {
+                        //     callback(null,obj);
+                        // }
+                    })
+                },
+                // function(array,callback) {
+                //     var data = [];
+                //     var firstRecord = array[0];
+                //     for (var col in firstRecord) {
+                //         data.push({name: col,sample:firstRecord[col]});
+                //     }
+                //     callback(null,data);
+                // }
+            ],function(err,arrayOfCols) {
+                var errorFromFuncions = err;
+                // db.release(connObj,function(err) {
+                //     if (err || errorFromFuncions) {
+                //         winston.error("Error reading tables from connection");
+                //         console.log(err);
+                //         console.log(errorFromFuncions);
+                //         return fn(err);
+                //     } else {
+                //         console.log("return data and release connection:", connObj. uuid);
+                //         return fn(null,arrayOfCols);
+                //     }
+                // })
+            })
+        }
+    })
+
+}
+
 function _initConnection(url,callback) {
     winston.info("ready to init a new connection.");
     var config = {
@@ -118,14 +183,18 @@ module.exports.initConnection = function(req,res) {
 
     if (db) {
         winston.info("init connection: connection already made.");
-        _readColumnsAndSample(req.body.tableName,function(err,data) {
-            if (err) return res.status(500).send(err);
-            else {
-                console.log("successfully read columns and sample, data: %s",
-                    JSON.stringify(data));
-                return res.json(data);
-            }
+
+        _readAllTables(function(err,data) {
+
         })
+        // _readColumnsAndSample(req.body.tableName,function(err,data) {
+        //     if (err) return res.status(500).send(err);
+        //     else {
+        //         console.log("successfully read columns and sample, data: %s",
+        //             JSON.stringify(data));
+        //         return res.json(data);
+        //     }
+        // })
     } else {
 
         // var data = [{name: "omg.molecule_name", sample:"abc"}];
@@ -139,19 +208,23 @@ module.exports.initConnection = function(req,res) {
 
             if (err) return res.status(500).send(JSON.stringify(err));
 
-            _readColumnsAndSample(req.body.tableName,function(err,data) {
-                if (err) return res.status(500).json(err);
-                else {
-
-
-                    console.log("successfully read columns and sample, data: %s",
-                        JSON.stringify(data));
-                    if (!req.session.columns) req.session.columns = {};
-                    req.session.columns[req.params.id] = data;
-                    return res.json(data);
-                }
+            _readAllTables(function(err,data) {
 
             })
+
+            // _readColumnsAndSample(req.body.tableName,function(err,data) {
+            //     if (err) return res.status(500).json(err);
+            //     else {
+
+
+            //         console.log("successfully read columns and sample, data: %s",
+            //             JSON.stringify(data));
+            //         if (!req.session.columns) req.session.columns = {};
+            //         req.session.columns[req.params.id] = data;
+            //         return res.json(data);
+            //     }
+
+            // })
         })        
     }
 

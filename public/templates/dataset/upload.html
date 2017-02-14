@@ -30,19 +30,20 @@
                     aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
                 </md-input-container>
 
-                <md-input-container layout="row" flex="80" md-no-float>
-                    <input ng-model="dataset.connection.tableName"
-                    aria-label="Dataset Connection Table Name" placeholder="Table Name" autofocus>
-                </md-input-container>
-
+           
 
                 <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
-                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0 &&
-                    dataset.connection.tableName" ng-hide="isConnecting==false"
+                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0" ng-hide="isConnecting==false"
                     ng-disabled="isConnecting || !dataset.connection.type ">
                     <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
                 </md-button>
 
+
+
+                  <!--    <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.tableName"
+                    aria-label="Dataset Connection Table Name" placeholder="Table Name" autofocus>
+                </md-input-container> -->
 
 
 
