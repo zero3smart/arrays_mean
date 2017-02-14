@@ -9,6 +9,7 @@ var aws = require('aws-sdk');
 var fs = require('fs');
 var es = require('event-stream');
 var parse = require('csv-parse');
+var moment = require('moment');
 var datasource_file_service = require('../../../libs/utils/aws-datasource-files-hosting');
 var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
@@ -553,6 +554,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                             readStream.resume();
                         } else if (countOfLines == 2) {
                             columns = columns.map(function (e, i) {
+                                intuitDataype(e.name, output[0][i])
                                 return {name: e.name, sample: output[0][i]};
                             });
                             readStream.resume();
@@ -563,6 +565,22 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                     });
             })
         );
+}
+
+function intuitDataype(name, sample) {
+    // check date
+    if (moment(sample).isValid()) {
+        console.log("name: " + name + " sample: " + sample + " date")
+        // check the name for the word "date"
+    } else {
+        var numberRE = /[^0-9|\.]/
+        if(numberRE.test(sample)) {
+            console.log("name: " + name + " sample: " + sample + "is a string")
+        } else {
+           console.log("name: " + name + "sample: " + sample + " is a number") 
+        }
+    }
+    // check number
 }
 
 module.exports.upload = function (req, res) {
