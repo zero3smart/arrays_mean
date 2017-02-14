@@ -137,7 +137,6 @@ var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
 }
 
 module.exports.create = function (req, res) {
-    console.log("creating user")
     User.create(req.body, function (err, user) {
         if (err) {
             res.status(500).send(err);
@@ -245,7 +244,8 @@ module.exports.update = function (req, res) {
                         res.status(404).send('User not found');
                     } else {
                         // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
-                        if(process.env.HOST !== 'local.arrays.co:9080') {
+                        // also if we're creating sampleTeam for the first time
+                        if(process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !== 'sampleTeam') {
                             // create sample dataset
                             sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
                                 if (err) {
