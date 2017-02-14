@@ -453,8 +453,14 @@ module.exports.save = function (req, res) {
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
 
                         doc[key] = value;
+
+                        if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
+                            console.log('cleared join session columns stored');
+                            req.session.columns[req.body._id + "_join"];
+                        }
                         if (typeof value === 'object')
                             doc.markModified(key);
+
 
                     }
                 });

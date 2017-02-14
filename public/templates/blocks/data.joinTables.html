@@ -16,28 +16,28 @@
        
                 <md-input-container flex="50">
                     <label>Primary Key</label>
-                    <md-select required name="localField_{{$index}}"
+                    <md-select name="localField_{{$index}}"
                                ng-model="dataset.connection.join.primaryKey">
                         <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
                             {{column.name}}
                         </md-option>
                     </md-select>
-                    <div ng-messages="dialog.form.localField.$error">
+                    <!-- <div ng-messages="dialog.form.localField.$error">
                         <div ng-message="required">This is required.</div>
-                    </div>
+                    </div> -->
                 </md-input-container>
 
                 <md-input-container flex="50">
                     <label>Foreign Key</label>
-                    <md-select required name="localField_{{$index}}"
+                    <md-select name="localField_{{$index}}"
                                ng-model="dataset.connection.join.foreignKey">
                         <md-option ng-repeat="column in colsByJoinTableName[dataset.connection.join.tableName]" value="{{column.name}}">
                             {{column.name}}
                         </md-option>
                     </md-select>
-                    <div ng-messages="dialog.form.localField.$error">
+                  <!--   <div ng-messages="dialog.form.localField.$error">
                         <div ng-message="required">This is required.</div>
-                    </div>
+                    </div> -->
                 </md-input-container>
 
             

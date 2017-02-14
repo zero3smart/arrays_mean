@@ -71,8 +71,7 @@ function _readColumnsAndSample(tableName,fn) {
                     var data = [];
                     var firstRecord = array[0];
                     for (var col in firstRecord) {
-                        var column = col.split(".")[1];
-                        data.push({name: column,sample:firstRecord[col]});
+                        data.push({name: col,sample:firstRecord[col]});
                     }
                     callback(null,data);
                 }
@@ -110,6 +109,9 @@ function _initConnection(url,callback) {
 
 module.exports.initConnection = function(req,res) {
 
+
+
+
     if (db) {
         winston.info("init connection: connection already made.");
         _readColumnsAndSample(req.body.tableName,function(err,data) {
@@ -121,13 +123,23 @@ module.exports.initConnection = function(req,res) {
             }
         })
     } else {
+
+        var data = [{name: "molecule_name", sample:"abc"}];
+        req.session.columns[req.params.id] = data;
+        return res.json(data);
+
+
         _initConnection(req.body.url,function(err) {
+
+
 
             if (err) return res.status(500).send(JSON.stringify(err));
 
             _readColumnsAndSample(req.body.tableName,function(err,data) {
                 if (err) return res.status(500).json(err);
                 else {
+
+
                     console.log("successfully read columns and sample, data: %s",
                         JSON.stringify(data));
                     if (!req.session.columns) req.session.columns = {};
@@ -138,9 +150,22 @@ module.exports.initConnection = function(req,res) {
             })
         })        
     }
+
+
 }
 
 module.exports.readColumnsForJoin = function(req,res) {
+
+
+
+    if (req.session.columns[req.params.id + "_join"]) {
+        return res.json(req.session.columns[req.params.id + "_join"]);
+    }
+ 
+
+    var data = [{name: "abc.molecule_name", sample:"abc"}];
+    req.session.columns[req.params.id + "_join" ] = data;
+    return res.json(data);
 
    
     if (db) {
@@ -168,6 +193,7 @@ module.exports.readColumnsForJoin = function(req,res) {
                     else {
                         console.log("successfully read columns and sample for join, data: %s",
                             JSON.stringify(data));
+                          req.session.columns[req.params.id + "_join"] = data;
                         return res.json(data);
                     }
 
