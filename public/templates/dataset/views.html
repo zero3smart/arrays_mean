@@ -30,7 +30,7 @@
 
                 <span flex ng-click="openViewDialog($event, view._id)">{{ view.displayAs }}</span>
 
-                <span class="dashboard-list-icon"
+                <span ng-hide="view._team" class="dashboard-list-icon"
                     aa-tooltip="Edit view"
                     ng-click="openViewDialog($event, view._id)" flex="5">
                     <i class="fa fa-pencil" aria-hidden="true"></i>

@@ -7,8 +7,15 @@
 
 
                 <md-input-container layout="row" flex="80" md-no-float>
-                    <input ng-model="dataset.connection.join.tableName" ng-model-options="{updateOn:'blur'}" ng-change="loadCols()"
-                    aria-label="Dataset Connection Table Name" placeholder="Join Table" autofocus>
+                    <md-select aria-label="Dataset Connection Table Name"
+                               ng-model="dataset.connection.join.tableName" ng-change="loadCols()">
+                        <md-option ng-repeat="tab in dataset.tables" value="{{tab.tab_name}}">
+                            {{tab.tab_name}}
+                        </md-option>
+                    </md-select>
+
+
+
                 </md-input-container>
 
 

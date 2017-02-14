@@ -35,6 +35,9 @@ var db;
 
 function _readColumnsAndSample(tableName,fn) {
 
+    var data = [{name: "abc.molecule_name", sample:"abc"}];
+    return fn(null,data);
+
     db.reserve(function(err,connObj) {
 
         if (connObj) {
@@ -89,11 +92,37 @@ function _readColumnsAndSample(tableName,fn) {
             })
         }
     })
+
+
+}
+
+module.exports.readColumnsAndSample = function(body,tableName,fn) {
+
+    var data = [{name: "abc.molecule_name", sample:"abc"}];
+    return fn(null,data);
+
+
+    if (db) {
+
+
+        _readColumnsAndSample(tableName,fn);
+
+    } else {
+
+        _initConnection(body.url,function(err) {
+            if (err) fn(err);
+             _readColumnsAndSample(tableName,fn);
+
+        })
+
+    }
 }
 
 
 function _readAllTables(fn) {
+
     console.log("ready to read tables");
+
     db.reserve(function(err,connObj) {
 
         if (connObj) {
@@ -121,35 +150,25 @@ function _readAllTables(fn) {
                 },
                 function(results,callback) {
                     results.toObjArray(function(err,obj) {
-                        console.log("object array");
-                        console.log(obj);
-                        // if (err) callback(err);
-                        // else {
-                        //     callback(null,obj);
-                        // }
+                        if (err) callback(err);
+                        else {
+                            callback(null,obj);
+                        }
                     })
-                },
-                // function(array,callback) {
-                //     var data = [];
-                //     var firstRecord = array[0];
-                //     for (var col in firstRecord) {
-                //         data.push({name: col,sample:firstRecord[col]});
-                //     }
-                //     callback(null,data);
-                // }
-            ],function(err,arrayOfCols) {
+                }
+            ],function(err,arrayOfTables) {
                 var errorFromFuncions = err;
-                // db.release(connObj,function(err) {
-                //     if (err || errorFromFuncions) {
-                //         winston.error("Error reading tables from connection");
-                //         console.log(err);
-                //         console.log(errorFromFuncions);
-                //         return fn(err);
-                //     } else {
-                //         console.log("return data and release connection:", connObj. uuid);
-                //         return fn(null,arrayOfCols);
-                //     }
-                // })
+                db.release(connObj,function(err) {
+                    if (err || errorFromFuncions) {
+                        winston.error("Error reading tables from connection");
+                        console.log(err);
+                        console.log(errorFromFuncions);
+                        return fn(err);
+                    } else {
+                        console.log("return data of tables and release connection:", connObj. uuid);
+                        return fn(null,arrayOfTables);
+                    }
+                })
             })
         }
     })
@@ -176,7 +195,7 @@ function _initConnection(url,callback) {
 
 }
 
-module.exports.initConnection = function(req,res) {
+module.exports.initConnection = function(body,callback) {
 
 
 
@@ -185,103 +204,44 @@ module.exports.initConnection = function(req,res) {
         winston.info("init connection: connection already made.");
 
         _readAllTables(function(err,data) {
-
-        })
-        // _readColumnsAndSample(req.body.tableName,function(err,data) {
-        //     if (err) return res.status(500).send(err);
-        //     else {
-        //         console.log("successfully read columns and sample, data: %s",
-        //             JSON.stringify(data));
-        //         return res.json(data);
-        //     }
-        // })
-    } else {
-
-        // var data = [{name: "omg.molecule_name", sample:"abc"}];
-        // req.session.columns[req.params.id] = data;
-        // return res.json(data);
-
-
-        _initConnection(req.body.url,function(err) {
-
-
-
-            if (err) return res.status(500).send(JSON.stringify(err));
-
-            _readAllTables(function(err,data) {
-
-            })
-
-            // _readColumnsAndSample(req.body.tableName,function(err,data) {
-            //     if (err) return res.status(500).json(err);
-            //     else {
-
-
-            //         console.log("successfully read columns and sample, data: %s",
-            //             JSON.stringify(data));
-            //         if (!req.session.columns) req.session.columns = {};
-            //         req.session.columns[req.params.id] = data;
-            //         return res.json(data);
-            //     }
-
-            // })
-        })        
-    }
-
-
-}
-
-module.exports.readColumnsForJoin = function(req,res) {
-
-
-
-    if (req.session.columns[req.params.id + "_join"]) {
-        return res.json(req.session.columns[req.params.id + "_join"]);
-    }
- 
-
-    // var data = [{name: "abc.molecule_name", sample:"abc"}];
-    // req.session.columns[req.params.id + "_join" ] = data;
-    // return res.json(data);
-
-   
-    if (db) {
-        _readColumnsAndSample(req.body.join.tableName,function(err,data) {
-
-            if (err) return res.status(500).json(err);
-
+            if (err) callback(err);
             else {
-                console.log("successfully read columns and sample for join, data: %s",
-                    JSON.stringify(data));
-                return res.json(data);
+               
+                console.log("successfully read tables, data %s", JSON.stringify(data));
+                callback(null,data);
             }
 
         })
 
     } else {
-        _initConnection(req.body.url,function(err) {
-            if (err) return res.status(500).json(err);
-            else {
 
-                 _readColumnsAndSample(req.body.join.tableName,function(err,data) {
+      
+        callback(null,[{"tab_name": "atlas_pd"}, {"tab_name": "bioreg"}]);
 
-                    if (err) return res.status(500).json(err);
 
-                    else {
-                        console.log("successfully read columns and sample for join, data: %s",
-                            JSON.stringify(data));
-                          req.session.columns[req.params.id + "_join"] = data;
-                        return res.json(data);
-                    }
 
-                })
 
-            }
+        // _initConnection(body.url,function(err) {
 
-        })
+        //     if (err) callback(err);
+
+        //     _readAllTables(function(err,data) {
+
+        //         if (err) return res.status(500).send(err);
+        //         else {
+        //            console.log("successfully read tables, data %s", JSON.stringify(data));
+        //            callback(null,data);
+        //         }
+
+        //     })
+        // })  
+
     }
 
+
 }
+
+
 
 function _runQuery(query,fn) {
 
