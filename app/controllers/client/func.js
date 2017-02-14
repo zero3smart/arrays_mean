@@ -934,25 +934,27 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;
 
-
-function _calcContentColor(backgroundColor) {
-    if (!backgroundColor) return '#000000';
+function determineBrightness(backgroundColor) {
     // brightness method described here - http://alienryderflex.com/hsp.html
     var r, g, b;
     var rWeight = .299,
         gWeight = .587,
-        bWeight = .114;
-
+        bWeight = .114; 
 
     // Calculate individual color components
     r = parseInt('0x' + backgroundColor.slice(1,3)) / 255;
     g = parseInt('0x' + backgroundColor.slice(3,5)) / 255;
     b = parseInt('0x' + backgroundColor.slice(5,7)) / 255;
 
-    var brightness = Math.sqrt(rWeight * (r * r) + gWeight * (g * g) + bWeight * (b * b));
+    return Math.sqrt(rWeight * (r * r) + gWeight * (g * g) + bWeight * (b * b));
+}
+
+function _calcContentColor(backgroundColor) {
+    if (!backgroundColor) return '#000000';
+
+    var brightness = determineBrightness(backgroundColor);
 
     if (brightness > 0.54) {
-
         return '#000000';
     }
 
@@ -960,3 +962,17 @@ function _calcContentColor(backgroundColor) {
 }
 
 module.exports.calcContentColor = _calcContentColor;
+
+function _useLightBrandText(backgroundColor) {
+    if (!backgroundColor) return false;
+
+    var brightness = determineBrightness(backgroundColor);
+
+    if (brightness > 0.54) {
+        return false;
+    }
+
+    return true;
+}
+
+module.exports.useLightBrandText = _useLightBrandText;

@@ -44,9 +44,7 @@
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
 
-    {% if not user %}
-
-    <div class="w-nav">
+    <!-- <div class="w-nav">
       <div class="w-container">
 
 
@@ -102,15 +100,9 @@
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
         {% endif %}
       </nav>
-    </div>
+    </div> -->
 
-    {% endif %}
-
-    {% if user %}
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg">
-    {% else %}
-    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg" style="top:64px;">
-    {% endif %}
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
                 <a class="navbar-brand" href="{{ galleryURL }}">{{ arrayTitle }}</a>
@@ -125,31 +117,79 @@
                         <span class="navbar-back-label hidden-xs">Back</span></a>
                 </li>
             </ul>
-            {% if user %}
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle {{ "user-initial-nav" if user }}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
-                            <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a>
-                            </li>
-                            <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="background-color-brand-hover"><a href="{{explore_url}}">Explore Arrays</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="background-color-brand-hover"><a
-                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
-                            </li>
-                        </ul>
-                    </li>
+                <ul class="nav navbar-nav navbar-right hide-mobile">
+                  <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                    <a href="#" class="share-link pill-link">Share</a>
+                  </li>
+                  {% if user %}
+
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                          <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
+                      </a>
+                      <ul class="dropdown-menu">
+                          <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
+                          <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
+                          <li role="separator" class="divider"></li>
+                          <li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a>
+                          </li>
+                          <li role="separator" class="divider"></li>
+                          <li class="background-color-brand-hover"><a href="{{explore_url}}">Explore Arrays</a></li>
+                          {% if env.NODE_ENV == 'production' %}
+                          <li class="background-color-brand-hover"><a href="https://www.arrays.co/news">News</a></li>
+                          {% endif %}
+                          <li class="background-color-brand-hover"><a
+                                  href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
+                          </li>
+                      </ul>
+                  </li>
+                  {% else %}
+                  <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                      <a class="pill-link pill-hollow" href="/auth/login">Log In</a>
+                  </li>
+                  <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                      {% if env.NODE_ENV == 'production' %}
+                      <a class="pill-link pill-filled" href="https://www.arrays.co/signup">Sign Up</a>
+                      {% else %}
+                      <a class="pill-link pill-filled w-nav-link" href="/auth/login">Sign Up</a>
+                      {% endif %}    
+                  </li>
+                  {% endif %}
                 </ul>
+
+                <!-- Mobile -->
+                <div class="w-nav-burger array-burger">
+                  <a class="w-burger-menu" href="#">
+                    <i id="menu-expand" class="icon-menu"></i>
+                  </a>
+                </div>
+
+                <div class="w-nav-overlay array-nav-overlay">
+                  <nav class="mobile-nav-menu">
+                    <a class="w-mobile-link" href="arrays.co" target="_blank">Home</a>
+                    <a class="w-mobile-link" href="{{explore_url}}" target="_blank">Explore</a>
+                    <a class="w-mobile-link" href="news.html">News</a>
+                {% if not user %}
+                    <a class="w-mobile-link" href="pricing.html">Pricing</a>
+                {% endif %}
+                    <a class="share-link w-mobile-link" href="#">Share</a>
+                {% if user %}
+                    <a class="w-mobile-link" href="/dashboard">Account Settings</a>
+                    <a class="w-mobile-link" id="logout">Log Out</a>
+                {% else %}
+                    <a class="w-mobile-link" href="/auth/login">Log In</a>
+                    {% if env.NODE_ENV == 'production' %}
+                    <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+                    {% else %}
+                    <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+                    {% endif %}
+                {% endif %}
+                  </nav>
+                </div>
+                <!-- End Mobile -->
+
             </div><!--/.nav-collapse -->
-            {% endif %}
         </div>
     </nav>
 </header>

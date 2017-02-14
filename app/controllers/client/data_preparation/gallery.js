@@ -50,7 +50,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
 
-                var checkConditionAndApplyClasses = function (conditions, value,multiple) {
+                var checkConditionAndApplyClasses = function (conditions, value, multiple) {
 
 
                     if (typeof value == 'undefined' || value == "" || value == null) {
@@ -98,51 +98,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return htmlElem;
                 };
 
-                var galleryItemBackgroundColor;
-
-                if (galleryViewSettings.galleryItemConditionsForBackgroundColor) {
-                    var cond = galleryViewSettings.galleryItemConditionsForBackgroundColor;
-
-                    var determineContentColor = function(backgroundColor) {
-                        var r, g, b;
-
-                        r = parseInt('0x' + backgroundColor.slice(1,3));
-                        g = parseInt('0x' + backgroundColor.slice(3,5));
-                        b = parseInt('0x' + backgroundColor.slice(5,7));
-
-                        var totalColorValue = r + g + b;
-
-                        if (totalColorValue > 382) {
-                            return '#000000';
-                        }
-
-                        return '#FFFFFF';
-                    }
-
-                    galleryItemBackgroundColor = function (rowObject) {
-                        var fieldName = cond.field;
-                        var conditions = cond.conditions;
-
-                        var fieldValue = rowObject["rowParams"][fieldName];
-
-                        for (var i = 0; i < conditions.length; i++) {
-                            if (conditions[i].value == fieldValue) {
-                                return {
-                                    backgroundColor: conditions[i].backgroundColor,
-                                    contentColor: determineContentColor(conditions[i].backgroundColor)
-                                };
-                            }
-                        }
-                        
-                        return {
-                            backgroundColor: '#FFFFFF',
-                            contentColor: '#000000'
-                        };
-                    }
-                }
-
-                
-
             }
 
             var galleryItemBackgroundColor;
@@ -166,8 +121,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                     
                     return {
-                        backgroundColor: '#FFFFFF',
-                        contentColor: '#000000'
+                        backgroundColor: '#FFF',
+                        contentColor: '#000'
                     };
                 }
             }
@@ -401,7 +356,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
-                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
+                    // brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
+                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor), 
                     sourceDoc: sourceDoc,
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,

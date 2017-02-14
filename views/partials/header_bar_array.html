@@ -36,126 +36,57 @@
         border-top-color: {{ brandColor }};
     }
 
-    .navbar-nav .dropdown > a,
-    .navbar-nav .dropdown > a span,
-    .sidebar-filter-slide-toggle span,
-    .navbar-brand-container .navbar-brand
-    {
-        color: {{ brandContentColor }};
-    }
-
-    /*.dropdown.open > a,
-    .dropdown.open > a span,*/
-    li.active > .sidebar-filter-slide-toggle span
-    {
-        color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
-    }
-
     .input-subscribe,
     .input-subscribe:focus {
-        border-color: {{ brandContentColor }};
-        color: {{ brandContentColor }};
+        border-color: {{ '#FFF' if brandWhiteText else '#000' }};
+        color: {{ '#FFF' if brandWhiteText else '#000' }};
     }
 
     .input-subscribe::-webkit-input-placeholder,
     .site-footer,
     .site-info a {
-        color: {{ brandContentColor }};
+        color: {{ '#FFF' if brandWhiteText else '#000' }};
     }
 
     .btn-inverse {
-        background-color: {{ brandContentColor }};
-        border-color: {{ brandContentColor }}
+        background-color: {{ '#FFF' if brandWhiteText else '#000' }};
+        border-color: {{ '#FFF' if brandWhiteText else '#000' }};
     }
 
     .btn-inverse:hover {
-        color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
+        color: {{ '#000' if brandWhiteText else '#FFF' }};
     }
 
-    {% if not user %}
-    .share-link {
-        margin-right: 15px;
-    }
-    {% endif %}
 </style>
 {% endif %}
 
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
 
-    {% if not user %}
-
-    <div class="w-nav">
-      <div class="w-container">
-
-        <a class="w-logo" href="{{marketing_url}}"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
-        </a>
-        <ul class="w-nav-list">
-
-          <li>
-              <a class="w-nav-link" href={{explore_url}} target="_blank">Explore</a>
-          </li>
-
-        {% if env.NODE_ENV == 'production' %}
-          <li>
-              <a class="w-nav-link" href="https://www.arrays.co/news">News</a>
-          </li>
-          <li>
-              <a class="w-nav-link" href="https://www.arrays.co/pricing">Pricing</a>
-          </li>
-          {% endif %}
-
-
-          <li>
-              <a class="w-nav-link" href="/auth/login">Log In</a>
-          </li>
-
-          <li class="signup-container">
-              {% if env.NODE_ENV == 'production' %}
-              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
-              {% else %}
-              <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
-              {% endif %}
-          </li>
-
-
-
-        </ul>
-        <div class="w-nav-burger">
-          <a class="w-burger-menu" href="#">
-            <i id="menu-expand" class="icon-menu"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="w-nav-overlay">
-      <nav class="mobile-nav-menu">
-        <a class="w-mobile-link" href="{{explore_url}}" target="_blank">Explore</a>
-        <a class="w-mobile-link" href="news.html">News</a>
-        <a class="w-mobile-link" href="pricing.html">Pricing</a>
-        <a class="w-mobile-link" href="/auth/login">Log In</a>
-        {% if env.NODE_ENV == 'production' %}
-        <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
-        {% else %}
-        <a class="w-mobile-link" href="/auth/login">Sign Up</a>
-        {% endif %}
-      </nav>
-    </div>
-
-    {% endif %}
-
-    {% if user %}
-    <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
-    {% else %}
-    <nav class="navbar navbar-default navbar-fixed-top background-color-brand" style="top:64px;">
-    {% endif %}
+    <nav class="navbar navbar-default navbar-fixed-top background-color-brand {{ 'light-text' if brandWhiteText }}">
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
-                <a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}"
+                <!-- <a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}"
                    href="{% if team.subdomain | length %}{{ addSubdomain(team.subdomain) }}{% else %}{{explore_url}}{% endif %}">{% if team.logo_header
                     | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title.toLowerCase() }}{% else
-                    %}Arrays{% endif %}</a><br/>
+                    %}Arrays{% endif %}</a> -->
+                <a class="navbar-brand navbar-brand-arrays navbar-brand-stacked-logo" href="{{marketing_url}}">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40.2px" height="36.9px" viewBox="0 0 120.6 110.7" xml:space="preserve">
+                        <g id="logo">
+                            <path class="st0" d="M55.7,24h11.2l2.2,6h8.2L65.5,0h-8.2L45.6,30h8L55.7,24z M61.3,9.3l3.2,8.7h-6.3L61.3,9.3z"/>
+                            <path class="st0" d="M46.9,59.1c3.8-1.4,6.1-4.3,6.1-9C53,43.5,48.4,40,41.8,40H28.4v30h8V60h2.4l6.4,10h8.9L46.9,59.1z M41,54
+                                h-4.6v-8H41c2.9,0,4.2,1.8,4.2,4S43.8,54,41,54z"/>
+                            <path class="st0" d="M91.6,59.1c3.8-1.4,6.1-4.3,6.1-9c0-6.7-4.6-10.2-11.2-10.2H72.4v30h8V60h3.1l6.4,10h8.9L91.6,59.1z M85.7,54
+                                h-5.3v-8h5.3c2.9,0,4.2,1.8,4.2,4S88.5,54,85.7,54z"/>
+                            <path class="st0" d="M11.7,80L0,110h8l2.2-6h11.2l2.2,6h8.2L19.9,80H11.7z M12.6,98l3.1-8.7l3.2,8.7H12.6z"/>
+                            <polygon class="st0" points="62.6,92 56.1,80 47.4,80 58.4,99.4 58.4,110 66.4,110 66.4,99.4 77.5,80 69,80    "/>
+                            <path class="st0" d="M112.5,92l-6-1.4c-1.6-0.3-2.6-1.1-2.6-2.5c0-1.7,1.6-2.9,3.9-2.9c2.7,0,4.1,1.8,4.7,2.8h7.9
+                                c-0.9-5-5.1-9.2-12.6-9.2c-6.8,0-11.8,4.1-11.8,10.1c0,5.2,3.4,7.6,7.9,8.6l5.9,1.3c2,0.5,2.9,1.1,2.9,2.6c0,1.9-1.7,2.9-4.2,2.9
+                                c-2.5,0-4.3-1.2-5-3.2h-8.4c1.1,6,6.1,9.7,13.5,9.7c6.7,0,12-3.6,12-9.9C120.6,96.1,117.7,93.3,112.5,92z"/>
+                        </g>
+                    </svg>
+                </a>
+                <br/>
                 <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
@@ -253,13 +184,24 @@
                         </ul>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#" class="share-link btn btn-splash">SHARE</a>
+                <ul class="nav navbar-nav navbar-right hide-mobile">
+                    {% if not user %}
+                    <li class="collapsable-links vert-center">
+                        <a class="link-underline" href="{{marketing_url}}">Home</a>
+                        <a class="link-underline" href={{explore_url}} target="_blank">Explore</a>
+                        {% if env.NODE_ENV == 'production' %}
+                        <a class="link-underline" href="https://www.arrays.co/news">News</a>
+                        <a class="link-underline" href="https://www.arrays.co/pricing">Pricing</a>
+                        {% endif %}
+                    </li>
+                    
+                    {% endif %}
+                    <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                        <a href="#" class="share-link pill-link">Share</a>
                     </li>
                     {% if user %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle {{ "user-initial-nav" if user }}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
                         <ul class="dropdown-menu">
@@ -269,16 +211,80 @@
                             {% if team.title %}
                             <li class="background-color-brand-hover"><a href="{{ addSubdomain(team.subdomain) }}">Home</a></li>
                             {% endif %}
-                            <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
+                            <!-- <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li> -->
                             <li role="separator" class="divider"></li>
                             <li class="background-color-brand-hover"><a href="{{explore_url}}">Explore Arrays</a></li>
+                            {% if env.NODE_ENV == 'production' %}
+                            <li class="background-color-brand-hover"><a href="https://www.arrays.co/news">News</a></li>
+                            {% endif %}
                             <li class="background-color-brand-hover"><a
                                     href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
                             </li>
                         </ul>
                     </li>
+                    {% else %}
+                    <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                        <a class="pill-link pill-hollow" href="/auth/login">Log In</a>
+                    </li>
+                    <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
+                        {% if env.NODE_ENV == 'production' %}
+                        <a class="pill-link pill-filled" href="https://www.arrays.co/signup">Sign Up</a>
+                        {% else %}
+                        <a class="pill-link pill-filled w-nav-link" href="/auth/login">Sign Up</a>
+                        {% endif %}    
+                    </li>
                     {% endif %}
                 </ul>
+
+                <!-- Mobile -->
+                <div class="w-nav-burger array-burger">
+                  <a class="w-burger-menu" href="#">
+                    <i id="menu-expand" class="icon-menu"></i>
+                  </a>
+                </div>
+
+                <div class="w-nav-overlay array-nav-overlay">
+                  <nav class="mobile-nav-menu">
+                  {% if team.title %}
+
+                    <a class="w-mobile-link" href="{{ addSubdomain(team.subdomain) }}" target="_blank">Home</a>
+                  {% else %}
+                    <a class="w-mobile-link" href="arrays.co" target="_blank">Home</a>
+
+                  {% endif %}
+
+                    <a class="w-mobile-link" href="{{explore_url}}" target="_blank">Explore</a>
+
+                  {% if env.NODE_ENV == 'production' %}
+
+                    <a class="w-mobile-link" href="news.html">News</a>
+                    {% if not user %}
+                    <a class="w-mobile-link" href="pricing.html">Pricing</a>
+                    {% endif %}
+
+                  {% endif %}
+
+                    <a class="share-link w-mobile-link" href="#">Share</a>
+
+                  {% if user %}
+
+                    <a class="w-mobile-link" href="/dashboard">Account Settings</a>
+                    <a class="w-mobile-link" id="logout">Log Out</a>
+
+                  {% else %}
+
+                    <a class="w-mobile-link" href="/auth/login">Log In</a>
+                    {% if env.NODE_ENV == 'production' %}
+                    <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+                    {% else %}
+                    <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+                    {% endif %}
+
+                  {% endif %}
+                  </nav>
+                </div>
+                <!-- End Mobile -->
+
             </div><!--/.nav-collapse -->
         </div>
     </nav>
