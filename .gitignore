@@ -121,8 +121,9 @@ dump.*
 style.min.css
 public/vendors/
 
-# staging sever files# 
+# staging sever files#
 config.json
+!public/fonts/custom-icon-font/config.json
 github-post-receive.sh
 
 
