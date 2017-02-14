@@ -13,7 +13,7 @@
 .icon-sort-ascending:before { content: '\e80b'; } /* '' */
 .icon-sort-descending:before { content: '\e80c'; } /* '' */
 .icon-back:before { content: '\e80d'; } /* '' */
-.icon-choropleth:before { content: '\e80e'; } /* '' */
+.icon-globe:before { content: '\e80e'; } /* '' */
 .icon-scatterplot:before { content: '\e80f'; } /* '' */
 .icon-facebook:before { content: '\e810'; } /* '' */
 .icon-twitter:before { content: '\e811'; } /* '' */
@@ -28,3 +28,4 @@
 .icon-line-graph:before { content: '\e81a'; } /* '' */
 .icon-pie-set:before { content: '\e81b'; } /* '' */
 .icon-bar-chart:before { content: '\e81c'; } /* '' */
+.icon-map:before { content: '\e81d'; } /* '' */
