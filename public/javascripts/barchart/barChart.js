@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 function BarChart(selector, dataSet, options) {
 
@@ -108,6 +108,7 @@ function BarChart(selector, dataSet, options) {
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {
             this._showYLabels = false;
+            this._margin.left = 25;
         } else {
             this._showYLabels = true;
         }
@@ -365,14 +366,14 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categ
 
     var formatter = this.getValueFormatter();
 
-    
+
 
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + label + '</div>' + 
+            '<div class="scatterplot-tooltip-content">' + label + '</div>' +
             '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
