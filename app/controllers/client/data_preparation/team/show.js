@@ -13,9 +13,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
 
-
-
-
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 
@@ -24,10 +21,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
 
         if (dataSourceDescription.connection) {
-            var default_listed = true; // list Arrays by default
-            if (dataSourceDescription.fe_listed === false) {
-                default_listed = false;
-            }
 
             var default_view = 'gallery';
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
@@ -50,8 +43,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 urls: dataSourceDescription.urls,
                 lastUpdatedBy: updatedByDisplayName,
                 author: authorDisplayName,
-                arrayListed: default_listed,
-                arrayVisible: dataSourceDescription.fe_visible,
                 default_view: default_view,
                 banner: dataSourceDescription.banner
             };
@@ -79,10 +70,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
-                var default_listed = true; // list Arrays by default
-                if (dataSourceDescription.fe_listed === false) {
-                    default_listed = false;
-                }
                 var default_view = 'gallery';
                 if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                     default_view = dataSourceDescription.fe_views.default_view;
@@ -99,9 +86,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     urls: dataSourceDescription.urls,
                     lastUpdatedBy: updatedByDisplayName,
                     author: authorDisplayName,
-                    arrayListed: default_listed,
-                    arrayVisible: dataSourceDescription.fe_visible,
-
                     default_filterJSON: default_filterJSON,
                     default_view: default_view,
                     banner: dataSourceDescription.banner
