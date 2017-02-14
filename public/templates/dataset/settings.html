@@ -34,7 +34,7 @@
 
             <md-switch ng-model="dataset.fe_listed"
                 ng-change="updatePublishSettings()"
-                ng-disabled="!dataset.fe_visible || !dataset.isPublic"
+                ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
                 List your visualization on arrays.co
             </md-switch>
