@@ -13,7 +13,7 @@ angular.module('arraysApp')
             if (!dataset.fe_excludeFields) {
                 dataset.fe_excludeFields = {};
                 for (var i = 0; i < dataset.columns.length; i++) {
-                    dataset.fe_excludeFields[dataset.columns[i].name] = false;
+                    dataset.fe_excludeFields[dataset.columns[i].name.replace(".","")] = false;
                 }
                 $scope.excludeAll = true; // set toggle to "Exclude All"
             } else {
@@ -63,7 +63,7 @@ angular.module('arraysApp')
             
 
 
-            $scope.joinDataCols = [];
+            var joinDataCols = [];
 
 
             if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join 
@@ -73,7 +73,7 @@ angular.module('arraysApp')
                 .then(function(response) {
 
                     if (response.status == 200 && response.data) {
-                        $scope.joinDataCols = response.data;
+                        joinDataCols = response.data;
                         $scope.loadJoinCols();
                     }
                 })
@@ -84,8 +84,8 @@ angular.module('arraysApp')
 
             $scope.loadJoinCols = function() {
 
-                if ($scope.$parent.$parent.dataset.connection.join  && $scope.joinDataCols) {
-                    $scope.data.fields = $scope.originalFields.concat($scope.joinDataCols);
+                if ($scope.$parent.$parent.dataset.connection.join  && joinDataCols) {
+                    $scope.data.fields = $scope.originalFields.concat(joinDataCols);
                 } else {
                     $scope.data.fields = $scope.originalFields;
                 }
@@ -142,6 +142,15 @@ angular.module('arraysApp')
                         }
 
                         $scope.save = function() {
+
+                            if ($scope.dataset.connection.join) {
+                                $scope.dataset.joinCols = $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName];
+                            } else {
+                                $scope.dataset.joinCols = [];
+                            }
+
+                            
+        
                             $mdDialog.hide($scope.dataset);
                         }
                     },
@@ -149,7 +158,10 @@ angular.module('arraysApp')
                     templateUrl: 'templates/blocks/data.joinTables.html',
                     clickOutsideToClose: true
                 })
-                .then(function(savedDataset,cols) {
+                .then(function(savedDataset) {
+                     joinDataCols = savedDataset.joinCols;
+                     delete savedDataset.joinCols;
+
                      $scope.$parent.$parent.dataset = savedDataset;
                      $scope.loadJoinCols();
                 })
@@ -1344,7 +1356,7 @@ angular.module('arraysApp')
 
             function sortColumnsByDisplayOrder() {
 
-                $scope.originalFields = $scope.$parent.$parent.dataset.columns.concat(
+                $scope.data.fields = $scope.originalFields = $scope.$parent.$parent.dataset.columns.concat(
                     $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
 
 
@@ -1441,6 +1453,7 @@ angular.module('arraysApp')
                         return $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) -
                             $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name);
                 });
+
 
             }
 

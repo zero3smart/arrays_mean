@@ -124,7 +124,7 @@ module.exports.initConnection = function(req,res) {
         })
     } else {
 
-        // var data = [{name: "molecule_name", sample:"abc"}];
+        // var data = [{name: "omg.molecule_name", sample:"abc"}];
         // req.session.columns[req.params.id] = data;
         // return res.json(data);
 
