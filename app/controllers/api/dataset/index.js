@@ -568,12 +568,21 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 function intuitDataype(name, sample) {
+    var dateRE = /(year|DATE)/i;
     // check date
-    if (moment(sample, moment.ISO_8601, true).isValid()) {
+    // MOMENT PARSES ALL DATES
+    if (moment(sample, [moment.ISO_8601, 'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY hh:mm', 'M/DD/YY hh:mm', 'M/D/YY hh:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY'], true).isValid()) {
         console.log("name: " + name + " sample: " + sample + " date")
+    } else if(dateRE.test(name)){
+        console.log("name contains year")
+        if(moment(sample, 'YYYY', true).isValid()) {
+            console.log("name: " + name + " sample: " + sample + " year date")
+        } else {
+            console.log("couldn't parse name: " + name + " sample: " + sample)
+        }
     } else {
         // if the sample has anything other than numbers and a "." it's a string
-        var numberRE = /[^0-9|\.]/
+        var numberRE = /[^0-9|\.]/;
         if(numberRE.test(sample)) {
             console.log("name: " + name + " sample: " + sample + " is a string")
         } else {
