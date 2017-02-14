@@ -81,6 +81,8 @@
                                                         <ul class="object-list">
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
+
+                                        
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
                                                             {% set arrayMemberText = arrayMember %}
                                                             {% if shouldLink %}
@@ -99,9 +101,15 @@
 
                                                 <dd>
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
-                                                {% if shouldLink %}
-                                                    {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
-                                                    
+
+                                                {% if shouldLink %} 
+
+
+                                                    {% set trueValue = columnValue | removeComma(columnName,dataTypesConversion) %}
+
+                                                    {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, trueValue , false) %}
+
+
                                                     <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                 {% endif %}
 

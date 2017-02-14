@@ -11,7 +11,7 @@
                 <ul class="dashboard-list">
                     <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
                     <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
-                    <li><a href="#" ng-click="addSourceType('database')">Connect to a database</a></li>
+                    <li><a href="#" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
                 </ul>
             </div>
 

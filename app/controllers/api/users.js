@@ -4,6 +4,7 @@ var mailer = require('../../libs/utils/nodemailer');
 var jwt = require('jsonwebtoken');
 var Batch = require('batch');
 var datasource_descriptions = require('../../models/descriptions');
+var sample_dataset = require('./sample_dataset');
 var winston = require('winston');
 
 module.exports.index = function (req, next) {
@@ -242,6 +243,16 @@ module.exports.update = function (req, res) {
                     } else if (!user) {
                         res.status(404).send('User not found');
                     } else {
+                        // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
+                        // also if we're creating sampleTeam for the first time
+                        if(process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !== 'sampleTeam') {
+                            // create sample dataset
+                            sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
+                                if (err) {
+                                    res.send({error: err})
+                                }
+                            });
+                        }
                         user.firstName = req.body.firstName;
                         user.lastName = req.body.lastName;
                         if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {

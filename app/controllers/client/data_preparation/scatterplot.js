@@ -19,7 +19,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
  
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
@@ -130,7 +130,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                                     user: user,
 
-                                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
 
                                     documents: documents,
                                     metaData: dataSourceDescription,

@@ -73,7 +73,7 @@
 
                             <div class="sort-bar-right pull-right">
                                 {{
-                                search.panel(
+                                search.default(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,
@@ -133,7 +133,7 @@
                                     {% for group in groupedResults %}
                                         {% if group.results | length %}
                                             <li class="timeline-group">
-                                
+
                                                 <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
                                                 <ul class="timeline-group-list">
 
@@ -145,7 +145,6 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                     {% if groupedResultsLimit < group.total and groupedResultsLimit >= 0 %}
-                                                    
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
                                                                 {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
