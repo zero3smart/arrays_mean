@@ -35,8 +35,8 @@ var db;
 
 function _readColumnsAndSample(tableName,fn) {
 
-    var data = [{name: "abc.molecule_name", sample:"abc"}];
-    return fn(null,data);
+    // var data = [{name: "abc.molecule_name", sample:"abc"}];
+    // return fn(null,data);
 
     db.reserve(function(err,connObj) {
 
@@ -98,8 +98,8 @@ function _readColumnsAndSample(tableName,fn) {
 
 module.exports.readColumnsAndSample = function(body,tableName,fn) {
 
-    var data = [{name: "abc.molecule_name", sample:"abc"}];
-    return fn(null,data);
+    // var data = [{name: "abc.molecule_name", sample:"abc"}];
+    // return fn(null,data);
 
 
     if (db) {
@@ -216,25 +216,25 @@ module.exports.initConnection = function(body,callback) {
     } else {
 
       
-        callback(null,[{"tab_name": "atlas_pd"}, {"tab_name": "bioreg"}]);
+        // callback(null,[{"tab_name": "atlas_pd"}, {"tab_name": "bioreg"}]);
 
 
 
 
-        // _initConnection(body.url,function(err) {
+        _initConnection(body.url,function(err) {
 
-        //     if (err) callback(err);
+            if (err) callback(err);
 
-        //     _readAllTables(function(err,data) {
+            _readAllTables(function(err,data) {
 
-        //         if (err) return res.status(500).send(err);
-        //         else {
-        //            console.log("successfully read tables, data %s", JSON.stringify(data));
-        //            callback(null,data);
-        //         }
+                if (err) return res.status(500).send(err);
+                else {
+                   console.log("successfully read tables, data %s", JSON.stringify(data));
+                   callback(null,data);
+                }
 
-        //     })
-        // })  
+            })
+        })  
 
     }
 
