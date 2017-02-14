@@ -427,8 +427,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //
                     docs: docs,
                     //
-                    // fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
-                    // humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
+                    fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+                    humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                     //
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     hasThumbs: hasThumbs,
