@@ -91,6 +91,10 @@ module.exports = function (grunt) {
                     'bootstrap/dist/js/bootstrap.min.js'
                 ],
                 dest: 'public/vendors'
+            },
+            fontello: {
+                src: 'public/fonts/custom-icon-font/css/fontello-embedded.css',
+                dest: 'public/stylesheets/base/fontello-embedded.css'
             }
         },
 
