@@ -66,6 +66,13 @@
 	box-shadow: none;
 }
 
+.map-container .sort-bar .dropdown-toggle,
+.map-container .sort-bar .search-by-label,
+.map-container .sort-bar .search-input {
+    /*text-shadow: -1px 0 3px white, 0 1px 3px white, 1px 0 3px white, 0 -1px 3px white;*/
+    text-shadow: 0 0 3px white;
+}
+
 .sort-criteria,
 .search-criteria {
 	color: var(--color-text-dark);
