@@ -124,9 +124,9 @@ module.exports.initConnection = function(req,res) {
         })
     } else {
 
-        var data = [{name: "molecule_name", sample:"abc"}];
-        req.session.columns[req.params.id] = data;
-        return res.json(data);
+        // var data = [{name: "molecule_name", sample:"abc"}];
+        // req.session.columns[req.params.id] = data;
+        // return res.json(data);
 
 
         _initConnection(req.body.url,function(err) {
@@ -163,9 +163,9 @@ module.exports.readColumnsForJoin = function(req,res) {
     }
  
 
-    var data = [{name: "abc.molecule_name", sample:"abc"}];
-    req.session.columns[req.params.id + "_join" ] = data;
-    return res.json(data);
+    // var data = [{name: "abc.molecule_name", sample:"abc"}];
+    // req.session.columns[req.params.id + "_join" ] = data;
+    // return res.json(data);
 
    
     if (db) {
