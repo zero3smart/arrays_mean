@@ -38,7 +38,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
@@ -63,6 +63,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var routePath_base = "/" + source_pKey + "/map";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+            var brandColor = dataSourceDescription.brandColor;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -343,6 +344,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    brandColor: brandColor,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.map.description : "",
                     //
@@ -361,7 +363,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     coordRadiusValue: coordRadiusValue,
                     coordColor: dataSourceDescription.fe_views.views.map.coordColor,
                     mapBy: mapBy,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,

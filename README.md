@@ -42,7 +42,9 @@
 ### III. Installing `node_modules` in the 'develop' package.json
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute `npm install`
+2. Run `git submodule init` followed by `git submodule update`
+3. Execute `npm install`
+
 
 ### IV. Building the front-end CSS files
 

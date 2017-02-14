@@ -438,11 +438,14 @@
                                             Include a field
                                         </md-button> -->
                                     </p>
-                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length == 1">
+                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length == 1 && !setting.description">
                                         Include this field in the <strong>{{currentMenu}}</strong> menu:
                                     </p>
-                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length > 1">
+                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length > 1 && !setting.description">
                                         Include these fields in the <strong>{{currentMenu}}</strong> menu:
+                                    </p>
+                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length && setting.description">
+                                        {{ setting.description }}
                                     </p>
                                     <ul class="dashboard-list user-list"
                                         ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">

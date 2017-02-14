@@ -69,6 +69,55 @@ angular.module('arraysApp')
                 $scope.excludeAll = exclude ? false : true; // toggle
             };
 
+            $scope.openJoinTablesDialog = function(evt) {
+                $mdDialog.show({
+                    locals: {
+                        dataset: $scope.$parent.$parent.dataset,
+                        DatasetService: DatasetService,
+
+
+                    },
+                    controller: function($scope,$mdDialog,dataset,DatasetService) {
+                        $scope.dataset = dataset;
+                        $scope.colsByJoinTableName = {};
+
+                        $scope.loadCols = function() {
+
+                            if (!$scope.dataset.connection.join.tableName || $scope.dataset.connection.join.tableName == "") return;
+                            if (!$scope.colsByJoinTableName[$scope.dataset.connection.join.tableName]) {
+                                $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = [];
+                            }
+
+                            DatasetService.colsForJoinTables($scope.dataset.connection)
+                            .then(function(response) {
+                                if (response.status == 200 && response.data) {
+                                    $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = response.data;
+                                }
+                            })
+
+                            
+                        }
+
+                        $scope.remove = function() {
+                            $scope.dialog.form.$setDirty();
+                            delete $scope.dataset.connection.join;
+
+                        }
+
+                        $scope.save = function() {
+                            $mdDialog.hide($scope.dataset);
+                        }
+                    },
+                    parent: angular.element(document.body),
+                    templateUrl: 'templates/blocks/data.joinTables.html',
+                    clickOutsideToClose: true
+                })
+                .then(function(savedDataset) {
+                     $scope.$parent.$parent.dataset = savedDataset;
+                })
+
+            }
+
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
                 // using the same controller for general field settings and field filter setting, for now
                 var fieldTemplate = filterOnly ? 'templates/blocks/data.field.filter.html' : 'templates/blocks/data.field.general.html';
@@ -93,7 +142,6 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
@@ -559,8 +607,6 @@ angular.module('arraysApp')
                 $scope.save = function () {
                     // Master Dataset
 
-
-
                     if ($scope.dataset.dirty !== 1) {
                         $scope.dataset.dirty = 2;
                     }
@@ -586,6 +632,7 @@ angular.module('arraysApp')
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
+
 
                     $scope.data.valueOverrides.map(function (elem) {
 
@@ -621,9 +668,6 @@ angular.module('arraysApp')
                             datasource.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                         });
                     });
-
-
-
 
                     $mdDialog.hide({
                         dataset: $scope.dataset,

@@ -132,8 +132,7 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
-
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {                        
                                 return DatasetService.get($stateParams.id);
                             }]
                         }
@@ -177,7 +176,7 @@ angular.module('arraysApp')
                                     if (additionalDatasets.length > 0) {
                                         additionalDatasets.map(function(dataset) {
                                             if (dataset.jobId !== 0) {
-                                                deferred.reject({importing: true, datasetId: dataset._id});
+                                                deferred.reject({importing: true, datasetId: dataset.schema_id});
                                                 return false;
 
                                             }

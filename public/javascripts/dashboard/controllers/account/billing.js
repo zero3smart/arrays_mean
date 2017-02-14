@@ -1,6 +1,13 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
-        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 
+        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService) {
+
+            // Get datasets for quantity limit
+            DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
+                .then(function(res) {
+                    $scope.datasetsQuantity = res.length;
+                }, function(err) {});
+
 
             $scope.loaded = false;
 
@@ -92,7 +99,7 @@ angular.module('arraysApp')
                         }
                     }
 
-                    return callback();
+                    if (callback) return callback();
                 }, function(err) {});
             }
 
@@ -123,7 +130,7 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        return callback();
+                        if (callback) return callback();
                     }
                 }, function(err) {});
             }
@@ -142,7 +149,7 @@ angular.module('arraysApp')
 
                     // console.log($scope.annualplan);
 
-                    return callback();
+                    if (callback) return callback();
                 }, function(err) {});
             }
 
@@ -154,6 +161,18 @@ angular.module('arraysApp')
                 });
 
                 return currentPlan[0];
+            }
+
+
+            //Update subscription quantity
+            function updateQuantity(subscrId, quantity, callback) {
+                Subscriptions.update({ subscrId: subscrId }, { quantity: quantity })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+                    $scope.$parent.team.subscription.quantity = quantity;
+                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                    return callback();
+                }, function(err) {});
             }
 
 
@@ -191,17 +210,18 @@ angular.module('arraysApp')
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
+
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
+
                 $scope.updateQuantity = function() {
                     var subscrId = $scope.subscription.uuid;
-                    Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
-                    .$promise.then(function(res) {
-                        // console.log(res.data);
+                    updateQuantity(subscrId, $scope.subscription.quantity._, function() {
                         $mdDialog.hide();
                     });
                 };
+
                 $scope.updatePlanCode = function(plan_code) {
                     // console.log(plan_code);
                     var subscrId = $scope.subscription.uuid;
@@ -211,7 +231,9 @@ angular.module('arraysApp')
                     })
                     .$promise.then(function(res) {
                         // console.log(res.data);
-                        getSubscriptions();
+                        getSubscriptions(function() {
+                            getPlans();
+                        });
                         $mdDialog.hide();
                     });
                 };
@@ -315,10 +337,11 @@ angular.module('arraysApp')
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
-                            $scope.$parent.team.subscription.state = 'in_trial';
+                            $scope.$parent.team.subscription.state = 'active';
                         } else {
-                            $scope.$parent.team.subscription = { state: 'in_trial'};
+                            $scope.$parent.team.subscription = { state: 'active'};
                         }
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -335,6 +358,7 @@ angular.module('arraysApp')
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $scope.$parent.team.subscription.state = 'active';
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -348,6 +372,7 @@ angular.module('arraysApp')
                 .$promise.then(function(res) {
                     // console.log(res.data);
                     $scope.$parent.team.subscription.state = 'canceled';
+                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     $state.go('dashboard.account.billing');
                 });
             };
@@ -358,6 +383,7 @@ angular.module('arraysApp')
                 .$promise.then(function(res) {
                     // console.log(res.data);
                     $scope.$parent.team.subscription.state = 'active';
+                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     getSubscriptions();
                 });
             };

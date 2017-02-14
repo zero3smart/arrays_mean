@@ -22,7 +22,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // Other filters
 
     var source_pKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
@@ -447,7 +447,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_realColumnName: groupBy_realColumnName,
                     groupedResultsLimit: groupedResultsLimit,
                     groupByDateFormat: groupByDateFormat,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
                     sortBy: sortBy,
                     sortDir: sortDir,

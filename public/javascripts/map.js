@@ -2,8 +2,9 @@
 *Set container height for MapGL canvas
 **/
 //.navbar-brand-container is fixed so it's height needs to be part of the calculation
-var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;  
-document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - offsetY + "px";
+var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;
+var mapContainer = document.getElementsByClassName('map-container')[0];
+mapContainer.style.height = window.innerHeight - offsetY + "px";
 
 /**
  * Initialize variables
@@ -134,6 +135,7 @@ map.on('load', function () {
     /**
      * Add source data to map
      */
+
     if (isCoordMap) {
         map.addSource('points', {
             type: 'geojson',
@@ -145,7 +147,6 @@ map.on('load', function () {
             data: geoData
         });
     }
-
 
     /**
      * Loop through layers, filter countries, and apply opacity
@@ -180,17 +181,17 @@ map.on('load', function () {
                 }
             });
         } else {            
-            map.addLayer({
-                id: names[i],
-                type: 'fill',
-                source: 'countries',
-                'source-layer': layer,
-                filter: filteruse,
-                paint: {
-                    'fill-color': '#00DAE5',
-                    'fill-opacity': opacities[i]
-                }
-            }, 'water');
+          map.addLayer({
+              id: names[i],
+              type: 'fill',
+              source: 'countries',
+              'source-layer': layer,
+              filter: filteruse,
+              paint: {
+                  'fill-color': brandColor,
+                  'fill-opacity': opacities[i]
+              }
+          }, 'water');
         }
     }
 
@@ -248,6 +249,10 @@ map.on('load', function () {
         var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
 
         window.location = urlForFilterValue;
+    });
+
+    window.addEventListener('resize', function() {
+        mapContainer.style.height = window.innerHeight - offsetY + "px";
     });
 });
 

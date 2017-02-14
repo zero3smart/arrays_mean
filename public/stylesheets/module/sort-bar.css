@@ -1,6 +1,6 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/sort-bar.css */
-	
+
 #array-controls {
 	z-index: 1;
 	background-color: #ffffff;
@@ -20,8 +20,8 @@
 
 @media (min-width: 768px) {
 	.sort-bar {
-		padding-top: 30px;
-		padding-bottom: 25px;
+		/*padding-top: 30px;*/
+		/*padding-bottom: 25px;*/
 	}
 }
 
@@ -40,17 +40,14 @@
 
 .sort-direction {
 	margin-right: 0;
+    margin-left: 15px;
+    cursor: pointer;
 }
 
-@media (min-width: 768px) {
-	.sort-direction {
-		margin-right: 0;
-		margin-left: 15px;
-	}
-}
-
+.sort-direction span,
 .sort-direction-icon {
 	color: black;
+    transition: color 0.15s;
 }
 
 .sort-control .dropdown-toggle {
@@ -58,10 +55,22 @@
 	padding-bottom: 6px;
 }
 
+.sort-control #search-by.dropdown-toggle {
+    padding-top: 3px;
+    padding-bottom: 0;
+}
+
 .sort-control .dropdown-toggle:hover,
 .sort-control .dropdown-toggle:focus,
 .sort-control .dropdown-toggle:active {
 	box-shadow: none;
+}
+
+.map-container .sort-bar .dropdown-toggle,
+.map-container .sort-bar .search-by-label,
+.map-container .sort-bar .search-input {
+    /*text-shadow: -1px 0 3px white, 0 1px 3px white, 1px 0 3px white, 0 -1px 3px white;*/
+    text-shadow: 0 0 3px white;
 }
 
 .sort-criteria,
@@ -75,9 +84,16 @@
 	max-height: calc(100vh - 300px);
 }
 
-.sort-control .dropdown-menu > li > a {
+.sort-control .dropdown-menu > li > a,
+.sort-control .dropdown-menu > li.search-dropdown-label > span {
 	padding: 15px 35px 15px 20px;
 	font-size: 18px;
+}
+
+.sort-control .dropdown-menu > li.search-dropdown-label > span {
+    display: block;
+    color: var(--color-text-dark);
+    font-weight: 600;
 }
 
 .sort-control .dropdown-menu > li > a:hover {
@@ -99,7 +115,7 @@
 	box-shadow: none;
 	vertical-align: baseline;
 	font-size: 18px;
-	line-height: 22px;
+	line-height: 25px;
 	font-family: var(--font-family-calibre);
 }
 
@@ -109,13 +125,28 @@
 
 .search-icon {
 	position: relative;
-	top: 2px;
 	display: inline-block;
 	margin-top: -3px;
 	margin-bottom: -3px;
 	width: 1em;
-	color: var(--color-text-ultralight);
+	color: var(--color-text-dark);
 	line-height: 1em;
+}
+
+.search-by-label {
+	font-size: 18px;
+	color: var(--color-text-light);
+}
+
+.form-search .sort-control {
+    padding-top: 6px;
+}
+
+.form-search .sort-control .dropdown-toggle {
+    padding-left: 0;
+}
+.form-search .sort-control .dropdown-toggle-button-has-caret:before {
+    top: -4px;
 }
 
 /* @end Search form */
@@ -212,7 +243,7 @@
 	.sort-bar-left .dropdown-toggle {
 		max-width: 100%;
 	}
-	
+
 	.dropdown-toggle-label {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
@@ -249,9 +280,9 @@
 		pointer-events: all;
 	}
 
-	.sort-control > a {
+	/*.sort-control > a {
 		display: block;
-	}
+	}*/
 
 	.form-search {
 		position: absolute;
@@ -278,7 +309,7 @@
 }
 
 .filter-bar-fixed-bottom {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 	padding-bottom: 30px;
 	z-index: 1;
