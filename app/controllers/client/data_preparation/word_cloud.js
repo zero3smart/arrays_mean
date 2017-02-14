@@ -206,7 +206,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     maxGroupedResultsValue: maxGroupedResultsValue,
                     groupBy: groupBy,
                     //
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
                     uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
