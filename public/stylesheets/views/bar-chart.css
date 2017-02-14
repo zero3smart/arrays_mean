@@ -17,6 +17,7 @@
 .array-bar-chart .sort-direction {
     display: inline-block;
     font-size: 18px;
+    padding-top: 3px;
 }
 
 .array-bar-chart .array-content {

@@ -134,6 +134,10 @@
 	color: var(--color-text-light);
 }
 
+.form-search .sort-control {
+    padding-top: 3px;
+}
+
 .form-search .sort-control .dropdown-toggle {
     padding-left: 0;
 }

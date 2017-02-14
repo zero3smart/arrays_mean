@@ -22,14 +22,14 @@
         </div>
 
         <div class="sort-control sort-control-right">
-            <div class="dropdown-toggle">
+            <div>
                 <span class="search-by-label hidden-xs">Search by {{ searchColToOutput }}:</span>
                 <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
                 <a href="#" class="btn dropdown-toggle dropdown-toggle-button-has-caret ui-label hidden-xs" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
                     <span class="icon-search search-icon hidden-xs"></span>
                 </a>
                 {% if columnNames | length %}
-                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                <ul class="dropdown-menu dropdown-menu-right search-dropdown-menu" aria-labelledby="search-by">
                     {% for colName in columnNames %}
                     <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                     {% endfor %}

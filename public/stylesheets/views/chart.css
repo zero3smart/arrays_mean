@@ -60,6 +60,7 @@
     display: inline-block;
     margin-left: 20px;
     color: var(--color-text-dark);
+    padding-top: 4px;
 }
 
 .legend-open .legend-toggle {
