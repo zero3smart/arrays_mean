@@ -372,7 +372,7 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categ
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + label + '</div>' + 
+            '<div class="scatterplot-tooltip-content-label">' + label + '</div>' + 
             '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
