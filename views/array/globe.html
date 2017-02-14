@@ -19,12 +19,13 @@
     </script>
     <script id="earth-front-fragment-shader" type="x-shader/x-fragment">
       uniform sampler2D texture;
+      uniform vec3 uLandColor;
       varying vec3 vNormal;
       varying vec2 vUv;
       void main() {
-        vec3 diffuse = vec3(0.8, 0.8, 0.8);
+        vec3 diffuse = uLandColor;
         float mask = texture2D(texture, vUv).x;
-        float opacity = 0.75 + (mask * 0.25);
+        float opacity = 0.75; // + (mask * 0.15);
         float intensity = 1.05 - dot(vNormal, vec3(0.0, 0.0, 1.0));
         vec3 land = diffuse;
         vec3 ocean = vec3(1, 1, 1);
@@ -41,10 +42,11 @@
     </script>
     <script id="earth-back-fragment-shader" type="x-shader/x-fragment">
       uniform sampler2D texture;
+      uniform vec3 uLandColor;
       varying vec2 vUv;
       void main() {
         float opacity = texture2D(texture, vUv).x;
-        vec3 diffuse = vec3(0.8, 0.8, 0.8);
+        vec3 diffuse = uLandColor;
         gl_FragColor = vec4(diffuse, opacity);
       }
     </script>
@@ -150,10 +152,11 @@
             {% endif %}
 
             <script type="text/javascript">
+            // extract variables needed in /javascripts/globe.js
                 var flightPaths = {{ flightPathsCollection | dump | safe }};
                 var filterObj = {{ filterObj | dump | safe }};
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {}) | safe }}";
-                // extract variables needed in /javascripts/globe.js
+                var brandColor = '{{ brandColor }}';
             </script>
 
             <div class="array-content">

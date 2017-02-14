@@ -22,6 +22,7 @@
         this.shaders = {
             earthFront: {
                 uniforms: {
+                    uLandColor: { type: 'c', value: new THREE.Color( config.landColor ) },
                     texture: {
                         type: 't',
                         value: null
@@ -32,6 +33,7 @@
             },
             earthBack: {
                 uniforms: {
+                    uLandColor: { type: 'c', value: new THREE.Color( config.landColor ) },
                     texture: {
                         type: 't',
                         value: null
@@ -77,7 +79,7 @@
             }
         });
         
-        var size = 2;
+        var size = 3;
         var altitude = this._bottomAltitude;
         _.each(config.points, function(point) {
             self._pointNodes.push(new GlobeMain.PointNode({
@@ -87,7 +89,7 @@
                 lng: point.lng,
                 size: size,
                 altitude: altitude,
-                color: '#FEB600',
+                color: config.pointColor,
                 opacity: 1
             }));
         });
@@ -96,11 +98,11 @@
             globe: this.globe,
             start: {
                 altitude: this._bottomAltitude,
-                color: '#888'
+                color: config.lineColor
             },
             end: {
                 altitude: this._bottomAltitude,
-                color: '#888'
+                color: config.lineColor
             }
         };
         

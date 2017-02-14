@@ -44,10 +44,22 @@ var GlobeMain = {
             return '' + v.lat + 'x' + v.lng;
         });
         
+        var c = new THREE.Color(brandColor);
+        c.r = 1 - c.r;
+        c.g = 1 - c.g;
+        c.b = 1 - c.b;
+        var pointColor = c.getStyle();
+        
+        c.lerp(new THREE.Color(0xffffff), 0.5);
+        var lineColor = c.getStyle();
+        
         this.globeView = new GlobeMain.GlobeView({
             $el: $('#globe'),
             points: points,
             lines: lines,
+            landColor: brandColor,
+            pointColor: pointColor,
+            lineColor: lineColor,
             onNodeClick: function(pointNode) {
                 // TODO: We've hard-coded o_lat and o_lon here, but we should be getting it from the server
                 // TODO: Ultimately it would be good to be able to also include things by destination as well as origin
