@@ -27,7 +27,7 @@ function _copySampleDatasource(datasetToDuplicateId, fileName, datasetId, teamSu
     // this will be the demo team
     var params = {
         Bucket: bucket,
-        CopySource: bucket + '/sampleTeam/datasets/' + datasetToDuplicateId + '/datasources/' + fileName,
+        CopySource: bucket + '/sampleteam/datasets/' + datasetToDuplicateId + '/datasources/' + fileName,
         Key: teamSubdomain + '/datasets/' + datasetId + '/datasources/' + fileName
     };
     s3.copyObject(params, function (err, data) {
