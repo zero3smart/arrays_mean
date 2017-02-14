@@ -14,7 +14,7 @@
 
 .array-chart .sort-bar {
     border-bottom-style: none;
-    padding-bottom: 0;
+    /*padding-bottom: 0;*/
 }
 
 #chart {
