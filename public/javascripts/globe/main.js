@@ -50,8 +50,8 @@ var GlobeMain = {
         c.b = 1 - c.b;
         var pointColor = c.getStyle();
         
-        c.lerp(new THREE.Color(0xffffff), 0.5);
-        var lineColor = c.getStyle();
+        // c.lerp(new THREE.Color(0xffffff), 0.5);
+        var lineColor = '#888'; //c.getStyle();
         
         this.globeView = new GlobeMain.GlobeView({
             $el: $('#globe'),
