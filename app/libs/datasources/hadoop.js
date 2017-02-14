@@ -98,7 +98,11 @@ function _initConnection(url,callback) {
     }
     var JDBC = new jdbc(config);
     JDBC.initialize(function(err) {
-        if (err) callback(err);
+        if (err) {
+            console.log("Error from initializing connection :: ");
+            console.log(err);
+            callback(err);
+        }
         else {
             db = JDBC;
             callback(null);
