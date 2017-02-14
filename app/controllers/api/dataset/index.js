@@ -388,8 +388,7 @@ module.exports.update = function(req,res) {
 
 
 
-module.exports.save = function (req, res) {
-
+module.exports.save = function (req, res) {    
     if (!req.body._id) {
 
         // Creating of New Dataset
@@ -542,7 +541,13 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                         countOfLines++;
 
                         if (countOfLines == 1) {
+                            var numberOfEmptyFields = 0;
                             columns = output[0].map(function (e) {
+                                // change any empty string keys to "Field"
+                                if(e === '') {
+                                    numberOfEmptyFields++;
+                                    e = "Field" + numberOfEmptyFields;
+                                }
                                 return {name: e.replace(/\./g, '_')};
                             });
                             readStream.resume();

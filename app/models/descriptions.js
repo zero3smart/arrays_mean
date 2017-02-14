@@ -82,7 +82,8 @@ var DatasourceDescription_scheme = Schema({
             fieldName: String,
             operatorName: String, // "equal"
             value: String // ""
-        }
+        },
+        nestingKey: String
     },
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
@@ -427,12 +428,16 @@ datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+
+    var subdomainQuery = {};
+    if (subdomain !== null) {
+        subdomainQuery["subdomain"] = subdomain;
+    }
    
-    
     this.findOne({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
-            match: { 'subdomain' : subdomain}
+            match: subdomainQuery
         })
         .lean()
         .exec(function (err, descriptions) {
@@ -440,6 +445,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
                 winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
                 fn(err, null);
             } else {
+
                 fn(err, descriptions);
             }
         })
@@ -453,9 +459,11 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
 
+
+
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
-            if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
+            if ( (!datasourceDescription.fe_visible || !datasourceDescription.imported) && !datasourceDescription.connection ) return fn();
 
 
 
@@ -465,30 +473,42 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .exec(function(err, foundUser) {
 
                         if (err) return fn(err);
+                        if (!foundUser) {
 
-                        if (
-                            foundUser.isSuperAdmin() || 
-                            (
+                            if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+                            
+                            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
+                        } else {
+
+                            if (
+                                foundUser.isSuperAdmin() || 
                                 (
+
                                     datasourceDescription.author.equals(foundUser._id) ||
                                     foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
                                     foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
                                     datasourceDescription.isPublic
                                 ) && ( 
-                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
+                                    subscription.state === 'active' || subscription.state === 'canceled' || datasourceDescription._team.superTeam == true
+
                                 )
-                            )
-                        ) {
-                            return fn(null, datasourceDescription);
-                        } else {
-                            return fn();
+                            ) {
+                                return fn(null, datasourceDescription);
+                            } else {
+                                return fn();
+                            }
                         }
+
+                        
                     });
+
             } else {
 
-                
-    
+
+            
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+
+
 
 
                 if (datasourceDescription.isPublic) return fn(null, datasourceDescription);

@@ -55,31 +55,27 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     });
 };
 
-
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
  
     var dataSource_title = dataSourceDescription.fileName;
     
     var collectionId = dataSourceDescription._id;
     if (dataSourceDescription.schemaId) collectionId = dataSourceDescription.schemaId;
-   
+
     //
     var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionId);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
 
-        // console.log(JSON.stringify(sampleDoc));
-
         if (err) {
             callback(err, null);
 
             return;
         }
+
         var limitToNTopValues = 100;
 
-
-     
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
         if (dataSourceDescription.useCustomView) {
@@ -111,7 +107,10 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
             uniqueFieldValuesByFieldName[key] = [];
         }
 
+
+
         async.each(filterKeys, function (key, cb) {
+
             // Commented out the count section for the comma-separated as individual filters.
             var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;

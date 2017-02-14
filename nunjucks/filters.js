@@ -1,12 +1,13 @@
 var moment = require('moment');
 var url = require('url');
 var datatypes = require('../app/libs/datasources/datatypes.js');
+var commaFilter = require('nunjucks-comma-filter');
 
 module.exports = function (nunjucks_env,env) {
 
 
 
-    nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
+    nunjucks_env.addFilter('comma', commaFilter);
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
         return moment(date).utc().format("MMMM Do, YYYY");
@@ -127,6 +128,9 @@ module.exports = function (nunjucks_env,env) {
     
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
+
+
+
         var filterObj = {};
         var existing_filterCols = Object.keys(existing_filterObj);
         var existing_filterCols_length = existing_filterCols.length;
@@ -144,8 +148,12 @@ module.exports = function (nunjucks_env,env) {
             }
         }
         //
+
+
         if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
+
+
             if (Array.isArray(filterVals) && (filterVals.indexOf(this_filterVal) == -1 || filterVals.indexOf(parseInt(this_filterVal)) == -1)) {
                 filterVals.push(this_filterVal);
                 filterObj[this_filterCol] = filterVals.length == 1 ? filterVals[0] : filterVals;
@@ -208,6 +216,9 @@ module.exports = function (nunjucks_env,env) {
             }
             if (typeof filterVal === 'number' || typeof filterVal === 'string') return filterVal;
         }
+        if (typeof filterVal == 'number') {
+            console.log("n")
+        }
         var output = output + '';
         if (!isNaN(filterVal.min))
             output = filterVal.min + ' – ';
@@ -225,10 +236,15 @@ module.exports = function (nunjucks_env,env) {
                 output += filterVal[i];
             }
         }
+
+
         return output;
     });
     // Array views - Filters for bubbles
     nunjucks_env.addFilter('filterValuesForBubble', function (filterVal) {
+
+     
+
         if (Array.isArray(filterVal)) {
             return filterVal;
         } else if (typeof filterVal === 'string') {
@@ -243,6 +259,16 @@ module.exports = function (nunjucks_env,env) {
             return [filterVal];
         }
     });
+
+
+    nunjucks_env.addFilter('removeComma',function(val,field,datatypes) {
+
+        if (typeof datatypes !== 'undefined' && datatypes[field] && 
+            (datatypes[field].operation == 'ToInteger' || datatypes[field].operation == 'ToFloat')) {
+            return val.replace(',','');
+        }
+        return val;
+    })
     // Array views - Filter route path
     nunjucks_env.addFilter('constructedRoutePath', function (routePath_base, filterObj, queryObj) {
         // Merge filterObj to queryObj
@@ -334,6 +360,8 @@ module.exports = function (nunjucks_env,env) {
     marketingPage += host;
    
 
+   
+
 
     nunjucks_env.addGlobal('siteBaseURL',protocol + host);
 
@@ -345,10 +373,15 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
         var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');
 
+        if (process.env.NODE_ENV == 'enterprise') {
+            return siteBaseUrl;
+        }
+
         if (!siteBaseUrl) return '/team/' + strSubdomain;
         var result = url.parse(siteBaseUrl);
         var urlParts = result.host.replace('www.', '');
         urlParts = [strSubdomain].concat(urlParts);
+
         return result.protocol + '//' + urlParts.join('.');
     });
 };

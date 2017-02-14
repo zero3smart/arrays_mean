@@ -14,6 +14,8 @@ var User = require('../../../models/users');
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
 
+
+
   
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
@@ -42,7 +44,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 });
             });
 
-            var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
+            var galleryViewSettings = dataSourceDescription.fe_views.views.gallery || dataSourceDescription.fe_views.views.timeline;
             var galleryItem_htmlWhenMissingImage;
 
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
@@ -223,13 +225,12 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     var originalVal = rowParams[key];
                     var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
 
-                    if (typeof dataSourceDescription.raw_rowObjects_coercionScheme[key] == 'undefined' || 
-                        dataSourceDescription.raw_rowObjects_coercionScheme[key].operation !== 'ToDate') {
+                    if (typeof dataSourceDescription.raw_rowObjects_coercionScheme[key] != 'undefined' &&  
+                        (dataSourceDescription.raw_rowObjects_coercionScheme[key].operation == 'ToFloat' || 
+                        dataSourceDescription.raw_rowObjects_coercionScheme[key].operation == 'ToInteger')) {
                         if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
-
-                        
                     }
-                    
+                
                     rowParams[key] = displayableVal;
                 }
                 //
@@ -309,7 +310,13 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 }
 
                 var i = source_pKey.indexOf('-');
+
+
                 var splitSubdomain = source_pKey.substring(i+1,source_pKey.length);
+
+                if (process.env.NODE_ENV == 'enterprise') {
+                    splitSubdomain = source_pKey;
+                }
           
               
                 //
@@ -318,6 +325,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     env: process.env,
 
                     user: user,
+
+                    dataTypesConversion: dataSourceDescription.raw_rowObjects_coercionScheme,
                
 
                     arrayTitle: dataSourceDescription.title,
@@ -341,8 +350,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
-                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    // folder: "/assets/images/",
+
 
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,

@@ -100,6 +100,7 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 
 }
 
+
 module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_id,
                                                                    parentId,
                                                                    callback) {

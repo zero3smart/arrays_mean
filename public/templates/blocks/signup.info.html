@@ -97,22 +97,24 @@
 
 				
 		</div>
-		<subdomain-suggestion ng-hide="invitedUser || env.node_env == 'enterprise' " team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
+		<subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
-		<div ng-hide="env.node_env == 'enterprise'" class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
-	 		<label>Your subdomain</label>
+
+
+		<div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
+	 		<label> {{ env.node_env !== 'enterprise'? 'Your subdomain' : 'Unique Team Identifier' }} </label>
 
 	  		<div class="input-group">
 
-				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
-				  <input ng-if="env.node_env !== 'enterprise'" ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
-				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" ng-required="env.node_env !== 'enterprise'">
-				  <span class="input-group-addon">{{"." + env.host}}</span>
+				  <span ng-hide="env.node_env == 'enterprise'" class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
+				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
+				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
+				  <span ng-hide="env.node_env=='enterprise'" class="input-group-addon">{{"." + env.host}}</span>
 			</div>
 
 			 <div class="help-block" ng-messages="infoForm.subdomain.$error" ng-if="infoForm.subdomain.$touched">
-			    <p ng-message="required">A subdomain is required.</p>
-			    <p ng-message="subdomainAvailable">This subdomain is reserved.</p>
+			    <p ng-message="required">This field is required.</p>
+			    <p ng-message="subdomainAvailable">This value is reserved. Please choose something else.</p>
 			    <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>
 			</div>
 		</div>

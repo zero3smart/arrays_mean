@@ -80,7 +80,7 @@ router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
 
 router.post('/dataset/connect/:id',ctrlConnection.connect);
-
+router.post('/dataset/colsForJoinTables',ctrlConnection.getColumnsForFieldMapping);
 
 //manage users
 router.get('/user/search', ctrlUsers.search);

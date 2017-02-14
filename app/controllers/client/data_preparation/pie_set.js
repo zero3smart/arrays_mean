@@ -25,7 +25,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
@@ -384,7 +384,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     brandColor: dataSourceDescription.brandColor,
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
