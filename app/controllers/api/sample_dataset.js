@@ -73,6 +73,10 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 duplicatedDescription.sample = true;
                 // set imported to false so it doesn't try to load automatically when viewing website
                 duplicatedDescription.imported = false;
+                // don't allow publishing of sample dataset
+                duplicatedDescription.fe_listed = false;
+                duplicatedDescription.fe_visible = false;
+                duplicatedDescription.isPublic = false;                
                 // set to isNew so it saves as a new description in mongodb
                 duplicatedDescription.isNew = true;
                 duplicatedDescription.save(function (err, savedDescription) {

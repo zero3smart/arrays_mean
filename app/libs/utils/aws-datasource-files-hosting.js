@@ -30,6 +30,7 @@ function _copySampleDatasource(datasetToDuplicateId, fileName, datasetId, teamSu
         CopySource: bucket + '/sampleteam/datasets/' + datasetToDuplicateId + '/datasources/' + fileName,
         Key: teamSubdomain + '/datasets/' + datasetId + '/datasources/' + fileName
     };
+    console.log(params)
     s3.copyObject(params, function (err, data) {
         if(err) {
             console.log(err, err.stack);
