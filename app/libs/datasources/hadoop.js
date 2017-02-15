@@ -288,21 +288,22 @@ function _runQuery(query,fn) {
 
 
 function _asyncRunQueries(queries,fn) {
-    var results = [];
+    var results = {};
     async.each(queries,function(q,callback) {
 
         _runQuery(q,function(err,ret) {
             if (err) callback(err);
             else {
-                results.push(ret);
+                console.log("returned obj");
+                console.log(ret);
                 callback();
             }
 
         })
     },function(err) {
         console.log("done query");
-        console.log(err);
-        console.log(results);
+        // console.log(err);
+        // console.log(results);
     })
 
 
