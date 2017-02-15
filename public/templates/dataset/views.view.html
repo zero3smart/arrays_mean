@@ -84,7 +84,7 @@
 </div>
 
 
-<div ng-if="(setting.inputType == 'select' && viewName != 'map') || (setting.inputType == 'select' && viewName == 'map' && (setting.name == 'pointTitle' || setting.name == 'latitudeField' || setting.name == 'longitudeField' || setting.name == 'radiusBy') && data.plotCoordinates == true)" ng-init="dep = checkDependency(setting.selectFrom);">
+<div ng-if="(setting.inputType == 'select' && viewName != 'map') || (setting.inputType == 'select' && viewName == 'map' && (setting.name == 'coordTitle' || setting.name == 'latitudeField' || setting.name == 'longitudeField' || setting.name == 'radiusBy') && data.plotCoordinates == true)" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
     <small class="pull-right" ng-if="dep">

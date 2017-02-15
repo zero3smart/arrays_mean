@@ -193,7 +193,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
                         var coordValue;
 
-                        coordTitle = dataSourceDescription.fe_views.views.map.pointTitle;
+                        coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
                         if (_coordDocs == undefined || _coordDocs == null) _coordDocs = [];
                         if (_coordDocs.length > 0 && coordRadiusValue != undefined) {
@@ -379,7 +379,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     coordMinMax: coordMinMax,
                     applyCoordRadius: coordRadiusValue == undefined ? false : true,
-                    coordColor: dataSourceDescription.fe_views.views.map.pointColor,
+                    coordColor: dataSourceDescription.fe_views.views.map.coordColor,
                     mapBy: mapBy,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
