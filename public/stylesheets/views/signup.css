@@ -1,41 +1,26 @@
 
 form.signup[name='emailForm'] {
 	margin:0px auto;
-	margin-top:100px;
+	margin-top: 60px;
 }
-
-
 
 form.signup label {
 	font-size:15px;
 }
 
-
 .red {
 	color:red;
 }
 
-nav#signupheader div {
-	margin-top: 0px;
-	margin-bottom: 0px;
-
-}
 a.pointer {
 	cursor: pointer;
 }
 div.float-parent {
 	overflow: hidden;
 }
-#signupheader img {
-	width:100%;
-}
-
-#signupheader h1 {
-	margin-left:20px;
-}
 
 div.reminder-message {
-	margin-top:80px;
+	margin-top: 30px;
 }
 
 .signupOr {
@@ -46,14 +31,6 @@ div.reminder-message {
 	padding-left:10px;
 	cursor: pointer;
 }
-p.signuptext {
-	font-size:30px;
-}
-
-
-.background_white {
-	background-color : #fff !important;
-}
 
 div.signup_btn_group {
 	overflow: hidden;
@@ -62,5 +39,3 @@ div.signup_btn_group {
 button.signupstep {
 	min-width:100px;
 }
-
-
