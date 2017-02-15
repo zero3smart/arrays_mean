@@ -56,7 +56,7 @@
           <ul class="nav navbar-nav navbar-right header-blank-right hide-mobile">
             {% if currentView == 'team-show' %}
             <li class="link-underline-container">
-                <a class="w-nav-link link-underline" href={{explore_url}} target="_blank">Explore</a>
+                <a class="w-nav-link link-underline" href={{explore_url}}>Explore</a>
             </li>
             {% endif %}
             {% if env.NODE_ENV == 'production' %}
@@ -86,7 +86,7 @@
           <ul class="w-nav-list">
               {% if currentView == 'team-show' %}
             <li>
-                <a class="w-nav-link link-underline" href={{explore_url}} target="_blank">Explore</a>
+                <a class="w-nav-link link-underline" href={{explore_url}}>Explore</a>
             </li>
               {% endif %}
 
@@ -128,7 +128,7 @@
     <div class="w-nav-overlay">
       <nav class="mobile-nav-menu">
         {% if currentView == 'team-show' %}
-        <a class="w-mobile-link" href="{{marketing_url}}" target="_blank">Explore</a>
+        <a class="w-mobile-link" href="{{marketing_url}}">Explore</a>
         {% endif %}
 
         {% if env.NODE_ENV == 'production' %}

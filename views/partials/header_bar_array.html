@@ -195,7 +195,7 @@
                     {% if not user %}
                     <li class="collapsable-links vert-center">
                         <a class="link-underline" href="{{marketing_url}}">Home</a>
-                        <a class="link-underline" href={{explore_url}} target="_blank">Explore</a>
+                        <a class="link-underline" href={{explore_url}}>Explore</a>
                         {% if env.NODE_ENV == 'production' %}
                         <a class="link-underline" href="https://www.arrays.co/news">News</a>
                         <a class="link-underline" href="https://www.arrays.co/pricing">Pricing</a>
@@ -254,13 +254,13 @@
                   <nav class="mobile-nav-menu">
                   {% if team.title %}
 
-                    <a class="w-mobile-link" href="{{ addSubdomain(team.subdomain) }}" target="_blank">Home</a>
+                    <a class="w-mobile-link" href="{{ addSubdomain(team.subdomain) }}">Home</a>
                   {% else %}
-                    <a class="w-mobile-link" href="arrays.co" target="_blank">Home</a>
+                    <a class="w-mobile-link" href="arrays.co">Home</a>
 
                   {% endif %}
 
-                    <a class="w-mobile-link" href="{{explore_url}}" target="_blank">Explore</a>
+                    <a class="w-mobile-link" href="{{explore_url}}">Explore</a>
 
                   {% if env.NODE_ENV == 'production' %}
 
