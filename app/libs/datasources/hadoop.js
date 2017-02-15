@@ -288,6 +288,19 @@ function _runQuery(query,fn) {
 
 
 function _asyncRunQueries(queries,fn) {
+    var results = [];
+    async.each(queries,function(q,callback) {
+        _runQuery(q,fucntion(err,ret) {
+            if (err) callback(err);
+            else {
+                results.push(ret);
+            }
+        })
+    },function(err) {
+        console.log("done query");
+        console.log(err);
+        console.log(results);
+    })
 
 
 }
@@ -316,5 +329,5 @@ module.exports.readData = function(url,query,fn) {
 
 
 module.exports.prepareFilters = function(queriesWithSemiColon,fn) {
-    _runQuery(queriesWithSemiColon,fn);
+    _asyncRunQueries(queriesWithSemiColon,fn);
 }
