@@ -295,6 +295,7 @@ function _asyncRunQueries(queries,fn) {
             if (err) callback(err);
             else {
                 results.push(ret);
+                callback();
             }
 
         })
