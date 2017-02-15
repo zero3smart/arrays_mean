@@ -71,6 +71,8 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 duplicatedDescription.dirty = 1;
                 // flag it as a sample so it can't be published to arrays.co
                 duplicatedDescription.sample = true;
+                // set imported to false so it doesn't try to load automatically when viewing website
+                duplicatedDescription.imported = false;
                 // set to isNew so it saves as a new description in mongodb
                 duplicatedDescription.isNew = true;
                 duplicatedDescription.save(function (err, savedDescription) {
