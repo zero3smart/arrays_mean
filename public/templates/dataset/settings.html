@@ -27,7 +27,7 @@
 
             <md-switch ng-model="dataset.isPublic"
                 ng-change="updatePublishSettings()"
-                ng-disabled="!dataset.fe_visible"
+                ng-disabled="!dataset.fe_visible || dataset.sample"
                 aria-label="Make dataset public">
                 Allow anyone to view visualization (not only registered users)
             </md-switch>
