@@ -46,7 +46,9 @@ module.exports.BindData = function(req, urlQuery, callback) {
             //
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
-            var skipNResults = config.timelineGroups * (Math.max(pageNumber, 1) - 1);
+            var groupSize = urlQuery.groupSize ? parseInt(urlQuery.groupSize) : config.timelineGroupSize;
+            var groupsLimit = config.pageSize / config.timelineGroupSize * 2;
+            var skipNResults = groupSize === -1 ? config.pageSize * (Math.max(pageNumber, 1) - 1) : groupsLimit * (Math.max(pageNumber, 1) - 1);
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
 
@@ -58,12 +60,21 @@ module.exports.BindData = function(req, urlQuery, callback) {
 
             var groupBy_realColumnName = groupBy ? groupBy : dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
+            // Set group by dropdown to default if we are viewing by all
+            var colNames_orderedForGroupByDropdown;
+            if (groupSize === -1) {
+                colNames_orderedForGroupByDropdown = [dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName];
+            } else if (dataSourceDescription.fe_views.views.timeline.durationsAvailableForGroupBy) {
+                colNames_orderedForGroupByDropdown = dataSourceDescription.fe_views.views.timeline.durationsAvailableForGroupBy;
+            } else {
+                colNames_orderedForGroupByDropdown = {};
+            }
+
             // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-            var groupedResultsLimit = urlQuery.groupSize ? parseInt(urlQuery.groupSize) : config.timelineGroupSize;
-            var groupsLimit = config.timelineGroups;
             var groupByDateFormat;
+            var filterDateFormat;
             //
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
             var sortDir = urlQuery.sortDir;
@@ -119,26 +130,31 @@ module.exports.BindData = function(req, urlQuery, callback) {
             case 'Decade':
                 groupByDuration = moment.duration(10, 'years').asMilliseconds();
                 groupByDateFormat = 'YYYY';
+                filterDateFormat = 'YYYY';
                 break;
 
             case 'Year':
                 groupByDuration = moment.duration(1, 'years').asMilliseconds();
                 groupByDateFormat = 'YYYY';
+                filterDateFormat = 'YYYY';
                 break;
 
             case 'Month':
                 groupByDuration = moment.duration(1, 'months').asMilliseconds();
                 groupByDateFormat = 'MMMM YYYY';
+                filterDateFormat = 'YYYY-MM-DD';
                 break;
 
             case 'Day':
                 groupByDuration = moment.duration(1, 'days').asMilliseconds();
                 groupByDateFormat = 'MMMM Do YYYY';
+                filterDateFormat = 'YYYY-MM-DD';
                 break;
 
             default:
                 groupByDuration = moment.duration(1, 'years').asMilliseconds();
                 groupByDateFormat = 'YYYY';
+                filterDateFormat = 'YYYY-MM-DD';
             }
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount = 0, groupedResults = [];
@@ -187,30 +203,43 @@ module.exports.BindData = function(req, urlQuery, callback) {
 
             // Count whole set
             batch.push(function(done) {
-                var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([{ // Count
-                    $group: {
-                        // _id: 1,
-                        _id: {
-                            "$subtract": [
-                                { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] }, {
-                                    "$mod": [
-                                        { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] },
-                                        groupByDuration
-                                    ]
-                                }
-                            ]
+                var countWholeFilteredSet_aggregationOperators;
+                if ( groupSize === -1 ) {
+                    countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([{ // Count
+                        $group: {
+                            _id: 1,
+                            count: {$sum: 1}
                         }
-                    }
-                }]);
+                    }]);
+                } else {
+                    countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([{ // Count
+                        $group: {
+                            // _id: 1,
+                            _id: {
+                                "$subtract": [
+                                    { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] }, {
+                                        "$mod": [
+                                            { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] },
+                                            groupByDuration
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }]);
+                }
 
                 var doneFn = function(err, results) {
                     if (err) {
-                        console.log('eroor counting whole set');
+                        console.log('error counting whole set');
                         return done(err);
                     }
 
                     if (results == undefined || results == null) {
                         // 0
+                    } else if ( groupSize === -1 ) {
+                        console.log(results[0]);
+                        nonpagedCount = results[0].count;
                     } else {
                         nonpagedCount = results.length;
                     }
@@ -258,53 +287,79 @@ module.exports.BindData = function(req, urlQuery, callback) {
                 });
 
                 // Show all if groupSize is -1
-                var groupedResultsLimitQuery;
-                if (groupedResultsLimit === -1) {
-                    groupedResultsLimitQuery = "$results";
-                } else {
-                    groupedResultsLimitQuery = { $slice: ["$results", groupedResultsLimit] };
-                }
-
-                aggregationOperators = aggregationOperators.concat(
-                    [
-                        projects,
-                        {$unwind: "$" + "rowParams." + sortBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
-                        { // unique/grouping and summing stage
-                            $group: {
-                                _id: {
-                                    "$subtract": [
-                                        {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
-                                        {
-                                            "$mod": [
-                                                {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
-                                                groupByDuration
-                                            ]
-                                        }
-                                    ]
+                if (groupSize === -1) {
+                    
+                    aggregationOperators = aggregationOperators.concat(
+                        [
+                            projects,
+                            {$unwind: "$" + "rowParams." + sortBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                            { // unique/grouping and summing stage
+                                $group: {
+                                    _id: 1,
+                                    startDate: {$min: "$" + "rowParams." + sortBy_realColumnName},
+                                    endDate: {$max: "$" + "rowParams." + sortBy_realColumnName},
+                                    total: {$sum: 1}, // the count
+                                    results: {$push: "$$ROOT"}
                                 },
-                                startDate: {$min: "$" + "rowParams." + sortBy_realColumnName},
-                                endDate: {$max: "$" + "rowParams." + sortBy_realColumnName},
-                                total: {$sum: 1}, // the count
-                                results: {$push: "$$ROOT"}
-                            }
-                        },
-                        { // reformat
-                            $project: {
-                                _id: 0,
-                                startDate: 1,
-                                endDate: 1,
-                                total: 1,
-                                results: groupedResultsLimitQuery
-                            }
-                        },
-                        {
-                            $sort: sort
-                        },
-                        // Pagination
-                        {$skip: skipNResults},
-                        {$limit: groupsLimit}
-                    ]);
+                            },
+                            { // reformat
+                                $project: {
+                                    _id: 0,
+                                    startDate: 1,
+                                    endDate: 1,
+                                    total: 1,
+                                    results: {
+                                        $slice: ["$results", skipNResults, config.pageSize]
+                                    }
+                                }
+                            },
+                            {
+                                $sort: sort
+                            },
+                        ]);
 
+                } else {
+
+                    aggregationOperators = aggregationOperators.concat(
+                        [
+                            projects,
+                            {$unwind: "$" + "rowParams." + sortBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                            { // unique/grouping and summing stage
+                                $group: {
+                                    _id: {
+                                        "$subtract": [
+                                            {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
+                                            {
+                                                "$mod": [
+                                                    {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
+                                                    groupByDuration
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    startDate: {$min: "$" + "rowParams." + sortBy_realColumnName},
+                                    endDate: {$max: "$" + "rowParams." + sortBy_realColumnName},
+                                    total: {$sum: 1}, // the count
+                                    results: {$push: "$$ROOT"}
+                                }
+                            },
+                            { // reformat
+                                $project: {
+                                    _id: 0,
+                                    startDate: 1,
+                                    endDate: 1,
+                                    total: 1,
+                                    results: { $slice: ["$results", groupSize] }
+                                }
+                            },
+                            {
+                                $sort: sort
+                            },
+                            // Pagination
+                            {$skip: skipNResults},
+                            {$limit: groupsLimit}
+                        ]);
+                }
 
                 var doneFn = function(err, _groupedResults) {
                     if (err) {
@@ -433,9 +488,8 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : '',
                     viewAllLinkTo: dataSourceDescription.fe_views.views.gallery ? 'gallery' : 'timeline',
                     //
-                    pageSize: config.timelineGroups < nonpagedCount ? config.pageSize : nonpagedCount,
                     onPageNum: pageNumber,
-                    numPages: Math.ceil(nonpagedCount / config.timelineGroups),
+                    numPages: groupSize === -1 ? Math.ceil(nonpagedCount / config.pageSize) : Math.ceil(nonpagedCount / groupsLimit),
                     nonpagedCount: nonpagedCount,
                     //
                     fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
@@ -448,8 +502,9 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     groupedResults: groupedResults,
                     groupBy: groupBy,
                     groupBy_realColumnName: groupBy_realColumnName,
-                    groupedResultsLimit: groupedResultsLimit,
+                    groupSize: groupSize,
                     groupByDateFormat: groupByDateFormat,
+                    filterDateFormat: filterDateFormat,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
                     sortBy: sortBy,
@@ -471,7 +526,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                    colNames_orderedForGroupByDropdown: dataSourceDescription.fe_views.views.timeline.durationsAvailableForGroupBy ? dataSourceDescription.fe_views.views.timeline.durationsAvailableForGroupBy : {},
+                    colNames_orderedForGroupByDropdown: colNames_orderedForGroupByDropdown,
                     //
                     routePath_base: routePath_base,
                     // multiselectable filter fields

@@ -144,17 +144,17 @@
                                                             {% include "../partials/timeline_item_text.html" %}
                                                         {% endif %}
                                                     {% endfor %}
-                                                    {% if groupedResultsLimit < group.total and groupedResultsLimit >= 0 %}
+                                                    {% if groupSize < group.total and groupSize >= 0 %}
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
                                                                 {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
-                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat('YYYY'), "max": group.endDate | addDate(1, 'y') | dateFormat('YYYY') } %}
+                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat(filterDateFormat), "max": group.endDate | addDate(1, 'y') | dateFormat(filterDateFormat) } %}
                                                                 {% else %}
-                                                                    {% set filterDateRange = group.startDate | dateFormat('YYYY') | int %}
+                                                                    {% set filterDateRange = group.startDate | dateFormat(filterDateFormat) | int %}
                                                                 {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
-                                                                <a href="{{ ('/' + array_source_key + '/' + viewAllLinkTo) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}{% if viewAllLinkTo === 'timeline' %}&groupSize=-1{% endif %}" class="timeline-view-all-link color-brand-hover">
+                                                                <a href="{{ ('/' + array_source_key + '/' + viewAllLinkTo) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}{% if viewAllLinkTo === 'timeline' %}&groupSize=-1{% if groupBy_realColumnName %}&groupBy={{ groupBy_realColumnName }}{% endif %}{% endif %}" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
                                                                     <span class="timeline-view-all-count">{{ group.total }}</span>
                                                                 </a>
@@ -182,7 +182,8 @@
                                         searchQ: searchQ,
                                         sortBy: sortBy,
                                         sortDir: sortDir,
-                                        groupBy: groupBy
+                                        groupBy: groupBy,
+                                        groupSize: groupSize
                                     }),
                                     lastPage,
                                     currentPage
