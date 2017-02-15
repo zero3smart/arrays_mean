@@ -323,11 +323,11 @@ $(document).ready(function () {
  * Analog of nunjucks filter constructedFilterObj() in app.js:63
  */
 function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) {
-    var filterObj = {}
+    var filterObj = existing_filterObj;
     if (Array.isArray(this_filterCol)) {
         for(var i = 0; i < this_filterCol.length; i++) {
-            if(checkAgainstExistingFilters(existing_filterObj, this_filterCol[i])) {
-                filterObj = returnFilterObject(existing_filterObj, this_filterCol, filterObj)
+            if(existing_filterObj.hasOwnProperty(this_filterCol[i])) {
+                continue;
             } else {
                 //since this is currently only for the pie set, it's guaranteed that if this is an array, the filter values will also be an array whose indices match up to the indices of the cols
                 filterObj[this_filterCol[i]] = this_filterVal[i];
@@ -350,33 +350,6 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     }
     //
     return filterObj;
-}
-
-function returnFilterObject(existing_filterObj, this_filterCol, filterObj) {
-    var existing_filterCols = Object.keys(existing_filterObj);
-    var existing_filterCols_length = existing_filterCols.length;
-    //yes, we have to do this twice, but we really won't ever have THAT many filters
-    for (var i = 0; i < existing_filterCols_length; i++) {
-        var existing_filterCol = existing_filterCols[i];
-        // never push other active values of this is filter col is already active
-        // which means we never allow more than one filter on the same column at present
-        var existing_filterVals = existing_filterObj[existing_filterCol];
-        filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
-    }
-    return filterObj;
-}
-
-
-function checkAgainstExistingFilters(existing_filterObj, this_filterCol) {
-    var existing_filterCols = Object.keys(existing_filterObj);
-    var existing_filterCols_length = existing_filterCols.length;
-    for (var i = 0; i < existing_filterCols_length; i++) {
-        var existing_filterCol = existing_filterCols[i];
-        if (existing_filterCol == this_filterCol) {
-            return true;
-        }
-    }
-    return false;
 }
 
 

@@ -92,9 +92,6 @@ function PieChart(selection, pieData, colorMap) {
      * Filter slice on click
      */
     g.on('click', function(d) {
-        if(window.location.search) {
-            routePath_withoutFilter += window.location.search;
-        }
         var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
         var filterCols = [groupBy, chartBy] 
         var filterVals = [d.data.label, d.data.title]

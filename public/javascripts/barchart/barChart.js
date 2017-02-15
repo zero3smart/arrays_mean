@@ -398,9 +398,6 @@ BarChart.prototype._barMouseOutEventHandler = function(barElement, barData, i, j
 };
 
 BarChart.prototype._barClickEventHandler = function(categoriesAndData, stackByIndex, groupByIndex) {
-    if(window.location.search) {
-        routePath_withoutFilter += window.location.search;
-    }
     var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
     var filterCols = [groupBy, stackBy]
     var filterVals = [categoriesAndData[groupByIndex][0], categoriesAndData[groupByIndex][1][stackByIndex].label]

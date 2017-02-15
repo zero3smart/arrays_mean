@@ -254,9 +254,6 @@ map.on('load', function () {
         var features = map.queryRenderedFeatures(e.point, {layers: names});
 
         var feature = features[0];
-        if(window.location.search) {
-            routePath_withoutFilter += window.location.search;
-        }
 
         var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
 
