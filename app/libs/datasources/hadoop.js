@@ -170,7 +170,9 @@ function _readAllTables(fn) {
 function _initConnection(url,callback) {
     winston.info("ready to init a new connection.");
     var config = {
-        url: url
+        url: url,
+        minpoolsize:5,
+        maxpoolsize:10
     }
     var JDBC = new jdbc(config);
     JDBC.initialize(function(err) {
@@ -285,6 +287,12 @@ function _runQuery(query,fn) {
 }
 
 
+function _asyncRunQueries(queries,fn) {
+
+
+}
+
+
 module.exports.readData = function(url,query,fn) {
 
 
@@ -304,4 +312,9 @@ module.exports.readData = function(url,query,fn) {
         _runQuery(query,fn);
 
     }
+}
+
+
+module.exports.prepareFilters = function(queriesWithSemiColon,fn) {
+    _runQuery(queriesWithSemiColon,fn);
 }
