@@ -28,6 +28,8 @@
         } else {
             this._addSegment(this._start.color, this._segmentCount + 1);
         }
+        
+        this._build();
     };
 
     // ----------
@@ -64,87 +66,24 @@
 
             this._sublines.push(line);
         },
-
+        
         // ----------
-        animateOn: function(complete) {
-            var self = this;
+        _build: function() {
+            var count = this._segmentCount + 1;
+            var vertices = [];
+            var latDiff = this._end.point.lat - this._start.point.lat;
+            var lngDiff = this._end.point.lng - this._start.point.lng;
+            var altitudeDiff = this._end.altitude - this._start.altitude;
+            var factor, lat, lng, altitude;
+            for (var i = 0; i < count; i++) {
+                factor = (i / (count - 1));
+                lat = this._start.point.lat + (latDiff * factor);
+                lng = this._start.point.lng + (lngDiff * factor);
+                altitude = this._start.altitude + (altitudeDiff * factor);
+                vertices.push(GlobeMain.coordToVector(lat, lng, altitude));
+            }
 
-            this.animating = true;
-
-            new TWEEN.Tween({
-                    progress: 0
-                })
-                .to({
-                    progress: 1
-                }, 2000)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate(function() {
-                    var tween = this;
-                    var count = self._segmentCount + 1;
-                    var vertices = [];
-                    var latDiff = self._end.point.lat - self._start.point.lat;
-                    var lngDiff = self._end.point.lng - self._start.point.lng;
-                    var altitudeDiff = self._end.altitude - self._start.altitude;
-                    var factor, lat, lng, altitude;
-                    for (var i = 0; i < count; i++) {
-                        factor = (i / (count - 1)) * tween.progress;
-                        lat = self._start.point.lat + (latDiff * factor);
-                        lng = self._start.point.lng + (lngDiff * factor);
-                        altitude = self._start.altitude + (altitudeDiff * factor);
-                        vertices.push(GlobeMain.coordToVector(lat, lng, altitude));
-                    }
-
-                    self._conformVertices(vertices);
-                })
-                .onComplete(function() {
-                    self.animating = false;
-
-                    if (complete) {
-                        complete();
-                    }
-                })
-                .start();
-        },
-
-        // ----------
-        animateOff: function(complete) {
-            var self = this;
-
-            this.animating = true;
-
-            new TWEEN.Tween({
-                    progress: 0
-                })
-                .to({
-                    progress: 1
-                }, 2000)
-                .easing(TWEEN.Easing.Cubic.InOut)
-                .onUpdate( function () {
-                    var tween = this;
-                    var count = self._segmentCount + 1;
-                    var vertices = [];
-                    var latDiff = self._end.point.lat - self._start.point.lat;
-                    var lngDiff = self._end.point.lng - self._start.point.lng;
-                    var altitudeDiff = self._end.altitude - self._start.altitude;
-                    var factor, lat, lng, altitude;
-                    for (var i = 0; i < count; i++) {
-                        factor = (i / (count - 1)) * (1 - tween.progress);
-                        lat = (latDiff * tween.progress) + self._start.point.lat + (latDiff * factor);
-                        lng = (lngDiff * tween.progress) + self._start.point.lng + (lngDiff * factor);
-                        altitude = (altitudeDiff * tween.progress) + self._start.altitude + (altitudeDiff * factor);
-                        vertices.push(GlobeMain.coordToVector(lat, lng, altitude));
-                    }
-
-                    self._conformVertices(vertices);
-                })
-                .onComplete(function() {
-                    self.animating = false;
-
-                    if (complete) {
-                        complete();
-                    }
-                })
-                .start();
+            this._conformVertices(vertices);
         },
 
         // ----------

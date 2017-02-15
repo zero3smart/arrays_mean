@@ -75,7 +75,6 @@ var GlobeMain = {
         });
 
         this.globeView.start();
-        this.globeView.animateLinesOn();
     },
     
     // ----------

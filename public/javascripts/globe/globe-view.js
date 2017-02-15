@@ -9,7 +9,6 @@
         this._onDrag = config.onDrag;
         this._onMouseUp = config.onMouseUp;
 
-        this._cityNodes = [];
         this._pointNodes = [];
         this._lines = [];
         this._bottomAltitude = 200.5;
@@ -182,54 +181,6 @@
         // ----------
         _addLine: function(config) {
             this._lines.push(new GlobeMain.Line(config));
-        },
-
-        // ----------
-        animateLinesOn: function() {
-            var self = this;
-
-            _.each(this._lines, function(v, i) {
-                setTimeout(function() {
-                    var animate = function() {
-                        if (self.stoppingLines) {
-                            self._checkLinesStopping();
-                            return;
-                        }
-
-                        v.animateOn();
-                    };
-
-                    animate();
-                }, i * 50);
-            });
-        },
-
-        // ----------
-        animateLinesOff: function(complete) {
-            this.stoppingLines = {
-                complete: complete
-            };
-
-            this._checkLinesStopping();
-        },
-
-        // ----------
-        _checkLinesStopping: function() {
-            if (!this.stoppingLines) {
-                return;
-            }
-
-            var animating = _.any(this._lines, function(v, i) {
-                return v.animating;
-            });
-
-            if (!animating) {
-                var complete = this.stoppingLines.complete;
-                this.stoppingLines = null;
-                if (complete) {
-                    complete();
-                }
-            }
         }
     };
 
