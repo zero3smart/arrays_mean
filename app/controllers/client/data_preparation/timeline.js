@@ -423,6 +423,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
