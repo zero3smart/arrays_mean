@@ -287,32 +287,7 @@ function _runQuery(query,fn) {
 }
 
 
-function _runQueries(queryObj,fn) {
-    var results = {};
-    async.eachOfSeries(queryObj,function(value,key,callback) {
-
-        _runQuery(value,function(err,ret) {
-            if (err) return callback(err);
-            else {
-                results[key] = [];
-                ret.map(function(item) {
-                    results[key].push(item[key]);
-                })
-                return callback();
-            }
-
-        })
-    },function(err) {
-        console.log("done all queries");
-        fn(err,results);
-    })
-
-
-}
-
-
 module.exports.readData = function(url,query,fn) {
-
 
     if (!db) {
 
@@ -332,8 +307,3 @@ module.exports.readData = function(url,query,fn) {
     }
 }
 
-
-module.exports.prepareFilters = function(queriesWithSemiColon,fn) {
-
-    _runQueries(queriesWithSemiColon,fn);
-}
