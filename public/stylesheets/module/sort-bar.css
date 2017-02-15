@@ -170,11 +170,6 @@
     right: -2px;
 }
 
-#search-by:hover .search-icon {
-	color: var(--color-primary);
-	cursor: pointer;
-}
-
 /* @end Search form */
 
 /* @group Mobile Search */
@@ -189,7 +184,7 @@
 
 .search-toggle:hover .search-icon,
 .search-toggle.search-active .search-icon {
-	color: var(--color-primary);
+	/*color: var(--color-primary);*/
 	cursor: pointer;
 }
 
