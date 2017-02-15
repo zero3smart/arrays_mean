@@ -291,7 +291,7 @@ function _runQueries(queryObj,fn) {
     var results = {};
     async.eachOfSeries(queryObj,function(value,key,callback) {
 
-        _runQuery(q,function(err,ret) {
+        _runQuery(value,function(err,ret) {
             if (err) return callback(err);
             else {
                 results[key] = [];
