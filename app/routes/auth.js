@@ -26,9 +26,9 @@ var updateSubscriptionInfo = function(user, callback) {
 
         var subscription = { data: { subscription: false } };
 
-        if (err && err.data.error.symbol) {
-            console.log('Subscription error:', err.data.error.symbol);
-            return callback();
+        if (err) {
+                console.log('Subscription error:', err);
+                return callback();
         } else if (response.data.subscriptions.subscription) {
 
             if (response.data.subscriptions.subscription.length > 1) {
