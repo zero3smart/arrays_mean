@@ -27,7 +27,7 @@
            </div>
         {% endif %}
 
- 
+
 
 
         <div id="array-controls" class="array-controls">
@@ -68,9 +68,7 @@
                                         page: onPageNum if onPageNum != 1 else null,
                                         sortDir: sortDir,
                                         sortBy: ''
-                                    }),
-                                    false,
-                                    false
+                                    })
                                 )
                                 }}
 
@@ -125,7 +123,7 @@
                         <div class="gallery">
                             <ul class="gallery-grid">
 
-                             
+
                                 {% for doc in docs %}
 
                                     {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
