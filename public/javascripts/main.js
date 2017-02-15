@@ -121,8 +121,8 @@ $(document).ready(function () {
     /**
      * Search criteria click dropdown item to select
      */
-    $('.search-input')
-        .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
+    // $('.search-input')
+    //     .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
 
     $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
@@ -134,8 +134,8 @@ $(document).ready(function () {
 
         $('.search-input')
             .attr('placeholder', newPlaceholder);
-        $('.search-input')
-            .css('width', (newPlaceholder.length * 9) + 'px') ;
+        // $('.search-input')
+        //     .css('width', (newPlaceholder.length * 9) + 'px') ;
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');

@@ -56,7 +56,7 @@
 }
 
 .sort-control #search-by.dropdown-toggle {
-    padding-top: 3px;
+    padding-top: 0;
     padding-bottom: 0;
 }
 
@@ -66,14 +66,22 @@
 	box-shadow: none;
 }
 
+.dropdown .sort-control .search-control {
+    padding-top: 0;
+}
+
 .map-container .sort-bar-left .dropdown-toggle,
 .map-container .sort-control-right {
-    /*text-shadow: -1px 0 3px white, 0 1px 3px white, 1px 0 3px white, 0 -1px 3px white;*/
-    /*text-shadow: 0 0 3px white;*/
-	background: white;
+    background: white;
     border: 1px solid #eee;
-	padding-right: 12px;
-    /*box-shadow: 0 0 2px 2px white;*/
+    padding-right: 12px;
+}
+.map-container .sort-bar-left .dropdown-toggle {
+    padding-bottom: 8px;
+}
+.map-container .sort-control-right {
+    border-radius: 4px;
+    padding-bottom: 4px;
 }
 
 .sort-criteria,
