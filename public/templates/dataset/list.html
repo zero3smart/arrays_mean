@@ -10,7 +10,7 @@
             <img ng-src="/images/image-not-found-sm.png" />
         </div> -->
 
-        <span flex class="dashboard-list-name" ng-click="select(dataset._id)">{{ dataset.title }}</span>
+        <span flex class="dashboard-list-name" ng-click="select(dataset._id)">{{ dataset.title }} <span ng-if="dataset.sample" class="text-muted">(sample)</span></span>
 
         <span class="dashboard-list-icon" ng-click="select(dataset._id)" flex="10">
             <i class="fa fa-pencil" aria-hidden="true"></i>
