@@ -233,7 +233,16 @@
 	.mobile-search-popover.search-open .sort-control {
 		display: block;
 		margin-right: 0;
+        padding: 0;
 	}
+
+    .mobile-search-popover.search-open .search-control {
+        padding-bottom: 10px;
+    }
+
+    .map-container .sort-control-right {
+        border: none;
+    }
 
 	.mobile-search-popover.search-open .dropdown-toggle {
 		padding: 5px 0;
