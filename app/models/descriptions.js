@@ -68,6 +68,7 @@ var DatasourceDescription_scheme = Schema({
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
     isPublic: {type: Boolean, default: false},
+    sample: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -434,13 +435,19 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
         subdomainQuery["subdomain"] = subdomain;
     }
    
-    this.findOne({uid: uid, importRevision: revision, fe_visible: true})
+    this.find({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
             match: subdomainQuery
         })
         .lean()
         .exec(function (err, descriptions) {
+            descriptions = descriptions.filter(function (description) {
+                if (description._team !== null) {
+                    return description
+                }
+            });
+            descriptions  = descriptions[0];
             if (err) {
                 winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
                 fn(err, null);
@@ -455,17 +462,12 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
-
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
-
-
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if ( (!datasourceDescription.fe_visible || !datasourceDescription.imported) && !datasourceDescription.connection ) return fn();
-
-
 
             if (userId) {
                 User.findById(userId)
@@ -504,8 +506,6 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
             } else {
 
-
-            
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
 
 

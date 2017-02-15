@@ -86,6 +86,8 @@ module.exports = function (grunt) {
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',
                     'jquery-ui/jquery-ui.min.js',
+                    'threejs/build/three.min.js',
+                    'tweenjs/src/Tween.js',
                     'bootstrap/dist/js/bootstrap.min.js'
                 ],
                 dest: 'public/vendors'

@@ -55,7 +55,7 @@ HorizontalBarChart.prototype._animateForSort = function() {
 
     var self = this;
 
-    var newCategories = this._categoryData
+    var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
@@ -88,7 +88,7 @@ HorizontalBarChart.prototype._animateForSort = function() {
     this._bars.transition()
         .duration(750)
         .delay(delay)
-        .attr("y", function(d, i, j) { return y0(self._categoryData[j]); });
+        .attr("y", function(d, i, j) { return y0(self._categories[j]); });
 
     this._categories = newCategories;
 
@@ -124,7 +124,7 @@ HorizontalBarChart.prototype.getXAxisTransform = function() {
 
 
 HorizontalBarChart.prototype.getYScale = function() {
-    
+
     return this._yScale = d3.scale.ordinal()
         .rangeBands([0, this._innerHeight], this._padding)
         .domain(this._categories);
@@ -135,6 +135,13 @@ HorizontalBarChart.prototype.getYAxis = function() {
 
     return d3.svg.axis()
         .scale(this.getYScale())
+        .tickFormat(function(d) {
+            var maxlength = 10;
+            if (d.length > maxlength) {
+                d = d.substring(0, maxlength) + '…'; // \u8230
+            }
+            return d;
+        })
         .orient('left');
 };
 
