@@ -302,6 +302,7 @@ function _runQueries(queries,fn) {
         })
     },function(err) {
         console.log("done all queries");
+        fn(err);
         // console.log(err);
         // console.log(results);
     })
@@ -333,5 +334,6 @@ module.exports.readData = function(url,query,fn) {
 
 
 module.exports.prepareFilters = function(queriesWithSemiColon,fn) {
+    
     _runQueries(queriesWithSemiColon,fn);
 }
