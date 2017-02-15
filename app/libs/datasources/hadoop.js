@@ -287,24 +287,24 @@ function _runQuery(query,fn) {
 }
 
 
-function _runQueries(queries,fn) {
+function _runQueries(queryObj,fn) {
     var results = {};
-    async.eachSeries(queries,function(q,callback) {
+    async.eachOfSeries(queries,function(value,key,callback) {
 
         _runQuery(q,function(err,ret) {
-            if (err) callback(err);
+            if (err) return callback(err);
             else {
-                console.log("returned obj");
-                console.log(ret);
-                callback();
+                results[key] = [];
+                ret.map(function(item) {
+                    results[key].push(item[key]);
+                })
+                return callback();
             }
 
         })
     },function(err) {
         console.log("done all queries");
-        fn(err);
-        // console.log(err);
-        // console.log(results);
+        fn(err,results);
     })
 
 
@@ -334,6 +334,6 @@ module.exports.readData = function(url,query,fn) {
 
 
 module.exports.prepareFilters = function(queriesWithSemiColon,fn) {
-    
+
     _runQueries(queriesWithSemiColon,fn);
 }
