@@ -88,14 +88,14 @@
 			<label>Team Title</label><small class="pull-right" ng-hide="invitedUser">You can change this later</small>
 	  		<div class="input-group">
 				<span class="input-group-addon"><i class="fa fa-group"></i></span>
-				<input required ng-model='user._team.title' name="teamTitle" ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
+				<input required ng-model='user._team.title' name="teamTitle" ng-disabled="invitedUser" type="text" class="form-control">
 			</div>
 
 			<div class="help-block" ng-messages="infoForm.teamTitle.$error" ng-if="infoForm.teamTitle.$touched">
 		    	<p ng-message="required">A team title is required.</p>
 			</div>
 
-				
+
 		</div>
 		<subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
@@ -107,7 +107,7 @@
 	  		<div class="input-group">
 
 				  <span ng-hide="env.node_env == 'enterprise'" class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
-				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
+				  <input ng-disabled="invitedUser" name="subdomain" ng-model="user._team.subdomain" unique-subdomain
 				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
 				  <span ng-hide="env.node_env=='enterprise'" class="input-group-addon">{{"." + env.host}}</span>
 			</div>
