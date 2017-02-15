@@ -31,7 +31,7 @@
                 {% if columnNames | length %}
                 <ul class="dropdown-menu dropdown-menu-right search-dropdown-menu" aria-labelledby="search-by">
                     {% for colName in columnNames %}
-                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                    <li class="search-dropdown-item background-color-brand-hover {{ "search-dropdown-item-active" if colName == searchColToOutput }}"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                     {% endfor %}
                 </ul>
                 {% endif %}

@@ -111,6 +111,11 @@
 	/*color: var(--color-text-dark);*/
 }
 
+/*active state should also be on other dropdowns*/
+/*.dropdown-menu > li.search-dropdown-item-active a {
+    font-weight: 600;
+}*/
+
 /* @end Sort Bar */
 
 /* @group Search form */
@@ -119,7 +124,7 @@
 	display: inline-block;
 	padding: 0;
     padding-left: 12px;
-	width: 140px;
+	width: 220px;
 	height: auto;
 	border-style: none;
 	border-radius: 0;
@@ -160,6 +165,14 @@
 }
 .form-search .sort-control .dropdown-toggle-button-has-caret:before {
     top: -4px;
+}
+#search-by.dropdown-toggle-button-has-caret:before {
+    right: -2px;
+}
+
+#search-by:hover .search-icon {
+	color: var(--color-primary);
+	cursor: pointer;
 }
 
 /* @end Search form */
