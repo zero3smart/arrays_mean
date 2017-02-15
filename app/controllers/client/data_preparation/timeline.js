@@ -217,9 +217,10 @@ module.exports.BindData = function(req, urlQuery, callback) {
                             // _id: 1,
                             _id: {
                                 "$subtract": [
-                                    { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] }, {
+                                    {"$subtract": [new Date(), "$" + "rowParams." + sortBy_realColumnName]},
+                                    {
                                         "$mod": [
-                                            { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] },
+                                            {"$subtract": [new Date(), "$" + "rowParams." + sortBy_realColumnName]},
                                             groupByDuration
                                         ]
                                     }
@@ -328,10 +329,10 @@ module.exports.BindData = function(req, urlQuery, callback) {
                                 $group: {
                                     _id: {
                                         "$subtract": [
-                                            {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
+                                            {"$subtract": [new Date(), "$" + "rowParams." + sortBy_realColumnName]},
                                             {
                                                 "$mod": [
-                                                    {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
+                                                    {"$subtract": [new Date(), "$" + "rowParams." + sortBy_realColumnName]},
                                                     groupByDuration
                                                 ]
                                             }

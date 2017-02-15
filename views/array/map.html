@@ -98,6 +98,7 @@
                     min: {{ coordMinMax.min if coordMinMax else 0 }},
                     max: {{ coordMinMax.max if coordMinMax else 0 }}
                 };
+                var applyCoordRadius = {{ applyCoordRadius }};
                 var coordColor = '{{ coordColor }}';
                 var coordCol = '{{ coordCol }}'
                 var isCoordMap = {{ isCoordMap if isCoordMap else false }};
