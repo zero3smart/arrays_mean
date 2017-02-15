@@ -16,4 +16,69 @@ $(function () {
 		});
 	}
 
+	/****
+	Signup Footer
+	****/
+	function getCookieValue(name) {
+		var value = '; ' + document.cookie;
+		var parts = value.split('; ' + name + '=');
+		if (parts.length == 2) {
+			return parts.pop().split(';').shift();
+		} else {
+			return false;
+		}
+	}
+
+	function getCookieExpire(days) {
+		var d;
+
+		if (days && typeof days == 'number') {
+			d = new Date(Date.now() + (days * 86400000));
+		} else {
+			d = new Date(Date.now() + (14 * 86400000));
+		}
+
+		return d.toUTCString();
+	}
+
+	var signupFooter = document.querySelector('.signup-footer');
+
+	if (signupFooter != null && !getCookieValue('_userDeclinedFooterSignup')) {
+		var declineSignup = document.querySelector('#close-signup-footer');
+		var mainFooter = document.querySelector('#colophon');
+
+		if (mainFooter != null) {
+			mainFooter.style.paddingBottom = '90px';
+		}
+
+		var footerVisible = false;
+
+		function evalScroll() {
+			if (window.scrollY > 64 && !footerVisible) {
+				signupFooter.classList.remove('close-signup-footer');
+				signupFooter.classList.add('show-signup-footer');
+				footerVisible = true;
+			} else if (window.scrollY <= 64 && footerVisible) {
+				signupFooter.classList.remove('show-signup-footer');
+				signupFooter.classList.add('close-signup-footer');
+				footerVisible = !footerVisible;
+			}
+		}
+
+		window.addEventListener('scroll', evalScroll);
+
+		declineSignup.addEventListener('click', function(e) {
+			e.preventDefault();
+			window.removeEventListener('scroll', evalScroll);
+			mainFooter.style.paddingBottom = '25px';
+
+			signupFooter.classList.remove('show-signup-footer');
+			signupFooter.classList.add('close-signup-footer');
+
+			document.cookie = '_userDeclinedFooterSignup=true; expires=' + getCookieExpire() + ';';
+		})
+	}
+	/****
+	!Signup Footer
+	****/
 });

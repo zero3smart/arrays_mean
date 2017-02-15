@@ -21,6 +21,7 @@
 .section-array-create .section-header.explore-header {
     border-bottom: none;
     margin-bottom: 0px;
+    padding-top: 0px;
 }
 
 .section-array-create .section-title {
