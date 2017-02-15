@@ -290,11 +290,13 @@ function _runQuery(query,fn) {
 function _asyncRunQueries(queries,fn) {
     var results = [];
     async.each(queries,function(q,callback) {
-        _runQuery(q,fucntion(err,ret) {
+
+        _runQuery(q,function(err,ret) {
             if (err) callback(err);
             else {
                 results.push(ret);
             }
+
         })
     },function(err) {
         console.log("done query");
