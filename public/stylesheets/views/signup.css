@@ -1,7 +1,5 @@
-
-form.signup[name='emailForm'] {
-	margin:0px auto;
-	margin-top: 60px;
+h1 {
+    margin-bottom: 60px;
 }
 
 form.signup label {

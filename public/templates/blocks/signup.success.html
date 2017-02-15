@@ -1,9 +1,16 @@
-<h1>Success!</h1>
+<h2>Success!</h2>
+
 <div ng-if="!isInvite">
-	<p>We have sent you an email to activate your account. The link will expire in two hours. If you havent received in 10 mins, you could 
-	<a class="pointer" href="{{resendActivationLink}}" target="_self">resend</a> it.
+	<p>
+        We have sent you an email to activate your account.
+        The activation link will expire in two hours.
+        If you haven't received the email in 10 minutes, you may
+        <a class="pointer" href="{{resendActivationLink}}" target="_self">resend it</a>.
 </div>
 
 <div ng-if="isInvite">
-	<p>Your registration process is complete. You could now login <a class="pointer" ng-click="login()">here</a>.
+	<p>
+        Your registration process is complete.
+        <a class="pointer" ng-click="login()">Log in</a>
+    </p>
 </div>
