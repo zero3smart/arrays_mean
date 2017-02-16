@@ -172,7 +172,8 @@ function _initConnection(url,callback) {
     var config = {
         url: url,
         minpoolsize:5,
-        maxpoolsize:10
+        maxpoolsize:10, 
+        maxidle: 1800000 
     }
     var JDBC = new jdbc(config);
     JDBC.initialize(function(err) {
