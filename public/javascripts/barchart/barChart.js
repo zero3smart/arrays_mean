@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 function BarChart(selector, dataSet, options) {
 
@@ -365,14 +365,14 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categ
 
     var formatter = this.getValueFormatter();
 
-    
+
 
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content-label">' + label + '</div>' + 
+            '<div class="scatterplot-tooltip-content-label">' + label + '</div>' +
             '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
@@ -459,7 +459,7 @@ BarChart.getInstance = function(selector, dataSet, options) {
 };
 
 BarChart.prototype.updateSortDirection = function(sortDirection) {
-    if (sortDirection) {
+    if (typeof sortDirection !== undefined) {
         this._options.sortDirection = sortDirection;
     }
     // animate for sort has to be called before rotate label otherwise, it'll overwrite style attributes
