@@ -5,7 +5,7 @@
 	        {% set url = doc.rowParams[fieldKey_medThumbImageURL] %}
 			
 			{% if scrapedImages %}
-				<img src="{{ returnAbsURLorBuildURL(url) }}" class="timeline-image" />
+				<img src="{{ makeURLfrom_relativePath(url,team.subdomain,datasetId,'image') }}" class="timeline-image" />
 			{% else %}	
 				<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />
 			{% endif %}
