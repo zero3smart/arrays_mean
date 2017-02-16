@@ -29,6 +29,7 @@
            
             return $http.get('api/dataset/get/' + id)
             .then(function(response) {
+                console.log(response.data)
                 return response.data.dataset;
             });
         };

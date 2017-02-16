@@ -269,8 +269,6 @@ module.exports.remove = function (req, res) {
 
 module.exports.get = function (req, res) {
 
-
-
     if (!req.params.id)
         return res.status(500).send('No ID given');
 
@@ -292,6 +290,7 @@ module.exports.get = function (req, res) {
 
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                    console.log(columns)
                     if (err) return res.status(500).json(err);
 
                     req.session.columns[req.params.id] = columns;
@@ -302,6 +301,7 @@ module.exports.get = function (req, res) {
             } else {
 
                 if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
+                    console.log(description.columns)
 
                 return res.status(200).json({dataset: description});
             }
@@ -439,7 +439,6 @@ module.exports.save = function (req, res) {
 
                 if (err) return res.status(500).send(err);
                 if (!doc) return res.status(500).send('Invalid Operation');
-
                 var description = doc, description_title = doc.title;
                 if (doc.schema_id) {
                     description = datasource_description.Consolidate_descriptions_hasSchema(doc);
@@ -555,8 +554,8 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                             readStream.resume();
                         } else if (countOfLines == 2) {
                             columns = columns.map(function (e, i) {
-                                intuitDataype(e.name, output[0][i])
-                                return {name: e.name, sample: output[0][i]};
+                                return intuitDataype(e.name, output[0][i])
+                                // return {name: e.name, sample: output[0][i]};
                             });
                             readStream.resume();
                         } else {
@@ -570,28 +569,42 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 
 function intuitDataype(name, sample) {
     var dateRE = /(year|DATE)/i;
-    // check date
-    // MOMENT PARSES ALL DATES
-    if (moment(sample, [moment.ISO_8601, 'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY hh:mm', 'M/DD/YY hh:mm', 'M/D/YY hh:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY'], true).isValid()) {
-        console.log("name: " + name + " sample: " + sample + " date")
-    } else if(dateRE.test(name)){
-        console.log("name contains year")
-        if(moment(sample, 'YYYY', true).isValid()) {
-            console.log("name: " + name + " sample: " + sample + " year date")
-        } else {
-            console.log("couldn't parse name: " + name + " sample: " + sample)
-        }
-    } else {
-        // if the sample has anything other than numbers and a "." it's a string
-        var numberRE = /[^0-9|\.]/;
-        if(numberRE.test(sample)) {
-            console.log("name: " + name + " sample: " + sample + " is a string")
-        } else {
-           console.log("name: " + name + "sample: " + sample + " is a number") 
+    var isDate = false;
+    var known_date_formats = [/*moment.ISO_8601, */'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY'];
+    var returnObj = {name: name, sample: sample};
+    for(var i = 0; i < known_date_formats.length; i++) {
+        if(moment(sample, known_date_formats[i], true).isValid()) {
+            console.log("name: " + name + " sample: " + sample + " date");
+            console.log("date format: " + known_date_formats[i]);
+            isDate = true;
+            return {name: name, sample: sample, data_type: known_date_formats[i], operation: 'ToDate'};
         }
     }
-    // check number
+
+    if(!isDate) {
+        if(dateRE.test(name)){
+            console.log("name contains year");
+            if(moment(sample, 'YYYY', true).isValid()) {
+                console.log("name: " + name + " sample: " + sample + " year date");
+                return {name: name, sample: sample, data_type: 'YYYY', operation: 'ToDate'};
+            } else {
+                console.log("couldn't parse name: " + name + " sample: " + sample);
+                return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+            }
+        } else {
+            // if the sample has anything other than numbers and a "." it's a string
+            var numberRE = /([^0-9\.,]|\s)/;
+            if(numberRE.test(sample) || sample === "") {
+                console.log("name: " + name + " sample: " + sample + " is a string");
+                return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+            } else {
+               console.log("name: " + name + "sample: " + sample + " is a number");
+               return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+            }
+        }
+    }
 }
+    
 
 module.exports.upload = function (req, res) {
 
@@ -714,6 +727,32 @@ module.exports.upload = function (req, res) {
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
                 req.session.columns[description._id] = columns;
+                // console.log(columns)
+                // console.log(description)
+                // save the raw row coercion
+                if (!description.raw_rowObjects_coercionScheme) {
+                    description.raw_rowObjects_coercionScheme = {};
+                }
+
+                for(var i = 0; i < columns.length; i++) {
+                    var column = columns[i];
+                    if (column.data_type !== 'String') {
+                        description.raw_rowObjects_coercionScheme[column.name] = {};
+                        if (column.operation === 'ToDate') {
+                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.data_type;
+                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.data_type;
+                        }
+                        description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+                    }
+                }
+                // description.save(function (err, updatedDescription) {
+                //     if (err) {
+                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                //         done(err);
+                //     } else {
+                //         console.log(updatedDescription)
+                //     }
+                // });
 
                 // Upload datasource to AWS S3
 
@@ -739,13 +778,16 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
+                // console.log(description)
+                // I don't think this is saving
                 description.save(function (err, updatedDescription) {
                     if (err)
                         winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
                     done(err);
+                    console.log(updatedDescription)
                 });
             } else {
-
+                console.log("saving here")
                 var findQuery = {_id: description._id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {

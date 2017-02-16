@@ -299,6 +299,7 @@ angular.module('arraysApp')
 
 
                 $scope.changeCoercionSchemeByOperation = function (colName) {
+                    console.log(colName)
 
 
                     var coercion = $scope.coercionScheme[colName];
