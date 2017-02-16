@@ -100,7 +100,7 @@
 
                         <div class="sort-bar clearfix">
 
-                            <nav style="display: {{ 'none' if isCoordMap else 'block' }};" class="sort-bar-left pull-left" role="navigation">
+                            <!-- <nav style="display: {{ 'none' if isCoordMap else 'block' }};" class="sort-bar-left pull-left" role="navigation">
                                 {{
                                 dropdown.default(
                                     'Map By',
@@ -113,11 +113,11 @@
                                     })
                                 )
                                 }}
-                            </nav>
+                            </nav> -->
 
                             <div class="sort-bar-right pull-right">
                                 {{
-                                search.panel(
+                                search.default(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,

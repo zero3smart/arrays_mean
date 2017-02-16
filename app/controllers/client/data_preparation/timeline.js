@@ -377,11 +377,14 @@ module.exports.BindData = function(req, urlQuery, callback) {
                             var displayableVal = func.ValueToExcludeByOriginalKey(
                                 el2.rowParams[sortBy_realColumnName], dataSourceDescription, sortBy_realColumnName, 'timeline');
 
-                            el2.rowParams[sortBy_realColumnName] = displayableVal;
+                            //Format the date value
+                            el2.rowParams[sortBy_realColumnName] = func.convertDateToBeRecognizable(displayableVal, sortBy_realColumnName, dataSourceDescription);                    
+
                             results.push(el2);
                         });
                         el.results = results;
                         groupedResults.push(el);
+                        
                     });
 
                     done();
