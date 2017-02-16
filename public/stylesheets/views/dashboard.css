@@ -153,10 +153,6 @@ aa-dialog-actions .md-button:last-child {
 
 /**/
 
-h1 {
-	/*overflow-x: hidden;*/
-	/*overflow-y: hidden;*/
-}
 h2 {
     font-size: 24px;
 }
@@ -350,7 +346,6 @@ body.md-toast-animating {
 	color: #eee;
 }
 .dashboard-list-icon.view.default-view {
-	/*color: rgba(0,0,0,0.87);*/
 	color: var(--color-text-dark);
 }
 .dashboard-list md-checkbox {
@@ -404,7 +399,6 @@ md-input-invalid.subdomain-append {
 .user-list li canvas {
 	width: 100%;
 	padding-right: 15px;
-	/*padding: 15px 15px 15px 0;*/
 }
 .user-dialog .profile-thumb {
 	width: 100%;
@@ -413,8 +407,6 @@ md-input-invalid.subdomain-append {
 
 .dashboard-list li.li-disabled {
 	color: var(--color-text-light);
-	/*bg doesnt work well with li border and left/right margin*/
-	/*background: #eee;*/
 }
 
 /* Angular Material tabs and nav bars */
@@ -459,7 +451,6 @@ md-tooltip.md-default-theme .md-content,
 md-tooltip .md-content {
 	font-size: 13px !important;
 	color: white !important;
-	/*background: var(--color-primary) !important;*/
 	background: var(--color-text-dark) !important;
 }
 
@@ -502,19 +493,6 @@ md-tooltip .md-content {
 ._md-nav-button-text.placeholder {
 	color: var(--color-text-light);
 }
-/*.dataset-breadcrumb button {
-    float: left;
-    width: 20%;
-    margin: 0;
-    border: none;
-    padding: 0;
-    background-color: transparent;
-    outline: none;
-    color: #333338;
-}
-.dataset-breadcrumb button:disabled {
-    color: #9B9B9B;
-}*/
 
 .dataset-breadcrumb span {
     font-family: var(--font-family-calibre);
@@ -603,7 +581,6 @@ ul.aa-color-picker {
 	border-radius: 15px;
 }
 .aa-color-picker li.selected {
-	/*border: 3px solid var(--color-text-dark);*/
 	border: 3px solid black;
 }
 
@@ -632,16 +609,13 @@ ul.aa-color-picker {
 	transition: opacity 0.3s, padding 0.3s;
 }
 .aa-color-picker.list li:not(.add-color):hover {
-	/*border: 3px solid black;*/
 	width: 60px;
 }
 .aa-color-picker.list li:hover .move-color,
 .aa-color-picker.list li:hover .remove-color {
 	opacity: 1;
-	/*padding-left: 36px;*/
 }
 .aa-color-picker.list li.add-color i {
-	/*text-align: center;*/
 	padding-top: 4px;
 	padding-left: 6px;
 }
@@ -708,42 +682,9 @@ ul.aa-color-picker {
     font-weight: bold;
 }
 
-/*.dataset .field > .handler {
-    width: 4%;
-    min-width: 20px;
-}
-.dataset .field > .order {
-    width: 4%;
-    min-width: 50px;
-}
-.dataset .field > .exclude {
-    width: 6%;
-    min-width: 63px;
-}
-.dataset .field > .name {
-    width: 18%;
-    min-width: 100px;
-}
-.dataset .field > .override {
-    width: 18%;
-    min-width: 100px;
-}
-.dataset .field > .type {
-    width: 12%;
-    min-width: 80px;
-}
-.dataset .field > .sample {
-    min-width: 180px;
-    width: 38%;
-}*/
-
-
 .dataset .field .exclude > md-checkbox {
     margin-bottom: 6px;
 }
-/*.dataset .field .exclude > md-switch {
-    margin: 0;
-}*/
 .dataset .field:not(.custom) .type {
     padding-top: 4px;
 }
@@ -806,7 +747,6 @@ md-dialog fieldset legend,
 	font-weight: bold;
 	color: var(--color-text-dark);
 	border: none;
-    /*margin-bottom: 4px;*/
     padding-top: 20px;
 }
 
