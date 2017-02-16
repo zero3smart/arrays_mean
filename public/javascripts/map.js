@@ -17,6 +17,7 @@ var layer = 'contour',
     filteruse,
     mapStyle,
     breaks = [],
+    defaultRadius = 2,
     maxRadius = 40, // At 0 zoom
     radii = [],
     opacities = [],
@@ -59,7 +60,7 @@ function linearScale(currentBreak, numBreaks, maxValue, minValue) {
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
-    if (isCoordMap) {
+    if (isCoordMap && applyCoordRadius) {
         breaks[i] = linearScale(i, numBreaks, coordMinMax.max, coordMinMax.min); 
         radii[i] = (i / numBreaks) * maxRadius + (maxRadius / numBreaks);
     } else {
@@ -69,8 +70,6 @@ for (i = 0; i < numBreaks; i++) {
 
     names[i] = 'layer-' + i;
 }
-
-console.log(breaks);
 
 /**
  * Mapbox access token
@@ -95,22 +94,6 @@ var map = new mapboxgl.Map({
     center: [0, 35],
     zoom: 1.5 // starting zoom
 });
-
-/* Format popup span value for numbers
-*/
-function convertIntegerToReadable(prop) {
-    if (typeof prop == 'number') {
-        var splitNum = prop.toString().split('.'); 
-        var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        var decimal = splitNum[1] ? '.' + splitNum[1] : '';
-
-        return number + decimal;
-    }
-    return prop;
-}
-/* Add number format to higher level helper/library file for reusability? */
-
-/**
 
 /**
  * Format popup span value for numbers
@@ -151,48 +134,77 @@ map.on('load', function () {
     /**
      * Loop through layers, filter countries, and apply opacity
      */
-    for (i = 0; i < numBreaks; i++) {
-        if (i < numBreaks - 1) {
-            filteruse = ['all', ['>=', metric, breaks[i] - logOffset], ['<', metric, breaks[i + 1] - logOffset]];
-        } else {
-            filteruse = ['>=', metric, breaks[i] - logOffset];
+    if (isCoordMap && !applyCoordRadius) {
+
+        names.push('points-of-interest');
+
+        map.addLayer({
+            id: names[0],
+            type: 'circle',
+            source: 'points',
+            paint: {
+                'circle-radius': {
+                    stops: [
+                        [0, defaultRadius],
+                        [4, defaultRadius * 3],
+                        [8, defaultRadius * 6],
+                        [12, defaultRadius * 9],
+                        [16, defaultRadius * 12],
+                        [20, defaultRadius * 15]
+                    ]
+                },
+                // 'circle-radius': radii[i],
+                'circle-color': coordColor,
+                'circle-opacity': 0.8
+            }
+        });
+
+    } else {
+
+        for (i = 0; i < numBreaks; i++) {
+            if (i < numBreaks - 1) {
+                filteruse = ['all', ['>=', metric, breaks[i] - logOffset], ['<', metric, breaks[i + 1] - logOffset]];
+            } else {
+                filteruse = ['>=', metric, breaks[i] - logOffset];
+            }
+
+            if (isCoordMap) {
+                map.addLayer({
+                    id: names[i],
+                    type: 'circle',
+                    source: 'points',
+                    filter: filteruse,
+                    paint: {
+                        'circle-radius': {
+                            stops: [
+                                [0, radii[i]],
+                                [4, radii[i] * 3],
+                                [8, radii[i] * 6],
+                                [12, radii[i] * 9],
+                                [16, radii[i] * 12],
+                                [20, radii[i] * 15]
+                            ]
+                        },
+                        // 'circle-radius': radii[i],
+                        'circle-color': coordColor,
+                        'circle-opacity': 0.5
+                    }
+                });
+            } else {            
+              map.addLayer({
+                  id: names[i],
+                  type: 'fill',
+                  source: 'countries',
+                  'source-layer': layer,
+                  filter: filteruse,
+                  paint: {
+                      'fill-color': brandColor,
+                      'fill-opacity': opacities[i]
+                  }
+              }, 'water');
+            }
         }
 
-        if (isCoordMap) {
-            map.addLayer({
-                id: names[i],
-                type: 'circle',
-                source: 'points',
-                filter: filteruse,
-                paint: {
-                    'circle-radius': {
-                        stops: [
-                            [0, radii[i]],
-                            [4, radii[i] * 3],
-                            [8, radii[i] * 6],
-                            [12, radii[i] * 9],
-                            [16, radii[i] * 12],
-                            [20, radii[i] * 15]
-                        ]
-                    },
-                    // 'circle-radius': radii[i],
-                    'circle-color': coordColor,
-                    'circle-opacity': 0.5
-                }
-            });
-        } else {            
-          map.addLayer({
-              id: names[i],
-              type: 'fill',
-              source: 'countries',
-              'source-layer': layer,
-              filter: filteruse,
-              paint: {
-                  'fill-color': brandColor,
-                  'fill-opacity': opacities[i]
-              }
-          }, 'water');
-        }
     }
 
 
@@ -223,9 +235,15 @@ map.on('load', function () {
         /**
          * Populate the popup and set its coordinates based on the feature found
          */
-        popup.setLngLat(e.lngLat)
-            .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
-            .addTo(map);
+        if (isCoordMap && !applyCoordRadius) {
+            popup.setLngLat(e.lngLat)
+                .setHTML('<span class="popup-key">' + feature.properties.name + '</span>')
+                .addTo(map);
+        } else {            
+            popup.setLngLat(e.lngLat)
+                .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
+                .addTo(map);
+        }
     });
 
 

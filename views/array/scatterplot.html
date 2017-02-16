@@ -58,7 +58,7 @@
 
                              <div class="sort-bar-right pull-right">
                                 {{
-                                search.panel(
+                                search.default(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,
@@ -69,20 +69,8 @@
                                 )
                                 }}
 
-                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                    <span class="icon-legend" aria-hidden="true"></span>
-                                </a>
+                                {% include "../partials/legend-toggle.html" %}
                             </div>
-
-
-
-
-                      
-
-
-
-
-                     
 
                         </div>
                     </div>
@@ -114,7 +102,7 @@
                 }}
             {% endif %}
 
-        </div><!-- .array-content --> 
+        </div><!-- .array-content -->
 
     </section>
 {% endblock %}
@@ -181,7 +169,7 @@
             });
         }
 
-       
+
         hideAxisItem('x', '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField | replace(r/_/g, ' ') }}');
         hideAxisItem('y', '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField | replace(r/_/g, ' ') }}');
 

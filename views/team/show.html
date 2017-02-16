@@ -31,9 +31,7 @@
 
                         {% if sources | length %}
                         <div class="row">
-
                             {% for source in sources %}
-                            {% if source.arrayListed %}
                             <div class="explore-tile col-sm-6 col-xs-12">
                                 <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
                                 <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
@@ -111,7 +109,6 @@
                                     </div>
                                 </div><!-- .panel -->
                             </div>
-                            {% endif %}
                             {% endfor %}
                         </div>
 

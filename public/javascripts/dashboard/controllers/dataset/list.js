@@ -12,13 +12,17 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
 
+            // Filter out sample datasets from subscription count
+            $scope.filteredDatasets = datasets.filter(function(dataset) {
+                return dataset.sample === false;
+            });
 
             $scope.primaryAction.text = 'New Visualization';
 
             if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
                 $scope.primaryAction.disabled = false;
             } else {
-                $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.datasets.length ? false : true; // limit based on billing
+                $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.filteredDatasets.length ? false : true; // limit based on billing
             }
             $scope.primaryAction.do = function() {
                 $scope.add();

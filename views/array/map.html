@@ -58,7 +58,7 @@
 
                             <div class="sort-bar-right pull-right">
                                 {{
-                                search.panel(
+                                search.default(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,
@@ -98,6 +98,7 @@
                     min: {{ coordMinMax.min if coordMinMax else 0 }},
                     max: {{ coordMinMax.max if coordMinMax else 0 }}
                 };
+                var applyCoordRadius = {{ applyCoordRadius }};
                 var coordColor = '{{ coordColor }}';
                 var coordCol = '{{ coordCol }}'
                 var isCoordMap = {{ isCoordMap if isCoordMap else false }};

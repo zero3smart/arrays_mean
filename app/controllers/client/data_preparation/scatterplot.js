@@ -177,6 +177,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 array_source_key: sourceKey,
                                 team: dataSourceDescription._team ? dataSourceDescription._team : null,
                                 brandColor: dataSourceDescription.brandColor,
+                                brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                                 brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                                 uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                                 sourceDoc: sourceDoc,
