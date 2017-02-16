@@ -118,7 +118,8 @@ angular.module('arraysApp')
 
                                 } else if (user.role == 'editor') {
 
-                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id});
+                                    return DatasetService.getDatasetsWithQuery(
+                                        { $or:[ {_id: {$in: user._editors}} , {author: user._id}], _team:user.defaultLoginTeam._id});
 
                                 } else {
                                     return [];
