@@ -103,14 +103,14 @@
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
 
                                                 {% if shouldLink %} 
-
-
                                                     {% set trueValue = columnValue | removeComma(columnName,dataTypesConversion) %}
 
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, trueValue , false) %}
-
-
-                                                    <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                    {% if default_filterJSON %}
+                                                        <a href="{{ ('/' + array_source_key + '/gallery/?' + default_filterJSON) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                    {% else %}
+                                                        <a href="{{ ('/' + array_source_key + '/gallery/') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                    {% endif %}
                                                 {% endif %}
 
                                                  {% set urlizedField = (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe %}
@@ -150,8 +150,4 @@
 
 {% block footer %}
 {% include "../partials/footer.html" %}
-{% endblock %}
-
-{% block inlineScript %}
-<script type="text/javascript" src="/javascripts/banner.js"></script>
 {% endblock %}

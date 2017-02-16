@@ -70,7 +70,7 @@
 
                                             <div class="sort-bar-right pull-right">
                                                 {{
-                                                search.panel(
+                                                search.default(
                                                     routePath_base,
                                                     searchCol if searchCol else "Object Title",
                                                     colNames_orderedForSortByDropdown,
@@ -81,9 +81,7 @@
                                                 )
                                                 }}
 
-                                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                                    <span class="icon-legend" aria-hidden="true"></span>
-                                                </a>
+                                                {% include "../partials/legend-toggle.html" %}
                                             </div>
 
                                         </div>

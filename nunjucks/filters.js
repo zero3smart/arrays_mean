@@ -129,8 +129,6 @@ module.exports = function (nunjucks_env,env) {
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
 
-
-
         var filterObj = {};
         var existing_filterCols = Object.keys(existing_filterObj);
         var existing_filterCols_length = existing_filterCols.length;
@@ -298,7 +296,6 @@ module.exports = function (nunjucks_env,env) {
                 }
             }
         if (routePath == '') return routePath_base;
-
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);
     });

@@ -190,36 +190,54 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var doneFn = function(err, _coordDocs) {
                         if (err) return done(err);
 
-                        coordRadiusValue = dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+                        coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
                         var coordValue;
 
                         coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
                         if (_coordDocs == undefined || _coordDocs == null) _coordDocs = [];
-                        if (_coordDocs.length > 0) {
+                        if (_coordDocs.length > 0 && coordRadiusValue != undefined) {
                             coordMinMax.max = parseInt(_coordDocs[0].rowParams[coordRadiusValue]);
                             coordMinMax.min = parseInt(_coordDocs[0].rowParams[coordRadiusValue]);
                         }
 
                         _coordDocs.forEach(function (el, i, arr) {
-                            coordValue = parseInt(el.rowParams[coordRadiusValue]);
-                            if(coordValue > coordMinMax.max) {
-                                coordMinMax.max = coordValue;
-                            } else if (coordValue < coordMinMax.min) {
-                                coordMinMax.min = coordValue;
+                            if (coordRadiusValue != undefined) {
+
+                                coordValue = parseInt(el.rowParams[coordRadiusValue]);
+                                if(coordValue > coordMinMax.max) {
+                                    coordMinMax.max = coordValue;
+                                } else if (coordValue < coordMinMax.min) {
+                                    coordMinMax.min = coordValue;
+                                }
+
+                                coordFeatures.push({
+                                    type: "Feature",
+                                    geometry: {
+                                        type: "Point",
+                                        coordinates: [el.rowParams[lngField], el.rowParams[latField]]
+                                    },
+                                    properties: {
+                                        name: el.rowParams[coordTitle],
+                                        total: coordValue
+                                    }
+                                });
+
+                            } else {
+
+                                coordFeatures.push({
+                                    type: "Feature",
+                                    geometry: {
+                                        type: "Point",
+                                        coordinates: [el.rowParams[lngField], el.rowParams[latField]]
+                                    },
+                                    properties: {
+                                        name: el.rowParams[coordTitle]
+                                    }
+                                });
+
                             }
 
-                            coordFeatures.push({
-                                type: "Feature",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [el.rowParams[lngField], el.rowParams[latField]]
-                                },
-                                properties: {
-                                    name: el.rowParams[coordTitle],
-                                    total: coordValue
-                                }
-                            });
                         });
                         done();
                     }
@@ -341,6 +359,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
@@ -360,7 +379,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         features: coordFeatures
                     },
                     coordMinMax: coordMinMax,
-                    coordRadiusValue: coordRadiusValue,
+                    applyCoordRadius: coordRadiusValue == undefined ? false : true,
                     coordColor: dataSourceDescription.fe_views.views.map.coordColor,
                     mapBy: mapBy,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),

@@ -73,7 +73,7 @@
 
                             <div class="sort-bar-right pull-right">
                                 {{
-                                search.panel(
+                                search.default(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,
@@ -133,7 +133,7 @@
                                     {% for group in groupedResults %}
                                         {% if group.results | length %}
                                             <li class="timeline-group">
-                                
+
                                                 <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
                                                 <ul class="timeline-group-list">
 
@@ -144,18 +144,17 @@
                                                             {% include "../partials/timeline_item_text.html" %}
                                                         {% endif %}
                                                     {% endfor %}
-                                                    {% if groupedResultsLimit < group.total %}
-                                                    
+                                                    {% if groupSize < group.total and groupSize >= 0 %}
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
                                                                 {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
-                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat('YYYY'), "max": group.endDate | addDate(1, 'y') | dateFormat('YYYY') } %}
+                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat(filterDateFormat), "max": group.endDate | addDate(1, 'y') | dateFormat(filterDateFormat) } %}
                                                                 {% else %}
-                                                                    {% set filterDateRange = group.startDate | dateFormat('YYYY') | int %}
+                                                                    {% set filterDateRange = group.startDate | dateFormat(filterDateFormat) | int %}
                                                                 {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
-                                                                <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="timeline-view-all-link color-brand-hover">
+                                                                <a href="{{ ('/' + array_source_key + '/' + viewAllLinkTo) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}{% if viewAllLinkTo === 'timeline' %}&groupSize=-1{% if groupBy_realColumnName %}&groupBy={{ groupBy_realColumnName }}{% endif %}{% endif %}" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
                                                                     <span class="timeline-view-all-count">{{ group.total }}</span>
                                                                 </a>
@@ -183,7 +182,8 @@
                                         searchQ: searchQ,
                                         sortBy: sortBy,
                                         sortDir: sortDir,
-                                        groupBy: groupBy
+                                        groupBy: groupBy,
+                                        groupSize: groupSize
                                     }),
                                     lastPage,
                                     currentPage

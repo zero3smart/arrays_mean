@@ -31,7 +31,8 @@ function getAllDatasetsWithQuery(query, res) {
         _id: 1,
         uid: 1,
         title: 1,
-        importRevision: 1
+        importRevision: 1,
+        sample: 1
     }, function (err, datasets) {
 
         if (err) {

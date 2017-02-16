@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 
         var $parent = $(this).parent();
-       
+
         var default_view = $parent.find("[name='default_view']").val();
         if (default_view === undefined || default_view == 'undefined' || default_view == '') {
             default_view = 'gallery';
@@ -36,11 +36,11 @@ $(document).ready(function () {
         var baseUrl = $parent.find("[name='subdomainUrl']").val();
 
         if (typeof baseUrl == 'undefined') {
-            baseUrl = ""; 
+            baseUrl = "";
         }
 
         //toDo: get view from api
-        
+
         var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
         var words = default_view.split(/(?=[A-Z])/);
@@ -48,11 +48,11 @@ $(document).ready(function () {
             return word.toLowerCase();
         }).join('-');
 
-         var href; 
+         var href;
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
-        
+
             href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
             window.location.href = href;
         } else {
@@ -121,12 +121,21 @@ $(document).ready(function () {
     /**
      * Search criteria click dropdown item to select
      */
+    // $('.search-input')
+    //     .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
+
     $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
         var colname = $(this).data('colname');
+        var newPlaceholder = 'Search by ' + colname;
 
         $('.search-criteria').html(colname);
         $('.search-colname').attr('value', colname);
+
+        $('.search-input')
+            .attr('placeholder', newPlaceholder);
+        // $('.search-input')
+        //     .css('width', (newPlaceholder.length * 9) + 'px') ;
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
@@ -243,7 +252,7 @@ $(document).ready(function () {
      * Array description expand/collapse text
      */
     $('.array-description-expand').on('click', function (e) {
-      
+
         $('.array-description').css("display", "none");
         $('.array-description-full').css("display", "inline");
         $('.array-description-expand').css("display", "none");
@@ -260,11 +269,11 @@ $(document).ready(function () {
     $('#login').on('click', function (e) {
         e.preventDefault();
         window.location.href = '/auth/login';
-        
+
     });
 
     $('#logout').on('click',function(e) {
- 
+
         e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
@@ -276,14 +285,14 @@ $(document).ready(function () {
                 window.sessionStorage.removeItem('team');
                 window.sessionStorage.removeItem('teams');
                 window.location.reload();
-                
+
             }
 
         })
     })
 
 
-              
+
 
     $('#revealPassword').change(function(e) {
         if($(this).is(":checked")) {
@@ -320,14 +329,14 @@ $(document).ready(function () {
  * Analog of nunjucks filter constructedFilterObj() in app.js:63
  */
 function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) {
-    var filterObj = {}
+    var filterObj = existing_filterObj;
     if (Array.isArray(this_filterCol)) {
         for(var i = 0; i < this_filterCol.length; i++) {
-            if(checkAgainstExistingFilters(existing_filterObj, this_filterCol[i])) {
-                filterObj = returnFilterObject(existing_filterObj, this_filterCol, filterObj)
+            if(existing_filterObj.hasOwnProperty(this_filterCol[i])) {
+                continue;
             } else {
                 //since this is currently only for the pie set, it's guaranteed that if this is an array, the filter values will also be an array whose indices match up to the indices of the cols
-                filterObj[this_filterCol[i]] = this_filterVal[i];   
+                filterObj[this_filterCol[i]] = this_filterVal[i];
             }
         }
 
@@ -347,33 +356,6 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     }
     //
     return filterObj;
-}
-
-function returnFilterObject(existing_filterObj, this_filterCol, filterObj) {
-    var existing_filterCols = Object.keys(existing_filterObj);
-    var existing_filterCols_length = existing_filterCols.length;
-    //yes, we have to do this twice, but we really won't ever have THAT many filters
-    for (var i = 0; i < existing_filterCols_length; i++) {
-        var existing_filterCol = existing_filterCols[i];
-        // never push other active values of this is filter col is already active
-        // which means we never allow more than one filter on the same column at present
-        var existing_filterVals = existing_filterObj[existing_filterCol];
-        filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
-    }
-    return filterObj;
-}
-
-
-function checkAgainstExistingFilters(existing_filterObj, this_filterCol) {
-    var existing_filterCols = Object.keys(existing_filterObj);
-    var existing_filterCols_length = existing_filterCols.length;
-    for (var i = 0; i < existing_filterCols_length; i++) {
-        var existing_filterCol = existing_filterCols[i];
-        if (existing_filterCol == this_filterCol) {
-            return true; 
-        }
-    }
-    return false;
 }
 
 

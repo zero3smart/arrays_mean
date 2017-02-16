@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/views/chart.css */
 
 .array-chart .site-content .container-fluid {
@@ -14,7 +14,6 @@
 
 .array-chart .sort-bar {
     border-bottom-style: none;
-    padding-bottom: 0;
 }
 
 #chart {
@@ -26,7 +25,6 @@
         overflow: hidden;
         margin-right: auto;
         margin-left: auto;
-    /*    padding: 10px;*/
         max-width: 100%;
         width: calc(100vh - 260px);
         height: calc(100vh - 260px);
@@ -59,7 +57,8 @@
 .legend-toggle {
     display: inline-block;
     margin-left: 20px;
-    color: var(--color-text-ultralight);
+    color: var(--color-text-dark);
+    padding-top: 4px;
 }
 
 .legend-open .legend-toggle {
@@ -69,7 +68,11 @@
 .legend-toggle > span {
     display: inline-block;
     width: 1em;
-    line-height: 40px;
+}
+
+.sort-bar .dropdown-toggle span,
+.legend-toggle {
+    transition: color 0.15s;
 }
 
 .array-chart .array-content {

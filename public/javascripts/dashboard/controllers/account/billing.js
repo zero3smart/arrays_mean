@@ -5,7 +5,12 @@ angular.module('arraysApp')
             // Get datasets for quantity limit
             DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
                 .then(function(res) {
-                    $scope.datasetsQuantity = res.length;
+                    var filteredDatasets = res.filter(function(dataset) {
+                        return dataset.sample === false;
+                    });
+
+                    // Don't allow subscription quantity to go to zero if there are no datasets
+                    $scope.datasetsQuantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
                 }, function(err) {});
 
 

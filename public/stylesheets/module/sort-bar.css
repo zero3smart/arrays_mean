@@ -1,6 +1,6 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/sort-bar.css */
-	
+
 #array-controls {
 	z-index: 1;
 	background-color: #ffffff;
@@ -20,8 +20,8 @@
 
 @media (min-width: 768px) {
 	.sort-bar {
-		padding-top: 30px;
-		padding-bottom: 25px;
+		/*padding-top: 30px;*/
+		/*padding-bottom: 25px;*/
 	}
 }
 
@@ -40,17 +40,14 @@
 
 .sort-direction {
 	margin-right: 0;
+    margin-left: 15px;
+    cursor: pointer;
 }
 
-@media (min-width: 768px) {
-	.sort-direction {
-		margin-right: 0;
-		margin-left: 15px;
-	}
-}
-
+.sort-direction span,
 .sort-direction-icon {
 	color: black;
+    transition: color 0.15s;
 }
 
 .sort-control .dropdown-toggle {
@@ -58,10 +55,33 @@
 	padding-bottom: 6px;
 }
 
+.sort-control #search-by.dropdown-toggle {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .sort-control .dropdown-toggle:hover,
 .sort-control .dropdown-toggle:focus,
 .sort-control .dropdown-toggle:active {
 	box-shadow: none;
+}
+
+.dropdown .sort-control .search-control {
+    padding-top: 0;
+}
+
+.map-container .sort-bar-left .dropdown-toggle,
+.map-container .sort-control-right {
+    background: white;
+    border: 1px solid #eee;
+    padding-right: 12px;
+}
+.map-container .sort-bar-left .dropdown-toggle {
+    padding-bottom: 8px;
+}
+.map-container .sort-control-right {
+    border-radius: 4px;
+    padding-bottom: 4px;
 }
 
 .sort-criteria,
@@ -75,14 +95,26 @@
 	max-height: calc(100vh - 300px);
 }
 
-.sort-control .dropdown-menu > li > a {
+.sort-control .dropdown-menu > li > a,
+.sort-control .dropdown-menu > li.search-dropdown-label > span {
 	padding: 15px 35px 15px 20px;
 	font-size: 18px;
+}
+
+.sort-control .dropdown-menu > li.search-dropdown-label > span {
+    display: block;
+    color: var(--color-text-dark);
+    font-weight: 600;
 }
 
 .sort-control .dropdown-menu > li > a:hover {
 	/*color: var(--color-text-dark);*/
 }
+
+/*active state should also be on other dropdowns*/
+/*.dropdown-menu > li.search-dropdown-item-active a {
+    font-weight: 600;
+}*/
 
 /* @end Sort Bar */
 
@@ -91,7 +123,8 @@
 .search-input {
 	display: inline-block;
 	padding: 0;
-	width: 140px;
+    padding-left: 12px;
+	width: 220px;
 	height: auto;
 	border-style: none;
 	border-radius: 0;
@@ -99,8 +132,9 @@
 	box-shadow: none;
 	vertical-align: baseline;
 	font-size: 18px;
-	line-height: 22px;
+	line-height: 25px;
 	font-family: var(--font-family-calibre);
+    transition: width 0.3s;
 }
 
 .search-input:focus {
@@ -109,13 +143,31 @@
 
 .search-icon {
 	position: relative;
-	top: 2px;
 	display: inline-block;
 	margin-top: -3px;
 	margin-bottom: -3px;
 	width: 1em;
-	color: var(--color-text-ultralight);
+	color: var(--color-text-dark);
 	line-height: 1em;
+}
+
+.search-by-label {
+	font-size: 18px;
+	color: var(--color-text-light);
+}
+
+.form-search .sort-control {
+    padding-top: 6px;
+}
+
+.form-search .sort-control .dropdown-toggle {
+    padding-left: 0;
+}
+.form-search .sort-control .dropdown-toggle-button-has-caret:before {
+    top: -4px;
+}
+#search-by.dropdown-toggle-button-has-caret:before {
+    right: -2px;
 }
 
 /* @end Search form */
@@ -132,7 +184,7 @@
 
 .search-toggle:hover .search-icon,
 .search-toggle.search-active .search-icon {
-	color: var(--color-primary);
+	/*color: var(--color-primary);*/
 	cursor: pointer;
 }
 
@@ -176,7 +228,16 @@
 	.mobile-search-popover.search-open .sort-control {
 		display: block;
 		margin-right: 0;
+        padding: 0;
 	}
+
+    .mobile-search-popover.search-open .search-control {
+        padding-bottom: 10px;
+    }
+
+    .map-container .sort-control-right {
+        border: none;
+    }
 
 	.mobile-search-popover.search-open .dropdown-toggle {
 		padding: 5px 0;
@@ -212,7 +273,7 @@
 	.sort-bar-left .dropdown-toggle {
 		max-width: 100%;
 	}
-	
+
 	.dropdown-toggle-label {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
@@ -249,9 +310,9 @@
 		pointer-events: all;
 	}
 
-	.sort-control > a {
+	/*.sort-control > a {
 		display: block;
-	}
+	}*/
 
 	.form-search {
 		position: absolute;

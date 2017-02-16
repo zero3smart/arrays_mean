@@ -27,14 +27,14 @@
 
             <md-switch ng-model="dataset.isPublic"
                 ng-change="updatePublishSettings()"
-                ng-disabled="!dataset.fe_visible"
+                ng-disabled="!dataset.fe_visible || dataset.sample"
                 aria-label="Make dataset public">
                 Allow anyone to view visualization (not only registered users)
             </md-switch>
 
             <md-switch ng-model="dataset.fe_listed"
                 ng-change="updatePublishSettings()"
-                ng-disabled="!dataset.fe_visible || !dataset.isPublic"
+                ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
                 List your visualization on arrays.co
             </md-switch>

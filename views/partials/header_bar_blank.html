@@ -44,42 +44,49 @@
 
 <header id="masthead" class="site-header hidden-print" role="banner">
 
-    {% if not user %}
-
-    <div>
+    <div class="w-nav">
       <div class="w-container w-bottom-shadow">
-        <a class="w-logo" href="{{marketing_url}}"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
-        </a>
-        <ul class="w-nav-list">
-          <li>
-              <a class="w-nav-link" href={{explore_url}} target="_blank">Explore</a>
-          </li>
+        <div class="container-fluid">
+          <a class="arrays-logo" href="{{marketing_url}}">
+            <img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210" />
+          </a>
 
+          <ul class="nav navbar-nav navbar-right header-blank-right hide-mobile">
+            <li>
+                <a class="header-blank-link {{ 'current-page' if currentView == 'create' }}" href={{explore_url}}>Explore</a>
+            </li>
+            <li>
+                <a class="header-blank-link" href="https://www.arrays.co/news">News</a>
+            </li>
+            <li>
+                <a class="header-blank-link" href="https://www.arrays.co/pricing">Pricing</a>
+            </li>
 
-          {% if env.NODE_ENV == 'production' %}
-          <li>
-              <a class="w-nav-link" href="https://www.arrays.co/news">News</a>
-          </li>
-          <li>
-              <a class="w-nav-link" href="https://www.arrays.co/pricing">Pricing</a>
-          </li>
-          {% endif %}
-
-
-          <li>
-              <a class="w-nav-link" href="/auth/login">Log In</a>
-          </li>
-
-          <li class="signup-container">
-              {% if env.NODE_ENV == 'production' %}
-              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
-              {% else %}
-              <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
-              {% endif %}
-          </li>
-
-
-        </ul>
+            {% if user %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">
+                    <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
+                    <li class="background-color-brand-hover"><a class="pointer" id="logout" >Log Out</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li class="w-login-container">
+                <a class="pill-link pill-hollow" href="/auth/login">Log In</a>
+            </li>
+            <li class="w-signup-container">
+                {% if env.NODE_ENV == 'production' %}
+                <a class="pill-link pill-filled" href="https://www.arrays.co/signup">Sign Up</a>
+                {% else %}
+                <a class="pill-link pill-filled" href="/auth/login">Sign Up</a>
+                {% endif %}
+            </li>
+            {% endif %}
+          </ul>
+        </div>
         <div class="w-nav-burger">
           <a class="w-burger-menu" href="#">
             <i id="menu-expand" class="icon-menu"></i>
@@ -90,45 +97,21 @@
 
     <div class="w-nav-overlay">
       <nav class="mobile-nav-menu">
-        <a class="w-mobile-link" href="{{marketing_url}}" target="_blank">Explore</a>
-        <a class="w-mobile-link" href="news.html">News</a>
-        <a class="w-mobile-link" href="pricing.html">Pricing</a>
+        <a class="w-mobile-link" href="{{explore_url}}">Explore</a>
+        <a class="w-mobile-link" href="https://www.arrays.co/news">News</a>
+        <a class="w-mobile-link" href="https://www.arrays.co/pricing">Pricing</a>
+        {% if user %}
+        <a class="w-mobile-link" href="/dashboard">Account Settings</a>
+        <a class="w-mobile-link pointer" id="logout">Log Out</a>
+        {% else %}
         <a class="w-mobile-link" href="/auth/login">Log In</a>
         {% if env.NODE_ENV == 'production' %}
         <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
         {% else %}
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
         {% endif %}
+        {% endif %}
       </nav>
     </div>
 
-    {% else %}
-    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
-        <div class="container-fluid container-full-width">
-            <div class="navbar-brand-container">
-
-                <a class="navbar-brand navbar-brand-arrays" href="{{explore_url}}">Arrays</a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">
-                            <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
-                        </a>
-                        <ul class="dropdown-menu">
-
-                            <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
-                            <li class="background-color-brand-hover"><a class="pointer" id="logout" >Log Out</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="background-color-brand-hover"><a
-                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode }}">Contact Support</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div><!--/.nav-collapse -->
-        </div>
-    </nav>
-    {% endif %}
 </header>

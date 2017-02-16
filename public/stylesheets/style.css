@@ -35,6 +35,7 @@
 @import url('views/svg-chart-base.css');
 @import url('views/chart.css');
 @import url('views/map.css');
+@import url('views/globe.css');
 @import url('views/timeline.css');
 @import url('views/scatterplot.css');
 @import url('views/linechart.css');

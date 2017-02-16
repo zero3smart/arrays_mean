@@ -14,7 +14,7 @@ VerticalBarChart.prototype = Object.create(BarChart.prototype);
 
 
 VerticalBarChart.prototype._animate = function () {
-    
+
     var self = this;
 
     this._bars.attr('width', function (d, i, j) {
@@ -36,8 +36,8 @@ VerticalBarChart.prototype._animate = function () {
 VerticalBarChart.prototype._animateForSort = function () {
 
     var self = this;
-
-    var newCategories = this._categoryData
+    var originalCategories = this._categories; // simple fix
+    var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
@@ -59,6 +59,7 @@ VerticalBarChart.prototype._animateForSort = function () {
             return d[0];
         });
 
+
     // Copy-on-write since tweens are evaluated after a delay.
     var x0 = d3.scale.ordinal()
         .rangeBands([0, this._innerWidth], this._padding)
@@ -70,8 +71,8 @@ VerticalBarChart.prototype._animateForSort = function () {
     this._bars.transition()
         .duration(750)
         .delay(delay)
-        .attr("x", function(d, i, j) { 
-            return x0(self._categoryData[j]); 
+        .attr("x", function(d, i, j) {
+            return x0(self._categories[j]);
         });
 
     this._categories = newCategories;
@@ -81,15 +82,17 @@ VerticalBarChart.prototype._animateForSort = function () {
         .call(self.getXAxis())
         .selectAll("g")
         .delay(delay);
+
+    this._categories = originalCategories; // simple fix
 };
 
 VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
     if(this._showXLabels) {
-        return this._xAxisContainer.selectAll("text")  
-            .style("text-anchor", "end")
+        return this._xAxisContainer.selectAll("text")
             .attr("dx", "-.8em")
             .attr("dy", "-.2em")
+            .style("text-anchor", "end")
             .attr("transform", "rotate(-90)" );
     } else {
         return this._xAxisContainer.selectAll("g")
@@ -108,6 +111,13 @@ VerticalBarChart.prototype.getXScale = function () {
 VerticalBarChart.prototype.getXAxis = function () {
     return d3.svg.axis()
         .scale(this.getXScale(this._innerWidth))
+        .tickFormat(function(d) {
+            var maxlength = 17;
+            if (d.length > maxlength) {
+                d = d.substring(0, maxlength) + '…'; // \u8230
+            }
+            return d;
+        })
         .orient('bottom');
 };
 
