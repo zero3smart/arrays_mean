@@ -12,7 +12,8 @@
     .dropdown-toggle:hover .color-brand-hover,
     .open .color-brand-hover,
     .search-toggle:hover .color-brand-hover,
-    .search-toggle.search-active .color-brand-hover {
+    .search-toggle.search-active .color-brand-hover,
+    #search-by:hover .search-icon {
         color: {{ brandColor }};
     }
 
@@ -201,7 +202,7 @@
                         <a class="link-underline" href="https://www.arrays.co/pricing">Pricing</a>
                         {% endif %}
                     </li>
-                    
+
                     {% endif %}
                     <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
                         <a href="#" class="share-link pill-link">Share</a>
@@ -238,7 +239,7 @@
                         <a class="pill-link pill-filled" href="https://www.arrays.co/signup">Sign Up</a>
                         {% else %}
                         <a class="pill-link pill-filled w-nav-link" href="/auth/login">Sign Up</a>
-                        {% endif %}    
+                        {% endif %}
                     </li>
                     {% endif %}
                 </ul>

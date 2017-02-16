@@ -56,7 +56,7 @@
 }
 
 .sort-control #search-by.dropdown-toggle {
-    padding-top: 3px;
+    padding-top: 0;
     padding-bottom: 0;
 }
 
@@ -66,11 +66,22 @@
 	box-shadow: none;
 }
 
-.map-container .sort-bar .dropdown-toggle,
-.map-container .sort-bar .search-by-label,
-.map-container .sort-bar .search-input {
-    /*text-shadow: -1px 0 3px white, 0 1px 3px white, 1px 0 3px white, 0 -1px 3px white;*/
-    text-shadow: 0 0 3px white;
+.dropdown .sort-control .search-control {
+    padding-top: 0;
+}
+
+.map-container .sort-bar-left .dropdown-toggle,
+.map-container .sort-control-right {
+    background: white;
+    border: 1px solid #eee;
+    padding-right: 12px;
+}
+.map-container .sort-bar-left .dropdown-toggle {
+    padding-bottom: 8px;
+}
+.map-container .sort-control-right {
+    border-radius: 4px;
+    padding-bottom: 4px;
 }
 
 .sort-criteria,
@@ -100,6 +111,11 @@
 	/*color: var(--color-text-dark);*/
 }
 
+/*active state should also be on other dropdowns*/
+/*.dropdown-menu > li.search-dropdown-item-active a {
+    font-weight: 600;
+}*/
+
 /* @end Sort Bar */
 
 /* @group Search form */
@@ -107,7 +123,8 @@
 .search-input {
 	display: inline-block;
 	padding: 0;
-	width: 140px;
+    padding-left: 12px;
+	width: 220px;
 	height: auto;
 	border-style: none;
 	border-radius: 0;
@@ -117,6 +134,7 @@
 	font-size: 18px;
 	line-height: 25px;
 	font-family: var(--font-family-calibre);
+    transition: width 0.3s;
 }
 
 .search-input:focus {
@@ -148,6 +166,9 @@
 .form-search .sort-control .dropdown-toggle-button-has-caret:before {
     top: -4px;
 }
+#search-by.dropdown-toggle-button-has-caret:before {
+    right: -2px;
+}
 
 /* @end Search form */
 
@@ -163,7 +184,7 @@
 
 .search-toggle:hover .search-icon,
 .search-toggle.search-active .search-icon {
-	color: var(--color-primary);
+	/*color: var(--color-primary);*/
 	cursor: pointer;
 }
 
@@ -207,7 +228,16 @@
 	.mobile-search-popover.search-open .sort-control {
 		display: block;
 		margin-right: 0;
+        padding: 0;
 	}
+
+    .mobile-search-popover.search-open .search-control {
+        padding-bottom: 10px;
+    }
+
+    .map-container .sort-control-right {
+        border: none;
+    }
 
 	.mobile-search-popover.search-open .dropdown-toggle {
 		padding: 5px 0;
