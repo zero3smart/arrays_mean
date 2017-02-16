@@ -236,12 +236,11 @@ md-content.md-default-theme, md-content {
     margin-bottom: 30px;
 }
 .instructions {
-    /*margin-top: 30px;*/
     margin-bottom: 15px;
 	line-height: 16px;
 }
 .teams .instructions {
-	padding: 12px;
+	padding-left: 12px;
 }
 
 

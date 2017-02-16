@@ -8,9 +8,8 @@
 
 <div class="array-content teams">
 
-    <p class="instructions"  ng-if="teams.length > 1">Switch teams</p>
-
-
+    <p class="instructions" ng-if="teams.length > 1">Switch teams</p>
+    <hr>
     <ul class="dashboard-list team-list" ng-cloak>
         <li ng-repeat="tm in teams track by $index">
             <md-button class="dashboard-list-hover" ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" md-no-ink>
@@ -18,7 +17,7 @@
                 <span class="dashboard-list-revision">({{tm.subdomain}}.arrays.co)</span>
             </md-button>
 
-            <a ng-if="team._id !== tm._id && user.role=='superAdmin'" herf="" ng-click="deleteTeam($index)" class="warn">Delete Team</a>
+            <a ng-if="team._id !== tm._id && user.role=='superAdmin'" href="" ng-click="deleteTeam($index)" class="warn">Delete Team</a>
 
             <md-checkbox ng-if="team._id !== tm._id && user.role=='superAdmin'" ng-model="tm.superTeam"
                 ng-change="updateSuperTeam($index)"
