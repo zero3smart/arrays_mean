@@ -177,7 +177,6 @@ team.GetTeamBySubdomain = function(req, fn) {
 
 
 
-
                 } else if (userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser.defaultLoginTeam._id;
 

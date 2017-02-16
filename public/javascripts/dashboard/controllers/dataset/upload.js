@@ -10,6 +10,11 @@ angular.module('arraysApp')
 
             $scope.addingSourceType = ''; // ['csv', 'json', 'database']
 
+            $scope.tables = [];
+            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.tableName) {
+                $scope.tables = $scope.$parent.$parent.dataset.tables;
+            }
+
 
             $scope.addSourceType = function(type) {
                 if (type == 'database') {
@@ -30,11 +35,12 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
 
-            $scope.$watch('isConnecting', function(connecting) {
+            $scope.$watch('dataset.connection.tableName', function(hasTable) {
 
                 if (!dataset.fileName) {
 
-                    $scope.primaryAction.disabled = (connecting !== false)
+                
+                    $scope.primaryAction.disabled = !(hasTable && hasTable !== null && $scope.isConnecting !== true);
                 }
             });
 
@@ -65,8 +71,10 @@ angular.module('arraysApp')
                 DatasetService.connectToRemoteDatasource(dataset._id,dataset.connection)
                 .then(function(response) {
 
+               
                     if (response.status == 200 && !response.data.error) {
                         $scope.isConnecting = false;
+                        $scope.tables = response.data
 
                         $mdToast.show(
                             $mdToast.simple()

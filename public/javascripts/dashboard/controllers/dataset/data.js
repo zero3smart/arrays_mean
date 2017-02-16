@@ -6,8 +6,6 @@ angular.module('arraysApp')
 
 
             $scope.availableTypeCoercions = availableTypeCoercions;
-
-
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
 
@@ -15,7 +13,7 @@ angular.module('arraysApp')
             if (!dataset.fe_excludeFields) {
                 dataset.fe_excludeFields = {};
                 for (var i = 0; i < dataset.columns.length; i++) {
-                    dataset.fe_excludeFields[dataset.columns[i].name] = false;
+                    dataset.fe_excludeFields[dataset.columns[i].name.replace(".","")] = false;
                 }
                 $scope.excludeAll = true; // set toggle to "Exclude All"
             } else {
@@ -62,9 +60,44 @@ angular.module('arraysApp')
                 }
             };
 
+            
+
+
+            var joinDataCols = [];
+
+
+            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join 
+                && $scope.$parent.$parent.dataset.connection.join.tableName) {
+
+                DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
+                .then(function(response) {
+
+                    if (response.status == 200 && response.data) {
+                        joinDataCols = response.data;
+                        $scope.loadJoinCols();
+                    }
+                })
+            }
+
+
+
+
+            $scope.loadJoinCols = function() {
+
+                if ($scope.$parent.$parent.dataset.connection.join  && joinDataCols) {
+                    $scope.data.fields = $scope.originalFields.concat(joinDataCols);
+                } else {
+                    $scope.data.fields = $scope.originalFields;
+                }
+            }
+
+            
+
+
+
             $scope.toggleExclude = function (exclude) {
-                for (var i = 0; i < $scope.data.fields.length; i++) {
-                    $scope.dataset.fe_excludeFields[$scope.data.fields[i].name] = exclude;
+                for (var i = 0; i < $scope.originalFields.length; i++) {
+                    $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
                 }
                 $scope.excludeAll = exclude ? false : true; // toggle
             };
@@ -81,30 +114,43 @@ angular.module('arraysApp')
                         $scope.dataset = dataset;
                         $scope.colsByJoinTableName = {};
 
-                        $scope.loadCols = function() {
 
+                        $scope.loadCols = function() {
                             if (!$scope.dataset.connection.join.tableName || $scope.dataset.connection.join.tableName == "") return;
                             if (!$scope.colsByJoinTableName[$scope.dataset.connection.join.tableName]) {
                                 $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = [];
                             }
 
-                            DatasetService.colsForJoinTables($scope.dataset.connection)
+                            DatasetService.colsForJoinTables($scope.dataset._id,$scope.dataset.connection)
                             .then(function(response) {
                                 if (response.status == 200 && response.data) {
                                     $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = response.data;
                                 }
                             })
-
-                            
                         }
+
+                        if (dataset.connection.join && dataset.connection.join.tableName) {
+                            $scope.loadCols();
+                        }
+
 
                         $scope.remove = function() {
                             $scope.dialog.form.$setDirty();
                             delete $scope.dataset.connection.join;
 
+
                         }
 
                         $scope.save = function() {
+
+                            if ($scope.dataset.connection.join) {
+                                $scope.dataset.joinCols = $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName];
+                            } else {
+                                $scope.dataset.joinCols = [];
+                            }
+
+                            
+        
                             $mdDialog.hide($scope.dataset);
                         }
                     },
@@ -113,7 +159,11 @@ angular.module('arraysApp')
                     clickOutsideToClose: true
                 })
                 .then(function(savedDataset) {
+                     joinDataCols = savedDataset.joinCols;
+                     delete savedDataset.joinCols;
+
                      $scope.$parent.$parent.dataset = savedDataset;
+                     $scope.loadJoinCols();
                 })
 
             }
@@ -492,7 +542,7 @@ angular.module('arraysApp')
                     }
 
                     if (!$scope.dataset.fe_nestedObject.fields) $scope.dataset.fe_nestedObject.fields = [];
-                    $scope.data.fields = $scope.dataset.fe_nestedObject.fields;
+                    $scope.originalFields = $scope.dataset.fe_nestedObject.fields;
 
                     if (!$scope.dataset.fe_nestedObject.fieldOverrides) $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides = [];
@@ -631,7 +681,7 @@ angular.module('arraysApp')
                     });
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
-                    $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
+                    $scope.dataset.fe_nestedObject.fields = $scope.originalFields;
 
 
                     $scope.data.valueOverrides.map(function (elem) {
@@ -710,7 +760,7 @@ angular.module('arraysApp')
                     locals: {
                         dataset: dataset,
                         colsAvailable: colsAvailable,
-                        fields: $scope.data.fields,
+                        fields: $scope.originalFields,
                         openFieldDialog: $scope.openFieldDialog
                     }
                 })
@@ -1052,7 +1102,7 @@ angular.module('arraysApp')
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
                         dataset: $scope.$parent.$parent.dataset,
-                        fields: $scope.data.fields
+                        fields: $scope.originalFields
                     }
                 })
                     .then(function (savedDataset) {
@@ -1306,7 +1356,7 @@ angular.module('arraysApp')
 
             function sortColumnsByDisplayOrder() {
 
-                $scope.data.fields = $scope.$parent.$parent.dataset.columns.concat(
+                $scope.data.fields = $scope.originalFields = $scope.$parent.$parent.dataset.columns.concat(
                     $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
 
 
@@ -1392,7 +1442,7 @@ angular.module('arraysApp')
 
                 );
 
-                $scope.data.fields.sort(function (column1, column2) {
+                $scope.originalFields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
                         $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name) != -1)
                         return 1;
@@ -1404,12 +1454,13 @@ angular.module('arraysApp')
                             $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name);
                 });
 
+
             }
 
             $scope.fieldSortableOptions = {
                 stop: function (e, ui) {
                     $scope.$parent.$parent.dataset.fe_fieldDisplayOrder =
-                        $scope.data.fields.map(function (field) {
+                        $scope.originalFields.map(function (field) {
                             return field.name;
                         });
 
