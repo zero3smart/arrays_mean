@@ -144,7 +144,7 @@
                 var pos = self._toScreenXY(v.node.position, self.globe.camera, self.$el);
                 var screenDistance = mouse.distanceTo(pos);
                 var worldDistance = v.node.position.distanceTo(self.globe.camera.position);
-                if (screenDistance < 10 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
+                if (screenDistance < 30 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
                     best = {
                         screenDistance: screenDistance,
                         pointNode: v,
