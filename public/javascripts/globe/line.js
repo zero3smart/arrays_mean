@@ -9,6 +9,7 @@
         this.animating = false;
         this._separateSegments = (this._start.color !== this._end.color);
         this._segmentCount = 40;
+        this._arcAltitude = config.arcAltitude;
         
         if (Math.abs(this._end.point.lng - this._start.point.lng) > 180) {
             if (this._end.point.lng > this._start.point.lng) {
@@ -74,12 +75,16 @@
             var latDiff = this._end.point.lat - this._start.point.lat;
             var lngDiff = this._end.point.lng - this._start.point.lng;
             var altitudeDiff = this._end.altitude - this._start.altitude;
-            var factor, lat, lng, altitude;
+            var factor, lat, lng, altitude, altitudeFactor;
             for (var i = 0; i < count; i++) {
                 factor = (i / (count - 1));
                 lat = this._start.point.lat + (latDiff * factor);
                 lng = this._start.point.lng + (lngDiff * factor);
+
                 altitude = this._start.altitude + (altitudeDiff * factor);
+                altitudeFactor = Math.sin(factor * Math.PI);                
+                altitude += this._arcAltitude * altitudeFactor;
+                
                 vertices.push(GlobeMain.coordToVector(lat, lng, altitude));
             }
 

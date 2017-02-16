@@ -95,6 +95,7 @@
 
         var lineConfig = {
             globe: this.globe,
+            arcAltitude: 30,
             start: {
                 altitude: this._bottomAltitude,
                 color: config.lineColor
