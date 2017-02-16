@@ -40,7 +40,7 @@ DAT.Globe = function(container, opts) {
     var distance = 1000;
     var distanceTarget = 1000;
     var distanceTargetFactor = 0.05;
-    var secondaryDistanceTargetFactor = 0.09;
+    var secondaryDistanceTargetFactor = 0.5;
     var rotationTargetFactor = 0.02;
     var secondaryRotationTargetFactor = 0.1;
     var padding = 40;
@@ -233,6 +233,10 @@ DAT.Globe = function(container, opts) {
     this.rotation = rotation;
 
     this.distance = function(value) {
+        if (value === undefined) {
+            return distanceTarget;
+        }
+        
         distanceTarget = value;
         distanceTargetFactor = secondaryDistanceTargetFactor;
     };

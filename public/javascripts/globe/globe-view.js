@@ -167,6 +167,18 @@
         start: function() {
             this.globe.animate();
         },
+        
+        // ----------
+        zoomIn: function() {
+            var distance = this.globe.distance() * 0.99;
+            this.globe.distance(Math.max(distance, 400));
+        },
+
+        // ----------
+        zoomOut: function() {
+            var distance = this.globe.distance() * 1.01;
+            this.globe.distance(Math.min(distance, 5000));
+        },
 
         // ----------
         _toScreenXY: function ( position, camera, jqdiv ) {
