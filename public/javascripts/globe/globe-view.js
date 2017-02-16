@@ -9,7 +9,6 @@
         this._onDrag = config.onDrag;
         this._onMouseUp = config.onMouseUp;
 
-        this._cityNodes = [];
         this._pointNodes = [];
         this._lines = [];
         this._bottomAltitude = 200.5;
@@ -96,6 +95,7 @@
 
         var lineConfig = {
             globe: this.globe,
+            arcAltitude: 30,
             start: {
                 altitude: this._bottomAltitude,
                 color: config.lineColor
@@ -144,7 +144,7 @@
                 var pos = self._toScreenXY(v.node.position, self.globe.camera, self.$el);
                 var screenDistance = mouse.distanceTo(pos);
                 var worldDistance = v.node.position.distanceTo(self.globe.camera.position);
-                if (screenDistance < 10 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
+                if (screenDistance < 30 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
                     best = {
                         screenDistance: screenDistance,
                         pointNode: v,
@@ -167,6 +167,18 @@
         start: function() {
             this.globe.animate();
         },
+        
+        // ----------
+        zoomIn: function() {
+            var distance = this.globe.distance() * 0.99;
+            this.globe.distance(Math.max(distance, 400));
+        },
+
+        // ----------
+        zoomOut: function() {
+            var distance = this.globe.distance() * 1.01;
+            this.globe.distance(Math.min(distance, 5000));
+        },
 
         // ----------
         _toScreenXY: function ( position, camera, jqdiv ) {
@@ -182,54 +194,6 @@
         // ----------
         _addLine: function(config) {
             this._lines.push(new GlobeMain.Line(config));
-        },
-
-        // ----------
-        animateLinesOn: function() {
-            var self = this;
-
-            _.each(this._lines, function(v, i) {
-                setTimeout(function() {
-                    var animate = function() {
-                        if (self.stoppingLines) {
-                            self._checkLinesStopping();
-                            return;
-                        }
-
-                        v.animateOn();
-                    };
-
-                    animate();
-                }, i * 50);
-            });
-        },
-
-        // ----------
-        animateLinesOff: function(complete) {
-            this.stoppingLines = {
-                complete: complete
-            };
-
-            this._checkLinesStopping();
-        },
-
-        // ----------
-        _checkLinesStopping: function() {
-            if (!this.stoppingLines) {
-                return;
-            }
-
-            var animating = _.any(this._lines, function(v, i) {
-                return v.animating;
-            });
-
-            if (!animating) {
-                var complete = this.stoppingLines.complete;
-                this.stoppingLines = null;
-                if (complete) {
-                    complete();
-                }
-            }
         }
     };
 

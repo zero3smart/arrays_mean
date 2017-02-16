@@ -333,6 +333,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     array_source_key: splitSubdomain,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                     default_filterJSON: default_filterJSON,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     main_view: dataSourceDescription.fe_views.default_view ? dataSourceDescription.fe_views.default_view : 'gallery',

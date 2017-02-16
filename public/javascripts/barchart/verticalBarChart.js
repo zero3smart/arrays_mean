@@ -36,7 +36,7 @@ VerticalBarChart.prototype._animate = function () {
 VerticalBarChart.prototype._animateForSort = function () {
 
     var self = this;
-
+    var originalCategories = this._categories; // simple fix
     var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
@@ -82,6 +82,8 @@ VerticalBarChart.prototype._animateForSort = function () {
         .call(self.getXAxis())
         .selectAll("g")
         .delay(delay);
+
+    this._categories = originalCategories; // simple fix
 };
 
 VerticalBarChart.prototype.rotateLabel = function () {

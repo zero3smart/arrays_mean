@@ -33,14 +33,14 @@ DAT.Globe = function(container, opts) {
     var mesh, atmosphere, point;
 
     var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
-    var rotation = { x: -Math.PI * 1.1 / 2, y: 0 },
-            target = { x: Math.PI * 1.9 / 2, y: Math.PI / 6.0 },
-            targetOnDown = { x: 0, y: 0 };
+    var target = { x: Math.PI * 1.9 / 2, y: Math.PI / 6.0 },
+        targetOnDown = { x: 0, y: 0 };
 
-    var distance = 2000;
+    var rotation = _.clone(target);
+    var distance = 1000;
     var distanceTarget = 1000;
     var distanceTargetFactor = 0.05;
-    var secondaryDistanceTargetFactor = 0.09;
+    var secondaryDistanceTargetFactor = 0.5;
     var rotationTargetFactor = 0.02;
     var secondaryRotationTargetFactor = 0.1;
     var padding = 40;
@@ -233,6 +233,10 @@ DAT.Globe = function(container, opts) {
     this.rotation = rotation;
 
     this.distance = function(value) {
+        if (value === undefined) {
+            return distanceTarget;
+        }
+        
         distanceTarget = value;
         distanceTargetFactor = secondaryDistanceTargetFactor;
     };

@@ -51,31 +51,20 @@ $(function () {
 			mainFooter.style.paddingBottom = '90px';
 		}
 
-		var footerVisible = false;
+		signupFooter.classList.add('show-signup-footer');
 
-		function evalScroll() {
-			if (window.scrollY > 64 && !footerVisible) {
-				signupFooter.classList.remove('close-signup-footer');
-				signupFooter.classList.add('show-signup-footer');
-				footerVisible = true;
-			} else if (window.scrollY <= 64 && footerVisible) {
-				signupFooter.classList.remove('show-signup-footer');
-				signupFooter.classList.add('close-signup-footer');
-				footerVisible = !footerVisible;
-			}
-		}
-
-		window.addEventListener('scroll', evalScroll);
 
 		declineSignup.addEventListener('click', function(e) {
 			e.preventDefault();
-			window.removeEventListener('scroll', evalScroll);
-			mainFooter.style.paddingBottom = '25px';
+
+			if (mainFooter != null) {
+				mainFooter.style.paddingBottom = '25px';
+			}
 
 			signupFooter.classList.remove('show-signup-footer');
 			signupFooter.classList.add('close-signup-footer');
 
-			document.cookie = '_userDeclinedFooterSignup=true; expires=' + getCookieExpire() + ';';
+			document.cookie = '_userDeclinedFooterSignup=true; expires=' + getCookieExpire(14) + ';';
 		})
 	}
 	/****

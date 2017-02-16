@@ -54,7 +54,7 @@ HorizontalBarChart.prototype.rotateXLabel = function() {
 HorizontalBarChart.prototype._animateForSort = function() {
 
     var self = this;
-
+    var originalCategories = this._categories; // simple fix
     var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
@@ -97,6 +97,8 @@ HorizontalBarChart.prototype._animateForSort = function() {
         .call(self.getYAxis())
         .selectAll("g")
         .delay(delay);
+
+    this._categories = originalCategories; // simple fix
 };
 
 

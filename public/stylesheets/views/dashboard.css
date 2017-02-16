@@ -200,7 +200,7 @@ md-content.md-default-theme, md-content {
 @media (min-width: 960px)  {
     .dashboard-content {
 		padding-top: var(--navbar-height-tablet);
-		max-width: 45em !important;
+		max-width: 40em !important;
     }
 }
 
