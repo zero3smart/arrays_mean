@@ -198,7 +198,7 @@ linechart.viewport.prototype = Object.create(linechart.base.prototype);
  * @param {String} selector
  * @returns {linechart.viewport}
  */
-var mouseLeft = true 
+var mouseLeft = true
 linechart.viewport.prototype.render = function (container) {
     /*
      * Stash reference to this object.
@@ -329,7 +329,7 @@ linechart.viewport.prototype._mouseEnterEventHandler = function () {
      * Append x-axis highlight to the document body.
      */
     this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
-        .setWidth(60)
+        // .setWidth(30) // allow width to be set by content
         .setOffset('top', -this._innerHeight - 30)
     /*
      * Show line pointer.
