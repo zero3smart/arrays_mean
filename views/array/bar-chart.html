@@ -166,6 +166,7 @@
                     }) | safe }}';
                     var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}'
+                    var aggregateBy = '{{ aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable }}'
 
                     var options = {
                         padding: {{ padding if padding else false }}

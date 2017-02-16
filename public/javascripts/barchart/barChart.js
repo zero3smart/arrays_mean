@@ -370,10 +370,10 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categ
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
-                '<div>' + category + '</div>' +
+                '<div>' + groupBy + ': ' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content-label">' + label + '</div>' +
-            '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
+            '<div class="scatterplot-tooltip-content-label">' + stackBy + ': ' + label + '</div>' +
+            '<div class="scatterplot-tooltip-content-label">' + aggregateBy + ': ' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);
