@@ -154,8 +154,8 @@ aa-dialog-actions .md-button:last-child {
 /**/
 
 h1 {
-	overflow-x: hidden;
-	overflow-y: hidden;
+	/*overflow-x: hidden;*/
+	/*overflow-y: hidden;*/
 }
 h2 {
     font-size: 24px;
@@ -223,6 +223,11 @@ md-content.md-default-theme, md-content {
 
 .md-button.md-dashboard.md-dashboard-header {
     margin-top: 11px;
+}
+@media (min-width: 481px) {
+    .md-button.md-dashboard.md-dashboard-header {
+        margin-top: 20px;
+    }
 }
 
 .md-button.md-dashboard.primary-action {
