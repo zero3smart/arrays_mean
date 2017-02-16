@@ -1,7 +1,5 @@
-<header layout="row" layout-align="start center">
+<header layout-xs="col" layout-gt-xs="row" layout-align="space-between start">
     <h1>Manage Teams</h1>
-
-    <span flex></span>
 
     <md-button class="md-dashboard md-dashboard-header" ng-if="user.role=='superAdmin'" ng-click="openAddTeamDialog($event)" md-no-ink>
         <span class="btn-label">Add Team</span>
@@ -21,7 +19,7 @@
             </md-button>
 
             <a ng-if="team._id !== tm._id && user.role=='superAdmin'" herf="" ng-click="deleteTeam($index)" class="warn">Delete Team</a>
-        
+
             <md-checkbox ng-if="team._id !== tm._id && user.role=='superAdmin'" ng-model="tm.superTeam"
                 ng-change="updateSuperTeam($index)"
                 aria-label="Make team super team">

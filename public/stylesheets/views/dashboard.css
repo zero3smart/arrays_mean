@@ -224,7 +224,7 @@ md-content.md-default-theme, md-content {
 .md-button.md-dashboard.md-dashboard-header {
     margin-top: 11px;
 }
-@media (min-width: 481px) {
+@media (min-width: 600px) {
     .md-button.md-dashboard.md-dashboard-header {
         margin-top: 20px;
     }
