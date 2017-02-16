@@ -367,6 +367,35 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addGlobal('marketing_url', marketingPage);
 
 
+    nunjucks_env.addGlobal('makeURLfrom_relativePath',function(relativePath,subdomain,datasetId,type) {
+
+
+        if (relativePath.slice(0,4) == 'http') {
+            return relativePath;
+        }
+
+        var key = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + subdomain + '/datasets/' +
+        datasetId + '/assets/'
+        if (type == 'banner') {
+            key += 'banner/' + relativePath; 
+        } else if (type == 'image') {
+            key += 'images/' + relativePath
+        }
+
+        
+        return key;
+
+
+
+
+
+    })
+
+
+
+
+
+
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
         var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');
 

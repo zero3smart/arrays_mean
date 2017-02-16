@@ -446,15 +446,6 @@ module.exports.BindData = function(req, urlQuery, callback) {
             }
 
 
-            var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 4) == 'http') {
-                    return url;
-                } else {
-                    var urlToReturn = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + dataSourceDescription._team.subdomain + '/datasets/' + dataSourceDescription._id + '/assets/images/' + url;
-                    return urlToReturn;
-                }
-            };
-
 
             var user = null;
             batch.push(function(done) {
@@ -476,10 +467,14 @@ module.exports.BindData = function(req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
+
+
                 var data = {
                     env: process.env,
 
                     user: user,
+
+                    datasetId: dataSourceDescription._id,
            
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
@@ -537,13 +532,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
-
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/',
-                    folder: '/assets/images/',
-                    uid: dataSourceDescription.uid,
-                    importRevision: dataSourceDescription.importRevision,
-                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
+                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
 
                 };
 

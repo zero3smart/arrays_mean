@@ -112,6 +112,7 @@ module.exports.BindData = function (req, callback) {
                 
                     var s = {
                         key:  dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
+                        _id: dataSourceDescription._id,
                         sourceDoc: doc,
                         title: dataSourceDescription.title,
                         brandColor: dataSourceDescription.brandColor,

@@ -301,14 +301,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
 
-                var returnAbsURLorBuildURL = function(url) {
-                    if (url.slice(0, 4) == "http") {
-                        return url
-                    } else {
-                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
-                    }
-                }
-
                 var i = source_pKey.indexOf('-');
 
 
@@ -327,6 +319,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     user: user,
 
                     dataTypesConversion: dataSourceDescription.raw_rowObjects_coercionScheme,
+                    datasetId: dataSourceDescription._id,
                
 
                     arrayTitle: dataSourceDescription.title,
@@ -352,12 +345,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
 
-
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
-                    uid: dataSourceDescription.uid,
-                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
+                    uid: dataSourceDescription.uid
                 };
                 callback(null, data);
             });

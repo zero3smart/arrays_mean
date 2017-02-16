@@ -73,7 +73,7 @@
             <label>Upload an image to showcase your visualization</label> <span class="optional" ng-if="!dataset.banner">(optional)</span>
 
             <div flex="50">
-                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}" style="margin-bottom: 15px;">
+                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{makeUrl(dataset.banner)}}" style="margin-bottom: 15px;">
             </div>
 
             <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">

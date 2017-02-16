@@ -933,7 +933,13 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
-                        $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+                        // $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+
+                        if (!$scope.data.designatedFields) $scope.data.designatedFields = {};
+                        for (var key in $scope.dataset.fe_designatedFields) {
+                            $scope.data.designatedFields[$scope.dataset.fe_designatedFields[key]] = key;
+                        }
+
                         sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
