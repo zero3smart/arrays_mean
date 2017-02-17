@@ -108,7 +108,7 @@ function BarChart(selector, dataSet, options) {
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {
             this._showYLabels = false;
-            this._margin.left = 36 + 10;
+            this._margin.left = 54; // 3em @ 18px
             this._innerWidth = this._outerWidth - this._margin.left - this._margin.right; // recalc
         } else {
             this._showYLabels = true;
@@ -156,13 +156,10 @@ function BarChart(selector, dataSet, options) {
 
     // yAxis label
     this._yAxisContainer.append('text')
-        // place at left of labels
-        .attr('transform',
-            'translate(' +
-                (this._showYLabels ? -this._yAxisContainer.node().getBBox().width : 0) // shift to left of tick labels, if displayed
-                + ', ' + (this._innerHeight * 0.5) + ')' +
+        .attr('transform', // put at svg left, not yAxisContainer
+            'translate(' + -this._margin.left + ', ' + (this._innerHeight * 0.5) + ')' +
             'rotate(-90)')
-        .attr("dy", "-1.25em") // and adjust
+        .attr("dy", "1.5em") // and adjust
         .attr("text-anchor", "middle")
         .text(aggregateBy)
         .classed("label", true);
