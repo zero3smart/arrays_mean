@@ -48,6 +48,7 @@ module.exports.create = function (req, res) {
                     }
                 });
             }
+            createdTeam.notifyNewTeamCreation();
             res.json(createdTeam);
         }
     });

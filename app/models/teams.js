@@ -3,11 +3,10 @@ var integerValidator = require('mongoose-integer');
 var _ = require("lodash");
 var User = require('./users');
 var Team = require('./teams');
+var nodemailer = require('.././libs/utils/nodemailer');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
-//
-
 
 var team_scheme = Schema({
     title: String,
@@ -31,6 +30,28 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy'] });
 
 
+team_scheme.pre('save',function(next) {
+    this._wasNew = this.isNew;
+    next();
+})
+
+
+team_scheme.methods.notifyNewTeamCreation = function() {
+   if (this._wasNew) {
+        this.populate('admin',function(err,docPopulatedWithAdmin) {
+            if (err || !docPopulatedWithAdmin.admin) {
+                winston.error('Team created with error');
+                console.log(err);
+            } else {
+                nodemailer.newTeamCreatedEmail(docPopulatedWithAdmin);
+            }
+        })
+   }
+};
+
+
+
+
 var team = mongoose.model(modelName, team_scheme);
 
 team.GetTeams = function(fn) {
@@ -44,6 +65,8 @@ team.GetTeams = function(fn) {
 };
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
+
+
 
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
@@ -174,7 +197,6 @@ team.GetTeamBySubdomain = function(req, fn) {
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, 
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
-
 
 
 

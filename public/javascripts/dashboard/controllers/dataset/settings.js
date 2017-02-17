@@ -5,6 +5,8 @@ angular.module('arraysApp')
 
             $scope.primaryAction.text = 'Publish';
 
+
+
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
                 if (validity !== undefined) {
@@ -123,7 +125,8 @@ angular.module('arraysApp')
                     if (dataset.banner) {
                         reload = true;
                     }
-                    dataset.banner = fileItem.publicUrl;
+
+                    dataset.banner = fileItem.file.name;
                     DatasetService.save(dataset).then(function () {
                         if (reload) {
                             dataset.banner = dataset.banner + '?' + new Date().getTime();
@@ -137,6 +140,17 @@ angular.module('arraysApp')
                     });
                 }
             };
+
+
+            $scope.makeUrl = function(bannerFileName) {
+                if (bannerFileName.indexOf('http') >= 0) {
+                    return bannerFileName;
+                } else {
+                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain + 
+                    '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
+                    return url;
+                }
+            }
 
             $scope.imageUploader.onBeforeUploadItem = function (item) {
                 item.headers['Content-Type'] = item.file.type;

@@ -14,6 +14,8 @@ var imported_data_preparation = require('../../../libs/datasources/imported_data
 var datatypes = require('../../../libs/datasources/datatypes');
 var s3ImageHosting = require('../../../libs/utils/aws-image-hosting');
 
+var hadoop = require('../../../libs/datasources/hadoop');
+
 var processing = require('../../../libs/datasources/processing');
 
 var queue = require.main.require('./queue-init')();
@@ -122,7 +124,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
     datasource_description.findById(req.params.id)
         .populate('_team')
         .exec(function (err, description) {
-            var key = description._team.subdomain + '/datasets/' + description.uid + '/assets/banner/' + req.query.fileName;
+            var key = description._team.subdomain + '/datasets/' + description._id + '/assets/banner/' + req.query.fileName;
             s3ImageHosting.signedUrlForPutObject(key, req.query.fileType, function (err, data) {
                 if (err) {
                     return res.status(500).send(err);
@@ -287,22 +289,75 @@ module.exports.get = function (req, res) {
           
             if (!req.session.columns) req.session.columns = {};
 
-            if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
+            if (description.connection) { //remote, read cols
 
-
-                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    if (err) return res.status(500).json(err);
-
-                    req.session.columns[req.params.id] = columns;
-                    description.columns = columns;
+                if (req.session[req.params.id] && req.session[req.params.id].tables && req.session[req.params.id].columns && 
+                    req.session[req.params.id] && req.session[req.params.id].columns[description.connection.tableName]) {
+                    description.columns =  req.session[req.params.id].columns[description.connection.tableName];
+                    description.tables = req.session[req.params.id].tables;
                     return res.status(200).json({dataset: description});
-                });
+                } 
+
+                if (description.connection.type == 'hadoop') {
+
+                    var batch = new Batch();
+                    batch.concurrency(1);
+
+                    if (!req.session[req.params.id] || !req.session[req.params.id].tables) {
+
+                        batch.push(function(done) {
+                            hadoop.initConnection({url:description.connection.url},function(err,tables) {
+                                if (err) return done(err);
+                                req.session[req.params.id].tables = tables;
+                                done();
+
+                            })
+                        })  
+                    }
+
+                    batch.push(function(done) {
+
+                        hadoop.readColumnsAndSample({url:description.connection.url},description.connection.tableName,function(err,data) {
+                            if (err) return done(err);
+                            if (!req.session[req.params.id].columns) req.session[req.params.id].columns = {};
+                            req.session[req.params.id].columns[description.connection.tableName] = data;
+                            done();
+                        })
+                    })
+
+
+                    batch.end(function(err) {
+                        console.log(err);
+
+                        if (err) return res.status(500).json(err);
+                        description.columns = req.session[req.params.id].columns[description.connection.tableName];
+                        description.tables = req.session[req.params.id].tables;
+                        return res.status(200).json({dataset: description});
+                    })
+
+
+                }
+
 
             } else {
 
-                if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
+                if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
 
-                return res.status(200).json({dataset: description});
+                    _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                        if (err) return res.status(500).json(err);
+
+                        req.session.columns[req.params.id] = columns;
+                        description.columns = columns;
+                        return res.status(200).json({dataset: description});
+                    });
+
+                } else {
+
+                    if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
+
+                    return res.status(200).json({dataset: description});
+                }
+
             }
         });
 };
@@ -389,7 +444,8 @@ module.exports.update = function(req,res) {
 
 
 
-module.exports.save = function (req, res) {    
+module.exports.save = function (req, res) {   
+
     if (!req.body._id) {
 
         // Creating of New Dataset
@@ -403,22 +459,24 @@ module.exports.save = function (req, res) {
                         return res.status(500).send(err);
                     } else {
                         team.datasourceDescriptions.push(doc.id);
+
                         team.save(function (err, saved) {
                             if (err) {
                                 return res.status(500).send(err);
                             } else {
+                                return res.json({id: doc.id});
                                 //update the user as an editor of the dataset
-                                User.findById(req.user, function(err, user) {
-                                    if(err) {
-                                        return res.status(500).send(err);
-                                    } else {
-                                        user._editors.push(doc.id);
-                                        user.save(function (err, saved) {
-                                            if (err) return res.status(500).send(err);
-                                            return res.json({id: doc.id}) 
-                                        })
-                                    }
-                                })
+                                // User.findById(req.user, function(err, user) {
+                                //     if(err) {
+                                //         return res.status(500).send(err);
+                                //     } else {
+                                //         user._editors.push(doc.id);
+                                //         user.save(function (err, saved) {
+                                //             if (err) return res.status(500).send(err);
+                                //             return res.json({id: doc.id}) 
+                                //         })
+                                //     }
+                                // })
                             }
                         });
                     }
@@ -454,8 +512,14 @@ module.exports.save = function (req, res) {
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
 
                         doc[key] = value;
+
+                        if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
+                            console.log('cleared join session columns stored');
+                            req.session.columns[req.body._id + "_join"];
+                        }
                         if (typeof value === 'object')
                             doc.markModified(key);
+
 
                     }
                 });

@@ -162,8 +162,8 @@
             return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
        }
 
-       var colsForJoinTables = function(connectionInfo) {
-            return $http.post('api/dataset/colsForJoinTables',connectionInfo);
+       var colsForJoinTables = function(datasetId,connectionInfo) {
+            return $http.post('api/dataset/colsForJoinTables/' + datasetId ,connectionInfo);
        }
 
 

@@ -2,7 +2,7 @@ angular.module('arraysApp')
     .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
         function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
 
-           
+
             //-- helper functions ---//
 
             function makeFieldValuePairs(obj) {
@@ -297,7 +297,7 @@ angular.module('arraysApp')
             //----
 
 
-            $scope.primaryAction.text = 'View Your Array';
+            $scope.primaryAction.text = 'View Your Visualization';
             $scope.$watch('dirty', function(dirty) {
                 $scope.primaryAction.disabled = dirty;
                 if(dirty && !$scope.inProgress && !dataset.connection) {
@@ -305,7 +305,7 @@ angular.module('arraysApp')
                 }
             });
 
-           
+
             $scope.primaryAction.do = function() {
                 var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
                     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
@@ -419,7 +419,7 @@ angular.module('arraysApp')
                     importDatasource($scope.$parent.$parent.dataset);
 
                 }
-              
+
             };
         }
     ]);
