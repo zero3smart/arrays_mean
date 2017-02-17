@@ -426,6 +426,7 @@ module.exports.save = function (req, res) {
                 })
 
             }
+            console.log("saved here :)")
         });
 
     } else {
@@ -434,6 +435,8 @@ module.exports.save = function (req, res) {
         datasource_description.findById(req.body._id)
             .populate('schema_id')
             .exec(function (err, doc) {
+                console.log(doc)
+                console.log("updating")
 
 
 
@@ -727,9 +730,7 @@ module.exports.upload = function (req, res) {
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
                 req.session.columns[description._id] = columns;
-                // console.log(columns)
-                // console.log(description)
-                // save the raw row coercion
+
                 if (!description.raw_rowObjects_coercionScheme) {
                     description.raw_rowObjects_coercionScheme = {};
                 }
@@ -745,14 +746,14 @@ module.exports.upload = function (req, res) {
                         description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
                     }
                 }
-                // description.save(function (err, updatedDescription) {
-                //     if (err) {
-                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
-                //         done(err);
-                //     } else {
-                //         console.log(updatedDescription)
-                //     }
-                // });
+
+
+                description.save(function (err, updatedDescription) {
+                    if (err) {
+                        winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                        done(err);
+                    }
+                });
 
                 // Upload datasource to AWS S3
 
@@ -820,7 +821,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-
+        console.log(description)
         return res.end(JSON.stringify({id: description._id,uid:description.uid}));
     });
 };
