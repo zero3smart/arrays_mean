@@ -290,7 +290,6 @@ module.exports.get = function (req, res) {
 
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    console.log(columns)
                     if (err) return res.status(500).json(err);
 
                     req.session.columns[req.params.id] = columns;
@@ -301,7 +300,6 @@ module.exports.get = function (req, res) {
             } else {
 
                 if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
-                    console.log(description.columns)
 
                 return res.status(200).json({dataset: description});
             }
@@ -426,7 +424,6 @@ module.exports.save = function (req, res) {
                 })
 
             }
-            console.log("saved here :)")
         });
 
     } else {
@@ -435,10 +432,6 @@ module.exports.save = function (req, res) {
         datasource_description.findById(req.body._id)
             .populate('schema_id')
             .exec(function (err, doc) {
-                console.log(doc)
-                console.log("updating")
-
-
 
                 if (err) return res.status(500).send(err);
                 if (!doc) return res.status(500).send('Invalid Operation');
@@ -464,7 +457,6 @@ module.exports.save = function (req, res) {
                 });
 
     
-
                 if (!doc.schema_id) {
                     doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                 }
@@ -518,6 +510,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
     var countOfLines = 0;
     var cachedLines = '';
     var columns = [];
+    var rowObjects = []
 
     var readStream = fileReadStream
         .pipe(es.split())
@@ -557,17 +550,42 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                             readStream.resume();
                         } else if (countOfLines == 2) {
                             columns = columns.map(function (e, i) {
-                                return intuitDataype(e.name, output[0][i])
+                                var rowObject = intuitDataype(e.name, output[0][i]);
+                                rowObjects.push(rowObject);
+                                return rowObject
                                 // return {name: e.name, sample: output[0][i]};
+                            });
+                            readStream.resume();
+                        } else if (countOfLines == 3){
+                            columns = columns.map(function (e, i) {
+                            return verifyDataType(e.name, output[0][i], rowObjects, i)
                             });
                             readStream.resume();
                         } else {
                             readStream.destroy();
-                            if (countOfLines == 3) next(null, columns);
+                            if (countOfLines == 4) next(null, columns);
                         }
                     });
             })
         );
+}
+
+function verifyDataType(name, sample, rowObjects, index) {
+    var numberRE = /([^0-9\.,]|\s)/;
+    var rowObject = rowObjects[index]
+    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.data_type, true).isValid()) {
+        console.log("parsing again from date")
+        var secondRowObject = intuitDataype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+
+    } else if(rowObject.operation == "ToInteger" && numberRE.test(sample)) {
+        console.log("parsing agin from integer")
+        var secondRowObject = intuitDataype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+    }
+    return rowObject;
 }
 
 function intuitDataype(name, sample) {
@@ -779,16 +797,12 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-                // console.log(description)
-                // I don't think this is saving
                 description.save(function (err, updatedDescription) {
                     if (err)
                         winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
                     done(err);
-                    console.log(updatedDescription)
                 });
             } else {
-                console.log("saving here")
                 var findQuery = {_id: description._id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {
@@ -821,7 +835,6 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        console.log(description)
         return res.end(JSON.stringify({id: description._id,uid:description.uid}));
     });
 };
