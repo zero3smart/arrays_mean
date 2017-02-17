@@ -33,13 +33,26 @@ $(document).ready(function() {
 
     // Handle of the "view by" - graph orientation, normalization
     function updateBarChartControls() {
+        var yAxisDropdown = $('#Y-Axis').parent();
+        var xAxisDropdown = $('#X-Axis').parent();
+
         options = getCookies();
+
         if (options.horizontal) {
             $('#orientation .horizontal').show();
             $('#orientation .vertical').hide();
+
+            yAxisDropdown.insertBefore(xAxisDropdown);
+            // swap labels
+            $('#Y-Axis span.label').text('X Axis');
+            $('#X-Axis span.label').text('Y Axis');
         } else {
             $('#orientation .horizontal').hide();
             $('#orientation .vertical').show();
+
+            xAxisDropdown.insertBefore(yAxisDropdown);
+            $('#Y-Axis span.label').text('Y Axis');
+            $('#X-Axis span.label').text('X Axis');
         }
 
         if (options.normalize) {
