@@ -2,27 +2,27 @@ $(document).ready(function() {
     var barChart;
     function renderBarChart() {
         options = getCookies();
-        if(!options.hasOwnProperty("horizontal")) {
-            options["horizontal"] = false;
+        if(!options.hasOwnProperty('horizontal')) {
+            options['horizontal'] = false;
         }
         barChart = BarChart.getInstance('#bar-chart', graphData, options);
     }
 
     function getCookies () {
         var options = {};
-        var cookiesArray = document.cookie.split(";", 4);
+        var cookiesArray = document.cookie.split(';', 4);
         for(var i = 0; i < cookiesArray.length; i++) {
-            var key = cookiesArray[i].split("=")[0];
-            if(key[0] == " ") {
+            var key = cookiesArray[i].split('=')[0];
+            if(key[0] == ' ') {
                 key = key.slice(1);
             }
-            var value = cookiesArray[i].split("=")[1];
-            if(value == "undefined" || value == "false") {
+            var value = cookiesArray[i].split('=')[1];
+            if(value == 'undefined' || value == 'false') {
                 value = false;
             } else {
                 value = true;
             }
-            if(key == "horizontal" || key == "padding" || key == "sortDirection" || key == "normalize") {
+            if(key == 'horizontal' || key == 'padding' || key == 'sortDirection' || key == 'normalize') {
                 options[key] = value;
             } else {
                 continue;
@@ -33,7 +33,7 @@ $(document).ready(function() {
 
     // Handle of the "view by" - graph orientation, normalization
     function updateBarChartControls() {
-        options = getCookies()
+        options = getCookies();
         if (options.horizontal) {
             $('#orientation .horizontal').show();
             $('#orientation .vertical').hide();
@@ -57,7 +57,7 @@ $(document).ready(function() {
             $('#sort-direction .icon-sort-descending').hide();
             $('#sort-direction .icon-sort-ascending').show();
         }
-    };
+    }
 
     $('#orientation').click(function(){
         options.horizontal = !options.horizontal;
@@ -87,11 +87,11 @@ $(document).ready(function() {
     };
 
     setCookies = function (options) {
-        document.cookie = "horizontal=" + options['horizontal'] +";";
-        document.cookie = "padding=" + options['padding'] + ";";
-        document.cookie = "sortDirection=" + options['sortDirection'] +";";
-        document.cookie = "normalize=" + options['normalize'] + ";";
-    }
+        document.cookie = 'horizontal=' + options['horizontal'] +';';
+        document.cookie = 'padding=' + options['padding'] + ';';
+        document.cookie = 'sortDirection=' + options['sortDirection'] +';';
+        document.cookie = 'normalize=' + options['normalize'] + ';';
+    };
 
     /**
      * Toggle legend
