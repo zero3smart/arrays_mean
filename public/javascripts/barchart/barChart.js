@@ -139,7 +139,7 @@ function BarChart(selector, dataSet, options) {
     this._xAxisContainer.append('text')
         // place at bottom of labels
         .attr('transform', 'translate(' + (this._innerWidth * 0.5) + ', ' + this._xAxisContainer.node().getBBox().height + ')')
-        .attr("dy", this._showXLabels ? "2em" : "1em") // and adjust
+        .attr("dy", this._showXLabels ? "1.5em" : "1em") // and adjust
         .attr("text-anchor", "middle")
         .text(groupBy)
         .classed("label", true);

@@ -112,7 +112,7 @@ VerticalBarChart.prototype.getXAxis = function () {
     return d3.svg.axis()
         .scale(this.getXScale(this._innerWidth))
         .tickFormat(function(d) {
-            var maxlength = 17;
+            var maxlength = 10;
             if (d.length > maxlength) {
                 d = d.substring(0, maxlength) + '…'; // \u8230
             }
