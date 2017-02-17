@@ -133,6 +133,15 @@ function BarChart(selector, dataSet, options) {
         this.rotateLabel();
     }
 
+    // xAxis label
+    this._xAxisContainer.append('text')
+        // place at bottom of labels
+        .attr('transform', 'translate(' + (this._innerWidth * 0.5) + ', ' + this._xAxisContainer.node().getBBox().height + ')')
+        .attr("dy", "2em") // and adjust
+        .attr("text-anchor", "middle")
+        .text(groupBy)
+        .classed("label", true);
+
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', this.getYAxisTransform())
@@ -142,6 +151,17 @@ function BarChart(selector, dataSet, options) {
         this.rotateYLabel();
         this.rotateXLabel();
     }
+
+    // yAxis label
+    this._yAxisContainer.append('text')
+        // place at left of labels
+        .attr('transform',
+            'translate(' + -this._yAxisContainer.node().getBBox().width + ', ' + (this._innerHeight * 0.5) + ')' +
+            'rotate(-90)')
+        .attr("dy", "-1.25em") // and adjust
+        .attr("text-anchor", "middle")
+        .text(aggregateBy)
+        .classed("label", true);
 
     /**
      * Append bar's series.
