@@ -16,7 +16,7 @@ linechart.viewport = function (data, options) {
         return lineData.map(function (d) {
             d.date = new Date(d.date);
             return d;
-        })
+        });
     });
 
     /**
@@ -198,7 +198,7 @@ linechart.viewport.prototype = Object.create(linechart.base.prototype);
  * @param {String} selector
  * @returns {linechart.viewport}
  */
-var mouseLeft = true 
+var mouseLeft = true;
 linechart.viewport.prototype.render = function (container) {
     /*
      * Stash reference to this object.
@@ -271,7 +271,7 @@ linechart.viewport.prototype.render = function (container) {
             } else {
                 setTimeout(function () {
                     self._mouseEnterEventHandler();
-                }, 2000)
+                }, 2000);
             }
         }).on('mouseleave', function () {
             setTimeout(function () {
@@ -318,7 +318,7 @@ linechart.viewport.prototype.render = function (container) {
  * @private
  */
 linechart.viewport.prototype._mouseEnterEventHandler = function () {
-    mouseLeft = false
+    mouseLeft = false;
     /*
      * Append tooltip to the document body.
      */
@@ -329,8 +329,8 @@ linechart.viewport.prototype._mouseEnterEventHandler = function () {
      * Append x-axis highlight to the document body.
      */
     this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
-        .setWidth(60)
-        .setOffset('top', -this._innerHeight - 30)
+        // .setWidth(30) // allow width to be set by content
+        .setOffset('top', -this._innerHeight - 30);
     /*
      * Show line pointer.
      */
@@ -343,7 +343,7 @@ linechart.viewport.prototype._mouseEnterEventHandler = function () {
  * @private
  */
 linechart.viewport.prototype._mouseOutEventHandler = function () {
-    mouseLeft = true
+    mouseLeft = true;
     /*
      * Hide tooltip.
      */
@@ -454,12 +454,12 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
         .attr('r', function (d) {
             return d.value ? 5 : 0;
         }).attr('cx', function (d) {
-        return d.date ? self._xScale(d.date) : 0;
-    }).attr('cy', function (d) {
-        return d.value ? self._yScale(d.value) : 0;
-    }).style('fill', function (d, i) {
-        return self._colors[i];
-    });
+            return d.date ? self._xScale(d.date) : 0;
+        }).attr('cy', function (d) {
+            return d.value ? self._yScale(d.value) : 0;
+        }).style('fill', function (d, i) {
+            return self._colors[i];
+        });
     /*
      * Update tooltip content.
      */
@@ -488,7 +488,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
             '</div>')
         .show();
 
-    var element = document.getElementById('default-tooltip-content-date')
+    var element = document.getElementById('default-tooltip-content-date');
 
     clickFunction = function() {
         if (self._options.redirectBaseUrl) {
@@ -499,8 +499,8 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
             window.location.href = self._options.redirectBaseUrl +
                 moment(date, moment.ISO_8601).format(self._options.outputInFormat);
         }
-    }
-    element.onclick = clickFunction
+    };
+    element.onclick = clickFunction;
 
 };
 
@@ -627,7 +627,7 @@ linechart.viewport.prototype.update = function (data) {
      * Update and move lines.
      */
     this._lines.data(data)
-        .attr("d", this._lineGenerator);
+        .attr('d', this._lineGenerator);
 
     return this;
 };

@@ -5,7 +5,7 @@
     a.color-brand:focus,
     a.color-brand:active,
     .sidebar-filter-toggle .color-brand {
-        color: {{ brandColor }};
+        color: {{ '#4A4A4A' if brandColor == '#dddddd' else brandColor }};
     }
 
     .color-brand-hover:hover,
