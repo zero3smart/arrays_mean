@@ -630,6 +630,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .pill-link,
 .w-signup-container .pill-link,
 .w-login-container .pill-link {
+	font-size: 18px;
 	padding: 4px 16px;
 	padding-bottom: 6px;
 	border: 1px solid #FEB600;
@@ -891,6 +892,7 @@ li.active > .sidebar-filter-slide-toggle span
 }
 
 .header-blank-link {
+	font-size: 18px;
 	color: #000;
 	transition: color 200ms ease;
 }
