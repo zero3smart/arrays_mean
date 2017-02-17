@@ -58,7 +58,7 @@ module.exports.newTeamCreatedEmail = function(team,cb) {
 		team.admin.firstName + ' ' + team.admin.lastName + '<br>Admin Email: ' + team.admin.email
 	var mailOptions = {
 		from : 'info@arrays.co',
-		to : 'support@arrays.co',
+		to : 'arraysalerts@gmail.com', //to be changed later
 		subject: 'New Team Created',
 		html: htmlText
 	}
