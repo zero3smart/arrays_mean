@@ -573,7 +573,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 function verifyDataType(name, sample, rowObjects, index) {
     var numberRE = /([^0-9\.,]|\s)/;
     var rowObject = rowObjects[index]
-    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.data_type, true).isValid()) {
+    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
         console.log("parsing again from date")
         console.log("name: " + name + " sample: " + sample)
         console.log("rowObject name: " + rowObject.name + " rowObject sample: " + rowObject.sample)
@@ -595,7 +595,7 @@ function verifyDataType(name, sample, rowObjects, index) {
 function intuitDataype(name, sample) {
     var dateRE = /(year|DATE)/i;
     var isDate = false;
-    var known_date_formats = [/*moment.ISO_8601, */'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY'];
+    var known_date_formats = [/*moment.ISO_8601, */'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY', 'YYYY-MM-DD', 'YYYY-M-D', 'YYYY-MM-D', 'YYYY-M-DD'];
     var returnObj = {name: name, sample: sample};
     for(var i = 0; i < known_date_formats.length; i++) {
         if(moment(sample, known_date_formats[i], true).isValid()) {
@@ -612,6 +612,8 @@ function intuitDataype(name, sample) {
             if(moment(sample, 'YYYY', true).isValid()) {
                 console.log("name: " + name + " sample: " + sample + " year date");
                 return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY', output_format: 'YYYY', operation: 'ToDate'};
+            } else if(moment(sample, 'YYYYMMDD', true).isValid()) {
+                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYYMMDD', output_format: 'YYYYMMDD'}
             } else {
                 console.log("couldn't parse name: " + name + " sample: " + sample);
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
@@ -620,13 +622,15 @@ function intuitDataype(name, sample) {
             // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
             var numberRE = /([^0-9\.,]|\s)/;
             var floatRE = /[^0-9]/;
-            if(numberRE.test(sample) || sample === "") {
+            var IdRE = /(Id|ID)/;
+            if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
                 console.log("name: " + name + " sample: " + sample + " is a string");
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
             } else if(floatRE.test(sample)) {
                console.log("name: " + name + "sample: " + sample + " is a float");
                return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
             } else {
+                console.log("name: " + name + " sample " + sample + " is an integer")
                 return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
             }
         }
@@ -755,10 +759,7 @@ module.exports.upload = function (req, res) {
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
                 req.session.columns[description._id] = columns;
-
-                if (!description.raw_rowObjects_coercionScheme) {
-                    description.raw_rowObjects_coercionScheme = {};
-                }
+                description.raw_rowObjects_coercionScheme = {};
 
                 for(var i = 0; i < columns.length; i++) {
                     var column = columns[i];
@@ -772,13 +773,20 @@ module.exports.upload = function (req, res) {
                     }
                 }
 
-
-                description.save(function (err, updatedDescription) {
-                    if (err) {
-                        winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
-                        done(err);
-                    }
-                });
+                // datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
+                //     if(err) {
+                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                //         done(err);
+                //         console.log(err);
+                //     } else {
+                //     }
+                // });
+                // description.save(function (err, updatedDescription) {
+                //     if (err) {
+                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                //         done(err);
+                //     }
+                // });
 
                 // Upload datasource to AWS S3
 
@@ -804,9 +812,15 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-                description.save(function (err, updatedDescription) {
-                    if (err)
-                        winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
+                // description.save(function (err, updatedDescription) {
+                //     if (err)
+                //         winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
+                //     done(err);
+                // });
+                datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
+                    if(err) {
+                        winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                    }
                     done(err);
                 });
             } else {
@@ -842,7 +856,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        return res.end(JSON.stringify({id: description._id,uid:description.uid}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme}));
     });
 };
 
