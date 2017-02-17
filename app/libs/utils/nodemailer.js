@@ -52,6 +52,24 @@ module.exports.sendActivationEmail = function(user, cb) {
 	})
 }
 
+module.exports.newTeamCreatedEmail = function(team,cb) {
+
+	var htmlText = 'Team: ' + team.title + '<br>Subdomain: ' +  team.subdomain + '<br>Admin: ' + 
+		team.admin.firstName + ' ' + team.admin.lastName + '<br>Admin Email: ' + team.admin.email
+	var mailOptions = {
+		from : 'info@arrays.co',
+		to : 'support@arrays.co',
+		subject: 'New Team Created',
+		html: htmlText
+	}
+
+	sendEmail(mailOptions,function(err) {
+		console.log(err);
+		if (cb) return cb(err);
+	})
+
+}
+
 
 
 
