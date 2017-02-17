@@ -64,14 +64,38 @@
                 TWEEN.update(time);
             },
             onMouseDown: function(event) {
+                self._drag = {
+                    lastX: event.clientX,
+                    lastY: event.clientY,
+                    distance: 0,
+                    startTime: Date.now()
+                };
+                
                 return self._onMouseDown ? self._onMouseDown(event) : false;
             },
             onDrag: function(event) {
+                if (self._drag) {
+                    var diffX = Math.abs(event.clientX - self._drag.lastX);
+                    var diffY = Math.abs(event.clientY - self._drag.lastY);
+                    self._drag.distance += diffX + diffY;
+                    self._drag.lastX = event.clientX;
+                    self._drag.lastY = event.clientY;
+                }
+                
                 if (self._onDrag) {
                     self._onDrag(event);
                 }
             },
-            onMouseUp: function() {
+            onMouseUp: function(event) {
+                if (self._drag && self._drag.distance < 10 && Date.now() - self._drag.startTime < 500) {
+                    var pointNode = self._hitTest(event);
+                    if (pointNode) {
+                        self._onNodeClick(pointNode);
+                    }                    
+                }
+                
+                self._drag = null;
+
                 if (self._onMouseUp) {
                     self._onMouseUp();
                 }
@@ -96,6 +120,8 @@
         var lineConfig = {
             globe: this.globe,
             arcAltitude: 30,
+            opacity: 0.5,
+            width: 1,
             start: {
                 altitude: this._bottomAltitude,
                 color: config.lineColor
@@ -112,51 +138,8 @@
             self._addLine(lineConfig);
         });
 
-        var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2();
-
-        GlobeMain.on('click', this.$el, function(event) {
-            var offset = self.$el.offset();
-            var x = event.clientX / GlobeMain.scale;
-            var y = event.clientY / GlobeMain.scale;
-            var width = self.$el.width();
-            var height = self.$el.height();
-            mouse.x = ((x - offset.left) / width) * 2 - 1;
-            mouse.y = - ((y - offset.top) / height) * 2 + 1;
-
-            raycaster.setFromCamera( mouse, self.globe.camera );
-
-            var earthDistance = Infinity;
-            var intersects = raycaster.intersectObject(self.globe.earth);
-            if (intersects.length) {
-                earthDistance = intersects[0].distance;
-            }
-
-            mouse.x = x;
-            mouse.y = y;
-            var best;
-
-            _.each(self._pointNodes, function(v, i) {
-                if (v.disabled()) {
-                    return;
-                }
-
-                var pos = self._toScreenXY(v.node.position, self.globe.camera, self.$el);
-                var screenDistance = mouse.distanceTo(pos);
-                var worldDistance = v.node.position.distanceTo(self.globe.camera.position);
-                if (screenDistance < 30 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
-                    best = {
-                        screenDistance: screenDistance,
-                        pointNode: v,
-                        worldDistance: worldDistance
-                    };
-                }
-            });
-
-            if (best) {
-                self._onNodeClick(best.pointNode);
-            }
-        });
+        this._raycaster = new THREE.Raycaster();
+        this._mouse = new THREE.Vector2();
 
         this.globe.rawRender();
     };
@@ -178,6 +161,53 @@
         zoomOut: function() {
             var distance = this.globe.distance() * 1.01;
             this.globe.distance(Math.min(distance, 5000));
+        },
+        
+        // ----------
+        _hitTest: function(event) {
+            var self = this;
+            var offset = this.$el.offset();
+            var x = event.clientX / GlobeMain.scale;
+            var y = event.clientY / GlobeMain.scale;
+            var width = this.$el.width();
+            var height = this.$el.height();
+            this._mouse.x = ((x - offset.left) / width) * 2 - 1;
+            this._mouse.y = - ((y - offset.top) / height) * 2 + 1;
+
+            this._raycaster.setFromCamera( this._mouse, this.globe.camera );
+
+            var earthDistance = Infinity;
+            var intersects = this._raycaster.intersectObject(this.globe.earth);
+            if (intersects.length) {
+                earthDistance = intersects[0].distance;
+            }
+
+            this._mouse.x = x;
+            this._mouse.y = y;
+            var best;
+
+            _.each(this._pointNodes, function(v, i) {
+                if (v.disabled()) {
+                    return;
+                }
+
+                var pos = self._toScreenXY(v.node.position, self.globe.camera, self.$el);
+                var screenDistance = self._mouse.distanceTo(pos);
+                var worldDistance = v.node.position.distanceTo(self.globe.camera.position);
+                if (screenDistance < 30 && worldDistance < earthDistance && (!best || best.screenDistance > screenDistance)) {
+                    best = {
+                        screenDistance: screenDistance,
+                        pointNode: v,
+                        worldDistance: worldDistance
+                    };
+                }
+            });
+
+            if (best) {
+                return best.pointNode;
+            }
+            
+            return null;
         },
 
         // ----------
