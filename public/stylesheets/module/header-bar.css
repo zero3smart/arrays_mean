@@ -77,8 +77,10 @@
 
 .navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
 	position: relative;
-	top: 10px;
 	fill: #000;
+	top: 13px;
+	width: 22px;
+	height: 24px;
 }
 
 .light-text .navbar-brand-arrays.navbar-brand-stacked-logo svg {
@@ -91,6 +93,12 @@
 		padding-bottom: 22px;
 		height: var(--navbar-height-tablet);
 		font-size: 20px;
+	}
+
+	.navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
+		top: 17px;
+		width: 27.5px;
+		height: 30px;
 	}
 }
 
@@ -135,16 +143,6 @@
 
 .array-controls-pinned .navbar-brand-array-title {
 	transform: translate(0, -100%);
-}
-
-@media (min-width: 768px) {
-	.navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo {
-		display: none;
-	}
-
-	.array-controls-pinned .navbar-brand-array-title {
-		transform: translate(0, -50%);
-	}
 }
 
 .array-controls-pinned .navbar-default .navbar-nav > .open > a,
