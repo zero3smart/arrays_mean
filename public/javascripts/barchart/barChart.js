@@ -141,7 +141,7 @@ function BarChart(selector, dataSet, options) {
         .attr('transform', 'translate(' + (this._innerWidth * 0.5) + ', ' + this._xAxisContainer.node().getBBox().height + ')')
         .attr("dy", this._showXLabels ? "1.5em" : "1em") // and adjust
         .attr("text-anchor", "middle")
-        .text(groupBy)
+        .text(this._options.horizontal ? aggregateBy : groupBy)
         .classed("label", true);
 
     this._yAxisContainer = this._canvas.append('g')
@@ -161,7 +161,7 @@ function BarChart(selector, dataSet, options) {
             'rotate(-90)')
         .attr("dy", "1.5em") // and adjust
         .attr("text-anchor", "middle")
-        .text(aggregateBy)
+        .text(this._options.horizontal ? groupBy : aggregateBy)
         .classed("label", true);
 
     /**
