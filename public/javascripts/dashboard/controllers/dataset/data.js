@@ -118,7 +118,7 @@ angular.module('arraysApp')
 
             }
 
-            $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
+            $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex, filterOnly, columnIndex) {
                 // using the same controller for general field settings and field filter setting, for now
                 var fieldTemplate = filterOnly ? 'templates/blocks/data.field.filter.html' : 'templates/blocks/data.field.general.html';
 
@@ -138,7 +138,8 @@ angular.module('arraysApp')
                         availableDesignatedFields: availableDesignatedFields,
                         custom: custom,
                         customFieldIndex: customFieldIndex,
-                        filterOnly: filterOnly
+                        filterOnly: filterOnly,
+                        columnIndex: columnIndex
                     }
                 })
                     .then(function (savedDataset) {
@@ -169,13 +170,14 @@ angular.module('arraysApp')
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex, filterOnly) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex, filterOnly, columnIndex) {
 
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
                 $scope.availableDesignatedFields = availableDesignatedFields;
                 $scope.custom = custom;
                 $scope.customFieldIndex = customFieldIndex;
+                $scope.columnIndex = columnIndex;
 
                 var originalFieldName = fieldName;
 
@@ -296,14 +298,8 @@ angular.module('arraysApp')
                 };
 
 
-
-
-                $scope.changeCoercionSchemeByOperation = function (colName) {
-                    console.log(colName)
-
-
+                $scope.changeCoercionSchemeByOperation = function (colName, colIndex) {
                     var coercion = $scope.coercionScheme[colName];
-
 
                     if ($filter('typeCoercionToString')(coercion) != 'Date') {
                         $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
@@ -320,6 +316,8 @@ angular.module('arraysApp')
                             $scope.dialog.fieldForm.$setPristine();
                         }
                     }
+                    // slice off the word "To" 
+                    $scope.dataset.columns[colIndex].data_type = coercion.operation.slice(2);
                 };
 
                 $scope.cancel = function () {
@@ -1441,28 +1439,34 @@ angular.module('arraysApp')
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
 
-            $scope.changeCoercionSchemeByOperation = function (colName) {
-                var coercion = $scope.coercionScheme[colName];
+            // ----------------------------------------------------
+            // I think this was left over from when we had the data types in the dropdown
+            // ----------------------------------------------------
 
-                if ($filter('typeCoercionToString')(coercion) != 'Date') {
-                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
-                    $scope.$parent.$parent.dataset.dirty = 1;
 
-                } else {
-                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName]) {
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+            // $scope.changeCoercionSchemeByOperation = function (colName) {
+            //     var coercion = $scope.coercionScheme[colName];
 
-                        $scope.$parent.$parent.dataset.dirty = 1;
+            //     if ($filter('typeCoercionToString')(coercion) != 'Date') {
+            //         $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+            //         $scope.$parent.$parent.dataset.dirty = 1;
 
-                    }
+            //     } else {
+            //         if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName]) {
+            //             $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
 
-                    else {
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+            //             $scope.$parent.$parent.dataset.dirty = 1;
 
-                    }
+            //         }
 
-                }
-            };
+            //         else {
+            //             $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+
+            //         }
+
+            //     }
+            // };
+            // ---------------------------------------------------------
 
             $scope.reset();
 

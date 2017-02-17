@@ -575,12 +575,16 @@ function verifyDataType(name, sample, rowObjects, index) {
     var rowObject = rowObjects[index]
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.data_type, true).isValid()) {
         console.log("parsing again from date")
+        console.log("name: " + name + " sample: " + sample)
+        console.log("rowObject name: " + rowObject.name + " rowObject sample: " + rowObject.sample)
         var secondRowObject = intuitDataype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
 
-    } else if(rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat" && numberRE.test(sample)) {
+    } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
         console.log("parsing agin from integer")
+        console.log("name: " + name + " sample: " + sample)
+        console.log("rowObject name: " + rowObject.name + " rowObject sample: " + rowObject.sample)
         var secondRowObject = intuitDataype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
@@ -598,7 +602,7 @@ function intuitDataype(name, sample) {
             console.log("name: " + name + " sample: " + sample + " date");
             console.log("date format: " + known_date_formats[i]);
             isDate = true;
-            return {name: name, sample: sample, data_type: known_date_formats[i], operation: 'ToDate'};
+            return {name: name, sample: sample, data_type: 'Date', input_format: known_date_formats[i], output_format: known_date_formats[i], operation: 'ToDate'};
         }
     }
 
@@ -607,7 +611,7 @@ function intuitDataype(name, sample) {
             console.log("name contains year");
             if(moment(sample, 'YYYY', true).isValid()) {
                 console.log("name: " + name + " sample: " + sample + " year date");
-                return {name: name, sample: sample, data_type: 'YYYY', operation: 'ToDate'};
+                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY', output_format: 'YYYY', operation: 'ToDate'};
             } else {
                 console.log("couldn't parse name: " + name + " sample: " + sample);
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
@@ -761,8 +765,8 @@ module.exports.upload = function (req, res) {
                     if (column.data_type !== 'String') {
                         description.raw_rowObjects_coercionScheme[column.name] = {};
                         if (column.operation === 'ToDate') {
-                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.data_type;
-                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.data_type;
+                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
+                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
                         }
                         description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
                     }
