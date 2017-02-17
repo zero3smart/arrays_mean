@@ -108,6 +108,8 @@ function BarChart(selector, dataSet, options) {
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {
             this._showYLabels = false;
+            this._margin.left = 36 + 10;
+            this._innerWidth = this._outerWidth - this._margin.left - this._margin.right; // recalc
         } else {
             this._showYLabels = true;
         }
@@ -137,7 +139,7 @@ function BarChart(selector, dataSet, options) {
     this._xAxisContainer.append('text')
         // place at bottom of labels
         .attr('transform', 'translate(' + (this._innerWidth * 0.5) + ', ' + this._xAxisContainer.node().getBBox().height + ')')
-        .attr("dy", "2em") // and adjust
+        .attr("dy", this._showXLabels ? "2em" : "1em") // and adjust
         .attr("text-anchor", "middle")
         .text(groupBy)
         .classed("label", true);
@@ -156,7 +158,9 @@ function BarChart(selector, dataSet, options) {
     this._yAxisContainer.append('text')
         // place at left of labels
         .attr('transform',
-            'translate(' + -this._yAxisContainer.node().getBBox().width + ', ' + (this._innerHeight * 0.5) + ')' +
+            'translate(' +
+                (this._showYLabels ? -this._yAxisContainer.node().getBBox().width : 0) // shift to left of tick labels, if displayed
+                + ', ' + (this._innerHeight * 0.5) + ')' +
             'rotate(-90)')
         .attr("dy", "-1.25em") // and adjust
         .attr("text-anchor", "middle")
