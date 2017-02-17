@@ -309,7 +309,8 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #000;
 }
 
-.array-controls-pinned .dropdown .dropdown-toggle .user-initial {
+.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
 	background-color: #000;
 	color: #FFF;
 }
@@ -907,18 +908,24 @@ li.active > .sidebar-filter-slide-toggle span
 
 /* #000 && #555 */
 
-.light-text .dropdown .dropdown-toggle .icon-menu {
+.light-text .dropdown .dropdown-toggle .icon-menu,
+.light-text .dropdown .dropdown-toggle span {
 	color: #FFF;
 }
-.light-text .dropdown.open .dropdown-toggle .icon-menu {
-	color: #AAA;
+.light-text .dropdown.open .dropdown-toggle .icon-menu,
+.light-text .dropdown.open .dropdown-toggle span {
+	color: #000;
 }
 
 .dropdown .dropdown-toggle .icon-menu,
-.array-controls-pinned .dropdown .dropdown-toggle .icon-menu {
+.array-controls-pinned .dropdown .dropdown-toggle .icon-menu,
+.array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu,
+.dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown.open .dropdown-toggle span {
 	color: #000;
 }
 .dropdown.open .dropdown-toggle .icon-menu,
-.array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu {
-	color: #555;
+.dropdown.open .dropdown-toggle span {
+	color: #FFF;
 }
