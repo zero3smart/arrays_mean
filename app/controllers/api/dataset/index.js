@@ -579,7 +579,7 @@ function verifyDataType(name, sample, rowObjects, index) {
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
 
-    } else if(rowObject.operation == "ToInteger" && numberRE.test(sample)) {
+    } else if(rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat" && numberRE.test(sample)) {
         console.log("parsing agin from integer")
         var secondRowObject = intuitDataype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
@@ -615,12 +615,15 @@ function intuitDataype(name, sample) {
         } else {
             // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
             var numberRE = /([^0-9\.,]|\s)/;
+            var floatRE = /[^0-9]/;
             if(numberRE.test(sample) || sample === "") {
                 console.log("name: " + name + " sample: " + sample + " is a string");
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+            } else if(floatRE.test(sample)) {
+               console.log("name: " + name + "sample: " + sample + " is a float");
+               return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
             } else {
-               console.log("name: " + name + "sample: " + sample + " is a number");
-               return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+                return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
             }
         }
     }
