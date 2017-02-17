@@ -188,7 +188,7 @@ DAT.Globe = function(container, opts) {
         container.removeEventListener('mouseout', onMouseOut, false);
         container.style.cursor = 'auto';
 
-        opts.onMouseUp();
+        opts.onMouseUp(event);
     }
 
     function onMouseOut(event) {
