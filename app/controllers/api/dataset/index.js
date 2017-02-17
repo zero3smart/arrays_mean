@@ -613,7 +613,7 @@ function intuitDataype(name, sample) {
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
             }
         } else {
-            // if the sample has anything other than numbers and a "." it's a string
+            // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
             var numberRE = /([^0-9\.,]|\s)/;
             if(numberRE.test(sample) || sample === "") {
                 console.log("name: " + name + " sample: " + sample + " is a string");
