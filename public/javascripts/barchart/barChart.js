@@ -41,7 +41,7 @@ function BarChart(selector, dataSet, options) {
         right : 15,
         bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present - margin bottom can be 15 if we're not showing the labels
         // bottom: 10,
-        left : options.horizontal ? 120 : Math.max(10 * digitCount, 50)
+        left : options.horizontal ? 120 : Math.max(10 * digitCount, 50) + 36 // 2em axis label = 18px * 2 = 36
     };
 
     if ('margin' in options) {
