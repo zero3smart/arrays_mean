@@ -21,7 +21,7 @@ $(function () {
 	 }
 	 else {
 		 var scene = new ScrollMagic.Scene({
-				offset: - $('.navbar-fixed-top').innerHeight() - $('.w-container').innerHeight(),
+				offset: - $('.navbar-fixed-top').innerHeight(),
 				triggerElement: '#array-controls'
 			})
 			.triggerHook('onLeave')

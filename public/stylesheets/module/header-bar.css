@@ -946,11 +946,23 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 	color: #555;
 }
 
-
 .navbar-brand-team-logo .team-logo-circle {
 	background-size: cover;
 	background-position: center;
-	height: 44px;
-	width: 44px;
-	border-radius: 22px;
+	height: 36px;
+	width: 36px;
+	border-radius: 18px;
+	position: relative;
+	bottom: 3px;
+}
+
+@media (min-width: 768px) {
+	.navbar-brand-team-logo .team-logo-circle {
+		background-size: cover;
+		background-position: center;
+		height: 44px;
+		width: 44px;
+		border-radius: 22px;
+		bottom: 0px;
+	}
 }
