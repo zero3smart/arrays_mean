@@ -266,7 +266,6 @@ module.exports.delete = function(req,res) {
 
 
 module.exports.deleteImage = function (req, res) {
-    console.log("here")
     if(req.user) {
         // only the admin can change images
         Team.findOne({_id: req.params.id, admin: req.user}, function (err, teamDoc) {
