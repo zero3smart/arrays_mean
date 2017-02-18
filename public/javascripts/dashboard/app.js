@@ -11,5 +11,6 @@ angular
         'ngCookies',
         'mdColorPicker',
         'angularFileUpload',
-        'ui.sortable'
+        'ui.sortable',
+        'credit-cards'
     ]);
