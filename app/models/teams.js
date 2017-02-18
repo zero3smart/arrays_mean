@@ -132,7 +132,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: truex};
+                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
 
 
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] }
