@@ -56,7 +56,8 @@
 	display: inline-block;
 	float: none;
 	margin-right: 0;
-	margin-left: 15px !important;
+	/*margin-left: 15px !important;*/
+	margin-left: 0px !important;
 	padding: 15px 0;
 	max-width: calc(100% - (42px * 4)); /* width of 2 icons on each side of header */
 	font-weight: 600;
@@ -943,4 +944,13 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 .dropdown.open .dropdown-toggle .icon-menu,
 .array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu {
 	color: #555;
+}
+
+
+.navbar-brand-team-logo .team-logo-circle {
+	background-size: cover;
+	background-position: center;
+	height: 44px;
+	width: 44px;
+	border-radius: 22px;
 }
