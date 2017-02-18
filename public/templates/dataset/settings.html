@@ -19,6 +19,7 @@
         <md-input-container class="md-block publish-settings">
 
             <label style="margin-bottom: 15px">Privacy settings</label>
+
             <!-- <md-switch ng-model="dataset.fe_visible"
                 ng-change="updatePublishSettings()"
                 aria-label="Publish dataset">
@@ -36,8 +37,19 @@
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
-                List your visualization on arrays.co
+                List your visualization on your team page
             </md-switch>
+
+<!-- 
+            <md-button ng-hide="dataset.connection || dataset.sample || !dataset.fe_visible" class="md-dashboard" aria-label="More actions menu" ng-disabled="dataset.state=='pending'"
+                ng-click="publishRequest()">
+                Submit Request to list on arrays.co
+                <span class="md-select-icon" aria-hidden="true"></span>
+            </md-button>
+
+            <h2 ng-if="dataset.state"> Request State: {{dataset.state}} </h2>
+ -->
+
 
         </md-input-container>
 

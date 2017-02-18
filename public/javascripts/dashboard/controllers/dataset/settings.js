@@ -51,6 +51,24 @@ angular.module('arraysApp')
                 }
             };
 
+            $scope.publishRequest = function() {
+
+                DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state: 'pending'})
+                .then(function(response) {
+                    if (response.status == 200 && response.data) {
+                        $scope.$parent.$parent.dataset = response.data;
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Request submitted, you will be notified when it get reviewed!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                    
+                })
+           
+            }
+
 
             $scope.submitForm = function(isValid) {
                 // debugger;
