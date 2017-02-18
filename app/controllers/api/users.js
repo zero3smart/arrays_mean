@@ -232,10 +232,6 @@ module.exports.update = function (req, res) {
             team.superTeam = true;
         }
 
-
-
-
-
         Team.create(team, function (err, createdTeam) {
             if (err) {
                 res.send(err);
@@ -308,6 +304,12 @@ module.exports.update = function (req, res) {
                         res.send(err);
                     }
                     else {
+                        mailer.newUserAcceptedInvitationEmail(team,savedUser,function(err) {
+                            if (err) winston.error('cannot send user alert email for user accepting invitation');
+                            else {
+                                winston.info('User Accepted Invitation Email sent');
+                            }
+                        })
                         res.json(savedUser);
                     }
                 })

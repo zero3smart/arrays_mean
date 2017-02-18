@@ -13,6 +13,7 @@ module.exports.create = function(req, res) {
     var userId = req.user;
 
     // Create Recurly user based on Arrays' user info
+
     User.findById(userId)
         .populate('_team')
         .populate('defaultLoginTeam')
@@ -36,6 +37,7 @@ module.exports.create = function(req, res) {
                     last_name: user.lastName
 
                 }, function(err, response) {
+
                     if (err) {
                         res.status(err.statusCode).send(err);
                     } else {

@@ -167,6 +167,10 @@
        }
 
 
+       var approvalRequest = function(datasetId,state) {
+            return $http.put('api/dataset/approve/' + datasetId, state);
+       }
+
 
 
         return {
@@ -182,6 +186,7 @@
             getReimportDatasets: getReimportDatasets,
             save: save,
             update: update,
+            approvalRequest: approvalRequest,
             getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
