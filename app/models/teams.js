@@ -70,7 +70,8 @@ team.GetTeams = function(fn) {
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
 
 
-
+    // console.log(teamQuery);
+    // console.log(JSON.stringify(datasetQuery));
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
             populate: {
@@ -262,12 +263,20 @@ team.UpdateSubscription = function(userId, responseData, callback) {
 
                                 var subscription = responseData.data.subscription;
 
-                                if (team.subscription.state == 'active' && subscription.state == 'canceled') {
 
-                                    stateChangedTo = 'canceled';
-                                } else if (team.subscription.state == 'canceled' && subscription.state == 'active') {
-                                    stateChangedTo = 'active';
+                                if (team.subscription) {
+
+                                    if (team.subscription.state == 'active' && subscription.state == 'canceled') {
+
+                                        stateChangedTo = 'canceled';
+                                        
+                                    } else if (team.subscription.state == 'canceled' && subscription.state == 'active') {
+                                        stateChangedTo = 'active';
+                                    }
+
                                 }
+
+                                
 
                                 team.subscription = {
                                     activated_at: subscription.activated_at._,

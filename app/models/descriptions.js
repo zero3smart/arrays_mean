@@ -118,7 +118,8 @@ var DatasourceDescription_scheme = Schema({
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
-DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
+DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team',
+        'author']});
 
 
 

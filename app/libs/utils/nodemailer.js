@@ -39,6 +39,19 @@ function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Actio
 
 }
 
+function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
+	var sub = '[Dataset Display Status]: ' + state;
+	var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') is ' + state + ' to be listed on arrays.co.';
+	var mailOptions = {
+		from: 'info@arrays.co', 
+		to: authorEmail,
+		subject: sub,
+		html: htmlText
+	}
+
+	sendEmail(mailOptions,cb);
+}
+
 
 module.exports.sendActivationEmail = function(user, cb) {
 	var token = jwt.sign({
@@ -86,19 +99,28 @@ module.exports.newTeamCreatedEmail = function(team,cb) {
 
 
 module.exports.newVizCreatedEmail = function(viz,cb) {
-	var userName = viz.author.firstName + ' ' + viz.author.lastName;
+
+	if (process.env.NODE_ENV !== 'development') {
+		var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz Created (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName,viz.author.email,viz.createdAt,
 		subject,cb);
+
+	}
+	
 }
 
-
+// this should be sending to email other than useralerts , since it requires actions
 module.exports.newVizWaitingForApproval = function(viz,cb) {
 	var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz pending approval (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName, viz.author.email,viz.updatedAt,
 		subject,cb);
+}
 
+module.exports.notifyVizApprovalAction = function(viz,cb) {
+	var authorName = viz.author.firstName + ' ' + viz.author.lastName ;
+	sendVizDisplayStatusUpdate(viz.state,authorName, viz.author.email,viz.title,cb);
 }
 
 module.exports.newUserInvitedEmail = function(admin,team,user,cb) {

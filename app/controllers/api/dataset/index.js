@@ -161,7 +161,6 @@ module.exports.approvalRequest = function(req,res) {
     batch.push(function(done) {
         if (req.body.state == 'pending') {
             if (dataset.state == 'pending') return done(); //re-submitting request? should not be happening
-
         }
         dataset.state = req.body.state;
         done();
@@ -174,7 +173,7 @@ module.exports.approvalRequest = function(req,res) {
             if (dataset.state == 'pending') {
                 nodemailer.newVizWaitingForApproval(dataset,done);
             } else {
-                done();
+                nodemailer.notifyVizApprovalAction(dataset,done);
             }
         })
     })
@@ -182,6 +181,7 @@ module.exports.approvalRequest = function(req,res) {
     batch.end(function(err) {
         if (err) res.status(500).send(err);
         else {
+
             res.json(dataset);
         }
 
@@ -330,6 +330,7 @@ module.exports.get = function (req, res) {
 
     datasource_description.findById(req.params.id)
         .lean()
+        .populate('author')
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
@@ -543,9 +544,11 @@ module.exports.save = function (req, res) {
         // Update of Existing Dataset
         datasource_description.findById(req.body._id)
             .populate('schema_id')
+            .populate('author')
             .exec(function (err, doc) {
 
-
+                var auth = doc.author;
+          
 
                 if (err) return res.status(500).send(err);
                 if (!doc) return res.status(500).send('Invalid Operation');
@@ -576,14 +579,12 @@ module.exports.save = function (req, res) {
 
                     }
                 });
-
     
-
                 if (!doc.schema_id) {
                     doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                 }
 
-             
+                // console.log(doc);
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);
                     if (!updatedDoc) return res.status(500).send('Invalid Operation');
