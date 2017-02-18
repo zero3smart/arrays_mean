@@ -40,15 +40,31 @@
                 List your visualization on your team page
             </md-switch>
 
-<!-- 
-            <md-button ng-hide="dataset.connection || dataset.sample || !dataset.fe_visible" class="md-dashboard" aria-label="More actions menu" ng-disabled="dataset.state=='pending'"
+
+   <!--          <label>Listing on Arrays.co</label> -->
+
+
+            <md-button ng-hide="dataset.connection || dataset.sample || !dataset.fe_visible || 
+                user.role=='superAdmin'" class="md-dashboard" aria-label="More actions menu" ng-disabled="dataset.state=='pending'"
                 ng-click="publishRequest()">
                 Submit Request to list on arrays.co
                 <span class="md-select-icon" aria-hidden="true"></span>
             </md-button>
+ 
+            <h2 ng-if="dataset.state && user.role !== 'superAdmin' "> Request State: {{dataset.state}} </h2>
 
-            <h2 ng-if="dataset.state"> Request State: {{dataset.state}} </h2>
- -->
+
+            <h2 ng-if="user.role=='superAdmin'">Require Action: </h2>
+
+            <md-select aria-label="Item title"
+                       ng-model="dataset.state" ng-change="updateListingOnArrays()">
+                <md-option value="pending"> Pending</md-option>
+                <md-option value="approved"> Approve</md-option>
+                <md-option value="disapproved"> Disapprove</md-option>
+            </md-select>
+
+
+           
 
 
         </md-input-container>

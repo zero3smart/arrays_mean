@@ -30,6 +30,8 @@ angular.module('arraysApp')
             // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
+            $scope.approved = (dataset.state == 'approved')
+
 
 
             $scope.$parent.$parent.dataset = dataset;

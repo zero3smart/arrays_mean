@@ -98,7 +98,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
 
     function nonLoginUserQuery (cb) {
-        var publicAndImportedDataset = {isPublic: true,imported:true,fe_visible:true,fe_listed:true};
+        var publicAndImportedDataset = {isPublic: true,imported:true,fe_visible:true,state:'approved'};
         var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
         getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true}, { 'subscription.state': 'active' } ] }, {$or: [publicAndImportedDataset,publicAndConnectedDataset]}, cb);
     }
@@ -110,7 +110,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
             .exec(function(err, foundUser) {
                 if (err) return fn(err);
                 if (!foundUser) return nonLoginUserQuery(fn);
-                var importedDataset = {imported:true,fe_visible:true,fe_listed:true};
+                var importedDataset = {imported:true,fe_visible:true,state: 'approved'};
                 var connectedDataset = {connection:{$ne:null}, fe_listed:true,fe_visible:true};
 
                 if (foundUser.isSuperAdmin()) {
