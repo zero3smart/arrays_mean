@@ -460,6 +460,14 @@ md-tooltip .md-content {
 /* Account */
 /* Payment */
 
+.payment-card-icon {
+    color: var(--color-text-light);
+}
+
+.payment-card-icon-active {
+    color: var(--color-text-dark);
+}
+
 .payment-bank-type md-radio-button {
     display: inline-block;
     margin-right: 30px;
