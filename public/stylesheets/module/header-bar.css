@@ -77,8 +77,10 @@
 
 .navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
 	position: relative;
-	top: 10px;
 	fill: #000;
+	top: 13px;
+	width: 22px;
+	height: 24px;
 }
 
 .light-text .navbar-brand-arrays.navbar-brand-stacked-logo svg {
@@ -91,6 +93,12 @@
 		padding-bottom: 22px;
 		height: var(--navbar-height-tablet);
 		font-size: 20px;
+	}
+
+	.navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
+		top: 17px;
+		width: 27.5px;
+		height: 30px;
 	}
 }
 
@@ -137,16 +145,6 @@
 	transform: translate(0, -100%);
 }
 
-@media (min-width: 768px) {
-	.navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo {
-		display: none;
-	}
-
-	.array-controls-pinned .navbar-brand-array-title {
-		transform: translate(0, -50%);
-	}
-}
-
 .array-controls-pinned .navbar-default .navbar-nav > .open > a,
 .array-controls-pinned .navbar-default .navbar-nav > .open > a:hover,
 .array-controls-pinned .navbar-default .navbar-nav > .open > a:focus {
@@ -159,22 +157,39 @@
 
 /* @group Filter active */
 
-@media (max-width: 767px) {
+.sidebar-filter-active {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	display: block;
+	width: 11px;
+	height: 11px;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: 1000px;
+}
+
+@media (min-width: 768px) {
 	.sidebar-filter-active {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		display: block;
-		width: 11px;
-		height: 11px;
-		border-width: 2px;
-		border-style: solid;
-		border-color: #ffffff;
-		border-radius: 1000px;
+		top: 11px;
+		right: 23px;
+		border-width: 3px;
+		height: 13px;
+		width: 13px;
 	}
 }
 
-.array-controls-pinned #navbar .active .sidebar-filter-slide-toggle {
+.light-text .active .sidebar-filter-active {
+	border-color: #FFFFFF;
+}
+
+.array-controls-pinned #navbar .active .sidebar-filter-active,
+.active .sidebar-filter-active {
+	background-color: transparent;
+	border-color: #000000;
+}
+
+.array-controls-pinned .active .sidebar-filter-slide-toggle {
 	background-color: transparent;
 	color: #000000;
 	transition: color 400ms ease-in-out;
@@ -311,7 +326,8 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #000;
 }
 
-.array-controls-pinned .dropdown .dropdown-toggle .user-initial {
+.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
 	background-color: #000;
 	color: #FFF;
 }
@@ -630,6 +646,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .pill-link,
 .w-signup-container .pill-link,
 .w-login-container .pill-link {
+	font-size: 18px;
 	padding: 4px 16px;
 	padding-bottom: 6px;
 	border: 1px solid #FEB600;
@@ -802,12 +819,17 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 
-li.active > .sidebar-filter-slide-toggle span
-{
+li.active > .sidebar-filter-slide-toggle span {
     color: #FFF;
+}
+li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
+	border-color: #FFF;
 }
 .light-text li.active > .sidebar-filter-slide-toggle span {
 	color: #000;
+}
+.light-text li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
+	border-color: #000;
 }
 
 .navbar-right .collapsable-links .link-underline {
@@ -891,6 +913,7 @@ li.active > .sidebar-filter-slide-toggle span
 }
 
 .header-blank-link {
+	font-size: 18px;
 	color: #000;
 	transition: color 200ms ease;
 }
@@ -907,18 +930,24 @@ li.active > .sidebar-filter-slide-toggle span
 
 /* #000 && #555 */
 
-.light-text .dropdown .dropdown-toggle .icon-menu {
+.light-text .dropdown .dropdown-toggle .icon-menu,
+.light-text .dropdown .dropdown-toggle span {
 	color: #FFF;
 }
-.light-text .dropdown.open .dropdown-toggle .icon-menu {
-	color: #AAA;
+.light-text .dropdown.open .dropdown-toggle .icon-menu,
+.light-text .dropdown.open .dropdown-toggle span {
+	color: #000;
 }
 
 .dropdown .dropdown-toggle .icon-menu,
-.array-controls-pinned .dropdown .dropdown-toggle .icon-menu {
+.array-controls-pinned .dropdown .dropdown-toggle .icon-menu,
+.array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu,
+.dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown.open .dropdown-toggle span {
 	color: #000;
 }
 .dropdown.open .dropdown-toggle .icon-menu,
-.array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu {
-	color: #555;
+.dropdown.open .dropdown-toggle span {
+	color: #FFF;
 }

@@ -40,6 +40,11 @@ angular.module('arraysApp')
 
                 }
             });
+
+            $scope.$watch('submitting',function(sub) {
+                $scope.primaryAction.disabled = (sub == true);
+            })
+            
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
             };
@@ -933,7 +938,13 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
-                        $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+                        // $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+
+                        if (!$scope.data.designatedFields) $scope.data.designatedFields = {};
+                        for (var key in $scope.dataset.fe_designatedFields) {
+                            $scope.data.designatedFields[$scope.dataset.fe_designatedFields[key]] = key;
+                        }
+
                         sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
@@ -1524,15 +1535,19 @@ angular.module('arraysApp')
 
 
                 if (isValid) {
+                    $scope.submitting = true;
 
                     var errorHandler = function (error) {
+                            $scope.submitting = false;
                             $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(5000)
                         );
-                        }, done = function() {
+                        }, done = function() {  
+                            $scope.submitting = false;
+
                             $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')

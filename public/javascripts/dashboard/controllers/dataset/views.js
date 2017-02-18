@@ -23,6 +23,11 @@ angular.module('arraysApp')
             };
 
 
+            $scope.$watch('submitting',function(sub) {
+                $scope.primaryAction.disabled = (sub == true);
+            })
+
+
 
 
             $scope.$parent.$parent.currentNavItem = 'views';
@@ -157,6 +162,8 @@ angular.module('arraysApp')
                 $scope.$parent.$parent.dataset.fe_views.default_view = $scope.data.default_view;
 
                 if (isValid) {
+
+                    $scope.submitting = true;
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
 
@@ -179,6 +186,7 @@ angular.module('arraysApp')
 
                     DatasetService.save(finalizedDataset)
                         .then(function (response) {
+                            $scope.submitting = false;
                             if (response.status == 200) {
                                 var id = response.data.id;
                                 $mdToast.show(
@@ -197,6 +205,7 @@ angular.module('arraysApp')
                             }
 
                         }, function (error) {
+                            $scope.submitting = false;
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(error)

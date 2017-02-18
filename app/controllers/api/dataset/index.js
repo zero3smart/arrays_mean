@@ -124,7 +124,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
     datasource_description.findById(req.params.id)
         .populate('_team')
         .exec(function (err, description) {
-            var key = description._team.subdomain + '/datasets/' + description.uid + '/assets/banner/' + req.query.fileName;
+            var key = description._team.subdomain + '/datasets/' + description._id + '/assets/banner/' + req.query.fileName;
             s3ImageHosting.signedUrlForPutObject(key, req.query.fileType, function (err, data) {
                 if (err) {
                     return res.status(500).send(err);
@@ -444,7 +444,8 @@ module.exports.update = function(req,res) {
 
 
 
-module.exports.save = function (req, res) {    
+module.exports.save = function (req, res) {   
+
     if (!req.body._id) {
 
         // Creating of New Dataset
@@ -458,22 +459,24 @@ module.exports.save = function (req, res) {
                         return res.status(500).send(err);
                     } else {
                         team.datasourceDescriptions.push(doc.id);
+
                         team.save(function (err, saved) {
                             if (err) {
                                 return res.status(500).send(err);
                             } else {
+                                return res.json({id: doc.id});
                                 //update the user as an editor of the dataset
-                                User.findById(req.user, function(err, user) {
-                                    if(err) {
-                                        return res.status(500).send(err);
-                                    } else {
-                                        user._editors.push(doc.id);
-                                        user.save(function (err, saved) {
-                                            if (err) return res.status(500).send(err);
-                                            return res.json({id: doc.id}) 
-                                        })
-                                    }
-                                })
+                                // User.findById(req.user, function(err, user) {
+                                //     if(err) {
+                                //         return res.status(500).send(err);
+                                //     } else {
+                                //         user._editors.push(doc.id);
+                                //         user.save(function (err, saved) {
+                                //             if (err) return res.status(500).send(err);
+                                //             return res.json({id: doc.id}) 
+                                //         })
+                                //     }
+                                // })
                             }
                         });
                     }

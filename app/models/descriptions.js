@@ -100,11 +100,13 @@ var DatasourceDescription_scheme = Schema({
 
     skipImageScraping: {type: Boolean, default: false},
 
-    jobId: {type: Number,integer: true, default: 0}
+    jobId: {type: Number,integer: true, default: 0},
 
     //0: no job has started, job has completed
     //all others: related to the jobId in the queue
-
+    approved: {
+        type: Boolean, default: false
+    }
 
     
 

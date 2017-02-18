@@ -15,8 +15,8 @@
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
                                     {% set title = team.title | lower %}
-                                    <!-- We will need to replace this as it's super hacky but for now we need it for moma -->
-                                    {% set url = returnAbsURLorBuildURL(rowObject.rowParams[fieldKey_originalImageURL]) %}
+                                    {% set url = makeURLfrom_relativePath(rowObject.rowParams[fieldKey_originalImageURL],
+                                        team.subdomain,datasetId,'image') %}
                                         {% if scrapedImages %}
                                             <img src="{{ url }}" class="object-featured img-responsive" />
                                         {% else %}
