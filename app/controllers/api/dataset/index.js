@@ -935,3 +935,33 @@ module.exports.removeSubdataset = function(req, res) {
 
     })
 };
+
+
+module.exports.deleteBanner = function (req, res) {
+    if(req.user) {
+        datasource_description.findById(req.params.id)
+            .populate('_team', 'subdomain')
+            .exec(function (err, description) {
+            if(err) {
+                console.log(err);
+                return res.status(500).send({error: err})
+            } else {
+                if(description.banner.indexOf('http') >= 0) {
+                    var key = description.banner.split("amazonaws.com")[1];
+                } else {
+                    var key = description._team.subdomain + "/datasets/" + description.title + "/assets/banner/" + description.banner;
+                }
+                datasource_file_service.deleteObject(key, function (err, data) {
+                    if(err) {
+                        console.log(err);
+                        return res.status(500).send({error: err})
+                    } else {
+                        description.banner = undefined;
+                        description.save();
+                        return res.json({dataset: description})
+                    }
+                })
+            }
+        })
+    }
+}

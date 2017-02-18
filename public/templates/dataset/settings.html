@@ -8,7 +8,7 @@
 
         <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Title</label>
-            <input unique-title required name="title" ng-model="dataset.title" dataset-id="dataset._id" submitting-flag="submitting>
+            <input unique-title required name="title" ng-model="dataset.title" dataset-id="dataset._id" submitting-flag="submitting">
             <div ng-messages="vm.settingsForm.title.$error">
                 <div ng-message="required">This is required.</div>
                 <div ng-message="titleAvailable">This title is already used on your team.</div>
@@ -78,9 +78,10 @@
 
             <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">
             <div layout="row" layout-align="start center">
-                <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0">
+                <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0" ng-if="!dataset.banner">
                    Choose File
                 </label>
+                <span><a href="" ng-if="dataset.banner" ng-click="deleteBanner()" class="warn">Remove</a></span>
             </div>
         </div>
 
