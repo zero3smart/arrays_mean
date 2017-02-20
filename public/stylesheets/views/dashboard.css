@@ -9,17 +9,44 @@ body.dashboard {
 	font-size: 18px;
 }
 
-h1 {
+.dashboard h1 {
     font-size: 39px;
 }
-h2 {
+.dashboard h2 {
     font-size: 27px;
 }
-h3 {
+.dashboard h3 {
     font-size: 24px;
 }
-h4 {
+.dashboard h4 {
     font-size: 21px;
+}
+
+/*container*/
+.dashboard-container {
+    /*padding: 1em;*/
+	padding-top: var(--navbar-height-mobile);
+}
+@media (min-width: 768px) {
+    .dashboard-container {
+		/*max-width: 768px;*/
+		padding-top: var(--navbar-height-tablet);
+    }
+}
+
+/*content*/
+.dashboard-content {
+	padding-top: var(--navbar-height-mobile);
+    margin: 24px;
+}
+@media (min-width: 960px)  {
+    .dashboard-content {
+		padding-top: var(--navbar-height-tablet);
+		max-width: 40em !important;
+    }
+}
+.dashboard-content .array-content {
+    padding: 12px 0;
 }
 
 /*to add to variables and global styles*/
@@ -32,6 +59,8 @@ h4 {
 .confirm {
     color: var(--color-primary);
 }
+
+/*spacing unit: 12px;*/
 
 /* md-input and container styles */
 
@@ -172,10 +201,6 @@ aa-dialog-actions .md-button:last-child {
 	top: 100%;
 }
 
-.dashboard-container {
-    padding: 2em 1em;
-}
-
 .dashboard-container a[href^="mailto"] {
 	/*md-default-theme*/
 	color: rgba(0,0,0,0.87);
@@ -187,43 +212,12 @@ md-content.md-default-theme, md-content {
     background-color: #ffffff !important;
 }
 
-@media (min-width: 768px) {
-    .dashboard-container {
-        padding: 4em 3em;
-    }
-}
-
-@media (min-width: 1200px) {
-    .dashboard-container {
-        padding: 4em 10em;
-    }
-}
-
-.dashboard-content {
-	padding-top: var(--navbar-height-mobile);
-}
-@media (min-width: 960px)  {
-    .dashboard-content {
-		padding-top: var(--navbar-height-tablet);
-		max-width: 40em !important;
-    }
-}
-
-.dashboard-content .array-header {
-    background-color: #fff;
-}
-
 .formInput{
     padding-top:20px;
 }
 
 .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
     vertical-align: inherit;
-}
-
-
-.dashboard-content .array-content {
-    padding: 15px 0;
 }
 
 .md-button.md-dashboard.md-dashboard-header {
@@ -361,8 +355,9 @@ body.md-toast-animating {
 	margin-bottom: 0;
 }
 
-/*.team-list .md-button .dashboard-list-name,*/
-/*.team-list .md-button .dashboard-list-revision,*/
+.team-list {
+    margin-left: -12px;
+}
 .team-list .md-button span  {
     font-size: 18px;
     line-height: 1em;
@@ -424,7 +419,9 @@ md-input-invalid.subdomain-append {
 .md-nav-bar .md-button,
 .md-tab {
     color: var(--color-text-dark);
-    font-size: 18px;
+    /*match h4 size*/
+    font-size: 21px;
+    /*font-size: 18px;*/
     text-transform: none;
 }
 .md-nav-bar .md-button.md-focused {
@@ -433,13 +430,9 @@ md-input-invalid.subdomain-append {
 md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused {
 	background-color: transparent;
 }
-/*match sidebar button height*/
 .md-nav-bar {
-	height: 41px;
-}
-/*.md-tab,*/
-.md-nav-item a {
-	line-height: 16px !important;
+    height: 46px;
+    margin-top: -1px;
 }
 
 .dashboard .tab-content {
