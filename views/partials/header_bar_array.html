@@ -5,7 +5,7 @@
     a.color-brand:focus,
     a.color-brand:active,
     .sidebar-filter-toggle .color-brand {
-        color: {{ brandColor }};
+        color: {{ '#4A4A4A' if brandColor == '#dddddd' else brandColor }};
     }
 
     .color-brand-hover:hover,
@@ -71,8 +71,18 @@
                    href="{% if team.subdomain | length %}{{ addSubdomain(team.subdomain) }}{% else %}{{explore_url}}{% endif %}">{% if team.logo_header
                     | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title.toLowerCase() }}{% else
                     %}Arrays{% endif %}</a> -->
-                <a class="navbar-brand navbar-brand-arrays navbar-brand-stacked-logo" href="https://arrays.co/">
-                   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="27.5px" height="30px" viewBox="0 0 16.5 18" xml:space="preserve">
+                {% if team.logo_header %}
+                <a class="navbar-brand navbar-brand-arrays navbar-brand-team-logo" href="{% if team.subdomain | length %}{{ addSubdomain(team.subdomain) }}{% else %}"https://arrays.co/"{% endif %}">
+                    <div class="team-logo-circle" style="background-image:url('{{ team.logo_header }}');"></div>
+                </a>
+                <br style="font-size:0px;" />
+                <a class="navbar-brand navbar-brand-array-title" style="position:relative;top:-7px;" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                    searchQ: searchQ,
+                    searchCol: searchCol
+                }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
+                {% else %}
+                <a class="navbar-brand navbar-brand-arrays navbar-brand-stacked-logo" href="{% if team.subdomain | length %}{{ addSubdomain(team.subdomain) }}{% else %}"https://arrays.co/"{% endif %}">
+                   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16.5 18" xml:space="preserve">
                         <polygon points="8.2,0 5.9,4.7 10.6,4.7 "/>
                         <polygon points="2.3,13.3 0,18 4.7,18 "/>
                         <polygon points="8.2,17.9 10.5,13.4 6,13.4 "/>
@@ -83,16 +93,17 @@
                 </a>
                 <br/>
                 <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
-					searchQ: searchQ,
-					searchCol: searchCol
-				}) }}"><span class="truncate">{{ arrayTitle }}</span></a>
+                    searchQ: searchQ,
+                    searchCol: searchCol
+                }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
+                {% endif %}
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>
                         <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter"
                                                                               aria-hidden="true"></span>{% if
-                            isFilterActive %}<span class="sidebar-filter-active background-color-brand"></span>{% endif
+                            isFilterActive %}<span class="sidebar-filter-active"></span>{% endif
                             %}</a>
                     </li>
                     <li class="dropdown">

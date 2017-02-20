@@ -5,6 +5,7 @@ var winston = require('winston');
 var Promise = require('q').Promise;
 var _ = require("lodash");
 var async = require('async');
+var nodemailer = require('.././libs/utils/nodemailer');
 
 var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
@@ -100,20 +101,51 @@ var DatasourceDescription_scheme = Schema({
 
     skipImageScraping: {type: Boolean, default: false},
 
-    jobId: {type: Number,integer: true, default: 0}
+    jobId: {type: Number,integer: true, default: 0},
 
     //0: no job has started, job has completed
     //all others: related to the jobId in the queue
 
+    state : String
+    //pending
+    //approved
+    //disapproved, maybe notify the user about this
 
     
 
 
-});
+},{ timestamps: true });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
+
+
+
+DatasourceDescription_scheme.pre('save',function(next) {
+    this._wasNew = this.isNew;
+    next();
+})
+
+DatasourceDescription_scheme.post('save',function(doc) {
+    if (doc._wasNew) {
+        this.populate('author _team',function(err,docPopulatedWithAuthor) {
+            if (err || !docPopulatedWithAuthor.author) {
+                winston.error('Viz created with error');
+                console.log(err);
+            } else {
+                nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
+                    if (err) winston.error('cannot send user alert email');
+                    else {
+                        winston.info('Viz created email sent');
+                    }
+                })
+            }
+        })
+    }
+})
+
+
 
 DatasourceDescription_scheme.pre('remove',function(next) {
     var thisId = this._id;

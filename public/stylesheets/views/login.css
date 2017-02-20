@@ -30,8 +30,8 @@
 }
 .socialButtons a:hover {
     color: white;
-    opacity:1;   
-    cursor: pointer;   
+    opacity:1;
+    cursor: pointer;
 }
 .socialButtons .btn-facebook {background: #3b5998;}
 .socialButtons .btn-twitter {background: #00aced;}
@@ -49,7 +49,14 @@
 
 #login-modal .modal-dialog {
     margin:0px auto;
-    margin-top:5%;
+}
+@media (min-width: 480px) {
+    #login-modal .modal-dialog {
+        margin-top:5%;
+    }
+    .modal-sm {
+        width: 300px;
+    }
 }
 
 .parent-pull-right {
@@ -58,18 +65,6 @@
 
 div.signup-link {
 	margin-bottom: 10px;
-}
-
-@media (min-width: 1400px) {
-    .modal-sm {
-        width: 20%;
-    }
-}
-
-@media (max-width: 1500px) {
-    .modal-sm {
-        width: 30%;
-    }
 }
 
 #login-modal .input-group button {
@@ -102,7 +97,7 @@ div.signup-link {
     background-color:var(--color-background);
     width: 3em;
     text-align: center;
-}           
+}
 .login .loginForm .input-group.i {
     width: 2em;
 }
@@ -114,6 +109,3 @@ div.signup-link {
 .login-page #login-modal {
     display: block !important;
 }
-
-    
-

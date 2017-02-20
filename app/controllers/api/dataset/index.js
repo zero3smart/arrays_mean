@@ -17,6 +17,7 @@ var s3ImageHosting = require('../../../libs/utils/aws-image-hosting');
 var hadoop = require('../../../libs/datasources/hadoop');
 
 var processing = require('../../../libs/datasources/processing');
+var nodemailer = require('../../../libs/utils/nodemailer');
 
 var queue = require.main.require('./queue-init')();
 require('../../../libs/import/queue-worker');
@@ -135,6 +136,58 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
         })
 
 };
+
+module.exports.approvalRequest = function(req,res) {
+    var datasetId = req.params.id;
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var dataset;
+
+    batch.push(function(done) {
+
+        datasource_description.findOne({_id:datasetId})
+        .populate('author _team')
+        .exec(function(err,d) {
+            if (err) done(err);
+            else {
+                dataset = d;
+                done();
+            }
+        })
+    })
+
+    batch.push(function(done) {
+        if (req.body.state == 'pending') {
+            if (dataset.state == 'pending') return done(); //re-submitting request? should not be happening
+
+        }
+        dataset.state = req.body.state;
+        done();
+
+    })
+
+    batch.push(function(done) {
+        dataset.save(function(err) {
+            if (err) return done(err);
+            if (dataset.state == 'pending') {
+                nodemailer.newVizWaitingForApproval(dataset,done);
+            } else {
+                done();
+            }
+        })
+    })
+
+    batch.end(function(err) {
+        if (err) res.status(500).send(err);
+        else {
+            res.json(dataset);
+        }
+
+    })
+
+}
 
 module.exports.deleteSource = function(req,res) {
     if (!req.params.id) {
@@ -444,7 +497,8 @@ module.exports.update = function(req,res) {
 
 
 
-module.exports.save = function (req, res) {    
+module.exports.save = function (req, res) {   
+
     if (!req.body._id) {
 
         // Creating of New Dataset
