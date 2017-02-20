@@ -42,7 +42,7 @@ body.dashboard {
 @media (min-width: 960px)  {
     .dashboard-content {
 		padding-top: var(--navbar-height-tablet);
-		max-width: 40em !important;
+		max-width: 35em !important;
     }
 }
 .dashboard-content .array-content {
@@ -254,10 +254,6 @@ md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-warn);
 }
 
-md-tabs .md-tab.md-active {
-    color: var(--color-text-dark);
-}
-
 img.iconMap {
     height:40px;
 }
@@ -416,23 +412,33 @@ md-input-invalid.subdomain-append {
 
 /* Angular Material tabs and nav bars */
 
+md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused {
+	background-color: transparent;
+}
+md-tabs .md-tab.md-active {
+    color: var(--color-text-dark);
+}
+.md-nav-bar {
+    height: 46px;
+}
+
 .md-nav-bar .md-button,
 .md-tab {
     color: var(--color-text-dark);
     /*match h4 size*/
     font-size: 21px;
-    /*font-size: 18px;*/
+    line-height: 21px;
     text-transform: none;
 }
 .md-nav-bar .md-button.md-focused {
 	background-color: transparent;
 }
-md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused {
-	background-color: transparent;
+.md-button._md-nav-button {
+    padding: 12px;
 }
-.md-nav-bar {
-    height: 46px;
-    margin-top: -1px;
+/*flush left*/
+.md-nav-item:first-of-type {
+    margin-left: 0;
 }
 
 .dashboard .tab-content {
