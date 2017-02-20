@@ -31,8 +31,8 @@ md-sidenav {
 /*not collapsed*/
 @media (min-width: 960px)  {
     .sidebar-menu {
-        /*h1 + 15px*/
-        /*padding-top: calc(78px + 15px);*/
+        /*manually align to baseline of subheader*/
+        padding-top: 114px;
     }
 }
 
