@@ -5,6 +5,10 @@ html, body {
 	background-color: #ffffff;
 }
 
+body.dashboard {
+	font-size: 18px;
+}
+
 /*to add to variables and global styles*/
 :root {
 	--color-warn: #fb4400;
@@ -28,9 +32,11 @@ md-input-container label {
 label,
 md-input-container label {
 	color: var(--color-text-dark);
+	line-height: normal;
 }
 
 md-input-container label.md-required:after {
+	font-size: inherit !important;
 	color: var(--color-warn) !important;
 }
 
@@ -151,16 +157,21 @@ aa-dialog-actions .md-button:last-child {
 	top: 100%;
 }
 
-/**/
-
+/*
+~1.225 scale from 18px
+to work with existing 41px h1
+*/
+h1 {
+	font-size: 41px;
+}
 h2 {
-    font-size: 24px;
+    font-size: 33px;
 }
 h3 {
-    font-size: 18px;
+    font-size: 27px;
 }
 h4 {
-    font-size: 16px;
+    font-size: 22px;
 }
 
 .dashboard-container {
@@ -311,23 +322,23 @@ body.md-toast-animating {
     display: inline-block;
     width: 20px;
     vertical-align: text-bottom;
-    font-size: 14px;
-    font-weight: 600;
+    /*font-size: 14px;*/
+    /*font-weight: 600;*/
     color: var(--color-primary);
 }
 .dashboard-list-name {
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 30px;
-    font-weight: 600;
+    /*font-weight: 600;*/
 }
 .dashboard-list .custom {
-	font-weight: bold;
+	/*font-weight: bold;*/
 }
 .user-list .pending {
 	color: var(--color-text-light);
 }
 .dashboard-list-revision {
-    font-size: 16px;
+    /*font-size: 16px;*/
 }
 .dashboard-list-icon {
     /*text-align: center;*/
@@ -354,12 +365,12 @@ body.md-toast-animating {
 
 .team-list .md-button .dashboard-list-name,
 .team-list .md-button .dashboard-list-revision  {
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 1em;
 }
 /* mimic .sidebar-menu .nav > li > a */
 .team-list .md-button {
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 1em;
     margin: 0;
     margin-bottom: 1px;
@@ -383,7 +394,7 @@ body.md-toast-animating {
 .subdomain-append,
 md-input-invalid.subdomain-append {
 	display: inline;
-	font-size: 20px;
+	/*font-size: 20px;*/
 	font-weight: normal;
 }
 
@@ -414,7 +425,7 @@ md-input-invalid.subdomain-append {
 .md-nav-bar .md-button,
 .md-tab {
     color: var(--color-text-dark);
-    font-size: 16px;
+    font-size: 18px;
     text-transform: none;
 }
 .md-nav-bar .md-button.md-focused {
@@ -502,21 +513,21 @@ md-tooltip .md-content {
 	color: var(--color-text-light);
 }
 
-.dataset-breadcrumb span {
+/*.dataset-breadcrumb span {
     font-family: var(--font-family-calibre);
     display: block;
     text-align: center;
-}
-.dataset-breadcrumb .active span {
+}*/
+/*.dataset-breadcrumb .active span {
     font-weight: bold;
-}
+}*/
 
-.dataset-breadcrumb .nav-item-icon {
+/*.dataset-breadcrumb .nav-item-icon {
     font-size: 24px;
-}
-.dataset-breadcrumb .nav-item-label {
+}*/
+/*.dataset-breadcrumb .nav-item-label {
     font-size: 14px;
-}
+}*/
 
 /* Dataset List */
 .dataset .row {
@@ -751,7 +762,7 @@ md-dialog {
 
 md-dialog fieldset legend,
 .dataset fieldset legend {
-    font-size: 16px;
+    /*font-size: 16px;*/
 	font-weight: bold;
 	color: var(--color-text-dark);
 	border: none;
