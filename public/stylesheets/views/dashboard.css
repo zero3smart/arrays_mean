@@ -9,6 +9,19 @@ body.dashboard {
 	font-size: 18px;
 }
 
+h1 {
+    font-size: 39px;
+}
+h2 {
+    font-size: 27px;
+}
+h3 {
+    font-size: 24px;
+}
+h4 {
+    font-size: 21px;
+}
+
 /*to add to variables and global styles*/
 :root {
 	--color-warn: #fb4400;
@@ -32,6 +45,7 @@ md-input-container label {
 label,
 md-input-container label {
 	color: var(--color-text-dark);
+    font-weight: 600;
 	line-height: normal;
 }
 
@@ -139,15 +153,16 @@ aa-dialog-actions .md-button:last-child {
 .new-dataset-form md-input-container {
 	margin-top: 22px;
 	margin-bottom: 11px;
-	font-size: 41px;
+	font-size: 39px;
 	line-height: 1.1em;
 	padding: 0;
 }
 .new-dataset-form input,
 .new-dataset-form input.ng-empty {
-	font-size: 41px;
+	font-size: 39px;
 	line-height: 1.1em;
-	height: 45px;
+	height: 41px;
+    padding-left: 0;
 }
 .new-dataset-form .md-errors-spacer {
 	display: none;
@@ -155,23 +170,6 @@ aa-dialog-actions .md-button:last-child {
 .new-dataset-form .error-messages {
 	position: absolute;
 	top: 100%;
-}
-
-/*
-~1.225 scale from 18px
-to work with existing 41px h1
-*/
-h1 {
-	font-size: 41px;
-}
-h2 {
-    font-size: 33px;
-}
-h3 {
-    font-size: 27px;
-}
-h4 {
-    font-size: 22px;
 }
 
 .dashboard-container {
@@ -682,7 +680,7 @@ ul.aa-color-picker {
 }
 
 .dataset .field.custom {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .dataset .field .exclude > md-checkbox {
@@ -744,14 +742,13 @@ md-dialog {
     width: 45em;
 }
 
-md-dialog fieldset legend,
+/*md-dialog fieldset legend,
 .dataset fieldset legend {
-    /*font-size: 16px;*/
-	font-weight: bold;
+	font-weight: 600;
 	color: var(--color-text-dark);
 	border: none;
     padding-top: 20px;
-}
+}*/
 
 .no-padding {
     padding: 0 !important;
@@ -797,7 +794,7 @@ md-icon.btn-icon {
     font-family: var(--font-family-calibre);
     text-transform: uppercase;
     color: white;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 1.5px;
     padding: 0 1em;
