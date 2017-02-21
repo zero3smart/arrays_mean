@@ -89,7 +89,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
     if(this._showXLabels) {
-        return this._xAxisContainer.selectAll("text")
+        return this._xAxisContainer.selectAll("text:not(.label)") // do not rotate axis label
             .attr("dx", "-.8em")
             .attr("dy", "-.2em")
             .style("text-anchor", "end")
