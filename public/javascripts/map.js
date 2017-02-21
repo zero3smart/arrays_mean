@@ -256,7 +256,7 @@ map.on('load', function () {
 
             var feature = features[0];
 
-            var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.indexOf('map'));
+            var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.lastIndexOf('map'));
 
             window.location = urlWithoutObjectId + feature.properties.id;
         });
