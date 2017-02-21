@@ -670,7 +670,6 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                                 var rowObject = intuitDataype(e.name, output[0][i]);
                                 rowObjects.push(rowObject);
                                 return rowObject
-                                // return {name: e.name, sample: output[0][i]};
                             });
                             readStream.resume();
                         } else if (countOfLines == 3){
@@ -691,17 +690,11 @@ function verifyDataType(name, sample, rowObjects, index) {
     var numberRE = /([^0-9\.,]|\s)/;
     var rowObject = rowObjects[index]
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
-        console.log("parsing again from date")
-        console.log("name: " + name + " sample: " + sample)
-        console.log("rowObject name: " + rowObject.name + " rowObject sample: " + rowObject.sample)
         var secondRowObject = intuitDataype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
 
     } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
-        console.log("parsing agin from integer")
-        console.log("name: " + name + " sample: " + sample)
-        console.log("rowObject name: " + rowObject.name + " rowObject sample: " + rowObject.sample)
         var secondRowObject = intuitDataype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
@@ -712,12 +705,10 @@ function verifyDataType(name, sample, rowObjects, index) {
 function intuitDataype(name, sample) {
     var dateRE = /(year|DATE)/i;
     var isDate = false;
-    var known_date_formats = [/*moment.ISO_8601, */'MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY', 'YYYY-MM-DD', 'YYYY-M-D', 'YYYY-MM-D', 'YYYY-M-DD'];
+    var known_date_formats = ['MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY', 'YYYY-MM-DD', 'YYYY-M-D', 'YYYY-MM-D', 'YYYY-M-DD'];
     var returnObj = {name: name, sample: sample};
     for(var i = 0; i < known_date_formats.length; i++) {
         if(moment(sample, known_date_formats[i], true).isValid()) {
-            console.log("name: " + name + " sample: " + sample + " date");
-            console.log("date format: " + known_date_formats[i]);
             isDate = true;
             return {name: name, sample: sample, data_type: 'Date', input_format: known_date_formats[i], output_format: known_date_formats[i], operation: 'ToDate'};
         }
@@ -725,14 +716,11 @@ function intuitDataype(name, sample) {
 
     if(!isDate) {
         if(dateRE.test(name)){
-            console.log("name contains year");
             if(moment(sample, 'YYYY', true).isValid()) {
-                console.log("name: " + name + " sample: " + sample + " year date");
                 return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY', output_format: 'YYYY', operation: 'ToDate'};
             } else if(moment(sample, 'YYYYMMDD', true).isValid()) {
-                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYYMMDD', output_format: 'YYYYMMDD'}
+                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYYMMDD', output_format: 'YYYYMMDD', operation: 'ToDate'}
             } else {
-                console.log("couldn't parse name: " + name + " sample: " + sample);
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
             }
         } else {
@@ -741,13 +729,15 @@ function intuitDataype(name, sample) {
             var floatRE = /[^0-9]/;
             var IdRE = /(Id|ID)/;
             if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
-                console.log("name: " + name + " sample: " + sample + " is a string");
+                // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
+                if(moment(sample, moment.ISO_8601, true).isValid()) {
+                    return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY-MM-DD', output_format: 'YYYY-MM-DD', operation: 'ToDate'}
+                }
                 return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+
             } else if(floatRE.test(sample)) {
-               console.log("name: " + name + "sample: " + sample + " is a float");
                return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
             } else {
-                console.log("name: " + name + " sample " + sample + " is an integer")
                 return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
             }
         }
