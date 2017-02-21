@@ -37,12 +37,19 @@ body.dashboard {
 /*content*/
 .dashboard-content {
 	padding-top: var(--navbar-height-mobile);
-    margin: 24px;
+	margin: 0 24px 24px;
+}
+@media (min-width: 600px) {
+	.dashboard-content {
+		padding-top: var(--navbar-height-mobile);
+		margin: 0 48px 48px;
+	}
 }
 @media (min-width: 960px)  {
     .dashboard-content {
 		padding-top: var(--navbar-height-tablet);
 		max-width: 35em !important;
+		margin: 24px;
     }
 }
 .dashboard-content .array-content {
