@@ -48,6 +48,7 @@ DAT.Globe = function(container, opts) {
     var earth;
     var disableRotate;
     var initialAnimation = true;
+    var isDragging = false;
 
     function init() {
 
@@ -138,14 +139,16 @@ DAT.Globe = function(container, opts) {
         container.appendChild(renderer.domElement);
 
         GlobeMain.on('mousedown', $(container), onMouseDown, 'Globe');
+        GlobeMain.on('mousemove', $(container), onMouseMove, 'Globe');
     }
 
     function onMouseDown(event) {
         event.preventDefault();
 
-        GlobeMain.on('mousemove', $(container), onMouseMove, 'Globe');
         GlobeMain.on('mouseup', $(container), onMouseUp, 'Globe');
         container.addEventListener('mouseout', onMouseOut, false);
+        
+        isDragging = true;
 
         mouseOnDown.x = - event.clientX;
         mouseOnDown.y = event.clientY;
@@ -159,31 +162,35 @@ DAT.Globe = function(container, opts) {
     }
 
     function onMouseMove(event) {
-        if (!disableRotate) {
-            if (initialAnimation) {
-                targetOnDown.x = rotation.x;
-                targetOnDown.y = rotation.y;
-                rotationTargetFactor = secondaryRotationTargetFactor;
-                initialAnimation = false;
+        if (isDragging) {
+            if (!disableRotate) {
+                if (initialAnimation) {
+                    targetOnDown.x = rotation.x;
+                    targetOnDown.y = rotation.y;
+                    rotationTargetFactor = secondaryRotationTargetFactor;
+                    initialAnimation = false;
+                }
+                
+                mouse.x = - event.clientX;
+                mouse.y = event.clientY;
+                
+                var zoomDamp = distance/1000;
+                
+                target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
+                target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+                
+                target.y = target.y > PI_HALF ? PI_HALF : target.y;
+                target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
             }
-
-            mouse.x = - event.clientX;
-            mouse.y = event.clientY;
-
-            var zoomDamp = distance/1000;
-
-            target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
-            target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
-
-            target.y = target.y > PI_HALF ? PI_HALF : target.y;
-            target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
+            
+            opts.onDrag(event);
+        } else {
+            opts.onHover(event);
         }
-
-        opts.onDrag(event);
     }
 
     function onMouseUp(event) {
-        GlobeMain.off('mousemove', $(container), onMouseMove);
+        isDragging = false;
         GlobeMain.off('mouseup', $(container), onMouseUp);
         container.removeEventListener('mouseout', onMouseOut, false);
         container.style.cursor = 'auto';
