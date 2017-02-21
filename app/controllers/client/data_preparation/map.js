@@ -219,7 +219,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     },
                                     properties: {
                                         name: el.rowParams[coordTitle],
-                                        total: coordValue
+                                        total: coordValue,
+                                        id: el._id
                                     }
                                 });
 
@@ -232,7 +233,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         coordinates: [el.rowParams[lngField], el.rowParams[latField]]
                                     },
                                     properties: {
-                                        name: el.rowParams[coordTitle]
+                                        name: el.rowParams[coordTitle],
+                                        id: el._id
                                     }
                                 });
 

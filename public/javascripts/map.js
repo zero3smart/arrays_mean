@@ -250,24 +250,33 @@ map.on('load', function () {
     /**
      * Filter by country on click
      */
-    map.on('click', function (e) {
-        var features = map.queryRenderedFeatures(e.point, {layers: names});
+    if (isCoordMap) {
+        map.on('click', function (e) {
+            var features = map.queryRenderedFeatures(e.point, {layers: names});
 
-        var feature = features[0];
+            var feature = features[0];
 
-        var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
+            var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.indexOf('map'));
 
-        var filterObjForThisFilterColVal;
-        if (isCoordMap) {
-            filterObjForThisFilterColVal = constructedFilterObj(filterObj, coordCol, feature.properties.name, false);
-        } else {
+            window.location = urlWithoutObjectId + feature.properties.id;
+        });
+    } else {
+        map.on('click', function (e) {
+            var features = map.queryRenderedFeatures(e.point, {layers: names});
+
+            var feature = features[0];
+
+            var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
+
+            var filterObjForThisFilterColVal;
+            
             filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
-        }
-        var filterObjString = $.param(filterObjForThisFilterColVal);
-        var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
+            var filterObjString = $.param(filterObjForThisFilterColVal);
+            var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
 
-        window.location = urlForFilterValue;
-    });
+            window.location = urlForFilterValue;
+        });
+    }
 
     window.addEventListener('resize', function() {
         mapContainer.style.height = window.innerHeight - offsetY + "px";
