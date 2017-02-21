@@ -3,7 +3,7 @@
 
         <h2>Format Your Content</h2>
 
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 45px">
+        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
             <label>Select the field you'd like to use as a title for each item</label>
             <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
@@ -12,14 +12,11 @@
                     {{column.name}}
                 </md-option>
             </md-select>
-
-
         </md-input-container>
 
-        <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3>
+        <!-- <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3> -->
 
-
-        <div layout="row" layout-align="start center">
+        <div layout="row" layout-align="start center" style="margin-bottom: 16px">
             <md-button ng-hide="dataset.connection" class="md-dashboard" ng-click="openFabricatedFilterDialog()">
                 <span class="btn-label">Edit Filters</span>
             </md-button>
@@ -34,7 +31,7 @@
 
             <md-menu>
                 <md-button ng-hide="dataset.connection" class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu($event)">
-                    More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></i>
+                    <span class="btn-label">More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></span></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
                 <md-menu-content width="4">
@@ -67,14 +64,11 @@
             </md-menu>
         </div>
 
-
-
         <md-button ng-show="dataset.connection" class="md-dashboard" ng-click="openJoinTablesDialog()">
             <span class="btn-label">Join Tables</span>
         </md-button>
 
-
-        <p>We found these fields in your data source:</p>
+        <h4 class="no-padding">We found these fields in your data source:</h4>
 
         <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
 
