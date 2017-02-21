@@ -114,7 +114,7 @@ var DatasourceDescription_scheme = Schema({
     
 
 
-},{ timestamps: true });
+},{ timestamps: true, minimize: false});
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);

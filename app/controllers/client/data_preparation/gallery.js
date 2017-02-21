@@ -136,12 +136,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.pageSize;
 
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
-
-            if(dataSourceDescription.fe_displayTitleOverrides) {
-                var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName];
-            } else {
-                var defaultSortByColumnName_humanReadable = galleryViewSettings.defaultSortByColumnName; 
-            }
+            
+            var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
             var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
             (dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName,dataSourceDescription) :
