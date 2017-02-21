@@ -45,7 +45,6 @@ angular.module('arraysApp')
             });
 
             $scope.primaryAction.do = function() {
-                console.log("in this function that I don't really understand")
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
                 delete finalizedDataset.__v;
@@ -129,8 +128,6 @@ angular.module('arraysApp')
                 };
 
                 uploader.onCompleteItem = function(fileItem, response, status) {
-                    console.log(response)
-                    console.log("complete item")
                     var self = this;
                     var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                         return a.uploader == self;
@@ -351,7 +348,6 @@ angular.module('arraysApp')
                     }
                 })
                 .then(function () {
-                    console.log($scope.$parent.$parent.dataset)
                     callback(datasource, true);
                 });
             };

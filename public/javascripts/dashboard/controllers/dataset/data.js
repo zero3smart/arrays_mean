@@ -1502,7 +1502,7 @@ angular.module('arraysApp')
             };
 
             // ----------------------------------------------------
-            // I think this was left over from when we had the data types in the dropdown
+            // I think this was left over from when we had the data types in the dropdown - am leaving for now, in case we re-implement the dropdown
             // ----------------------------------------------------
 
 
@@ -1536,7 +1536,6 @@ angular.module('arraysApp')
 
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui
-                console.log("submitting form")
                 $scope.saveRequiredFields();
 
 

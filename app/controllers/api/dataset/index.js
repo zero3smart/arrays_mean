@@ -880,21 +880,6 @@ module.exports.upload = function (req, res) {
                     }
                 }
 
-                // datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
-                //     if(err) {
-                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
-                //         done(err);
-                //         console.log(err);
-                //     } else {
-                //     }
-                // });
-                // description.save(function (err, updatedDescription) {
-                //     if (err) {
-                //         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
-                //         done(err);
-                //     }
-                // });
-
                 // Upload datasource to AWS S3
 
     
@@ -919,11 +904,6 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-                // description.save(function (err, updatedDescription) {
-                //     if (err)
-                //         winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
-                //     done(err);
-                // });
                 datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
                     if(err) {
                         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
