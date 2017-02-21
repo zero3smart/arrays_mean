@@ -102,7 +102,9 @@ md-input-container label {
 label {
     color: var(--color-text-dark);
 }
-
+md-input-container.md-default-theme label, md-input-container label, md-input-container.md-default-theme .md-placeholder, md-input-container .md-placeholder {
+    color: var(--color-text-light);
+}
 
 md-input-container label.md-required:after {
 	font-size: inherit !important;
