@@ -35,6 +35,7 @@ var db;
 
 function _readColumnsAndSample(tableName,fn) {
 
+
     db.reserve(function(err,connObj) {
 
         if (connObj) {
@@ -71,8 +72,7 @@ function _readColumnsAndSample(tableName,fn) {
                     var data = [];
                     var firstRecord = array[0];
                     for (var col in firstRecord) {
-                        var column = col.split(".")[1];
-                        data.push({name: column,sample:firstRecord[col]});
+                        data.push({name: col,sample:firstRecord[col]});
                     }
                     callback(null,data);
                 }
@@ -90,16 +90,98 @@ function _readColumnsAndSample(tableName,fn) {
             })
         }
     })
+
+
+}
+
+module.exports.readColumnsAndSample = function(body,tableName,fn) {
+
+
+    if (db) {
+
+
+        _readColumnsAndSample(tableName,fn);
+
+    } else {
+
+        _initConnection(body.url,function(err) {
+            if (err) fn(err);
+             _readColumnsAndSample(tableName,fn);
+
+        })
+
+    }
+}
+
+
+function _readAllTables(fn) {
+
+    db.reserve(function(err,connObj) {
+
+        if (connObj) {
+
+            console.log("Using connection: " + connObj. uuid + "for reading tables in this schema");
+            var conn = connObj.conn;
+
+            async.waterfall([
+                function(callback) {
+                    conn.createStatement(function(err,statement) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,statement);
+                        }
+                    })
+                },
+                function(statement,callback) {
+                    statement.executeQuery("SHOW TABLES",function(err,results) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,results);
+                        }
+                    })
+                },
+                function(results,callback) {
+                    results.toObjArray(function(err,obj) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,obj);
+                        }
+                    })
+                }
+            ],function(err,arrayOfTables) {
+                var errorFromFuncions = err;
+                db.release(connObj,function(err) {
+                    if (err || errorFromFuncions) {
+                        winston.error("Error reading tables from connection");
+                        console.log(err);
+                        console.log(errorFromFuncions);
+                        return fn(err);
+                    } else {
+                        console.log("return data of tables and release connection:", connObj. uuid);
+                        return fn(null,arrayOfTables);
+                    }
+                })
+            })
+        }
+    })
+
 }
 
 function _initConnection(url,callback) {
     winston.info("ready to init a new connection.");
     var config = {
-        url: url
+        url: url,
+        minpoolsize:5,
+        maxpoolsize:10, 
+        maxidle: 1800000 
     }
     var JDBC = new jdbc(config);
     JDBC.initialize(function(err) {
-        if (err) callback(err);
+        if (err) {
+            console.log("Error from initializing connection :: ");
+            console.log(err);
+            callback(err);
+        }
         else {
             db = JDBC;
             callback(null);
@@ -108,77 +190,48 @@ function _initConnection(url,callback) {
 
 }
 
-module.exports.initConnection = function(req,res) {
+module.exports.initConnection = function(body,callback) {
+
+
+
 
     if (db) {
         winston.info("init connection: connection already made.");
-        _readColumnsAndSample(req.body.tableName,function(err,data) {
-            if (err) return res.status(500).send(err);
+
+        _readAllTables(function(err,data) {
+            if (err) callback(err);
             else {
-                console.log("successfully read columns and sample, data: %s",
-                    JSON.stringify(data));
-                return res.json(data);
+               
+                console.log("successfully read tables, data %s", JSON.stringify(data));
+                callback(null,data);
             }
+
         })
+
     } else {
-        _initConnection(req.body.url,function(err) {
 
-            if (err) return res.status(500).send(JSON.stringify(err));
 
-            _readColumnsAndSample(req.body.tableName,function(err,data) {
-                if (err) return res.status(500).json(err);
+        _initConnection(body.url,function(err) {
+
+            if (err) callback(err);
+
+            _readAllTables(function(err,data) {
+
+                if (err) return res.status(500).send(err);
                 else {
-                    console.log("successfully read columns and sample, data: %s",
-                        JSON.stringify(data));
-                    if (!req.session.columns) req.session.columns = {};
-                    req.session.columns[req.params.id] = data;
-                    return res.json(data);
+                   console.log("successfully read tables, data %s", JSON.stringify(data));
+                   callback(null,data);
                 }
 
             })
-        })        
-    }
-}
+        })  
 
-module.exports.readColumnsForJoin = function(req,res) {
-
-   
-    if (db) {
-        _readColumnsAndSample(req.body.join.tableName,function(err,data) {
-
-            if (err) return res.status(500).json(err);
-
-            else {
-                console.log("successfully read columns and sample for join, data: %s",
-                    JSON.stringify(data));
-                return res.json(data);
-            }
-
-        })
-
-    } else {
-        _initConnection(req.body.url,function(err) {
-            if (err) return res.status(500).json(err);
-            else {
-
-                 _readColumnsAndSample(req.body.join.tableName,function(err,data) {
-
-                    if (err) return res.status(500).json(err);
-
-                    else {
-                        console.log("successfully read columns and sample for join, data: %s",
-                            JSON.stringify(data));
-                        return res.json(data);
-                    }
-
-                })
-
-            }
-
-        })
     }
 
+
 }
+
+
 
 function _runQuery(query,fn) {
 
@@ -186,7 +239,7 @@ function _runQuery(query,fn) {
 
         if (connObj) {
 
-            console.log("Using connection: " + connObj. uuid);
+            console.log("Using connection: " + connObj. uuid + " to run query");
             var conn = connObj.conn;
 
             async.waterfall([
@@ -220,7 +273,10 @@ function _runQuery(query,fn) {
                 var errorFromFuncions = err;
                 db.release(connObj,function(err) {
                     if (err || errorFromFuncions) {
-                        winston.error("Error reading remote data columns and records: ",err);
+
+                        winston.error("Error running query");
+                        console.log("err in releasing db : %s", err);
+                        console.log("err from function executing query : %s",errorFromFuncions);
                         fn(err);
                     } else {
                         fn(null,arrayOfData);
@@ -233,7 +289,6 @@ function _runQuery(query,fn) {
 
 
 module.exports.readData = function(url,query,fn) {
-
 
     if (!db) {
 
@@ -252,3 +307,4 @@ module.exports.readData = function(url,query,fn) {
 
     }
 }
+

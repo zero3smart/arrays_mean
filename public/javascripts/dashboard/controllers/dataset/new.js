@@ -52,20 +52,24 @@ angular.module('arraysApp')
                 restrict: 'A',
                 require: 'ngModel',
                 scope: {    
-                    datasetId : '='
+                    datasetId : '=',
+                    submittingFlag: '='
 
                 },
                 link: function(scope,elem,attr,model) {
 
                     model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
 
-
                         var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
                         var team = AuthService.currentTeam();
                         var deferred = $q.defer();
 
+                        scope.submittingFlag = true;
+
                         DatasetService.search({uid: value, _team: team._id})
                         .then(function(response) {
+
+                            scope.submittingFlag = false;
                       
                             if (response.status == 200) {
                                 if (response.data.length > 0) {

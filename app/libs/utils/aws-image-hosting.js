@@ -37,6 +37,7 @@ function _signedUrlForPutObject(key,fileType,callback) {
         ContentType: fileType
     };
     s3.getSignedUrl('putObject',params,function(err,signedUrl) {
+        
         callback(err,{putSignedUrl: signedUrl, publicUrl: _appendKeyToBucket(key)});
     })
 

@@ -2,7 +2,7 @@
     <form name="newDSForm" ng-submit="submitForm(newDSForm.$valid)" novalidate>
         <div layout="row" layout-align="space-between center">
             <md-input-container flex="66" md-no-float>
-                <input required name="title" ng-model="dataset.title" unique-title
+                <input required name="title" ng-model="dataset.title" unique-title submitting-flag="submitting"
                     aria-label="Visualization Title" placeholder="Visualization Name" autofocus>
                 <div ng-messages="newDSForm.title.$error" class="error-messages">
                     <div ng-message="required">This is required.</div>

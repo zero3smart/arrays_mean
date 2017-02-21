@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/tooltip.css */
 
 /* @group Global Tooltip */
@@ -163,10 +163,12 @@ div.arrays-co-tooltip.xaxis-highlight {
     cursor: pointer;
     border-radius: 0;
     text-align: center;
+    word-break: break-all;
+    max-width: 165px;
 }
 
 div.arrays-co-tooltip.xaxis-highlight .default-tooltip-content {
-    padding: 0 0.4em;
+    /*padding: 0 0.4em;*/
 }
 
 /* @end Linegraph Tooltip */

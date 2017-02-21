@@ -51,6 +51,7 @@ router.get('/dataset/get/:id', ctrlDataset.get);
 router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSourcesWithSchemaID);
 router.post('/dataset/save', ctrlDataset.save);
 router.put('/dataset/update/:id',ctrlDataset.update);
+router.put('/dataset/approve/:id',ctrlDataset.approvalRequest);
 
 
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
@@ -80,7 +81,7 @@ router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
 
 router.post('/dataset/connect/:id',ctrlConnection.connect);
-router.post('/dataset/colsForJoinTables',ctrlConnection.getColumnsForFieldMapping);
+router.post('/dataset/colsForJoinTables/:id',ctrlConnection.getColumnsForFieldMapping);
 
 //manage users
 router.get('/user/search', ctrlUsers.search);

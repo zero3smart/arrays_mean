@@ -32,6 +32,16 @@ angular.module('arraysApp')
                 country: 'US'
             };
 
+            // Which cards to validated against in the CC input
+            $scope.cardsAccepted = [
+                'Visa',
+                'MasterCard',
+                'American Express',
+                'Discover',
+                'Diners Club',
+                'JCB'
+            ];
+
 
             // Get account info from Recurly
             Account.get()

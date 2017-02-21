@@ -24,6 +24,7 @@ module.exports.getAll = function (req, res) {
 
 
 module.exports.create = function (req, res) {
+    
     Team.create(req.body, function (err, createdTeam) {
         if (err) {
             res.send({error: err.message});
@@ -48,6 +49,7 @@ module.exports.create = function (req, res) {
                     }
                 });
             }
+            createdTeam.notifyNewTeamCreation();
             res.json(createdTeam);
         }
     });

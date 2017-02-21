@@ -5,6 +5,8 @@ angular.module('arraysApp')
 
             $scope.primaryAction.text = 'Publish';
 
+
+
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
                 if (validity !== undefined) {
@@ -48,6 +50,24 @@ angular.module('arraysApp')
                     }
                 }
             };
+
+            $scope.publishRequest = function() {
+
+                DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state: 'pending'})
+                .then(function(response) {
+                    if (response.status == 200 && response.data) {
+                        $scope.$parent.$parent.dataset = response.data;
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Request submitted, you will be notified when it get reviewed!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                    
+                })
+           
+            }
 
 
             $scope.submitForm = function(isValid) {
@@ -123,7 +143,8 @@ angular.module('arraysApp')
                     if (dataset.banner) {
                         reload = true;
                     }
-                    dataset.banner = fileItem.publicUrl;
+
+                    dataset.banner = fileItem.file.name;
                     DatasetService.save(dataset).then(function () {
                         if (reload) {
                             dataset.banner = dataset.banner + '?' + new Date().getTime();
@@ -137,6 +158,17 @@ angular.module('arraysApp')
                     });
                 }
             };
+
+
+            $scope.makeUrl = function(bannerFileName) {
+                if (bannerFileName.indexOf('http') >= 0) {
+                    return bannerFileName;
+                } else {
+                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain + 
+                    '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
+                    return url;
+                }
+            }
 
             $scope.imageUploader.onBeforeUploadItem = function (item) {
                 item.headers['Content-Type'] = item.file.type;

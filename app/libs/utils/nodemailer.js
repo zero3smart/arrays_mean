@@ -10,13 +10,35 @@ var transporter = nodemailer.createTransport({
 	region: process.env.AWS_REGION
 });
 
+
+var alert_email = process.env.ALERT_EMAIL || 'useralerts@arrays.co';
+
+
 function sendEmail (mailOptions,callback) {
 	transporter.sendMail(mailOptions,function(err,info) {
 		if (err) console.log(err);
 		console.log(info);
-		callback(err);
+		if (callback) callback(err);
 	})
 }
+
+
+
+function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Action,cb) {
+	var htmlText = 'Team Name: ' + teamName + '<br>Subdomain: ' + subdomain + '<br>Action User Name: ' + 
+	userName + '<br>Action User Email: ' + userEmail + '<br>DateTime: ' + DateTime + '<br>Action: ' + 
+	Action;
+	var mailOptions = {
+		from: 'info@arrays.co',
+		to: alert_email,
+		subject: '[User Alert] ' + Action,
+		html: htmlText
+	}
+
+	sendEmail(mailOptions,cb);
+
+}
+
 
 module.exports.sendActivationEmail = function(user, cb) {
 	var token = jwt.sign({
@@ -52,6 +74,53 @@ module.exports.sendActivationEmail = function(user, cb) {
 	})
 }
 
+module.exports.newTeamCreatedEmail = function(team,cb) {
+
+	var userName = team.admin.firstName + ' ' + team.admin.lastName
+
+	var subject = 'Team Created (id: ' + team._id + ')';
+
+	sendUserAlertEmail(team.title,team.subdomain,userName,team.admin.email,team.createdAt,
+		subject, cb);
+}
+
+
+module.exports.newVizCreatedEmail = function(viz,cb) {
+	var userName = viz.author.firstName + ' ' + viz.author.lastName;
+	var subject = 'Viz Created (id: ' + viz._id + ', title: ' + viz.title + ')';
+	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName,viz.author.email,viz.createdAt,
+		subject,cb);
+}
+
+
+module.exports.newVizWaitingForApproval = function(viz,cb) {
+	var userName = viz.author.firstName + ' ' + viz.author.lastName;
+	var subject = 'Viz pending approval (id: ' + viz._id + ', title: ' + viz.title + ')';
+	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName, viz.author.email,viz.updatedAt,
+		subject,cb);
+
+}
+
+module.exports.newUserInvitedEmail = function(admin,team,user,cb) {
+
+	var userName = admin.firstName + ' ' +  admin.lastName;
+	var subject = 'Invited  New User (id: ' + user._id + ', email: ' + user.email + ')';
+	sendUserAlertEmail(team.title,team.subdomain,userName, admin.email, user.createdAt,subject,cb);
+}
+
+module.exports.newUserAcceptedInvitationEmail = function(team,user,cb) {
+	var userName = user.firstName + ' ' + user.lastName;
+	var subject = 'User Accepted Invitation';
+	sendUserAlertEmail(team.title,team.subdomain,userName,user.email, user.updatedAt,subject,cb);
+
+}
+
+module.exports.subscriptionUpdatedEmail = function(admin,team,subscriptionAction,cb) {
+	var userName = admin.firstName + ' ' + admin.lastName;
+	var subject = 'Subscription State Changed To "' + subscriptionAction + '"'
+	sendUserAlertEmail(team.title,team.subdomain,userName,admin.email,team.updatedAt,subject,cb);
+
+}
 
 
 
