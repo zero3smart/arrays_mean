@@ -9,7 +9,7 @@
             <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Add a data source from the options below.</p>
                 <ul class="dashboard-list">
-                    <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
+                    <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
                     <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
                     <li><a href="#" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
                 </ul>
@@ -77,7 +77,7 @@
                         <span class="btn-label">Upload Data</span>
                     </md-button>
 
-                    <p class="aa-file-select-close"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+                    <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
                 </div>
                 <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
 
