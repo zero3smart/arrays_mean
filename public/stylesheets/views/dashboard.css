@@ -241,14 +241,6 @@ md-content.md-default-theme, md-content {
 .md-button.md-dashboard.primary-action {
     margin-bottom: 30px;
 }
-.instructions {
-    margin-bottom: 15px;
-	line-height: 16px;
-}
-.teams .instructions {
-	padding-left: 12px;
-}
-
 
 .dataset .md-content {
     overflow: hidden;
@@ -317,14 +309,9 @@ body.md-toast-animating {
     display: inline-block;
     width: 20px;
     vertical-align: text-bottom;
-    /*font-size: 14px;*/
-    /*font-weight: 600;*/
     color: var(--color-primary);
 }
 .dashboard-list-name {
-    /*font-size: 16px;*/
-    line-height: 30px;
-    /*font-weight: 600;*/
 }
 .dashboard-list .custom {
 	/*font-weight: bold;*/
@@ -333,10 +320,8 @@ body.md-toast-animating {
 	color: var(--color-text-light);
 }
 .dashboard-list-revision {
-    /*font-size: 16px;*/
 }
 .dashboard-list-icon {
-    /*text-align: center;*/
 }
 .dashboard-list-icon:hover,
 .dashboard-list-icon:focus {
@@ -348,7 +333,6 @@ body.md-toast-animating {
 	color: var(--color-text-light);
 }
 .dashboard-list-icon.view {
-	/*color: var(--color-text-light);*/
 	color: #eee;
 }
 .dashboard-list-icon.view.default-view {
@@ -367,12 +351,10 @@ body.md-toast-animating {
 }
 /* mimic .sidebar-menu .nav > li > a */
 .team-list .md-button {
-    /*font-size: 16px;*/
     line-height: 1em;
     margin: 0;
     margin-bottom: 1px;
     padding: 12px;
-    /*width: 100%;*/
     color: var(--color-text-dark);
     border-radius: 4px;
     text-transform: none;
@@ -391,7 +373,6 @@ body.md-toast-animating {
 .subdomain-append,
 md-input-invalid.subdomain-append {
 	display: inline;
-	/*font-size: 20px;*/
 	font-weight: normal;
 }
 
@@ -406,11 +387,11 @@ md-input-invalid.subdomain-append {
 .user-list li img,
 .user-list li canvas {
 	width: 100%;
-	padding-right: 15px;
+	padding-right: 1em;
 }
 .user-dialog .profile-thumb {
 	width: 100%;
-	padding-right: 15px;
+	padding-right: 1em;
 }
 
 .dashboard-list li.li-disabled {
