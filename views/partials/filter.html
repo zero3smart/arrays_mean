@@ -1,13 +1,6 @@
 {% macro default(displayTitleOverrides,routePath_base, filterObj, truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill, label=false, customClassName='') %}
 <div class="filter-bar {{ customClassName }}">
-    {% if label %}
-    <span class="filter-label ui-label">Filters:</span>
-    {% else %}
     <div class="container-fluid">
-    {% endif %}
-
-
-
 
     {% for filterCol, filterVals in filterObj %}
 
@@ -16,7 +9,6 @@
         {% for filterVal in filterValsForBubbles %}
 
             {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true, true) %}
-
             {% set routePath_withoutThisFilter = routePath_base | constructedRoutePath(filterObjForThisFilterColVal) %}
             {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
 
@@ -25,8 +17,6 @@
         {% endfor %}
     {% endfor %}
 
-    {% if not label %}
     </div>
-    {% endif %}
 </div>
 {% endmacro %}
