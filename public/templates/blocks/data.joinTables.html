@@ -7,8 +7,15 @@
 
 
                 <md-input-container layout="row" flex="80" md-no-float>
-                    <input ng-model="dataset.connection.join.tableName" ng-model-options="{updateOn:'blur'}" ng-change="loadCols()"
-                    aria-label="Dataset Connection Table Name" placeholder="Join Table" autofocus>
+                    <md-select aria-label="Dataset Connection Table Name"
+                               ng-model="dataset.connection.join.tableName" ng-change="loadCols()">
+                        <md-option ng-repeat="tab in dataset.tables" value="{{tab.tab_name}}">
+                            {{tab.tab_name}}
+                        </md-option>
+                    </md-select>
+
+
+
                 </md-input-container>
 
 
@@ -16,28 +23,28 @@
        
                 <md-input-container flex="50">
                     <label>Primary Key</label>
-                    <md-select required name="localField_{{$index}}"
+                    <md-select name="localField_{{$index}}"
                                ng-model="dataset.connection.join.primaryKey">
                         <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
                             {{column.name}}
                         </md-option>
                     </md-select>
-                    <div ng-messages="dialog.form.localField.$error">
+                    <!-- <div ng-messages="dialog.form.localField.$error">
                         <div ng-message="required">This is required.</div>
-                    </div>
+                    </div> -->
                 </md-input-container>
 
                 <md-input-container flex="50">
                     <label>Foreign Key</label>
-                    <md-select required name="localField_{{$index}}"
+                    <md-select name="localField_{{$index}}"
                                ng-model="dataset.connection.join.foreignKey">
                         <md-option ng-repeat="column in colsByJoinTableName[dataset.connection.join.tableName]" value="{{column.name}}">
                             {{column.name}}
                         </md-option>
                     </md-select>
-                    <div ng-messages="dialog.form.localField.$error">
+                  <!--   <div ng-messages="dialog.form.localField.$error">
                         <div ng-message="required">This is required.</div>
-                    </div>
+                    </div> -->
                 </md-input-container>
 
             

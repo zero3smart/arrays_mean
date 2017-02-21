@@ -10,6 +10,8 @@
         this._separateSegments = (this._start.color !== this._end.color);
         this._segmentCount = 40;
         this._arcAltitude = config.arcAltitude;
+        this._opacity = config.opacity;
+        this._width = config.width;
         
         if (Math.abs(this._end.point.lng - this._start.point.lng) > 180) {
             if (this._end.point.lng > this._start.point.lng) {
@@ -52,7 +54,9 @@
         _addSegment: function(color, count) {
             var material = new THREE.LineBasicMaterial({
                 color: color,
-                linewidth: 2
+                linewidth: this._width,
+                opacity: this._opacity,
+                transparent: (this._opacity !== 1)
             });
 
             var geometry = new THREE.Geometry();
@@ -82,7 +86,7 @@
                 lng = this._start.point.lng + (lngDiff * factor);
 
                 altitude = this._start.altitude + (altitudeDiff * factor);
-                altitudeFactor = Math.sin(factor * Math.PI);                
+                altitudeFactor = Math.sin(factor * Math.PI);
                 altitude += this._arcAltitude * altitudeFactor;
                 
                 vertices.push(GlobeMain.coordToVector(lat, lng, altitude));

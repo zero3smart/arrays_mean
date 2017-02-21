@@ -163,10 +163,14 @@
             return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
        }
 
-       var colsForJoinTables = function(connectionInfo) {
-            return $http.post('api/dataset/colsForJoinTables',connectionInfo);
+       var colsForJoinTables = function(datasetId,connectionInfo) {
+            return $http.post('api/dataset/colsForJoinTables/' + datasetId ,connectionInfo);
        }
 
+
+       var approvalRequest = function(datasetId,state) {
+            return $http.put('api/dataset/approve/' + datasetId, state);
+       }
 
 
 
@@ -183,6 +187,7 @@
             getReimportDatasets: getReimportDatasets,
             save: save,
             update: update,
+            approvalRequest: approvalRequest,
             getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,

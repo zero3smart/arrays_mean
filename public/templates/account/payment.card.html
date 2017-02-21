@@ -1,6 +1,6 @@
 <h3>Credit Card Information</h3>
 
-<ng-form name="payment_card">
+<ng-form name="payment_card" class="payment-card">
 
     <md-input-container>
         <label>First Name</label>
@@ -23,34 +23,38 @@
     <div layout="row">
         <md-input-container>
             <label>Card Number</label>
-            <input name="number" ng-model="billing.number" placeholder="{{ billing.numberPlaceholder }}" required ng-minlength="13" ng-maxlength="19" maxlength="19" aa-reset-validity-on-change="invalid" />
+            <input ng-if="!billing.numberPlaceholder" type="text" name="number" ng-model="billing.number" cc-number cc-type="cardsAccepted" cc-eager-type cc-format novalidate ng-required="true" />
+            <input ng-if="billing.numberPlaceholder" type="text" name="number" ng-model="billing.number" cc-number cc-type="cardsAccepted" cc-eager-type cc-format novalidate ng-required="true" placeholder="{{ billing.numberPlaceholder }}" />
             <div ng-messages="payment_card.number.$error">
                 <div ng-message="required">Card Number is required.</div>
-                <div ng-message="minlength">Card Number must be at least 13 digits.</div>
-                <div ng-message="maxlangth">Card Number must be less than 20 digits.</div>
                 <div ng-message="invalid">Card Number is invalid.</div>
+                <div ng-message="ccNumber">Card Number is invalid.</div>
+                <div ng-message="ccNumberType">That type of card is not accepted.</div>
             </div>
+            
         </md-input-container>
 
         <md-input-container>
             <label>CVV</label>
-            <input name="verification_value" ng-model="billing.verification_value" required ng-minlength="3" ng-maxlength="4" maxlength="4" ng-pattern="/^\d+$/"/>
+            <input type="text" name="verification_value" ng-model="billing.verification_value" cc-cvc cc-type="payment_card.number.$ccType" ng-required="true" />
             <div ng-messages="payment_card.verification_value.$error">
                 <div ng-message="required">CVV is required.</div>
                 <div ng-message="minlength">CVV must be at least 3 digits.</div>
-                <div ng-message="maxlangth">CVV must be less than 5 digits.</div>
+                <div ng-message="maxlength">CVV must be less than 5 digits.</div>
                 <div ng-message="pattern">CVV must be numeric.</div>
+                <div ng-message="ccCvc">CVV is invalid.</div>
             </div>
+            
         </md-input-container>
     </div>
 
     <h3>Cards Accepted</h3>
-    <i class="fa fa-2x fa-large fa-cc-visa" aria-hidden="true" title="Visa"></i>&emsp;
-    <i class="fa fa-2x fa-cc-mastercard" aria-hidden="true" title="Mastercard"></i>&emsp;
-    <i class="fa fa-2x fa-cc-amex" aria-hidden="true" title="AMEX"></i>&emsp;
-    <i class="fa fa-2x fa-cc-discover" aria-hidden="true" title="Discover"></i>&emsp;
-    <i class="fa fa-2x fa-cc-diners-club" aria-hidden="true" title="Diners Club"></i>&emsp;
-    <i class="fa fa-2x fa-cc-jcb" aria-hidden="true" title="JCB"></i>
+    <i class="payment-card-icon fa fa-2x fa-large fa-cc-visa" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Visa' }" aria-hidden="true" title="Visa"></i>&emsp;
+    <i class="payment-card-icon fa fa-2x fa-cc-mastercard" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'MasterCard' }" aria-hidden="true" title="MasterCard"></i>&emsp;
+    <i class="payment-card-icon fa fa-2x fa-cc-amex" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'American Express' }" aria-hidden="true" title="American Express"></i>&emsp;
+    <i class="payment-card-icon fa fa-2x fa-cc-discover" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Discover' }" aria-hidden="true" title="Discover"></i>&emsp;
+    <i class="payment-card-icon fa fa-2x fa-cc-diners-club" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Diners Club' }" aria-hidden="true" title="Diners Club"></i>&emsp;
+    <i class="payment-card-icon fa fa-2x fa-cc-jcb" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'JCB' }" aria-hidden="true" title="JCB"></i>
 
     <h4>Expires</h4>
     <div layout="row">

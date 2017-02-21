@@ -63,6 +63,10 @@ module.exports.get = function (req, res) {
                 .exec(function (err, user) {
 
 
+                    if  (err) return res.status(500).send('Internal Server Error');
+                    if (!user) return res.status(401).send({error: 'unauthorized'});
+
+
 
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
@@ -228,9 +232,6 @@ module.exports.update = function (req, res) {
             team.superTeam = true;
         }
 
-
-
-
         Team.create(team, function (err, createdTeam) {
             if (err) {
                 res.send(err);
@@ -265,6 +266,8 @@ module.exports.update = function (req, res) {
                                 res.send(err);
                             }
                             else {
+                                createdTeam.notifyNewTeamCreation();
+
                                 if (user.activated) {
                                     res.json(savedUser);
                                 } else {
@@ -301,6 +304,12 @@ module.exports.update = function (req, res) {
                         res.send(err);
                     }
                     else {
+                        mailer.newUserAcceptedInvitationEmail(team,savedUser,function(err) {
+                            if (err) winston.error('cannot send user alert email for user accepting invitation');
+                            else {
+                                winston.info('User Accepted Invitation Email sent');
+                            }
+                        })
                         res.json(savedUser);
                     }
                 })

@@ -61,7 +61,10 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
         if(err) {
             callback(err, null);
             } else {
+                // since these are all type Mixed, we need to set markModified to true
+                var mixedFields = ['raw_rowObjects_coercionScheme', 'fe_excludeFields', 'fe_displayTitleOverrides', 'fe_designatedFields', 'fe_objectShow_customHTMLOverrideFnsByColumnNames'];
                 var duplicatedDescription = dataset;
+
                 duplicatedDescription._id = ObjectId();
                 // change the associated team
                 duplicatedDescription._team = createdTeam._id;
@@ -76,7 +79,15 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 // don't allow publishing of sample dataset
                 duplicatedDescription.fe_listed = false;
                 duplicatedDescription.fe_visible = false;
-                duplicatedDescription.isPublic = false;                
+                duplicatedDescription.isPublic = false;
+                // loop through all the mixed fields and save to empty objects if they're not already set then mark modified so they save into db
+                for(var i = 0; i < mixedFields.length; i++) {
+                    if(!duplicatedDescription[mixedFields[i]]) {
+                        console.log("field not set: " + mixedFields[i])
+                        duplicatedDescription[mixedFields[i]] = {}
+                    }
+                    duplicatedDescription.markModified(mixedFields[i])
+                };
                 // set to isNew so it saves as a new description in mongodb
                 duplicatedDescription.isNew = true;
                 duplicatedDescription.save(function (err, savedDescription) {

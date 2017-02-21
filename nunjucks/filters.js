@@ -12,6 +12,9 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
         return moment(date).utc().format("MMMM Do, YYYY");
     });
+    nunjucks_env.addFilter('dateFormattedAs_monthDayYear_array', function (date) {
+        return moment(date).utc().format("MMM D, YYYY");
+    });
     nunjucks_env.addFilter('addDate', function (date, amount, format) {
         return moment(date).add(amount, format).toDate();
     });
@@ -365,6 +368,35 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addGlobal('explore_url', exploreURL);
 
     nunjucks_env.addGlobal('marketing_url', marketingPage);
+
+
+    nunjucks_env.addGlobal('makeURLfrom_relativePath',function(relativePath,subdomain,datasetId,type) {
+
+
+        if (relativePath.slice(0,4) == 'http') {
+            return relativePath;
+        }
+
+        var key = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + subdomain + '/datasets/' +
+        datasetId + '/assets/'
+        if (type == 'banner') {
+            key += 'banner/' + relativePath; 
+        } else if (type == 'image') {
+            key += 'images/' + relativePath
+        }
+
+        
+        return key;
+
+
+
+
+
+    })
+
+
+
+
 
 
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {

@@ -193,7 +193,8 @@ module.exports.MountRoutes = function (app) {
         var host = process.env.HOST || 'localhost:9080' ;
         var obj = {
             node_env: process.env.NODE_ENV,
-            host: host
+            host: host,
+            s3Bucket: process.env.AWS_S3_BUCKET
         }
         return res.json(obj);
     })

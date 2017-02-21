@@ -129,23 +129,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             }
 
-            var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 4) == "http") {
-                    return url
-                } else {
-                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
-                    return urlToReturn
-                }
-            }
-
-                
-
+            
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
             var skipNResults = config.pageSize * (Math.max(pageNumber, 1) - 1);
             var limitToNResults = config.pageSize;
 
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+            
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
             var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
@@ -359,6 +350,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                    datasetId: dataSourceDescription._id,
 
                 
 
@@ -414,11 +406,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    //image url
-                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    // folder: "/assets/images/",
-                    // uid: dataSourceDescription.uid,
-                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
 
                 callback(null, data);

@@ -88,7 +88,8 @@ module.exports = function (grunt) {
                     'jquery-ui/jquery-ui.min.js',
                     'threejs/build/three.min.js',
                     'tweenjs/src/Tween.js',
-                    'bootstrap/dist/js/bootstrap.min.js'
+                    'bootstrap/dist/js/bootstrap.min.js',
+                    'angular-credit-cards/release/angular-credit-cards.js'
                 ],
                 dest: 'public/vendors'
             },
