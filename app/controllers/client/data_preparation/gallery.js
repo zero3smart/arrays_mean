@@ -136,6 +136,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.pageSize;
 
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+            
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
             var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
