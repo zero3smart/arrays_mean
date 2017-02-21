@@ -80,6 +80,7 @@ $(document).ready(function() {
         barChart.updateSortDirection(options.sortDirection);
     });
 
+    updateBarChartControls();
     renderBarChart();
 
     window.onresize = function() {
