@@ -94,6 +94,54 @@
 
 	}])
 
+
+	signupModule.controller('passwordCtrl',['$scope','User','$stateParams','$window',function($scope,User,$stateParams,
+		$window) {
+
+	
+		$scope.userId = $stateParams.userId;
+		$scope.msg = $stateParams.msg;
+		$scope.err = $stateParams.err;
+
+
+		$scope.sendResetEmail = function() {
+			User.resetPassword({id:$scope.user._id})
+			.$promise
+			.then(function(response) {
+				if (response.data == 'ok') {
+					$scope.success = true;
+				}
+			},function(response) {
+				$scope.err = response.data.err;
+			})
+		}
+
+		$scope.updatePassword = function(pw) {
+			var param = {
+				password: pw
+			}
+			User.updateProfile({id: $scope.userId},param)
+			.$promise
+			.then(function(response) {
+				if (response._id) {
+					$scope.success = true;
+				}
+
+			},function(response) {
+
+			})
+
+		}
+
+		$scope.login = function() {
+			$window.location.href = 'auth/login';
+			
+
+		}
+
+		
+	}])
+
 	
 
 })();

@@ -33,6 +33,23 @@ module.exports.search = function (req, res) {
     })
 };
 
+module.exports.checkPw = function(req,res) {
+
+ 
+
+    var userId = req.params.id;
+    User.findById(userId,function(err,user) {
+        if (err) res.send(err);
+        else {
+            if (user.validPassword(req.body.password)) {
+                res.json({valid: true});
+            } else {
+                res.json({valid: false});
+            }
+        }
+    })
+}
+
 module.exports.getAll = function(req,res) {
     if (!req.user) {
         res.status(401).send({error: 'unauthorized'});
@@ -150,6 +167,30 @@ module.exports.create = function (req, res) {
     })
 }
 
+//reset password
+module.exports.reset = function(req,res) {
+    var userId = req.params.id;
+    if (!userId) {
+        return res.status(401).json({err:'unauthorized'});
+    }
+    User.findById(userId,function(err,user){
+        if (err) return res.send(err);
+        else if (!user) {
+            return res.status(404).json({err:'Cannot find User'});
+        } else {
+            mailer.sendResetPasswordEmail(user,function(err) {
+                if (err) {
+                    res.status(500).json({err:'Cannot resend email to reset password'});
+                } else {
+                    res.json({data:'ok'})
+                }
+
+            })
+
+        }
+    })
+}
+
 
 module.exports.resend = function (req, res) {
     var userId = req.params.id;
@@ -211,6 +252,27 @@ module.exports.resend = function (req, res) {
             }
         })
     }
+}
+
+module.exports.updateProfile = function(req,res) {
+
+    var userId = req.params.id;
+    User.findById(userId,function(err,user) {
+        if (err) return res.send(err);
+
+        for (var key in req.body) {
+            if (key == 'password') {
+                user.setPassword(req.body[key]);
+            }
+        }
+        user.save(function(err) {
+            if (err) return res.send(err);
+            else {
+                res.json(user);
+            }
+        })
+
+    })
 }
 
 

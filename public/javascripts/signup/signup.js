@@ -2,7 +2,9 @@
 	angular.module('signupModule',['ui.router','ngMessages','ngResource','ngMaterial'])
 		.config(function($stateProvider,$urlRouterProvider,$locationProvider) {
 
-			$urlRouterProvider.otherwise('/signup/email');
+			$urlRouterProvider
+				.when('/reset','/reset/email')
+				.when('/signup','/signup/email')
 
 
 			$stateProvider
@@ -12,7 +14,26 @@
 					templateUrl: 'templates/signup.html'
 				})
 
+				.state('reset', {
+					abstract: true,
+					url: '/reset',
+					templateUrl: 'templates/signup.html'
+				})
+
+
+
 			$stateProvider
+
+				.state('reset.email',{
+					url: '/email',
+					templateUrl:'templates/blocks/reset.email.html',
+					controller: 'passwordCtrl'
+				})
+				.state('reset.password',{
+					url: '/password?userId&err&msg',
+					templateUrl:'templates/blocks/reset.password.html',
+					controller: 'passwordCtrl'
+				})
 				.state('signup.email', {
 					url: '/email',
 					templateUrl: 'templates/blocks/signup.email.html',
@@ -43,6 +64,9 @@
 					templateUrl:'templates/blocks/signup.error.html',
 					controller: 'errorCtrl'
 				})
+
+
+
 
 
 	    $locationProvider.html5Mode(true);
