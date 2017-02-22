@@ -380,7 +380,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     coordMinMax: coordMinMax,
                     applyCoordRadius: coordRadiusValue == undefined ? false : true,
-                    coordColor: dataSourceDescription.fe_views.views.map.coordColor,
+                    coordColor: dataSourceDescription.fe_views.views.map.coordColor ? dataSourceDescription.fe_views.views.map.coordColor : dataSourceDescription.brandColor,
                     mapBy: mapBy,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
