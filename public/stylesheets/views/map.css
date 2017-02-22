@@ -34,7 +34,7 @@
 .dropdown-toggle-button-group,
 .dropdown-toggle-button {
     margin-bottom: 5px;
-    border-radius: 5px;
+    border-radius: 4px;
     background-color: #ffffff;
     box-shadow: var(--box-shadow);
 }
