@@ -125,6 +125,7 @@ angular.module('arraysApp')
 
             }
 
+
             $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
 
                 var data = {
@@ -411,28 +412,34 @@ angular.module('arraysApp')
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
 
-            $scope.changeCoercionSchemeByOperation = function (colName) {
-                var coercion = $scope.coercionScheme[colName];
+            // ----------------------------------------------------
+            // I think this was left over from when we had the data types in the dropdown - am leaving for now, in case we re-implement the dropdown
+            // ----------------------------------------------------
 
-                if ($filter('typeCoercionToString')(coercion) != 'Date') {
-                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
-                    $scope.$parent.$parent.dataset.dirty = 1;
 
-                } else {
-                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName]) {
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+            // $scope.changeCoercionSchemeByOperation = function (colName) {
+            //     var coercion = $scope.coercionScheme[colName];
 
-                        $scope.$parent.$parent.dataset.dirty = 1;
+            //     if ($filter('typeCoercionToString')(coercion) != 'Date') {
+            //         $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+            //         $scope.$parent.$parent.dataset.dirty = 1;
 
-                    }
+            //     } else {
+            //         if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName]) {
+            //             $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
 
-                    else {
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+            //             $scope.$parent.$parent.dataset.dirty = 1;
 
-                    }
+            //         }
 
-                }
-            };
+            //         else {
+            //             $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+
+            //         }
+
+            //     }
+            // };
+            // ---------------------------------------------------------
 
             $scope.reset();
 

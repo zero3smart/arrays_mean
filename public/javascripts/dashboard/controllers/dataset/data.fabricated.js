@@ -72,7 +72,7 @@ angular.module('arraysApp')
             } else {
                 $scope.cancel();
             }
-            $scope.openFieldDialog(evt, field.name, field.sample, field.custom, field.customFieldIndex, true);
+            $scope.openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex, true);
         };
 
         $scope.addFabricated = function () {
