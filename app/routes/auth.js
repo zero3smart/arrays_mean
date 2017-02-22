@@ -78,6 +78,10 @@ router.get('/google/callback', function(req, res, next) {
     })(req, res, next);
 });
 
+
+
+
+
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
 

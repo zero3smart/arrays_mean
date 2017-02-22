@@ -13,6 +13,15 @@ var transporter = nodemailer.createTransport({
 
 var alert_email = process.env.ALERT_EMAIL || 'useralerts@arrays.co';
 
+var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
+
+
+
+
 
 function sendEmail (mailOptions,callback) {
 	transporter.sendMail(mailOptions,function(err,info) {
@@ -52,23 +61,32 @@ function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb
 	sendEmail(mailOptions,cb);
 }
 
+module.exports.sendResetPasswordEmail = function(user,cb) {
+	var token = jwt.sign({
+		_id: user._id,
+		email: user.email
+	},jwtSecret,{expiresIn: '24h'});
+
+	var resetLink = baseURL + '/account/reset_password?token=' + token;
+	var mailOptions = {
+		from : 'info@arrays.co',
+		to: user.email,
+		subject: 'Account Password Reset',
+		html: "Hi " + user.firstName + ",<br> To reset the password of your Arrays account, please click the link below: <br>"	+ 
+		resetLink + "<br>"
+	}
+	sendEmail(mailOptions,function(err) {
+		console.log(err);
+		cb(err);
+	})
+}
+
 
 module.exports.sendActivationEmail = function(user, cb) {
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
-
-
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-
-
-
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-    baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
-
 
 
 
@@ -155,13 +173,6 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
-
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-
-	baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
 
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {

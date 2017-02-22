@@ -272,6 +272,12 @@ $(document).ready(function () {
 
     });
 
+    $('#forget-pw').on('click',function(e) {
+        
+    })
+
+
+
     $('#logout').on('click',function(e) {
 
         e.preventDefault();
