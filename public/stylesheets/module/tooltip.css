@@ -155,6 +155,19 @@ div.arrays-co-tooltip .scatterplot-tooltip-content-label {
     color: #4a4a4a;
 }
 
+div.arrays-co-tooltip .globe-tooltip-content {
+    font-size: 1.2em;
+    line-height: 95%;
+    padding: 0.3em 0.5em;
+    color: #c9c9c9;
+}
+div.arrays-co-tooltip .globe-tooltip-content-label {
+    font-size: 1.2em;
+    line-height: 95%;
+    padding: 0.3em 0.5em;
+    color: #4a4a4a;
+}
+
 /* @end Scatterplot Tooltip */
 
 /* @begin Linegraph Tooltip */

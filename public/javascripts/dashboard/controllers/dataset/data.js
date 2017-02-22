@@ -40,6 +40,11 @@ angular.module('arraysApp')
 
                 }
             });
+
+            $scope.$watch('submitting',function(sub) {
+                $scope.primaryAction.disabled = (sub == true);
+            })
+            
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
             };
@@ -1530,15 +1535,19 @@ angular.module('arraysApp')
 
 
                 if (isValid) {
+                    $scope.submitting = true;
 
                     var errorHandler = function (error) {
+                            $scope.submitting = false;
                             $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(5000)
                         );
-                        }, done = function() {
+                        }, done = function() {  
+                            $scope.submitting = false;
+
                             $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')

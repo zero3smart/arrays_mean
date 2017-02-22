@@ -52,6 +52,9 @@ module.exports.invite = function(req,res) {
                                         mailer.sendInvitationEmail(team,foundUser,createdUser,req.body._editors,req.body._viewers,
                                             function(err) {
                                                 if (err) res.status(500).send(err);
+                                                mailer.newUserInvitedEmail(foundUser,foundUser.defaultLoginTeam,createdUser,function(err) {
+                                                    if (err) res.status(500).send(err);
+                                                })
                                                 return res.status(200).send({user: foundUser});
                                             })
                                     }

@@ -1,44 +1,41 @@
 /* Menu Nav Bar */
 
-.dashboard-content {
-    /*transition: left 400ms ease-in-out, width 400ms ease-in-out;*/
-    /*left: 0;*/
-    position: relative;
-    width: 100%;
-}
-
-.sidebar-menu {
-    margin-top: var(--navbar-height-mobile);
-    padding: 15px;
-    width: 100%;
-}
-@media (min-width: 768px) {
-    .sidebar-menu {
-        margin-top: var(--navbar-height-tablet);
-    }
-}
-/*not collapsed*/
-@media (min-width: 960px)  {
-    .sidebar-menu {
-        /*h1 + 15px*/
-        padding-top: calc(78px + 15px);
-        width: var(--sidebar-width);
-    }
-}
-
 md-sidenav {
     position: fixed !important;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-}
-.md-sidenav-backdrop {
-    position: fixed !important;
 }
 @media (min-width: 960px)  {
     md-sidenav {
         position: relative !important;
     }
 }
+.md-sidenav-backdrop {
+    position: fixed !important;
+}
+
+.sidebar-menu {
+    margin: 24px;
+    margin-top: var(--navbar-height-mobile);
+    padding-top: 12px;
+}
+@media (min-width: 768px) {
+    .sidebar-menu {
+        margin-top: var(--navbar-height-tablet);
+    }
+}
+.dashboard-container md-sidenav {
+    width: 15em;
+}
+
+/*not collapsed*/
+@media (min-width: 960px)  {
+    .sidebar-menu {
+        /*manually align to baseline of subheader*/
+        padding-top: 114px;
+    }
+}
+
 /*dont do a transition when resizing the window*/
 /*md-sidenav.md-closed-add,*/
 /*md-sidenav.md-closed-remove,*/
@@ -56,7 +53,7 @@ md-sidenav.md-closed.md-locked-open-add-active {
     position: relative;
     /*letter-spacing: 2px;*/
     /*font-size: 1.1em;*/
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 1em;
 
     display: inline-block;

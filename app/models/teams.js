@@ -3,11 +3,10 @@ var integerValidator = require('mongoose-integer');
 var _ = require("lodash");
 var User = require('./users');
 var Team = require('./teams');
-
+var nodemailer = require('.././libs/utils/nodemailer');
+var winston = require('winston');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
-//
-
 
 var team_scheme = Schema({
     title: String,
@@ -31,6 +30,31 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy'] });
 
 
+team_scheme.pre('save',function(next) {
+    this._wasNew = this.isNew;
+    next();
+})
+
+
+team_scheme.methods.notifyNewTeamCreation = function() {
+   if (this._wasNew) {
+        this.populate('admin',function(err,docPopulatedWithAdmin) {
+            if (err || !docPopulatedWithAdmin.admin) {
+                winston.error('Team created with error');
+                console.log(err);
+            } else {
+                nodemailer.newTeamCreatedEmail(docPopulatedWithAdmin,function(err) {
+                    if (err) winston.error('cannot send user alert email');
+                    else {
+                        winston.info('Team created email sent');
+                    }
+                })
+            }
+        })
+   }
+};
+
+
 var team = mongoose.model(modelName, team_scheme);
 
 team.GetTeams = function(fn) {
@@ -44,6 +68,8 @@ team.GetTeams = function(fn) {
 };
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
+
+
 
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
@@ -70,6 +96,7 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
 // arrays' public page data
 team.GetTeamsAndDatasources = function(userId, fn) {
 
+
     function nonLoginUserQuery (cb) {
         var publicAndImportedDataset = {isPublic: true,imported:true,fe_visible:true,fe_listed:true};
         var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
@@ -91,7 +118,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
+                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
 
 
@@ -104,7 +131,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
+                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
 
 
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] }
@@ -220,6 +247,8 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                     return callback(401, 'unauthorized');
                 }
 
+                var stateChangedTo = '';
+
                 // Update team with subscription info
                 team.findByIdAndUpdate(user.defaultLoginTeam._id)
                     .exec(function(err, team) {
@@ -232,6 +261,16 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                             if (responseData.data.subscription) {
 
                                 var subscription = responseData.data.subscription;
+                                
+                                if (team.subscription) {
+                                    if (team.subscription.state == 'active' && subscription.state == 'canceled') {
+
+                                        stateChangedTo = 'canceled';
+                                    } else if (team.subscription.state == 'canceled' && subscription.state == 'active') {
+                                        stateChangedTo = 'active';
+                                    }
+                                }
+                                
 
                                 team.subscription = {
                                     activated_at: subscription.activated_at._,
@@ -262,6 +301,15 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                 if (err) {
                                     return callback(500, err);
                                 } else {
+                                    if (stateChangedTo !== '') {
+                                        nodemailer.subscriptionUpdatedEmail(user,user.defaultLoginTeam,stateChangedTo,function(err) {
+                                            if (err) winston.error('cannot send user alert email');
+                                            else {
+                                                winston.info('send user alert email with subscription update');
+                                            }
+                                                  
+                                        })
+                                    }
                                     return callback(responseData.statusCode, null, responseData);
                                 }
                             });

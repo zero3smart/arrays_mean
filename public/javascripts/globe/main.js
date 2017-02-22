@@ -17,6 +17,8 @@ var GlobeMain = {
         this.$el = $('#globe');
         this.scale = 1;
         
+        // console.time('load');
+        
         var lines = _.uniqBy(flightPaths, function(v, i) {
             return '' + v.origin.lat + 'x' + v.origin.lon + 'x' +
                 v.destination.lat + 'x' + v.destination.lon;
@@ -44,6 +46,24 @@ var GlobeMain = {
         points = _.uniqBy(points, function(v, i) {
             return '' + v.lat + 'x' + v.lng;
         });
+        
+        var originCounts = _.countBy(flightPaths, function(v, i) {
+            return v.origin.lat + 'x' + v.origin.lon;
+        });
+        
+        var destinationCounts = _.countBy(flightPaths, function(v, i) {
+            return v.destination.lat + 'x' + v.destination.lon;
+        });
+        
+        _.each(points, function(v, i) {
+            var key = v.lat + 'x' + v.lng;
+            v.info = {
+                originCount: originCounts[key] || 0,
+                destinationCount: destinationCounts[key] || 0
+            };
+        });
+        
+        // console.timeEnd('load');
         
         var c = new THREE.Color(brandColor);
         c.r = 1 - c.r;

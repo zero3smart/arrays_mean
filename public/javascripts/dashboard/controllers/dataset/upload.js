@@ -8,7 +8,12 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
-            $scope.addingSourceType = ''; // ['csv', 'json', 'database']
+            /** if not enterprise, skip option links (only one choice of CSV)
+             *  and go straight to CSV upload
+             *  until database is a public option and JSON is supported
+             *  ['csv', 'json', 'database']
+             */
+            $scope.addingSourceType = ($scope.env.node_env == 'enterprise') ? '' : 'csv';
 
             $scope.tables = [];
             if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.tableName) {
@@ -39,7 +44,7 @@ angular.module('arraysApp')
 
                 if (!dataset.fileName) {
 
-                
+
                     $scope.primaryAction.disabled = !(hasTable && hasTable !== null && $scope.isConnecting !== true);
                 }
             });
@@ -58,7 +63,7 @@ angular.module('arraysApp')
                         inherit: false,
                         notify: true
                     });
-                })
+                });
             };
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
@@ -71,10 +76,10 @@ angular.module('arraysApp')
                 DatasetService.connectToRemoteDatasource(dataset._id,dataset.connection)
                 .then(function(response) {
 
-               
+
                     if (response.status == 200 && !response.data.error) {
                         $scope.isConnecting = false;
-                        $scope.tables = response.data
+                        $scope.tables = response.data;
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -94,8 +99,8 @@ angular.module('arraysApp')
 
                     }
 
-                })
-            }
+                });
+            };
 
 
             function initSource(additionalDatasource) {
