@@ -176,7 +176,6 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
 
                         if (coercionSchemeForKey.operation) {
-                            console.log(coercionSchemeForKey)
                             typeFinalized_rowValue = datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue, columnName);
 
                         }
