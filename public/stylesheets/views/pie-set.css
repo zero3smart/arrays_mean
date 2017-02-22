@@ -1,8 +1,9 @@
 .pie-set-item {
     height: auto;
+    max-width: 270px;
     position: relative;
-    padding: 0;
-    margin: 15px 6px;
+    padding: 20px;
+    margin: 6px;
     border-radius: 5px;
 }
 
@@ -22,8 +23,6 @@
 @media (min-width: 768px) {
     .pie-set-item {
         height: 270px;
-        padding: 20px;
-        margin: 10px 6px;
     }
     .array-pie-set.legend-open .site-content .container-fluid {
         padding-right: 20px;
