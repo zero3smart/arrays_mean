@@ -355,7 +355,6 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
         }
     }
     //
-    console.log(filterObj)
     return filterObj;
 }
 
