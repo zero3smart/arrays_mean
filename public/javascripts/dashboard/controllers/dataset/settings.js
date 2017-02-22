@@ -81,14 +81,17 @@ angular.module('arraysApp')
 
                         if (response.status == 200 && response.data) {
 
+                            if (!$filter('isSuperAdmin')(dataset.author)) {
+            
+                                $scope.$parent.$parent.dataset = response.data;
+                                 $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('Dataset updated with approval state setting!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
 
-                            $scope.$parent.$parent.dataset = response.data;
-                             $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Dataset updated with approval state setting!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                            }
                         }
                     })
 
