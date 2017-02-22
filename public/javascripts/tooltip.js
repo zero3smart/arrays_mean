@@ -152,7 +152,11 @@ Tooltip.prototype.setOn = function (element, cls) {
  * @param {HTMLElement|SVGElement} element
  * @returns {Tooltip}
  */
-Tooltip.prototype.show = function (element) {
+Tooltip.prototype.show = function (element, options) {
+    options = options || {};
+    
+    var elementDimensions, position;
+    
     /*
      * Use previously stashed element if not prvided.
      */
@@ -161,14 +165,25 @@ Tooltip.prototype.show = function (element) {
      * Stash current element.
      */
     this.setOn(element);
-    /*
-     * Get element dimensions.
-     */
-    var elementDimensions = element.getBoundingClientRect();
-    /*
-     * Get element position.
-     */
-    var position = jQuery(element).offset();
+    
+    if (options.bounds) {
+        // We're expecting options.bounds to have top, left, width, height
+        elementDimensions = options.bounds;
+        position = {
+            left: options.bounds.left,
+            top: options.bounds.top
+        };
+    } else {
+        /*
+        * Get element dimensions.
+        */
+        elementDimensions = element.getBoundingClientRect();
+        /*
+        * Get element position.
+        */
+        position = jQuery(element).offset();
+    }
+    
     /*
      * Append hidden content to the container.
      */
@@ -221,7 +236,7 @@ Tooltip.prototype._getLeftPosition = function (position, tooltipDimension, eleme
         y -= y + tooltipDimension.height - document.body.clientHeight;
     }
     /*
-     * Fix document height top violence. 
+     * Fix document height top violence.
      */
     if (y < 0) {
         y = 0;
@@ -305,7 +320,7 @@ Tooltip.prototype._getRightPosition = function (position, tooltipDimension, elem
         y -= y + tooltipDimension.height - document.body.clientHeight;
     }
     /*
-     * Fix document height top violence. 
+     * Fix document height top violence.
      */
     if (y < 0) {
         y = 0;

@@ -2,6 +2,10 @@
     transition: padding 400ms ease-in-out;
 }
 
+rect.bar {
+    transition: opacity 150ms;
+}
+
 @media (min-width: 768px) {
     .array-bar-chart.legend-open .site-content .container-fluid {
         padding-right: 20px;

@@ -8,7 +8,7 @@
                 <div ng-if="!selectedUser._id">
                     <p>Invite a new user to <strong>{{team.title}}</strong>.</p>
                     <md-input-container class="md-block" flex="100" flex-gt-xs="65">
-                        <label>Email</label>
+                        <label>Email Address</label>
                         <input aria-label="email" required name="email" ng-model="selectedUser.email">
                         <div ng-messages="vm.userForm.email.$error">
                             <div ng-message="unique">This user is an existing user.</div>
@@ -20,17 +20,20 @@
                     <!-- <div flex="10">
                         <img src="/images/image-not-found-sm.png" class="profile-thumb" />
                     </div> -->
-                    <p>
-                        Manage permissions for<!-- br /-->
+                    <h4>
+                        Manage permissions for
                         <strong>{{selectedUser.firstName}} {{selectedUser.lastName}}</strong> ({{selectedUser.email}})
-                    </p>
+                    </43>
                 </div>
 
                 <ul ng-hide="user.invited[person._id]|| datasets.length == 0" class="dashboard-list user-list no-padding">
                     <li ng-repeat="dataset in datasets" layout="row" layout-align="center center">
-                        <span flex><strong>{{dataset.title}}</strong></span>
+                        <span flex="65">{{dataset.title}}</span>
+                        <span flex="10"></span>
 
-                        <md-select flex ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
+                        <md-select ng-hide="team.admin==selectedUser._id" ng-model="userRoles[dataset._id]"
+                            flex="25" aria-label="User role" name="role" required
+                            class="no-margin">
                             <md-option ng-repeat="role in availableUserRoles" value="{{role.value}}">{{role.name}}</md-option>
                         </md-select>
 
@@ -39,7 +42,7 @@
                 </ul>
 
             </md-content>
-            <md-dialog-actions layout="row" layout-align="space-between center">
+            <md-dialog-actions layout="row" layout-align="space-between center" style="border: 0">
                 <a class="warn" ng-if="selectedUser._id !== team.admin && selectedUser._id && selectedUser.activated==true" ng-click="makeTeamAdmin($event, selectedUser)">Make Team Admin</a>
                 <span flex><!-- force end align on invite--></span>
 
@@ -47,8 +50,8 @@
                     <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard confirm" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
                         <span class="btn-label">Invite User</span>
                     </md-button>
-
-                    <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard confirm" type="button" ng-if="selectedUser._id">
+                    <!-- duplicate found ng-if="selectedUser._id" -->
+                    <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard confirm" type="button">
                         <span class="btn-label">Save Settings</span>
                     </md-button>
 

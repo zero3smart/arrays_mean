@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <div class="sort-bar clearfix">
+                            <div id="array-controls" class="sort-bar clearfix">
 
                                 <nav class="sort-bar-left pull-left" role="navigation">
 
@@ -166,6 +166,7 @@
                     }) | safe }}';
                     var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}'
+                    var aggregateBy = '{{ aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable }}'
 
                     var options = {
                         padding: {{ padding if padding else false }}
@@ -186,7 +187,9 @@
 
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
-                <h3 class="legend-title">Legend</h3>
+                <!-- <h3 class="legend-title">Legend</h3> -->
+                <!-- <p style="padding: 0 0 11px 40px">{{ stackBy }}</p> -->
+                <h3 class="legend-title">{{ stackBy }}</h3>
                 <ul class="legend-list"></ul>
             </nav>
 
@@ -198,6 +201,7 @@
 {% block inlineScript %}
     {{ super() }}
 
+    <script type="text/javascript" src="/vendors/scrollmagic/scrollmagic/minified/ScrollMagic.min.js"></script>
     <script type="text/javascript" src="/vendors/d3/d3.js"></script>
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
     <script type="text/javascript" src="/javascripts/barchart/barChart.js"></script>
