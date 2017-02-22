@@ -40,7 +40,7 @@
 
 .sort-direction {
 	margin-right: 0;
-    margin-left: 15px;
+    margin-left: 8px;
     cursor: pointer;
 }
 
@@ -49,7 +49,9 @@
 	color: black;
     transition: color 0.15s;
 }
-
+.sort-direction-icon {
+    font-size: 24px;
+}
 .sort-control .dropdown-toggle {
 	padding-top: 6px;
 	padding-bottom: 6px;

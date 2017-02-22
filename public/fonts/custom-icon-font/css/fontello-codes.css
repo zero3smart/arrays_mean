@@ -28,4 +28,8 @@
 .icon-line-graph:before { content: '\e81a'; } /* '' */
 .icon-pie-set:before { content: '\e81b'; } /* '' */
 .icon-bar-chart:before { content: '\e81c'; } /* '' */
+.icon-bars-v:before { content: '\e81d'; } /* '' */
+.icon-bars-h:before { content: '\e81e'; } /* '' */
 .icon-map:before { content: '\e81f'; } /* '' */
+.icon-perc:before { content: '\e820'; } /* '' */
+.icon-pound:before { content: '\e821'; } /* '' */

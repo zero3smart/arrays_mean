@@ -64,20 +64,6 @@
       ]
     },
     {
-      "uid": "1f09f625e2ef43fbaf570432d9b9dd39",
-      "css": "close-filterpill",
-      "code": 59396,
-      "src": "custom_icons",
-      "selected": true,
-      "svg": {
-        "path": "M529.5 500L725.9 696.4 696.4 725.9 500 529.5 303.6 725.9 274.1 696.4 470.5 500 274.1 303.6 303.6 274.1 500 470.5 696.4 274.1 725.9 303.6 529.5 500Z",
-        "width": 1000
-      },
-      "search": [
-        "close-filterpill"
-      ]
-    },
-    {
       "uid": "853446845ca2e2ee4ad8399fc0b6c977",
       "css": "expand",
       "code": 59397,
@@ -120,20 +106,6 @@
       ]
     },
     {
-      "uid": "b8cfda3f3652674f5dc6efb3fcf946e8",
-      "css": "gallery",
-      "code": 59400,
-      "src": "custom_icons",
-      "selected": true,
-      "svg": {
-        "path": "M125 125H458.3V458.3H125V125ZM125 541.7H458.3V875H125V541.7ZM541.7 125H875V458.3H541.7V125ZM541.7 541.7H875V875H541.7V541.7Z",
-        "width": 1000
-      },
-      "search": [
-        "gallery"
-      ]
-    },
-    {
       "uid": "b3c45534f435f5c08e3906aa0171a32d",
       "css": "menu",
       "code": 59401,
@@ -173,20 +145,6 @@
       },
       "search": [
         "sort-ascending"
-      ]
-    },
-    {
-      "uid": "23e6bd9ccba83ca404495162b5d9ec1a",
-      "css": "sort-descending",
-      "code": 59404,
-      "src": "custom_icons",
-      "selected": true,
-      "svg": {
-        "path": "M166.7 250H833.3V333.3H166.7V250ZM250 458.3H750V541.7H250V458.3ZM333.3 666.7H666.7V750H333.3V666.7Z",
-        "width": 1000
-      },
-      "search": [
-        "sort-descending"
       ]
     },
     {
@@ -425,6 +383,104 @@
       },
       "search": [
         "map"
+      ]
+    },
+    {
+      "uid": "1f09f625e2ef43fbaf570432d9b9dd39",
+      "css": "close-filterpill",
+      "code": 59396,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M529.5 500L725.9 696.4 696.4 725.9 500 529.5 303.6 725.9 274.1 696.4 470.5 500 274.1 303.6 303.6 274.1 500 470.5 696.4 274.1 725.9 303.6 529.5 500Z",
+        "width": 1000
+      },
+      "search": [
+        "close-filterpill"
+      ]
+    },
+    {
+      "uid": "23e6bd9ccba83ca404495162b5d9ec1a",
+      "css": "sort-descending",
+      "code": 59404,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M166.7 250H833.3V333.3H166.7V250ZM250 458.3H750V541.7H250V458.3ZM333.3 666.7H666.7V750H333.3V666.7Z",
+        "width": 1000
+      },
+      "search": [
+        "sort-descending"
+      ]
+    },
+    {
+      "uid": "b8cfda3f3652674f5dc6efb3fcf946e8",
+      "css": "gallery",
+      "code": 59400,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M125 125H458.3V458.3H125V125ZM125 541.7H458.3V875H125V541.7ZM541.7 125H875V458.3H541.7V125ZM541.7 541.7H875V875H541.7V541.7Z",
+        "width": 1000
+      },
+      "search": [
+        "gallery"
+      ]
+    },
+    {
+      "uid": "a4e5d8d364b31ab316872f2825f77500",
+      "css": "bars-h",
+      "code": 59422,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M166.7 166.7H458.3V270.8H166.7V166.7ZM166.7 729.2H750V833.3H166.7V729.2ZM166.7 354.2H833.3V458.3H166.7V354.2ZM166.7 541.7H625V645.8H166.7V541.7Z",
+        "width": 1000
+      },
+      "search": [
+        "bars-h"
+      ]
+    },
+    {
+      "uid": "e2b3970e12bd2ba0fcf4faf5b1ca1046",
+      "css": "bars-v",
+      "code": 59421,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M166.7 833.3V541.7H270.8V833.3H166.7ZM729.2 833.3V250H833.3V833.3H729.2ZM354.2 833.3V166.7H458.3V833.3H354.2ZM541.7 833.3V375H645.8V833.3H541.7Z",
+        "width": 1000
+      },
+      "search": [
+        "bars-v"
+      ]
+    },
+    {
+      "uid": "21449bbcfc34828de3afaa18002c1143",
+      "css": "pound",
+      "code": 59425,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M720.8 645.8H616.7L579.2 808.3H491.7L529.2 645.8H400L362.5 808.3H275L312.5 645.8H220.8L237.5 570.8H333.3L366.7 433.3H262.5L279.2 358.3H383.3L420.8 195.8H508.3L470.8 358.3H600L637.5 195.8H725L687.5 358.3H783.3L766.7 433.3H666.7L633.3 570.8H737.5L720.8 645.8ZM420.8 570.8H550L583.3 433.3H454.2L420.8 570.8Z",
+        "width": 1000
+      },
+      "search": [
+        "pound"
+      ]
+    },
+    {
+      "uid": "b23239b0719d17e7f2efc465491d99e2",
+      "css": "perc",
+      "code": 59424,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M337.5 470.8C262.5 470.8 200 408.3 200 333.3S262.5 195.8 337.5 195.8 475 258.3 475 333.3 412.5 470.8 337.5 470.8ZM337.5 395.8C370.8 395.8 400 366.7 400 333.3 400 300 370.8 270.8 337.5 270.8 304.2 270.8 275 300 275 333.3 275 366.7 300 395.8 337.5 395.8ZM645.8 200H725L354.2 816.7H275L645.8 200ZM662.5 825C587.5 825 525 762.5 525 687.5 525 612.5 587.5 550 662.5 550 737.5 550 800 612.5 800 687.5 800 762.5 741.7 825 662.5 825ZM662.5 625C629.2 625 600 654.2 600 687.5 600 720.8 629.2 750 662.5 750S725 720.8 725 687.5C725 650 700 625 662.5 625Z",
+        "width": 1000
+      },
+      "search": [
+        "percent"
       ]
     }
   ]
