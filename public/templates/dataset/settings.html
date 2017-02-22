@@ -17,7 +17,6 @@
         </md-input-container>
 
         <md-input-container class="md-block publish-settings">
-
             <label style="margin-bottom: 15px">Privacy settings</label>
 
             <!-- <md-switch ng-model="dataset.fe_visible"
@@ -37,70 +36,50 @@
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
-                List your visualization on your team page
+                List visualization on your team page
             </md-switch>
+        </md-input-container>
 
 
-    
-            <h2> Listing on Arrays.co 
-            <small ng-if="!(dataset.author | isSuperAdmin)">(Viz has to be imported and listed on team page before showing on arrays index page)</small> </h2>
+        <label>List on arrays.co</label>
 
 
-            <div ng-if="(dataset.author | isSuperAdmin)"> 
+        <div ng-if="(dataset.author | isSuperAdmin)">
+            <md-switch ng-model="showOnArraysCo"
+                ng-change="updateListingOnArrays(showOnArraysCo)"
+                ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
+                aria-label="Make dataset accessible on arrays.co">
+                List visualization on arrays.co
+            </md-switch>
+        </div>
 
-                <md-switch ng-model="showOnArraysCo"
-                    ng-change="updateListingOnArrays(showOnArraysCo)"
-                    ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
-                    aria-label="Make dataset accessible on arrays.co">
-                    List your visualization on arrays.co
-                </md-switch>
-
-    
-            </div>
-
-
-             <md-button ng-hide="dataset.connection || dataset.sample ||
-                user.role=='superAdmin'" class="md-dashboard" aria-label="More actions menu" ng-disabled="dataset.state=='approved' ||
-                dataset.state =='pending'|| !dataset.imported"
+        <div>
+            <md-button ng-hide="dataset.connection || dataset.sample || user.role=='superAdmin'"
+                ng-disabled="dataset.state=='approved' || dataset.state =='pending'|| !dataset.imported"
+                class="md-dashboard" aria-label="More actions menu"
                 ng-click="listOnArraysRequest()">
 
-                Submit Request to list on arrays.co
-                <span class="md-select-icon" aria-hidden="true"></span>
+                <span class="btn-label">Request {{ dataset.state || 'listing on arrays.co' }}</span>
+
             </md-button>
+            <p ng-if="!(dataset.author | isSuperAdmin) && !dataset.state">Visualization must be imported and listed on team page before making a request to list on array.co.</p>
+        </div>
 
+        <!-- <div ng-if="dataset.state && user.role !== 'superAdmin'">
+            <h3>Request State: {{dataset.state}}</h3>
+        </div> -->
 
-
-            <div ng-if="dataset.state && user.role !== 'superAdmin'">
-                <h3> Request State: {{dataset.state}}</h3>
-            </div>
-
-
-            <div ng-if="user.role=='superAdmin' && dataset.state && !(dataset.author | isSuperAdmin) " >
-
-                <div>
-                    <h3> Current State: {{dataset.state}}</h3>
-                </div>
-
-
-                Action: 
-
-                <md-button  class="md-dashboard" aria-label="Approve Listing On Arrays.co" ng-disabled=" 
-                    dataset.state == 'approved'"
-                    ng-click="updateListingOnArrays(true)">
-                    Approve 
-                    <span class="md-select-icon" aria-hidden="true"></span>
-                </md-button>
-
-
-                <md-button class="md-dashboard" aria-label="Approve Listing On Arrays.co" ng-disabled="dataset.state == 'disapproved'"
-                    ng-click="updateListingOnArrays(false)">
-                    Disapprove
-                    <span class="md-select-icon" aria-hidden="true"></span>
-                </md-button>
-
-            </div>
-
-        </md-input-container>
+        <div ng-if="user.role=='superAdmin' && dataset.state && !(dataset.author | isSuperAdmin) " >
+            <h3>Request {{dataset.state}}</h3>
+            <md-button class="md-dashboard" aria-label="Approve Listing On Arrays.co" ng-disabled="dataset.state == 'approved'"
+                ng-click="updateListingOnArrays(true)">
+                Approve
+            </md-button>
+            <md-button class="md-dashboard" aria-label="Approve Listing On Arrays.co" ng-disabled="dataset.state == 'disapproved'"
+                ng-click="updateListingOnArrays(false)">
+                Disapprove
+            </md-button>
+        </div>
 
         <!-- <md-input-container class="md-block md-input-has-placeholder">
             <label>URL</label>
