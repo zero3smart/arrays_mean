@@ -700,49 +700,43 @@ function verifyDataType(name, sample, rowObjects, index) {
         rowObject.operation = secondRowObject.operation;
     }
     return rowObject;
-}
+};
 
 function intuitDataype(name, sample) {
+    var format = datatypes.isDate(sample)[1];
+    if (format !== null) {
+        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'}
+    }
+
     var dateRE = /(year|DATE)/i;
-    var isDate = false;
-    var known_date_formats = ['MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY', 'YYYY-MM-DD', 'YYYY-M-D', 'YYYY-MM-D', 'YYYY-M-DD'];
-    var returnObj = {name: name, sample: sample};
-    for(var i = 0; i < known_date_formats.length; i++) {
-        if(moment(sample, known_date_formats[i], true).isValid()) {
-            isDate = true;
-            return {name: name, sample: sample, data_type: 'Date', input_format: known_date_formats[i], output_format: known_date_formats[i], operation: 'ToDate'};
-        }
-    }
-
-    if(!isDate) {
-        if(dateRE.test(name)){
-            if(moment(sample, 'YYYY', true).isValid()) {
-                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY', output_format: 'YYYY', operation: 'ToDate'};
-            } else if(moment(sample, 'YYYYMMDD', true).isValid()) {
-                return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYYMMDD', output_format: 'YYYYMMDD', operation: 'ToDate'}
-            } else {
-                return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
-            }
+    if (dateRE.test(name)) {
+        format = datatypes.isEdgeDate(sample)[1];
+        if (format === 'ISO_8601') {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        } else if (format !== null) {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
         } else {
-            // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-            var numberRE = /([^0-9\.,]|\s)/;
-            var floatRE = /[^0-9]/;
-            var IdRE = /(Id|ID)/;
-            if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
-                // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
-                if(moment(sample, moment.ISO_8601, true).isValid()) {
-                    return {name: name, sample: sample, data_type: 'Date', input_format: 'YYYY-MM-DD', output_format: 'YYYY-MM-DD', operation: 'ToDate'}
-                }
-                return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
-
-            } else if(floatRE.test(sample)) {
-               return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
-            } else {
-                return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
-            }
+            return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
         }
     }
-}
+
+    // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
+    var numberRE = /([^0-9\.,]|\s)/;
+    var floatRE = /[^0-9,]/;
+    var IdRE = /(Id|ID)/;
+    if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
+        // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
+        format = datatypes.isISODateOrString(sample)[1];
+        if(format !== null) {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        }
+        return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+    } else if(floatRE.test(sample)) {
+       return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
+    } else {
+        return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
+    }
+};
     
 
 module.exports.upload = function (req, res) {
