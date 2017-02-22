@@ -86,9 +86,8 @@ var GlobeMain = {
                 // TODO: Ultimately it would be good to be able to also include things by destination as well as origin
                 var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
                 var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
-                var latFilterString = $.param(constructedFilterObj(filterObj, 'o_lat', pointNode.lat, false));
-                var lonFilterString = $.param(constructedFilterObj(filterObj, 'o_lon', pointNode.lng, false));
-                var urlForFilterValue = routePath + queryParamJoinChar + latFilterString + '&' + lonFilterString;
+                var filterString = $.param(constructedFilterObj(filterObj, ['o_lat', 'o_lon'], [pointNode.lat, pointNode.lng], false));
+                var urlForFilterValue = routePath + queryParamJoinChar + filterString;
 
                 window.location = urlForFilterValue;
                 // pointNode.select();
