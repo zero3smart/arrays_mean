@@ -250,24 +250,35 @@ map.on('load', function () {
     /**
      * Filter by country on click
      */
-    map.on('click', function (e) {
-        var features = map.queryRenderedFeatures(e.point, {layers: names});
+    if (isCoordMap) {
+        if (galleryViewEnabled) {
+            map.on('click', function (e) {
+                var features = map.queryRenderedFeatures(e.point, {layers: names});
 
-        var feature = features[0];
+                var feature = features[0];
 
-        var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
+                var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.lastIndexOf('map'));
 
-        var filterObjForThisFilterColVal;
-        if (isCoordMap) {
-            filterObjForThisFilterColVal = constructedFilterObj(filterObj, coordCol, feature.properties.name, false);
-        } else {
-            filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+                window.location = urlWithoutObjectId + feature.properties.id;
+            });
         }
-        var filterObjString = $.param(filterObjForThisFilterColVal);
-        var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
+    } else {
+        map.on('click', function (e) {
+            var features = map.queryRenderedFeatures(e.point, {layers: names});
 
-        window.location = urlForFilterValue;
-    });
+            var feature = features[0];
+
+            var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
+
+            var filterObjForThisFilterColVal;
+            
+            filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+            var filterObjString = $.param(filterObjForThisFilterColVal);
+            var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
+
+            window.location = urlForFilterValue;
+        });
+    }
 
     window.addEventListener('resize', function() {
         mapContainer.style.height = window.innerHeight - offsetY + "px";
