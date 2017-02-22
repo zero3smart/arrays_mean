@@ -59,6 +59,12 @@
     margin-left: 20px;
     color: var(--color-text-dark);
     padding-top: 4px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+}
+.array-controls-pinned .legend-toggle {
+    background: white;
+    border: 1px solid #eee;
 }
 
 .legend-open .legend-toggle {
@@ -67,7 +73,7 @@
 
 .legend-toggle > span {
     display: inline-block;
-    width: 1em;
+    /*width: 1em;*/
 }
 
 .sort-bar .dropdown-toggle span,
