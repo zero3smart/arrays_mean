@@ -106,10 +106,14 @@
                     </span>
                 </span>
 
+                <span ng-hide="dataset.connection" flex="5" class="">
+                    {{ field.data_type }}
+                </span>
 
+                <span flex="10"></span>
 
                 <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
-                    ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
+                    ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex, null, $index)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>
 
