@@ -262,19 +262,17 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                             if (responseData.data.subscription) {
 
                                 var subscription = responseData.data.subscription;
-
-
+                                
                                 if (team.subscription) {
-
                                     if (team.subscription.state == 'active' && subscription.state == 'canceled') {
 
                                         stateChangedTo = 'canceled';
-                                        
                                     } else if (team.subscription.state == 'canceled' && subscription.state == 'active') {
                                         stateChangedTo = 'active';
                                     }
 
                                 }
+                                
 
                                 
 

@@ -63,6 +63,10 @@ module.exports.get = function(req, res) {
             if (err) {
                 res.status(500).send(err);
             } else {
+                
+                if (!user) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
 
                 if (!user) {
                      return res.status(401).send({error: 'unauthorized'});

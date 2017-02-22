@@ -3,7 +3,7 @@
 
         <h2>Display Settings</h2>
 
-        <p style="margin-bottom: 30px">Change your display and publishing settings below.</p>
+        <h4 class="no-padding">Change your display and publishing settings below.</h4>
 
 
         <md-input-container class="md-block" style="margin-top: 45px;">
@@ -13,7 +13,7 @@
                 <div ng-message="required">This is required.</div>
                 <div ng-message="titleAvailable">This title is already used on your team.</div>
             </div>
-           
+
         </md-input-container>
 
         <md-input-container class="md-block publish-settings">
@@ -40,6 +40,7 @@
                 List your visualization on your team page
             </md-switch>
 
+
     
             <h2> Listing on Arrays.co 
             <small ng-if="!(dataset.author | isSuperAdmin)">(Viz has to be imported and listed on team page before showing on arrays index page)</small> </h2>
@@ -62,6 +63,7 @@
                 user.role=='superAdmin'" class="md-dashboard" aria-label="More actions menu" ng-disabled="dataset.state=='approved' ||
                 dataset.state =='pending'|| !dataset.imported"
                 ng-click="listOnArraysRequest()">
+
                 Submit Request to list on arrays.co
                 <span class="md-select-icon" aria-hidden="true"></span>
             </md-button>

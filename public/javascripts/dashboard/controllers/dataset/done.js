@@ -297,7 +297,7 @@ angular.module('arraysApp')
             //----
 
 
-            $scope.primaryAction.text = 'View Your Visualization';
+            $scope.primaryAction.text = 'View';
             $scope.$watch('dirty', function(dirty) {
                 $scope.primaryAction.disabled = dirty;
                 if(dirty && !$scope.inProgress && !dataset.connection) {
