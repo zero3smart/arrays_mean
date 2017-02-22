@@ -251,15 +251,17 @@ map.on('load', function () {
      * Filter by country on click
      */
     if (isCoordMap) {
-        map.on('click', function (e) {
-            var features = map.queryRenderedFeatures(e.point, {layers: names});
+        if (galleryViewEnabled) {
+            map.on('click', function (e) {
+                var features = map.queryRenderedFeatures(e.point, {layers: names});
 
-            var feature = features[0];
+                var feature = features[0];
 
-            var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.lastIndexOf('map'));
+                var urlWithoutObjectId = routePath_withoutFilter.slice(0, routePath_withoutFilter.lastIndexOf('map'));
 
-            window.location = urlWithoutObjectId + feature.properties.id;
-        });
+                window.location = urlWithoutObjectId + feature.properties.id;
+            });
+        }
     } else {
         map.on('click', function (e) {
             var features = map.queryRenderedFeatures(e.point, {layers: names});
