@@ -91,24 +91,24 @@
                             </div>
 
                         </div>
-
-                        {% if isFilterActive %}
-                            {{
-                            filter.default(displayTitleOverrides,
-                                routePath_base | constructedRoutePath(null, {
-                                    searchQ: searchQ,
-                                    searchCol: searchCol,
-                                    sortDir: sortDir,
-                                    sortBy: sortBy}),
-                                filterObj,
-                                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill
-                            )
-                            }}
-                        {% endif %}
-
                     </div>
                 </div><!-- .row -->
             </div><!-- .container-fluid -->
+
+            {% if isFilterActive %}
+                {{
+                filter.default(displayTitleOverrides,
+                    routePath_base | constructedRoutePath(null, {
+                        searchQ: searchQ,
+                        searchCol: searchCol,
+                        sortDir: sortDir,
+                        sortBy: sortBy}),
+                    filterObj,
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill
+                )
+                }}
+            {% endif %}
+
         </div><!-- #array-controls -->
 
         <div class="array-content">

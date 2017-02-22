@@ -3,7 +3,7 @@
 
 #array-controls {
 	z-index: 1;
-	background-color: #ffffff;
+	background-color: transparent;
 }
 
 /* @group Sort Bar */
@@ -27,7 +27,7 @@
 
 .sort-control {
 	display: inline-block;
-	margin-right: 20px;
+	margin-right: 15px;
 	padding-right: 0;
 	padding-left: 0;
 	vertical-align: top;
@@ -55,6 +55,14 @@
 	padding-bottom: 6px;
 }
 
+#array-controls .sort-bar-left .dropdown-toggle,
+#array-controls .sort-control-right,
+.map-container .sort-bar-left .dropdown-toggle,
+.map-container .sort-control-right {
+    padding-right: 12px;/**/
+    border: 1px solid #fff;
+}
+
 .sort-control #search-by.dropdown-toggle {
     padding-top: 0;
     padding-bottom: 0;
@@ -70,16 +78,20 @@
     padding-top: 0;
 }
 
+/*add border on map or on scroll;*/
+.array-controls-pinned #array-controls .sort-bar-left .dropdown-toggle,
+.array-controls-pinned #array-controls .sort-control-right,
+.array-controls-pinned #array-controls .sort-direction,
 .map-container .sort-bar-left .dropdown-toggle,
 .map-container .sort-control-right {
     background: white;
     border: 1px solid #eee;
-    padding-right: 12px;
 }
 .map-container .sort-bar-left .dropdown-toggle {
     padding-bottom: 8px;
 }
-.map-container .sort-control-right {
+/*.map-container*/
+.sort-control-right {
     border-radius: 4px;
     padding-bottom: 4px;
 }
@@ -354,13 +366,13 @@
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 1000px;
+	background-color: #ffffff;
 	color: #777777;
 	font-weight: normal;
 	font-size: 16px;
 }
 
 .filter-bar-fixed-bottom .filter-tag {
-	background-color: #ffffff;
 	box-shadow: var(--box-shadow);
 }
 
