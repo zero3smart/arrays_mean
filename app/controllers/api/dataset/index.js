@@ -173,7 +173,10 @@ module.exports.approvalRequest = function(req,res) {
             if (dataset.state == 'pending') {
                 nodemailer.newVizWaitingForApproval(dataset,done);
             } else {
-                nodemailer.notifyVizApprovalAction(dataset,done);
+                if (!dataset.author.isSuperAdmin()) {
+                    nodemailer.notifyVizApprovalAction(dataset,done);
+                }
+                
             }
         })
     })

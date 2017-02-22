@@ -30,7 +30,7 @@ angular.module('arraysApp')
             // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
-            if ($filter('isSuperAdmin')(dataset.author) ) { 
+            if ($filter('isSuperAdmin')(dataset.author) ) {
                 $scope.showOnArraysCo = (dataset.state == 'approved')? true: false
             }
 
@@ -61,14 +61,14 @@ angular.module('arraysApp')
                         $scope.$parent.$parent.dataset = response.data;
                          $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Request submitted, you will be notified when it get reviewed!')
+                                .textContent('Request submitted!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
                     }
-                    
+
                 })
-           
+
             }
 
             $scope.updateListingOnArrays = function(approved) {
@@ -81,6 +81,7 @@ angular.module('arraysApp')
 
                         if (response.status == 200 && response.data) {
 
+
                             if (!$filter('isSuperAdmin')(dataset.author)) {
             
                                 $scope.$parent.$parent.dataset = response.data;
@@ -92,6 +93,7 @@ angular.module('arraysApp')
                                 );
 
                             }
+
                         }
                     })
 
@@ -197,7 +199,7 @@ angular.module('arraysApp')
                 if (bannerFileName.indexOf('http') >= 0) {
                     return bannerFileName;
                 } else {
-                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain + 
+                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain +
                     '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
                     return url;
                 }

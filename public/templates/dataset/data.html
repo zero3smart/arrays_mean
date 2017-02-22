@@ -30,13 +30,13 @@
             <span flex="5"></span> -->
 
             <md-menu>
-                <md-button ng-hide="dataset.connection" class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu($event)">
+                <md-button ng-hide="dataset.connection" class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu()">
                     <span class="btn-label">More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></span></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
                 <md-menu-content width="4">
                     <md-menu-item ng-if="user.role=='superAdmin'">
-                        <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                        <md-button ng-click="openFieldDialog('', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                             Add a new field
                         </md-button>
                     </md-menu-item>
@@ -90,7 +90,7 @@
                              ></md-checkbox>
                 </span>
 
-                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
+                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex)">
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
                         <span ng-if="!field.custom">(Sample: {{ field.sample | limitTo:35 }})</span>
@@ -109,7 +109,7 @@
 
 
                 <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
-                    ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
+                    ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>
 
