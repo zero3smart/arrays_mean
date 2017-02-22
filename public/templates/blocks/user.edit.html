@@ -23,7 +23,7 @@
                     <h4>
                         Manage permissions for
                         <strong>{{selectedUser.firstName}} {{selectedUser.lastName}}</strong> ({{selectedUser.email}})
-                    </43>
+                    </h4>
                 </div>
 
                 <ul ng-hide="user.invited[person._id]|| datasets.length == 0" class="dashboard-list user-list no-padding">
@@ -47,7 +47,7 @@
                 <span flex><!-- force end align on invite--></span>
 
                 <div>
-                    <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard confirm" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
+                    <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser($event)" class="md-dashboard confirm" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
                         <span class="btn-label">Invite User</span>
                     </md-button>
                     <!-- duplicate found ng-if="selectedUser._id" -->
