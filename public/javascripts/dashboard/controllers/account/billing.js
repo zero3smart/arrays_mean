@@ -2,7 +2,8 @@ angular.module('arraysApp')
     .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 
         function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService) {
 
-            // Get datasets for quantity limit
+            /* Code for limiting # of datasets based on subscription quantity (keeping for later) */
+            /*// Get datasets for quantity limit
             DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
                 .then(function(res) {
                     var filteredDatasets = res.filter(function(dataset) {
@@ -11,8 +12,9 @@ angular.module('arraysApp')
 
                     // Don't allow subscription quantity to go to zero if there are no datasets
                     $scope.datasetsQuantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
-                }, function(err) {});
+                }, function(err) {});*/
 
+            $scope.datasetsQuantity = 1;
 
             $scope.loaded = false;
 
