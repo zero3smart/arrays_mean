@@ -153,7 +153,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
-            //         
+            //
+         
 
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
