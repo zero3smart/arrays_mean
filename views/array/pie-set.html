@@ -162,7 +162,7 @@
 
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
-                <h3 class="legend-title">Legend</h3>
+                <h3 class="legend-title">{{ groupBy or defaultGroupByColumnName_humanReadable }}</h3>
 
                 {% if flatResults | length %}
                 <ul class="legend-list"></ul>
