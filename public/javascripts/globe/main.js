@@ -81,17 +81,17 @@ var GlobeMain = {
             landColor: brandColor,
             pointColor: pointColor,
             lineColor: lineColor,
-            onNodeClick: function(pointNode) {
+            // onNodeClick: function(pointNode) {
                 // TODO: We've hard-coded o_lat and o_lon here, but we should be getting it from the server
                 // TODO: Ultimately it would be good to be able to also include things by destination as well as origin
-                var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
-                var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
-                var filterString = $.param(constructedFilterObj(filterObj, ['o_lat', 'o_lon'], [pointNode.lat, pointNode.lng], false));
-                var urlForFilterValue = routePath + queryParamJoinChar + filterString;
+            //     var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
+            //     var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
+            //     var filterString = $.param(constructedFilterObj(filterObj, ['o_lat', 'o_lon'], [pointNode.lat, pointNode.lng], false));
+            //     var urlForFilterValue = routePath + queryParamJoinChar + filterString;
 
-                window.location = urlForFilterValue;
-                // pointNode.select();
-            }
+            //     window.location = urlForFilterValue;
+            //     // pointNode.select();
+            // }
         });
 
         this.globeView.start();
