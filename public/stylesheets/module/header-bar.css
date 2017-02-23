@@ -1,4 +1,4 @@
-/* @override
+/* @override 
 	http://localhost:9080/stylesheets/module/header-bar.css */
 
 .container-fluid.container-full-width {
@@ -302,25 +302,24 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 
 .user-initial-nav {
-	margin-right: 20px;
-	margin-left: 20px;
-	height: 64px;
-	width: 32px;
+	margin-right: 10px;
+	height: 50px;
+	width: 30px;
 }
 
 .user-initial {
 	display: block;
 	position: absolute;
-	left: 0px;
-	bottom: 16px;
 	background-color: #000;
 	vertical-align: middle;
 	text-align: center;
+	line-height: 30px;
+	height: 30px;
+	width: 30px;
+	left: 0px;
+	bottom: 10px;
 	border-radius: 100%;
-	font-size: 18px;
-	height: 32px;
-	width: 32px;
-	line-height: 32px;
+	font-size: 24px;
 }
 
 .light-text .dropdown .dropdown-toggle .user-initial {
@@ -328,32 +327,50 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #000;
 }
 
+.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
+	background-color: #000;
+	color: #FFF;
+}
+
 .navbar-nav .dropdown > a .user-initial {
 	color: #FFF;
+}
+
+
+@media (min-width: 768px) {
+	.user-initial-nav {
+		margin-right: 20px;
+		margin-left: 20px;
+		height: 64px;
+		width: 38px;
+	}
+
+	.user-initial {
+		height: 38px;
+		width: 38px;
+		line-height: 38px;
+		bottom: 13px;
+	}
 }
 
 /* scroll magic content color */
 .array-controls-pinned .icon-filter,
 .array-controls-pinned .icon-filter:hover,
 .array-controls-pinned .navbar-nav > li .dropdown-toggle,
-.array-controls-pinned .navbar .dropdown-toggle span,
-.array-controls-pinned .navbar .dropdown-toggle.user-initial-nav span,
-.array-controls-pinned .navbar .dropdown-toggle span:hover,
+.array-controls-pinned .dropdown-toggle span,
+.array-controls-pinned .dropdown-toggle.user-initial-nav span,
+.array-controls-pinned .dropdown-toggle span:hover,
 .array-controls-pinned .navbar-brand-container .navbar-brand
 {
     color: #000000;
 }
 
-.navbar .array-controls-pinned .dropdown.open > a,
-.navbar .array-controls-pinned .dropdown.open > a span,
+.array-controls-pinned .dropdown.open > a,
+.array-controls-pinned .dropdown.open > a span,
 .array-controls-pinned li.active > .sidebar-filter-slide-toggle span
 {
     color: #000000;
-}
-.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
-.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
-	background-color: #000;
-	color: #FFF;
 }
 /* User Conversion Header Replicated From Webflow Site */
 
@@ -501,7 +518,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
   .w-nav-overlay {
     display: none;
   }
-
+  
   .w-nav-burger {
     display: none;
   }
@@ -802,6 +819,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
     color: #000;
 }
 
+
 li.active > .sidebar-filter-slide-toggle span {
     color: #FFF;
 }
@@ -925,25 +943,13 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 .dropdown .dropdown-toggle .icon-menu,
 .array-controls-pinned .dropdown .dropdown-toggle .icon-menu,
 .array-controls-pinned .dropdown.open .dropdown-toggle .icon-menu,
-.navbar .dropdown .dropdown-toggle span,
-.array-controls-pinned .navbar .dropdown .dropdown-toggle span,
-.array-controls-pinned .navbar .dropdown.open .dropdown-toggle span {
+.dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown .dropdown-toggle span,
+.array-controls-pinned .dropdown.open .dropdown-toggle span {
 	color: #000;
 }
-.array-controls-pinned .dropdown .dropdown-toggle span.user-initial,
-.array-controls-pinned .dropdown.open .dropdown-toggle span.user-initial,
-.navbar .dropdown.open .dropdown-toggle .icon-menu,
-.navbar .dropdown.open .dropdown-toggle span {
-	color: #FFF;
-}
-
-.dropdown .dropdown-toggle span.user-initial,
-.dropdown.open .dropdown-toggle span.user-initial {
-	color: #000;
-}
-
-.array-controls-pinned .dropdown .dropdown-toggle span.user-initial,
-.array-controls-pinned .dropdown.open .dropdown-toggle span.user-initial {
+.dropdown.open .dropdown-toggle .icon-menu,
+.dropdown.open .dropdown-toggle span {
 	color: #FFF;
 }
 

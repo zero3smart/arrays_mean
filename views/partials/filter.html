@@ -12,7 +12,7 @@
             {% set routePath_withoutThisFilter = routePath_base | constructedRoutePath(filterObjForThisFilterColVal) %}
             {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
 
-            <span class="filter-tag border-color-brand">{{ displayTitleOverrides[filterCol] or filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+            <span class="filter-tag">{{ displayTitleOverrides[filterCol] or filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
 
         {% endfor %}
     {% endfor %}
