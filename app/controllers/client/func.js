@@ -115,6 +115,7 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
         winston.error("❌  Programmer runtime check error. No match conditions in multifilter for filter obj: ", filterObj);
         return {err: new Error("No match conditions in multifilter despite filterObj")};
     }
+
     return {matchOps: conditions};
 };
 module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFilter_matchOp_orErrDescription_fromMultiFilter;
@@ -900,7 +901,6 @@ function _filterObjFromQueryParams(queryParams) {
             filterObj[key] = queryParams[key];
         }
     }
-    console.log(filterObj)
     return filterObj;
 };
 
