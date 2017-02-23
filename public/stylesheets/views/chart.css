@@ -56,9 +56,9 @@
 
 .legend-toggle {
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 8px;
     color: var(--color-text-dark);
-    padding-top: 4px;
+    padding: 3px 2px 1px 3px;
     border: 1px solid #fff;
     border-radius: 4px;
 }
