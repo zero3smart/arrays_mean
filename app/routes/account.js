@@ -5,6 +5,16 @@ var User = require('../models/users');
 var async = require('async');
 var datasource_description = require('../models/descriptions');
 
+router.get('/reset_password',function(req,res) {
+
+    var token = req.query.token;
+    jwt.verify(token,process.env.SESSION_SECRET,function(err,decoded) {
+        if (err ) return res.redirect('/reset/password?err=' +err.name + '&msg=' + err.message);
+        var userId = decoded._id;
+        return res.redirect('/reset/password?userId=' + userId);
+    })
+})
+
 router.get('/verify', function(req, res) {
     var token = req.query.token;
     jwt.verify(token,process.env.SESSION_SECRET,function(err,decoded) {

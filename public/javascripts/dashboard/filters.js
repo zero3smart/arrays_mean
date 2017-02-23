@@ -7,7 +7,13 @@ app.filter('dotless', function () {
         }
     };
 });
-
+app.filter('isSuperAdmin', function() {
+    return function(user) {
+        if (user) {
+            return (user.email.indexOf('schemadesign.com') >= 0 || user.email.indexOf('arrays.co') >= 0)
+        }
+    }
+})
 app.filter('capitalize', function () {
     return function (input) {
         if (input != null)

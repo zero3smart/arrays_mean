@@ -21,6 +21,10 @@ module.exports.create = function(req, res) {
             if (err) {
                 res.status(500).send(err);
             } else {
+                
+                if (!user) {
+                     return res.status(401).send({error: 'unauthorized'});
+                }
 
                 if (!user.defaultLoginTeam || user._team.length === 0) {
                     return res.status(401).send({error: 'unauthorized'});
@@ -62,6 +66,10 @@ module.exports.get = function(req, res) {
                 
                 if (!user) {
                     return res.status(401).send({error: 'unauthorized'});
+                }
+
+                if (!user) {
+                     return res.status(401).send({error: 'unauthorized'});
                 }
 
                 if (!user.defaultLoginTeam || user._team.length === 0) {

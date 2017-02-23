@@ -9,6 +9,7 @@ var aws = require('aws-sdk');
 var fs = require('fs');
 var es = require('event-stream');
 var parse = require('csv-parse');
+var moment = require('moment');
 var datasource_file_service = require('../../../libs/utils/aws-datasource-files-hosting');
 var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
@@ -161,7 +162,6 @@ module.exports.approvalRequest = function(req,res) {
     batch.push(function(done) {
         if (req.body.state == 'pending') {
             if (dataset.state == 'pending') return done(); //re-submitting request? should not be happening
-
         }
         dataset.state = req.body.state;
         done();
@@ -174,7 +174,7 @@ module.exports.approvalRequest = function(req,res) {
             if (dataset.state == 'pending') {
                 nodemailer.newVizWaitingForApproval(dataset,done);
             } else {
-                done();
+                nodemailer.notifyVizApprovalAction(dataset,done);
             }
         })
     })
@@ -182,6 +182,7 @@ module.exports.approvalRequest = function(req,res) {
     batch.end(function(err) {
         if (err) res.status(500).send(err);
         else {
+
             res.json(dataset);
         }
 
@@ -323,13 +324,12 @@ module.exports.remove = function (req, res) {
 
 module.exports.get = function (req, res) {
 
-
-
     if (!req.params.id)
         return res.status(500).send('No ID given');
 
     datasource_description.findById(req.params.id)
         .lean()
+        .populate('author')
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
@@ -543,13 +543,13 @@ module.exports.save = function (req, res) {
         // Update of Existing Dataset
         datasource_description.findById(req.body._id)
             .populate('schema_id')
+            .populate('author')
             .exec(function (err, doc) {
 
-
+                var auth = doc.author;          
 
                 if (err) return res.status(500).send(err);
                 if (!doc) return res.status(500).send('Invalid Operation');
-
                 var description = doc, description_title = doc.title;
                 if (doc.schema_id) {
                     description = datasource_description.Consolidate_descriptions_hasSchema(doc);
@@ -576,14 +576,12 @@ module.exports.save = function (req, res) {
 
                     }
                 });
-
     
-
                 if (!doc.schema_id) {
                     doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                 }
 
-             
+                // console.log(doc);
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);
                     if (!updatedDoc) return res.status(500).send('Invalid Operation');
@@ -632,6 +630,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
     var countOfLines = 0;
     var cachedLines = '';
     var columns = [];
+    var rowObjects = []
 
     var readStream = fileReadStream
         .pipe(es.split())
@@ -671,17 +670,77 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                             readStream.resume();
                         } else if (countOfLines == 2) {
                             columns = columns.map(function (e, i) {
-                                return {name: e.name, sample: output[0][i]};
+                                var rowObject = intuitDataype(e.name, output[0][i]);
+                                rowObjects.push(rowObject);
+                                return rowObject
+                            });
+                            readStream.resume();
+                        } else if (countOfLines == 3){
+                            columns = columns.map(function (e, i) {
+                            return verifyDataType(e.name, output[0][i], rowObjects, i)
                             });
                             readStream.resume();
                         } else {
                             readStream.destroy();
-                            if (countOfLines == 3) next(null, columns);
+                            if (countOfLines == 4) next(null, columns);
                         }
                     });
             })
         );
 }
+
+function verifyDataType(name, sample, rowObjects, index) {
+    var numberRE = /([^0-9\.,]|\s)/;
+    var rowObject = rowObjects[index]
+    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
+        var secondRowObject = intuitDataype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+
+    } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
+        var secondRowObject = intuitDataype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+    }
+    return rowObject;
+};
+
+function intuitDataype(name, sample) {
+    var format = datatypes.isDate(sample)[1];
+    if (format !== null) {
+        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'}
+    }
+
+    var dateRE = /(year|DATE)/i;
+    if (dateRE.test(name)) {
+        format = datatypes.isEdgeDate(sample)[1];
+        if (format === 'ISO_8601') {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        } else if (format !== null) {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+        } else {
+            return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+        }
+    }
+
+    // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
+    var numberRE = /([^0-9\.,]|\s)/;
+    var floatRE = /[^0-9,]/;
+    var IdRE = /(Id|ID)/;
+    if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
+        // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
+        format = datatypes.isISODateOrString(sample)[1];
+        if(format !== null) {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        }
+        return {name: name, sample: sample, data_type: 'String', operation: 'ToString'};
+    } else if(floatRE.test(sample)) {
+       return {name: name, sample: sample, data_type: 'Float', operation: 'ToFloat'};
+    } else {
+        return {name: name, sample: sample, data_type: 'Integer', operation: 'ToInteger'};
+    }
+};
+    
 
 module.exports.upload = function (req, res) {
 
@@ -804,6 +863,19 @@ module.exports.upload = function (req, res) {
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
                 req.session.columns[description._id] = columns;
+                description.raw_rowObjects_coercionScheme = {};
+
+                for(var i = 0; i < columns.length; i++) {
+                    var column = columns[i];
+                    if (column.data_type !== 'String') {
+                        description.raw_rowObjects_coercionScheme[column.name] = {};
+                        if (column.operation === 'ToDate') {
+                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
+                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
+                        }
+                        description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+                    }
+                }
 
                 // Upload datasource to AWS S3
 
@@ -829,13 +901,13 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-                description.save(function (err, updatedDescription) {
-                    if (err)
-                        winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
+                datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
+                    if(err) {
+                        winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
+                    }
                     done(err);
                 });
             } else {
-
                 var findQuery = {_id: description._id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {
@@ -868,8 +940,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-
-        return res.end(JSON.stringify({id: description._id,uid:description.uid}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme}));
     });
 };
 

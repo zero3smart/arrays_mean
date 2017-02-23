@@ -61,6 +61,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
             //
+            var galleryViewEnabled;
+            if (dataSourceDescription.fe_views.views.gallery != undefined) {
+                if (dataSourceDescription.fe_views.views.gallery.visible != undefined) {
+                    galleryViewEnabled = dataSourceDescription.fe_views.views.gallery.visible;
+                } else {
+                    galleryViewEnabled = false;
+                }
+            } else {
+                galleryViewEnabled = false;
+            }
+            //
             var routePath_base = "/" + source_pKey + "/map";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             var brandColor = dataSourceDescription.brandColor;
@@ -219,7 +230,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     },
                                     properties: {
                                         name: el.rowParams[coordTitle],
-                                        total: coordValue
+                                        total: coordValue,
+                                        id: el._id
                                     }
                                 });
 
@@ -232,7 +244,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         coordinates: [el.rowParams[lngField], el.rowParams[latField]]
                                     },
                                     properties: {
-                                        name: el.rowParams[coordTitle]
+                                        name: el.rowParams[coordTitle],
+                                        id: el._id
                                     }
                                 });
 
@@ -367,6 +380,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.map.description : "",
                     //
+                    galleryViewEnabled: galleryViewEnabled,
                     highestValue: highestValue,
                     featureCollection: {
                         type: "FeatureCollection",
@@ -380,7 +394,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     coordMinMax: coordMinMax,
                     applyCoordRadius: coordRadiusValue == undefined ? false : true,
-                    coordColor: dataSourceDescription.fe_views.views.map.coordColor,
+                    coordColor: dataSourceDescription.fe_views.views.map.coordColor ? dataSourceDescription.fe_views.views.map.coordColor : dataSourceDescription.brandColor,
                     mapBy: mapBy,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //

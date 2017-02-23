@@ -241,6 +241,7 @@ angular.module('arraysApp')
 
                     dataset.dirty = 1;
                     dataset.fileName = fileItem.file.name;
+                    dataset.raw_rowObjects_coercionScheme = response.raw_rowObjects_coercionScheme;
 
                     $mdToast.show(
                         $mdToast.simple()
@@ -289,6 +290,7 @@ angular.module('arraysApp')
                     if (response.status == 200) {
                         var toastFileName = dataset.fileName;
                         dataset.fileName = null;
+                        dataset.raw_rowObjects_coercionScheme = {};
                         $scope.uploader.queue = [];
                         if(notify) {
                             $mdToast.show(

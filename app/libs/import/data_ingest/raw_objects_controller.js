@@ -170,14 +170,13 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                 if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
 
-
                     var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
 
         
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
 
                         if (coercionSchemeForKey.operation) {
-                            typeFinalized_rowValue = datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
+                            typeFinalized_rowValue = datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue, columnName);
 
                         }
 
