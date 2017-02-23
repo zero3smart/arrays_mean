@@ -12,7 +12,7 @@
 	position: relative;
 	z-index: 1;
 	padding-top: 15px;
-	padding-bottom: 15px;
+	/*padding-bottom: 15px;*/
 }
 
 .sort-bar.has-description {
@@ -351,7 +351,7 @@
 /* @group Filter Bar */
 
 .filter-bar {
-	padding-top: 20px;
+	/*padding-top: 20px;*/
 	padding-bottom: 5px;
 }
 
