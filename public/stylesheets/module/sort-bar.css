@@ -13,8 +13,10 @@
 	z-index: 1;
 	padding-top: 15px;
 	padding-bottom: 15px;
-    /*needed for description but also causes double-border on scroll*/
-    border-top: 1px solid var(--color-divider);
+}
+
+.sort-bar.has-description {
+	border-top: 1px solid var(--color-divider);
     margin-top: -1px;
 }
 
@@ -27,7 +29,8 @@
 
 .sort-control {
 	display: inline-block;
-	margin-right: 15px;/**/
+	margin-right: 8px;
+	margin-bottom: 8px;
 	padding-right: 0;
 	padding-left: 0;
 	vertical-align: top;
