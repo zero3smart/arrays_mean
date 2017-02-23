@@ -1,11 +1,14 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
-        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
 
             $scope.primaryAction.text = 'Publish';
 
-
+            // scroll to listing request, if hash
+            $timeout(function() {
+                $anchorScroll();
+            });
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
