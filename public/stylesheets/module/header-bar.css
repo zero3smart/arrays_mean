@@ -302,24 +302,25 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 
 .user-initial-nav {
-	margin-right: 10px;
-	height: 50px;
-	width: 30px;
+	margin-right: 20px;
+	margin-left: 20px;
+	height: 64px;
+	width: 32px;
 }
 
 .user-initial {
 	display: block;
 	position: absolute;
+	left: 0px;
+	bottom: 16px;
 	background-color: #000;
 	vertical-align: middle;
 	text-align: center;
-	line-height: 30px;
-	height: 30px;
-	width: 30px;
-	left: 0px;
-	bottom: 10px;
 	border-radius: 100%;
-	font-size: 24px;
+	font-size: 18px;
+	height: 32px;
+	width: 32px;
+	line-height: 32px;
 }
 
 .light-text .dropdown .dropdown-toggle .user-initial {
@@ -327,31 +328,8 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #000;
 }
 
-.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
-.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
-	background-color: #000;
-	color: #FFF;
-}
-
 .navbar-nav .dropdown > a .user-initial {
 	color: #FFF;
-}
-
-
-@media (min-width: 768px) {
-	.user-initial-nav {
-		margin-right: 20px;
-		margin-left: 20px;
-		height: 64px;
-		width: 38px;
-	}
-
-	.user-initial {
-		height: 38px;
-		width: 38px;
-		line-height: 38px;
-		bottom: 13px;
-	}
 }
 
 /* scroll magic content color */
@@ -371,6 +349,11 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .array-controls-pinned li.active > .sidebar-filter-slide-toggle span
 {
     color: #000000;
+}
+.array-controls-pinned .dropdown .dropdown-toggle .user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
+	background-color: #000;
+	color: #FFF;
 }
 /* User Conversion Header Replicated From Webflow Site */
 
@@ -819,7 +802,6 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
     color: #000;
 }
 
-
 li.active > .sidebar-filter-slide-toggle span {
     color: #FFF;
 }
@@ -948,8 +930,20 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 .array-controls-pinned .navbar .dropdown.open .dropdown-toggle span {
 	color: #000;
 }
+.array-controls-pinned .dropdown .dropdown-toggle span.user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle span.user-initial,
 .navbar .dropdown.open .dropdown-toggle .icon-menu,
 .navbar .dropdown.open .dropdown-toggle span {
+	color: #FFF;
+}
+
+.dropdown .dropdown-toggle span.user-initial,
+.dropdown.open .dropdown-toggle span.user-initial {
+	color: #000;
+}
+
+.array-controls-pinned .dropdown .dropdown-toggle span.user-initial,
+.array-controls-pinned .dropdown.open .dropdown-toggle span.user-initial {
 	color: #FFF;
 }
 
