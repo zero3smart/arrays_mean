@@ -1,8 +1,11 @@
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start">
     <h1>Manage Users</h1>
 
-    <md-button class="md-dashboard md-dashboard-header" ng-click="openUserDialog($event, {})" md-no-ink>
-        <span class="btn-label">Invite User</span>
+    <md-button class="md-dashboard md-dashboard-header" md-no-ink
+        ng-class="{ 'confirm': !$state.is('dashboard.user.list') }"
+        ng-disabled="primaryAction.disabled"
+        ng-click="primaryAction.do($event)">
+        <span class="btn-label">{{ primaryAction.text }}</span>
     </md-button>
 </header>
 
