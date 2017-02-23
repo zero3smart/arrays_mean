@@ -12,7 +12,7 @@
     <md-dialog-content layout-padding>
         <md-content>
             <p>
-                Are you sure you want to increase your plan to <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}</strong>?
+                Are you sure you want to increase your plan to <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
                 Your account will be charged during the next billing cycle.
             </p>
             <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>

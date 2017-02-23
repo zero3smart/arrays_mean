@@ -1,8 +1,8 @@
 <div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
     <h2>Plan Summary</h2>
     <p>
-        {{ subscription.plan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
-        Cost per Dataset: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
+        {{ subscription.plan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}<br />
+        Cost per User: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
         <span ng-if="subscription.plan.plan_code === 'pro-monthly'"><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}</span>
         <span ng-if="subscription.plan.plan_code === 'pro-annual'"><strong>Total per year:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}</span>
         <br />
