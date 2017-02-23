@@ -183,27 +183,42 @@ angular
                 }
 
 
-                $scope.inviteUser = function() {
+                $scope.inviteUser = function(ev) {
 
-                    var queryParams = {email: $scope.selectedUser.email};
+                    var userEmail = $scope.selectedUser.email,
+                        queryParams = {email: userEmail};
 
                     User.search(queryParams)
                         .$promise.then(function(data) {
 
-                        if (data.length > 0) {
+                        if (data.length) { // if user exists
 
                             if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
                                 $scope.vm.userForm["email"].$setValidity("unique",false)
                             } else {
 
-                                var confirm = $mdDialog.confirm()
-                                    .title('Are you sure to grant permission to this user ?')
-                                    .textContent('This user does not belong to your team, giving this user permission to edit/view datasets will add' +
-                                        ' this user to your team.')
-                                    .targetEvent(event)
-                                    .ok('Yes')
-                                    .cancel('No');
-                                $mdDialog.show(confirm).then(function () {
+                                $mdDialog.show({
+                                    templateUrl: 'templates/blocks/user.permissions.html',
+                                    parent: angular.element(document.body),
+                                    targetEvent: ev,
+                                    clickOutsideToClose: true,
+                                    fullscreen: true,
+                                    locals: {
+                                        email: userEmail,
+                                        team: $scope.team
+                                    },
+                                    controller: function($scope, $mdDialog, email, team) {
+                                        $scope.email = email;
+                                        $scope.team = team;
+                                        $scope.hide = function() {
+                                            $mdDialog.hide();
+                                        };
+                                        $scope.cancel = function() {
+                                            $mdDialog.cancel();
+                                        };
+                                    }
+                                })
+                                .then(function () {
                                     $scope.selectedUser = data[0];
                                     bindUserRolesToSelectedUser();
 
@@ -230,7 +245,7 @@ angular
                                     })
 
                                 }, function () {
-                                    console.log('You decided to not to give permission this user to your datasets');
+                                    // console.log('You decided to not to give permission this user to your datasets');
                                 });
 
                             }

@@ -12,17 +12,19 @@ var func = require('../func');
 var User = require('../../../models/users');
 
 // Prepare country geo data cache
-var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../../public/data/world.geo.json/countries.geo.json', 'utf8');
+var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../data/countries.geo.json', 'utf8');
 var __countries_geo_json = JSON.parse(__countries_geo_json_str);
-var cache_countryGeometryByLowerCasedCountryName = {};
+var cache_countryGeometryByCountryId = {};
+var __countryNameToIdDict_str = fs.readFileSync(__dirname + '/../../../data/countryNameToId.json', 'utf8');
+var cache_countryNameToIdDict = JSON.parse(__countryNameToIdDict_str);
 var numCountries = __countries_geo_json.features.length;
 for (var i = 0; i < numCountries; i++) {
     var countryFeature = __countries_geo_json.features[i];
-    var countryName = countryFeature.properties.name;
+    var countryId = countryFeature.id;
     var geometry = countryFeature.geometry;
-    cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
+    cache_countryGeometryByCountryId[countryId] = geometry;
 }
-// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
+// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByCountryId).length + " geometries by country name.");
 
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
@@ -37,6 +39,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // searchCol
     // embed
     // Other filters
+
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
@@ -53,13 +56,23 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
+            //
+            var galleryViewEnabled;
+            if (dataSourceDescription.fe_views.views.gallery != undefined) {
+                if (dataSourceDescription.fe_views.views.gallery.visible != undefined) {
+                    galleryViewEnabled = dataSourceDescription.fe_views.views.gallery.visible;
+                } else {
+                    galleryViewEnabled = false;
+                }
+            } else {
+                galleryViewEnabled = false;
+            }
             //
             var routePath_base = "/" + source_pKey + "/map";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -219,7 +232,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     },
                                     properties: {
                                         name: el.rowParams[coordTitle],
-                                        total: coordValue
+                                        total: coordValue,
+                                        id: el._id
                                     }
                                 });
 
@@ -232,7 +246,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         coordinates: [el.rowParams[lngField], el.rowParams[latField]]
                                     },
                                     properties: {
-                                        name: el.rowParams[coordTitle]
+                                        name: el.rowParams[coordTitle],
+                                        id: el._id
                                     }
                                 });
 
@@ -306,7 +321,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 highestValue = countAtCountry;
                             }
                             var countAtCountry_str = "" + countAtCountry;
-                            var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toString().toLowerCase()];
+                            var formattedCountryName = countryName.toString().toLowerCase().trim().replace(/ /g,"_");
+                            var countryId = cache_countryNameToIdDict.countries[formattedCountryName];
+                            var geometryForCountry = cache_countryGeometryByCountryId[countryId];
                             if (typeof geometryForCountry === 'undefined') {
                                 winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
 
@@ -367,6 +384,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.map.description : "",
                     //
+                    galleryViewEnabled: galleryViewEnabled,
                     highestValue: highestValue,
                     featureCollection: {
                         type: "FeatureCollection",
@@ -380,7 +398,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     coordMinMax: coordMinMax,
                     applyCoordRadius: coordRadiusValue == undefined ? false : true,
-                    coordColor: dataSourceDescription.fe_views.views.map.coordColor,
+                    coordColor: dataSourceDescription.fe_views.views.map.coordColor ? dataSourceDescription.fe_views.views.map.coordColor : dataSourceDescription.brandColor,
                     mapBy: mapBy,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //

@@ -38,6 +38,39 @@
 
 	}])
 
+	signupModule.directive('accountExist',['$q','User',function($q,User)
+	{
+		return {
+			restrict: 'AE',
+			require: 'ngModel',
+			link: function(scope,elem,attr,model) {
+
+				model.$asyncValidators.exist = function(modelValue,viewValue) {
+					var value = modelValue|| viewValue;
+					var params = {email: value, provider: 'local', activated: true};
+					var deferred = $q.defer();
+					User.search(params)
+						.$promise.then(function(data) {
+
+							if (data.length == 0) {
+								deferred.reject(false);
+							} else {
+								scope.user = data[0];
+								deferred.resolve(true);
+							}
+
+						},function() {
+							deferred.reject(false);
+						})
+					return deferred.promise;
+				}
+
+			}
+		}
+
+	}])
+
+
 	signupModule.directive('passwordChecker',function() {
 		return {
 			restrict: 'A',

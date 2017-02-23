@@ -1,3 +1,4 @@
+
 .axis path, .axis line {
     fill: none;
     stroke: #c9c9c9;
@@ -5,5 +6,10 @@
 }
 
 .axis .tick text {
+    fill: var(--color-text-light);
+}
+
+.axis text.label {
+    font-size: 18px;
     fill: var(--color-text-light);
 }

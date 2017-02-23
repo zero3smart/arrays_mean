@@ -50,6 +50,11 @@ angular.module('arraysApp')
                         controller: 'AccountCtrl',
                         templateUrl: 'templates/account/profile.html'
                     })
+                    .state('dashboard.account.password',{
+                        url: '/password',
+                        controller: 'AccountCtrl',
+                        templateUrl:'templates/account/password.html'
+                    })
                     .state('dashboard.account.billing', {
                         url: '/billing',
                         controller: 'BillingCtrl',

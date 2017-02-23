@@ -13,6 +13,15 @@ var transporter = nodemailer.createTransport({
 
 var alert_email = process.env.ALERT_EMAIL || 'useralerts@arrays.co';
 
+var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
+
+
+
+
 
 function sendEmail (mailOptions,callback) {
 	transporter.sendMail(mailOptions,function(err,info) {
@@ -39,23 +48,45 @@ function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Actio
 
 }
 
+function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
+	var sub = '[Dataset Display Status]: ' + state;
+	var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') is ' + state + ' to be listed on arrays.co.';
+	var mailOptions = {
+		from: 'info@arrays.co', 
+		to: authorEmail,
+		subject: sub,
+		html: htmlText
+	}
+
+	sendEmail(mailOptions,cb);
+}
+
+module.exports.sendResetPasswordEmail = function(user,cb) {
+	var token = jwt.sign({
+		_id: user._id,
+		email: user.email
+	},jwtSecret,{expiresIn: '24h'});
+
+	var resetLink = baseURL + '/account/reset_password?token=' + token;
+	var mailOptions = {
+		from : 'info@arrays.co',
+		to: user.email,
+		subject: 'Account Password Reset',
+		html: "Hi " + user.firstName + ",<br> To reset the password of your Arrays account, please click the link below: <br>"	+ 
+		resetLink + "<br>"
+	}
+	sendEmail(mailOptions,function(err) {
+		console.log(err);
+		cb(err);
+	})
+}
+
 
 module.exports.sendActivationEmail = function(user, cb) {
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
-
-
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-
-
-
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-    baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
-
 
 
 
@@ -86,19 +117,28 @@ module.exports.newTeamCreatedEmail = function(team,cb) {
 
 
 module.exports.newVizCreatedEmail = function(viz,cb) {
-	var userName = viz.author.firstName + ' ' + viz.author.lastName;
+
+	if (process.env.NODE_ENV !== 'development') {
+		var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz Created (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName,viz.author.email,viz.createdAt,
 		subject,cb);
+
+	}
+	
 }
 
-
+// this should be sending to email other than useralerts , since it requires actions
 module.exports.newVizWaitingForApproval = function(viz,cb) {
 	var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz pending approval (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName, viz.author.email,viz.updatedAt,
 		subject,cb);
+}
 
+module.exports.notifyVizApprovalAction = function(viz,cb) {
+	var authorName = viz.author.firstName + ' ' + viz.author.lastName ;
+	sendVizDisplayStatusUpdate(viz.state,authorName, viz.author.email,viz.title,cb);
 }
 
 module.exports.newUserInvitedEmail = function(admin,team,user,cb) {
@@ -133,13 +173,6 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
-
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-
-	baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
 
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {
