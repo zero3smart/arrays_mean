@@ -17,6 +17,8 @@ var GlobeMain = {
         this.$el = $('#globe');
         this.scale = 1;
         
+        // console.time('load');
+        
         var lines = _.uniqBy(flightPaths, function(v, i) {
             return '' + v.origin.lat + 'x' + v.origin.lon + 'x' +
                 v.destination.lat + 'x' + v.destination.lon;
@@ -45,6 +47,24 @@ var GlobeMain = {
             return '' + v.lat + 'x' + v.lng;
         });
         
+        var originCounts = _.countBy(flightPaths, function(v, i) {
+            return v.origin.lat + 'x' + v.origin.lon;
+        });
+        
+        var destinationCounts = _.countBy(flightPaths, function(v, i) {
+            return v.destination.lat + 'x' + v.destination.lon;
+        });
+        
+        _.each(points, function(v, i) {
+            var key = v.lat + 'x' + v.lng;
+            v.info = {
+                originCount: originCounts[key] || 0,
+                destinationCount: destinationCounts[key] || 0
+            };
+        });
+        
+        // console.timeEnd('load');
+        
         var c = new THREE.Color(brandColor);
         c.r = 1 - c.r;
         c.g = 1 - c.g;
@@ -61,18 +81,17 @@ var GlobeMain = {
             landColor: brandColor,
             pointColor: pointColor,
             lineColor: lineColor,
-            onNodeClick: function(pointNode) {
+            // onNodeClick: function(pointNode) {
                 // TODO: We've hard-coded o_lat and o_lon here, but we should be getting it from the server
                 // TODO: Ultimately it would be good to be able to also include things by destination as well as origin
-                var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
-                var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
-                var latFilterString = $.param(constructedFilterObj(filterObj, 'o_lat', pointNode.lat, false));
-                var lonFilterString = $.param(constructedFilterObj(filterObj, 'o_lon', pointNode.lng, false));
-                var urlForFilterValue = routePath + queryParamJoinChar + latFilterString + '&' + lonFilterString;
+            //     var routePath = routePath_withoutFilter.replace(/globe/i, 'gallery');
+            //     var queryParamJoinChar = routePath.indexOf('?') !== -1? '&' : '?';
+            //     var filterString = $.param(constructedFilterObj(filterObj, ['o_lat', 'o_lon'], [pointNode.lat, pointNode.lng], false));
+            //     var urlForFilterValue = routePath + queryParamJoinChar + filterString;
 
-                window.location = urlForFilterValue;
-                // pointNode.select();
-            }
+            //     window.location = urlForFilterValue;
+            //     // pointNode.select();
+            // }
         });
 
         this.globeView.start();

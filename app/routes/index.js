@@ -157,7 +157,7 @@ var _mountRoutes_endPoints = function (app) {
                 if (isRouteForDataset || req.subdomains.length == 0) {
                     return res.redirect(rootDomain +'/');
                 } else {
-                                
+
 
                     return next();
                 }
@@ -177,7 +177,14 @@ var _mountRoutes_endPoints = function (app) {
         res.redirect('/auth/login');
     });
     app.use('/signup',require('./signup'));
-    app.use('/schemaaccess', require('./auth'));
+
+
+
+    app.use('/reset', function(req, res) {
+        res.render('auth/password',{
+            env: process.env
+        });
+    });
 
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));

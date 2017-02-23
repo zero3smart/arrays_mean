@@ -4,7 +4,7 @@
     var component = GlobeMain.GlobeView = function(config) {
         var self = this;
 
-        this._onNodeClick = config.onNodeClick;
+        // this._onNodeClick = config.onNodeClick;
         this._onMouseDown = config.onMouseDown;
         this._onDrag = config.onDrag;
         this._onMouseUp = config.onMouseUp;
@@ -15,6 +15,7 @@
         this._topAltitude = 218;
         this._storyNodeScale = 2.15;
         this._storyGlowScale = 4.3;
+        this._tooltip = new Tooltip();
 
         var i;
 
@@ -64,6 +65,8 @@
                 TWEEN.update(time);
             },
             onMouseDown: function(event) {
+                self._tooltip.hide();
+
                 self._drag = {
                     lastX: event.clientX,
                     lastY: event.clientY,
@@ -87,17 +90,45 @@
                 }
             },
             onMouseUp: function(event) {
-                if (self._drag && self._drag.distance < 10 && Date.now() - self._drag.startTime < 500) {
-                    var pointNode = self._hitTest(event);
-                    if (pointNode) {
-                        self._onNodeClick(pointNode);
-                    }                    
-                }
+                // if (self._drag && self._drag.distance < 10 && Date.now() - self._drag.startTime < 500) {
+                    // var pointNode = self._hitTest(event);
+                    // if (pointNode) {
+                    //     self._onNodeClick(pointNode);
+                    // }
+                // }
                 
                 self._drag = null;
 
                 if (self._onMouseUp) {
                     self._onMouseUp();
+                }
+            },
+            onHover: function(event) {
+                var pointNode = self._hitTest(event);
+                if (pointNode !== self._hoverPointNode) {
+                    if (pointNode) {
+                        var pos = self._toScreenXY(pointNode.node.position, self.globe.camera, self.$el);
+                        self._tooltip.setContent(
+                            '<div>' +
+                                '<div class="globe-tooltip-content-label">Origins</div>' +
+                                '<div class="globe-tooltip-content">' + pointNode.info.originCount + '</div>' +
+                                '<div class="globe-tooltip-content-label">Destinations</div>' +
+                                '<div class="globe-tooltip-content">' + pointNode.info.destinationCount + '</div>' +
+                            '</div>')
+                            .setPosition('top')
+                            .show(self.$el[0], {
+                                bounds: {
+                                    left: pos.x,
+                                    top: pos.y - 10,
+                                    width: 1,
+                                    height: 1
+                                }
+                            });
+                    } else {
+                        self._tooltip.hide();
+                    }
+                    
+                    self._hoverPointNode = pointNode;
                 }
             }
         });
@@ -108,6 +139,7 @@
             self._pointNodes.push(new GlobeMain.PointNode({
                 globeView: self,
                 globe: self.globe,
+                info: point.info,
                 lat: point.lat,
                 lng: point.lng,
                 size: size,

@@ -34,7 +34,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
 
-                                        <div class="sort-bar clearfix">
+                                        <div id="array-controls" class="sort-bar clearfix">
 
                                             <nav class="sort-bar-left pull-left" role="navigation">
                                                 {{
@@ -152,6 +152,7 @@
 {% block inlineScript %}
     {{ super() }}
 
+    <script type="text/javascript" src="/vendors/scrollmagic/scrollmagic/minified/ScrollMagic.min.js"></script>
     <script type="text/javascript" src="/vendors/lodash/dist/lodash.js"></script>
     <script type="text/javascript" src="/vendors/d3/d3.js"></script>
     <script type="text/javascript" src="/vendors/moment/moment.js"></script>

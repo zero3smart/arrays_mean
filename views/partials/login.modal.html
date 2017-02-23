@@ -15,7 +15,12 @@
 
              {% set error = flash.error | first %}
              <div class="alert alert-danger">
-              <strong><i class="fa fa-times"></i> </strong> {% if error.message== "activation pending"%} You have not activated your account yet. You could resend the email <a class="alert-link pointer" href="{{error.link}}">here</a>  {% else %} {{error.message}} {%endif%}
+                {% if error.message== "activation pending"%}
+                    Your account has not been activated.
+                    <a class="alert-link pointer" href="{{error.link}}">Resend the activaton email</a>.
+                {% else %}
+                    {{error.message}}
+                {%endif%}
             </div>
             {% endif %}
 
@@ -32,7 +37,7 @@
             <form id="loginForm" autocomplete="off" method="POST">
                   <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                    <input type="text" class="form-control" name="email" placeholder="email address">
+                    <input type="text" class="form-control" name="email" placeholder="Email address">
                  </div>
                  <span class="help-block"></span>
                  <div class="input-group">
@@ -48,7 +53,7 @@
                     </div>
                  </div>
                   <div>
-                    <a href="">  Forget Password?  </a>
+                    <a href="/reset">  Forgot Password?  </a>
                  </div>
 
                  <div class="input-group col-xs-12">

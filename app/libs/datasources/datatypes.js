@@ -28,7 +28,7 @@ module.exports.displayNumberWithComma = function(number) {
 }
 
 
-var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
+var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field, name) {
 
      if (inString.toLowerCase() == 'null') {
         return null;
@@ -72,8 +72,33 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
         // if (replacement_parseTwoDigitYear_fn != null && typeof replacement_parseTwoDigitYear_fn !== 'undefined') {
         //     moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn;
         // }
+        if (dateFormatString === 'ISO_8601') {
+            dateFormatString = moment.ISO_8601;
+        }
 
-        var aMoment = moment.utc(inString, dateFormatString);
+        if (moment.utc(inString, dateFormatString, true).isValid()) {
+            var aMoment = moment.utc(inString, dateFormatString);
+        } else {
+            var knownDateResult = _isDate(inString);
+            var edgeDateResult = _isEdgeDate(inString);
+            var ISODateResult = _isISODateOrString(inString);
+            switch (true) {
+                case knownDateResult[0]:
+                    dateFormatString = knownDateResult[1];
+                    break;
+                case edgeDateResult[0]:
+                    dateFormatString = edgeDateResult[1];
+                    break;
+                case ISODateResult[0]: 
+                    dateFormatString = ISODateResult[1];
+                    break;
+                default:
+                    console.log("none of the above");
+                    return undefined;
+            }
+            var aMoment = moment.utc(inString, dateFormatString);
+        }
+
         if (aMoment.isValid() == false) {
             console.warn("⚠️  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.");
 
@@ -135,7 +160,7 @@ var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
 }
 //
 // Public: 
-module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValue) {
+module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValue, columnName) {
     var operationName = coercionSchemeForKey.operation;
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
         console.error("❌  Illegal, malformed, or missing operation name at key 'operation' in coercion scheme."
@@ -146,7 +171,7 @@ module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValu
     }
 
 
-    return fieldValueDataTypeCoercion_coercionFunctions(rowValue, coercionSchemeForKey);
+    return fieldValueDataTypeCoercion_coercionFunctions(rowValue, coercionSchemeForKey, columnName);
 };
 // Public:
 module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
@@ -180,7 +205,7 @@ module.exports.fieldDataType_coercion_toString = function(field) {
     } else {
         return 'String'; // 'Unknown'
     }
-}
+};
 
 module.exports.doesExistFormat_fieldDataType_coercion_toString = function(field) {
     if (!field) return false;
@@ -191,7 +216,7 @@ module.exports.doesExistFormat_fieldDataType_coercion_toString = function(field)
     }
 
     return false;
-}
+};
 
 module.exports.available_forFieldDataType_coercions = function() {
     return [
@@ -202,10 +227,42 @@ module.exports.available_forFieldDataType_coercions = function() {
         {operation: 'ToFloat'},
         {operation: 'ToStringTrim'}
         ];
-}
-
-
+};
 
 module.exports.available_forDuration = function() {
     return ["Decade", "Year", "Month", "Day"]
-}
+};
+
+var _isDate = function(sample) {
+    var known_date_formats = ['MM/DD/YYYY', 'M/D/YYYY', 'M/DD/YYYY', 'MM/D/YYYY', 'MM/DD/YY HH:mm', 'M/DD/YY HH:mm', 'M/D/YY HH:mm', 'MM/DD/YY H:mm', 'M/DD/YY H:mm', 'M/D/YY H:mm', 'M/D/YY', 'MM/DD/YY', 'MM/D/YY', 'M/DD/YY', 'M/DD/YY', 'YYYY/MM/DD', 'YYYY/M/D', 'YYYY/MM/D', 'YYYY/M/DD', 'YY/MM/DD', 'YY/M/D', 'YY/MM/D', 'YY/M/DD', 'MM-DD-YYYY', 'M-D-YYYY', 'MM-D-YYYY', 'MM-DD-YYYY', 'M-D-YY', 'MM-DD-YY', 'M-DD-YY', 'MM-D-YY', 'MM-YYYY', 'YYYY-MM-DD', 'YYYY-M-D', 'YYYY-MM-D', 'YYYY-M-DD', 'YYYY/MM', 'YYYY/M', 'YY/MM', 'YY/M'];
+    for(var i = 0; i < known_date_formats.length; i++) {
+        if (moment(sample, known_date_formats[i], true).isValid()) {
+            return [true, known_date_formats[i]];
+        } 
+    }
+    return [false, null];
+};
+module.exports.isDate = _isDate;
+
+// AKA. Dates that could be easily confused for an int
+var _isEdgeDate = function(sample) {
+    if (moment(sample, 'YYYY', true).isValid()) {
+        return [true, 'YYYY'];
+    } else if (moment(sample, 'YYYYMMDD', true).isValid()) {
+        return [true, 'YYYYMMDD'];
+    } else if (moment(sample, moment.ISO_8601, true).isValid()) {
+        return [true, 'ISO_8601'];
+    } else {
+        return [false, null];
+    }
+};
+module.exports.isEdgeDate = _isEdgeDate;
+
+var _isISODateOrString = function(sample) {
+    if (moment(sample, moment.ISO_8601, true).isValid()) {
+        return [true, "ISO_8601"];
+    }
+    return [false, null];
+};
+module.exports.isISODateOrString = _isISODateOrString;
+

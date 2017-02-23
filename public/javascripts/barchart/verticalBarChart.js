@@ -89,7 +89,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
     if(this._showXLabels) {
-        return this._xAxisContainer.selectAll("text")
+        return this._xAxisContainer.selectAll("text:not(.label)") // do not rotate axis label
             .attr("dx", "-.8em")
             .attr("dy", "-.2em")
             .style("text-anchor", "end")
@@ -112,7 +112,7 @@ VerticalBarChart.prototype.getXAxis = function () {
     return d3.svg.axis()
         .scale(this.getXScale(this._innerWidth))
         .tickFormat(function(d) {
-            var maxlength = 17;
+            var maxlength = 10;
             if (d.length > maxlength) {
                 d = d.substring(0, maxlength) + '…'; // \u8230
             }
