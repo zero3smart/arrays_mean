@@ -216,7 +216,6 @@ angular.module('arraysApp')
                         }
 
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
-                        console.log($scope.coercionScheme)
                         sortColumnsByDisplayOrder();
 
                         $scope.vm.dataForm.$setDirty();
@@ -365,7 +364,6 @@ angular.module('arraysApp')
 
 
                 $scope.changeCoercionSchemeByOperation = function (colName, colIndex, firstRecord) {
-                    console.log($scope.coercionScheme[colName])
                     if ($scope.coercionScheme[colName].operation === "ToInteger") {
                         var floatRE = /[^0-9,]/;
                         if (floatRE.test(firstRecord)) {
@@ -374,7 +372,6 @@ angular.module('arraysApp')
                     };
 
                     var coercion = $scope.coercionScheme[colName];
-                    console.log(coercion)
                     if ($filter('typeCoercionToString')(coercion) != 'Date') {
                         $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                         $scope.dataset.dirty = 1;
