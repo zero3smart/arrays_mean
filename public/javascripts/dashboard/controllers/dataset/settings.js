@@ -221,5 +221,17 @@ angular.module('arraysApp')
                     });
             };
 
+            $scope.deleteBanner = function() {
+                AssetService.deleteBanner($scope.dataset._id).then(function (data) {
+                    $scope.dataset.banner = data.dataset.banner
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Banner deleted successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                });
+            };
+
         }
     ]);
