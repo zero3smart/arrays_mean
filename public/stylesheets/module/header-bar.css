@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/header-bar.css */
 
 .container-fluid.container-full-width {
@@ -302,9 +302,10 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 
 .user-initial-nav {
-	margin-right: 10px;
-	height: 50px;
-	width: 30px;
+    margin-right: 20px;
+    margin-left: 20px;
+    height: 64px;
+    width: 38px;
 }
 
 .user-initial {
@@ -313,13 +314,13 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	background-color: #000;
 	vertical-align: middle;
 	text-align: center;
-	line-height: 30px;
-	height: 30px;
-	width: 30px;
+    height: 32px;
+    width: 32px;
+    line-height: 32px;
+    bottom: 16px;
 	left: 0px;
-	bottom: 10px;
 	border-radius: 100%;
-	font-size: 24px;
+	font-size: 18px;
 }
 
 .light-text .dropdown .dropdown-toggle .user-initial {
@@ -337,22 +338,6 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #FFF;
 }
 
-
-@media (min-width: 768px) {
-	.user-initial-nav {
-		margin-right: 20px;
-		margin-left: 20px;
-		height: 64px;
-		width: 38px;
-	}
-
-	.user-initial {
-		height: 38px;
-		width: 38px;
-		line-height: 38px;
-		bottom: 13px;
-	}
-}
 
 /* scroll magic content color */
 .array-controls-pinned .icon-filter,
@@ -518,7 +503,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
   .w-nav-overlay {
     display: none;
   }
-  
+
   .w-nav-burger {
     display: none;
   }
