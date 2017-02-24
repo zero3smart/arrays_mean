@@ -366,11 +366,6 @@
 	/*padding-top: 20px;*/
 	padding-bottom: 5px;
 }
-@media (max-width: 767px) {
-    .filter-bar {
-	   display: none;
-   }
-}
 
 .filter-label {
 	display: inline-block;

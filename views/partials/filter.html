@@ -1,5 +1,5 @@
 {% macro default(displayTitleOverrides,routePath_base, filterObj, truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill, label=false, customClassName='') %}
-<div class="filter-bar {{ customClassName }}">
+<div class="filter-bar {{ customClassName }} hidden-xs">
     <div class="container-fluid">
 
     {% for filterCol, filterVals in filterObj %}
