@@ -42,7 +42,7 @@
 }
 
 .sort-direction {
-	margin-right: 0;
+	/*margin-right: 0;*/
     margin-left: 8px;
     border: 1px solid #fff;
     border-radius: 4px;
@@ -64,6 +64,17 @@
 .sort-control .dropdown-toggle {
 	padding-top: 6px;
 	padding-bottom: 6px;
+}
+
+/*overrides brandcolor hover*/
+/*.array-controls-pinned .sort-control .dropdown-toggle-label .label*/
+.sort-control.open .dropdown-toggle-label span.label,
+.sort-control .dropdown-toggle-label span.label {
+    color: var(--color-text-light);
+}
+/*.array-controls-pinned .sort-control .dropdown-toggle-label .sort-criteria*/
+.sort-control .dropdown-toggle-label span.sort-criteria {
+    color: var(--color-text-dark);
 }
 
 #array-controls .sort-bar-left .dropdown-toggle,
