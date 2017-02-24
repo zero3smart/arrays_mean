@@ -1,10 +1,8 @@
 <div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.done') && dataset.imported }">
     You have unsaved changes.
-    Continue to
-    'Publish'
-    <!-- <a href="#" ng-click="navigate('dashboard.dataset.done')">Publish</a> -->
-    to save your changes.
-    <!-- <a href="#">Process Data</a> -->
+    <a href="#" ng-click="">Process data</a>
+    to save and publish changes or
+    <a href="#" ng-click="">revert.</a>
 </div>
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start" ng-if="!$state.is('dashboard.dataset.new')">
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Visualization Settings</h1>
