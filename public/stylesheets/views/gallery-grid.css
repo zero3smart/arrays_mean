@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/gallery-grid.css */
 
 /* @group Array Header */
@@ -67,6 +67,10 @@
 /* @end Small Array Header */
 
 /* @group Gallery Grid */
+
+.array-gallery .sort-direction {
+    padding-top: 5px;
+}
 
 .gallery-grid {
     margin-right: -5px;

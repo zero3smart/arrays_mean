@@ -50,7 +50,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
 
 
-
             var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;

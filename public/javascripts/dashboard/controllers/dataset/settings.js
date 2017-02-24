@@ -1,11 +1,14 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService',
-        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
 
             $scope.primaryAction.text = 'Publish';
 
-
+            // scroll to listing request, if hash
+            $timeout(function() {
+                $anchorScroll();
+            });
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
@@ -30,19 +33,21 @@ angular.module('arraysApp')
             // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
-
+            if ($filter('isSuperAdmin')(dataset.author) ) {
+                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false
+            }
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'settings';
 
             $scope.updatePublishSettings = function() {
 
+
                 if(!dataset.fe_visible) {
                     dataset.isPublic = false;
                     dataset.fe_listed = false;
                 } else {
                     if(dataset.imported) {
-
 
                         DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
                             fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
@@ -51,11 +56,57 @@ angular.module('arraysApp')
                 }
             };
 
+            $scope.listOnArraysRequest = function() {
+
+                DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state: 'pending'})
+                .then(function(response) {
+                    if (response.status == 200 && response.data) {
+                        $scope.$parent.$parent.dataset = response.data;
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Request submitted!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+
+                })
+
+            }
+
+            $scope.updateListingOnArrays = function(approved) {
+
+                if (dataset.imported) {
+
+                    var appr = (approved == true ) ?  'approved' : 'disapproved';
+                    DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state:appr})
+                    .then(function(response) {
+
+                        if (response.status == 200 && response.data) {
+
+
+                            $scope.$parent.$parent.dataset = response.data;
+                             $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Dataset approval state updated!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
+                        }
+                    })
+
+                } else {
+
+
+                    if (approved == true) {
+                        dataset.state = 'approved';
+                    }
+                }
+            }
+
 
             $scope.submitForm = function(isValid) {
                 // debugger;
-
-
 
                 // if (isValid) {
                     $scope.submitting = true;
@@ -146,7 +197,7 @@ angular.module('arraysApp')
                 if (bannerFileName.indexOf('http') >= 0) {
                     return bannerFileName;
                 } else {
-                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain + 
+                    var url = 'https://' + $scope.env.s3Bucket + '.s3.amazonaws.com/' + $scope.team.subdomain +
                     '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
                     return url;
                 }

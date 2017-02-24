@@ -5,19 +5,18 @@
 @import url('base/typography.css');
 @import url('base/bootstrap-chosen.css');
 @import url('base/spectrum.css');
-
-
 /* @end Base */
-/* @group Lib */
-/* @end Lib */
+
 /* @group Layout */
 @import url('layout/body.css');
 @import url('layout/embedded.css');
 /* @end Layout */
+
 /* @group Lib */
 @import url('../vendors/angular-material/angular-material.min.css');
 @import url('../vendors/md-color-picker/dist/mdColorPicker.min.css');
 /* @end Lib */
+
 /* @group Module */
 @import url('module/header-bar.css');
 @import url('module/sidebar-filter.css');
@@ -27,6 +26,7 @@
 @import url('module/tooltip.css');
 @import url('module/splash.css');
 /* @end Module */
+
 /* @group Views */
 @import url('views/array-create.css');
 @import url('views/team-show.css');
@@ -49,6 +49,7 @@
 @import url('views/signup.css');
 
 /* @end Views */
+
 /* @group Clients */
 @import url('clients/isb.css');
 /* @end Clients */

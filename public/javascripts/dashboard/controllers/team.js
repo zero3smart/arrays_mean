@@ -68,7 +68,7 @@ angular
 
             $scope.updateSuperTeam = function(index) {
                 var team = $scope.teams[index];
-                console.log(team);
+                // console.log(team);
 
                 Team.update({id:team._id},{superTeam: team.superTeam}).$promise
                 .then(function(response) {

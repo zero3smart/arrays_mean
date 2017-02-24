@@ -239,7 +239,6 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     if (results == undefined || results == null) {
                         // 0
                     } else if ( groupSize === -1 ) {
-                        console.log(results[0]);
                         nonpagedCount = results[0].count;
                     } else {
                         nonpagedCount = results.length;

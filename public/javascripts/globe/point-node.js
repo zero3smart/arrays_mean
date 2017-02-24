@@ -8,6 +8,7 @@
         this.altitude = config.altitude;
         this.size = config.size;
         this.globe = config.globe;
+        this.info = config.info;
         this._lines = [];
         this._viewed = false;
         this._glowAttached = false;

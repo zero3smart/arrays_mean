@@ -1,21 +1,21 @@
 angular.module('arraysApp')
     .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope','DatasetService','$q',
         function($scope, $location, $state, $rootScope,DatasetService,$q) {
-       
+
             $scope.currentStep = $state.current.name;
 
             //Keep track of state when navigating without breadcrumbs
             $rootScope.$on('$stateChangeStart',
                 function(event, toState){
                     $scope.currentStep = toState.name;
-                });
+                }
+            );
 
             $scope.primaryAction = {
                 disabled: true
             };
 
-            $scope.navigate = function(step) {
-
+            $scope.navigate = function(step, anchor) {
                 var errorHandler = function (error) {
                         $mdToast.show(
                         $mdToast.simple()
@@ -31,6 +31,7 @@ angular.module('arraysApp')
                     switch (step) {
                     case 'dashboard.dataset.settings':
                         if ($scope.dataset._id) {
+                            $location.hash(anchor || '');
                             $location.path('/dashboard/dataset/settings/' + $scope.dataset._id);
                         }
                         break;
@@ -103,7 +104,7 @@ angular.module('arraysApp')
 
                    }
 
-                 
+
 
                     $q.all(queue)
                         .then(done)

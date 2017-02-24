@@ -2,8 +2,17 @@
 <md-content layout-padding>
     <div>
 
-        <h2 ng-if="!dirty && imported && !inProgress">Your data has been successfully processed!</h2>
         <h2 ng-if="inProgress">Your data is processing&hellip;</h2>
+
+        <div ng-if="!dirty && imported && !inProgress">
+            <h2>Your data has been successfully processed!</h2>
+            <p>
+                <a href="#" ng-click="primaryAction.do()">View your visualization</a> or <a href="#" ng-click="navigate('dashboard.dataset.views')">continue editing</a>.
+            </p>
+            <p ng-if="dataset.fe_visible && dataset.fe_listed">
+                <a href="#" ng-click="navigate('dashboard.dataset.settings', 'request-listing')">Request for your visualization to be listed on arrays.co</a>.
+            </p>
+        </div>
 
         <md-content class="md-block" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>

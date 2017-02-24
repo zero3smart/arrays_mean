@@ -41,7 +41,7 @@ function BarChart(selector, dataSet, options) {
         right : 15,
         bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present - margin bottom can be 15 if we're not showing the labels
         // bottom: 10,
-        left : options.horizontal ? 120 : Math.max(10 * digitCount, 50)
+        left : options.horizontal ? 120 : Math.max(10 * digitCount, 50) + 36 // 2em axis label = 18px * 2 = 36
     };
 
     if ('margin' in options) {
@@ -108,6 +108,8 @@ function BarChart(selector, dataSet, options) {
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {
             this._showYLabels = false;
+            this._margin.left = 54; // 3em @ 18px
+            this._innerWidth = this._outerWidth - this._margin.left - this._margin.right; // recalc
         } else {
             this._showYLabels = true;
         }
@@ -133,6 +135,15 @@ function BarChart(selector, dataSet, options) {
         this.rotateLabel();
     }
 
+    // xAxis label
+    this._xAxisContainer.append('text')
+        // place at bottom of labels
+        .attr('transform', 'translate(' + (this._innerWidth * 0.5) + ', ' + this._xAxisContainer.node().getBBox().height + ')')
+        .attr("dy", this._showXLabels ? "1.5em" : "1em") // and adjust
+        .attr("text-anchor", "middle")
+        .text(this._options.horizontal ? aggregateBy : groupBy)
+        .classed("label", true);
+
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', this.getYAxisTransform())
@@ -142,6 +153,16 @@ function BarChart(selector, dataSet, options) {
         this.rotateYLabel();
         this.rotateXLabel();
     }
+
+    // yAxis label
+    this._yAxisContainer.append('text')
+        .attr('transform', // put at svg left, not yAxisContainer
+            'translate(' + -this._margin.left + ', ' + (this._innerHeight * 0.5) + ')' +
+            'rotate(-90)')
+        .attr("dy", "1.5em") // and adjust
+        .attr("text-anchor", "middle")
+        .text(this._options.horizontal ? groupBy : aggregateBy)
+        .classed("label", true);
 
     /**
      * Append bar's series.
@@ -162,7 +183,7 @@ function BarChart(selector, dataSet, options) {
         .style('fill', function(d, i, j) {
             return self._colors[d.label];
         }).on('mouseenter', function(d, i, j) {
-            self._barMouseEnterEventHandler(this, i, j, categoriesAndData);
+            self._barMouseEnterEventHandler(this, d, j, categoriesAndData)
         }).on('mouseout', function(d, i, j) {
             self._barMouseOutEventHandler(this, d, i, j);
         }).on('click', function(d, j, i){
@@ -353,9 +374,9 @@ BarChart.prototype.getValueFormatter = function() {
  * @param {Integer} i - bar number within series
  * @param {Integer} j - series number
  */
-BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categoriesAndData) {
-    var label = categoriesAndData[j][1][i].label;
-    var value = categoriesAndData[j][1][i].value;
+BarChart.prototype._barMouseEnterEventHandler = function(barElement, d, j, categoriesAndData) {
+    var label = d.label;
+    var value = d.value;
     var category = categoriesAndData[j][0];
 
     this._canvas.selectAll('rect.bar')
@@ -370,10 +391,10 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categ
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
-                '<div>' + category + '</div>' +
+                '<div>' + groupBy + ': ' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content-label">' + label + '</div>' +
-            '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
+            '<div class="scatterplot-tooltip-content-label">' + stackBy + ': ' + label + '</div>' +
+            '<div class="scatterplot-tooltip-content-label">' + aggregateBy + ': ' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);
