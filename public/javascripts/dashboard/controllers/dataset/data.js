@@ -3,8 +3,6 @@ angular.module('arraysApp')
         function ($scope, $state, $q, DatasetService, AuthService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
             $scope.$parent.$parent.currentNavItem = 'data';
 
-
-
             $scope.availableTypeCoercions = availableTypeCoercions;
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
@@ -24,7 +22,17 @@ angular.module('arraysApp')
                         break;
                     }
                 }
-            }
+            };
+
+            $scope.formatDataType = function(sample, data_type) {
+                if (data_type === 'Date') {
+                    return 'Date';
+                } else if (data_type === 'Integer' || data_type === 'Float' || data_type === 'Number') {
+                    return 'Number';
+                } else if (data_type === 'String' || data_type === 'Text') {
+                    return 'Text';
+                }
+            };
 
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.dataForm.$valid', function(validity) {
@@ -208,6 +216,7 @@ angular.module('arraysApp')
                         }
 
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
+                        console.log($scope.coercionScheme)
                         sortColumnsByDisplayOrder();
 
                         $scope.vm.dataForm.$setDirty();
@@ -235,6 +244,8 @@ angular.module('arraysApp')
                 $scope.columnIndex = columnIndex;
 
                 var originalFieldName = fieldName;
+
+                $scope.updatedDataTypes = [{data_type: 'Date', originalCoercion:{operation: 'ToDate'}}, {data_type: 'Number', originalCoercion: {operation: 'ToInteger'}}, {data_type: 'Text', originalCoercion: {operation: 'ToString'}}];
 
                 function refreshFieldByName(name) {
                     // General
@@ -353,9 +364,17 @@ angular.module('arraysApp')
                 };
 
 
-                $scope.changeCoercionSchemeByOperation = function (colName, colIndex) {
-                    var coercion = $scope.coercionScheme[colName];
+                $scope.changeCoercionSchemeByOperation = function (colName, colIndex, firstRecord) {
+                    console.log($scope.coercionScheme[colName])
+                    if ($scope.coercionScheme[colName].operation === "ToInteger") {
+                        var floatRE = /[^0-9,]/;
+                        if (floatRE.test(firstRecord)) {
+                            $scope.coercionScheme[colName] = {operation: "ToFloat"};
+                        }
+                    };
 
+                    var coercion = $scope.coercionScheme[colName];
+                    console.log(coercion)
                     if ($filter('typeCoercionToString')(coercion) != 'Date') {
                         $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                         $scope.dataset.dirty = 1;
