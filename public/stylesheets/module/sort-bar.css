@@ -21,9 +21,8 @@
 }
 
 @media (min-width: 768px) {
-	.sort-bar {
-		/*padding-top: 30px;*/
-		/*padding-bottom: 25px;*/
+	.sort-bar-left, .sort-bar-right {
+        max-width: 50%;
 	}
 }
 
@@ -366,6 +365,11 @@
 .filter-bar {
 	/*padding-top: 20px;*/
 	padding-bottom: 5px;
+}
+@media (max-width: 767px) {
+    .filter-bar {
+	   display: none;
+   }
 }
 
 .filter-label {
