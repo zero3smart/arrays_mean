@@ -50,9 +50,13 @@ angular.module('arraysApp')
                         }
                         break;
                     case 'dashboard.dataset.done':
-                        if ( ($scope.dataset.fe_listed && $scope.dataset.fe_visible && $scope.dataset.fe_views.default_view )|| (!$scope.dataset.fe_listed && !$scope.dataset.fe_visible) ) {
-                            $location.path('/dashboard/dataset/done/' + $scope.dataset._id);
-                        }
+                        /** removing if statement--should not be an issue--
+                         *  this is only called from processData(),
+                         *  which only appears after dataset is imported
+                         */
+                        // if ( ($scope.dataset.fe_listed && $scope.dataset.fe_visible && $scope.dataset.fe_views.default_view )|| (!$scope.dataset.fe_listed && !$scope.dataset.fe_visible) ) {
+                        $location.path('/dashboard/dataset/done/' + $scope.dataset._id);
+                        // }
                         break;
                     }
                 };
@@ -99,6 +103,10 @@ angular.module('arraysApp')
                 $q.all(queue)
                     .then(done)
                     .catch(errorHandler);
+            };
+
+            $scope.processData = function() {
+                $scope.navigate('dashboard.dataset.done');
             };
 
             $scope.convertToURLSafe = function(input) {
