@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 
-        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService) {
+    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 'plans', 
+        function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService, plans) {
 
             /* Code for limiting # of datasets based on subscription quantity (keeping for later) */
             /*// Get datasets for quantity limit
@@ -13,6 +13,14 @@ angular.module('arraysApp')
                     // Don't allow subscription quantity to go to zero if there are no datasets
                     $scope.datasetsQuantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
                 }, function(err) {});*/
+
+            // Set plans data after promise from router resolves
+            plans.$promise.then(function(data) {
+                $scope.plans = data.data.plans.plan;
+                // console.log(data.data.plans.plan);
+
+                $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
+            });
 
             $scope.datasetsQuantity = 1;
 
@@ -28,10 +36,13 @@ angular.module('arraysApp')
             var d = new Date();
 
             $scope.billing = {
+                quantity: 1,
+
                 month: parseInt(('0' + (d.getMonth() + 1)).slice(-2)), // Set current month and year
                 year: d.getFullYear(),
 
-                country: 'US'
+                country: 'US',
+                account_type: 'checking'
             };
 
             // Which cards to validated against in the CC input
@@ -52,37 +63,35 @@ angular.module('arraysApp')
 
                 // If no account, make new one
                 if (res.data.error) {
+                    console.info('Billing account doesn\'t exist yet for this user, creating it.');
                     newAccount();
                 } else if (res.data.account) {
                     getBilling(function() {
                         getSubscriptions(function() {
-                            getPlans(function() {
-                                $scope.loaded = true;
-                            });
+                            $scope.loaded = true;
                         });
                     });
                 }
-            });
+            }, function(err) {});
 
 
             // Create new billing account in Recurly
-            function newAccount() {
+            var newAccount = function(callback) {
                 Account.save()
                 .$promise.then(function(res) {
+                    console.info('New billing account created.');
                     getBilling(function() {
                         getSubscriptions(function() {
-                            getPlans(function() {
-                                $scope.loaded = true;
-                            });
+                            $scope.loaded = true;
                         });
                     });
                     
-                });
-            }
+                }, function(err) {});
+            };
 
 
             // Get billing info from Recurly
-            function getBilling(callback) {
+            var getBilling = function(callback) {
                 var self = this;
 
                 Billing.get()
@@ -90,6 +99,7 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.data.error) {
+                        console.info('Billing info doesn\'t exist yet for this user.');
                         $scope.billing.exists = false;
                         $scope.loaded = true;
                     } else if (res.data.billing_info) {
@@ -118,11 +128,11 @@ angular.module('arraysApp')
 
                     if (callback) return callback();
                 }, function(err) {});
-            }
+            };
 
 
             //Get subscriptions info from Recurly
-            function getSubscriptions(callback) {
+            var getSubscriptions = function(callback) {
                 Subscriptions.get()
                 .$promise.then(function(res) {
                     // console.log(res.data);
@@ -140,6 +150,10 @@ angular.module('arraysApp')
                             $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
                         }
 
+                        // Set current Plan
+                        $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, $scope.plans);
+                        // console.log($scope.subscription);
+
                         // Calculate trial days remaining
                         var now = new Date();
                         var end = new Date($scope.subscription.trial_ends_at._);
@@ -150,39 +164,21 @@ angular.module('arraysApp')
                         if (callback) return callback();
                     }
                 }, function(err) {});
-            }
-
-
-            //Get plans info from Recurly
-            function getPlans(callback) {
-                Plans.get()
-                .$promise.then(function(res) {
-                    // console.log(res.data.plans.plan);
-
-                    $scope.plans = res.data.plans.plan;
-
-                    $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
-                    $scope.annualplan = getPlanFromPlans('pro-annual', res.data.plans.plan);
-
-                    // console.log($scope.annualplan);
-
-                    if (callback) return callback();
-                }, function(err) {});
-            }
+            };
 
 
             // Get current plan
-            function getPlanFromPlans(plan_code, plans) {
+            var getPlanFromPlans = function(plan_code, plans) {
                 var currentPlan = plans.filter(function(plan) {
                     return plan.plan_code === plan_code;
                 });
 
                 return currentPlan[0];
-            }
+            };
 
 
             //Update subscription quantity
-            function updateQuantity(subscrId, quantity, callback) {
+            var updateQuantity = function(subscrId, quantity, callback) {
                 Subscriptions.update({ subscrId: subscrId }, { quantity: quantity })
                 .$promise.then(function(res) {
                     // console.log(res.data);
@@ -190,7 +186,7 @@ angular.module('arraysApp')
                     $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     return callback();
                 }, function(err) {});
-            }
+            };
 
 
             $scope.$parent.currentNavItem = 'billing';
@@ -261,7 +257,7 @@ angular.module('arraysApp')
                 $scope.billing.payment_type = currentTab;
             };
 
-            $scope.updateBillingInfo = function(plan_code) {
+            $scope.updateBillingInfo = function(plan_code, quantity) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
                     // console.log(res);
@@ -270,7 +266,7 @@ angular.module('arraysApp')
 
                         // If adding billing for first time, create subscription
                         if (plan_code) {
-                            $scope.startTrialSubscription(plan_code);
+                            $scope.startTrialSubscription(plan_code, quantity);
                         } else {
                             $state.go('dashboard.account.billing');
                         }
@@ -347,8 +343,8 @@ angular.module('arraysApp')
                 }, function(err) {});
             };
 
-            $scope.startTrialSubscription = function(plan_code) {
-                Subscriptions.save({ 'plan_code': plan_code })
+            $scope.startTrialSubscription = function(plan_code, quantity) {
+                Subscriptions.save({ 'plan_code': plan_code, 'quantity': quantity })
                 .$promise.then(function(res) {
                     // console.log(res.data);
 

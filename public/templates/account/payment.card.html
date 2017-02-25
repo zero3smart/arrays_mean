@@ -1,27 +1,37 @@
-<h3>Credit Card Information</h3>
-
 <ng-form name="payment_card" class="payment-card">
 
-    <md-input-container>
-        <label>First Name</label>
-        <input name="first_name" ng-model="billing.first_name" required aa-reset-validity-on-change="invalid" />
-        <div ng-messages="payment_card.first_name.$error">
-            <div ng-message="required">First Name is required.</div>
-            <div ng-message="invalid">First Name is invalid.</div>
-        </div>
-    </md-input-container>
+    <div layout-gt-sm="row">
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>First Name</label>
+            <input name="first_name" ng-model="billing.first_name" required aa-reset-validity-on-change="invalid" />
+            <div ng-messages="payment_card.first_name.$error">
+                <div ng-message="required">First Name is required.</div>
+                <div ng-message="invalid">First Name is invalid.</div>
+            </div>
+        </md-input-container>
 
-    <md-input-container>
-        <label>Last Name</label>
-        <input name="last_name" ng-model="billing.last_name" required aa-reset-validity-on-change="invalid" />
-        <div ng-messages="payment_card.last_name.$error">
-            <div ng-message="required">Last Name is required.</div>
-            <div ng-message="invalid">Last name is invalid.</div>
-        </div>
-    </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Last Name</label>
+            <input name="last_name" ng-model="billing.last_name" required aa-reset-validity-on-change="invalid" />
+            <div ng-messages="payment_card.last_name.$error">
+                <div ng-message="required">Last Name is required.</div>
+                <div ng-message="invalid">Last name is invalid.</div>
+            </div>
+        </md-input-container>
+    </div>
 
-    <div layout="row">
-        <md-input-container>
+    <label>Cards Accepted</label>
+    <div class="payment-cards-accepted">
+        <i class="payment-card-icon fa fa-2x fa-large fa-cc-visa" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Visa' }" aria-hidden="true" title="Visa"></i>
+        <i class="payment-card-icon fa fa-2x fa-cc-mastercard" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'MasterCard' }" aria-hidden="true" title="MasterCard"></i>
+        <i class="payment-card-icon fa fa-2x fa-cc-amex" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'American Express' }" aria-hidden="true" title="American Express"></i>
+        <i class="payment-card-icon fa fa-2x fa-cc-discover" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Discover' }" aria-hidden="true" title="Discover"></i>
+        <i class="payment-card-icon fa fa-2x fa-cc-diners-club" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Diners Club' }" aria-hidden="true" title="Diners Club"></i>
+        <i class="payment-card-icon fa fa-2x fa-cc-jcb" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'JCB' }" aria-hidden="true" title="JCB"></i>
+    </div>
+
+    <div layout-gt-sm="row">
+        <md-input-container class="md-block" flex-gt-sm>
             <label>Card Number</label>
             <input ng-if="!billing.numberPlaceholder" type="text" name="number" ng-model="billing.number" cc-number cc-type="cardsAccepted" cc-eager-type cc-format novalidate ng-required="true" />
             <input ng-if="billing.numberPlaceholder" type="text" name="number" ng-model="billing.number" cc-number cc-type="cardsAccepted" cc-eager-type cc-format novalidate ng-required="true" placeholder="{{ billing.numberPlaceholder }}" />
@@ -34,7 +44,7 @@
             
         </md-input-container>
 
-        <md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
             <label>CVV</label>
             <input type="text" name="verification_value" ng-model="billing.verification_value" cc-cvc cc-type="payment_card.number.$ccType" ng-required="true" />
             <div ng-messages="payment_card.verification_value.$error">
@@ -48,17 +58,9 @@
         </md-input-container>
     </div>
 
-    <h3>Cards Accepted</h3>
-    <i class="payment-card-icon fa fa-2x fa-large fa-cc-visa" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Visa' }" aria-hidden="true" title="Visa"></i>&emsp;
-    <i class="payment-card-icon fa fa-2x fa-cc-mastercard" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'MasterCard' }" aria-hidden="true" title="MasterCard"></i>&emsp;
-    <i class="payment-card-icon fa fa-2x fa-cc-amex" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'American Express' }" aria-hidden="true" title="American Express"></i>&emsp;
-    <i class="payment-card-icon fa fa-2x fa-cc-discover" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Discover' }" aria-hidden="true" title="Discover"></i>&emsp;
-    <i class="payment-card-icon fa fa-2x fa-cc-diners-club" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'Diners Club' }" aria-hidden="true" title="Diners Club"></i>&emsp;
-    <i class="payment-card-icon fa fa-2x fa-cc-jcb" ng-class="{ 'payment-card-icon-active': payment_card.number.$ccEagerType === 'JCB' }" aria-hidden="true" title="JCB"></i>
-
-    <h4>Expires</h4>
     <div layout="row">
         <md-input-container>
+            <label>Expires</label>
             <md-select name="month" ng-model="billing.month" required aria-label="Card Expiration Month" aa-reset-validity-on-change="invalid">
                 <md-option ng-repeat="month in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']" ng-value="{{month}}">{{month}}</md-option>
             </md-select>

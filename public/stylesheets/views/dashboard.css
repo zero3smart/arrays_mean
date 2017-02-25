@@ -482,6 +482,14 @@ md-tooltip .md-content {
 /* Account */
 /* Payment */
 
+.payment-form md-input-container {
+    padding-right: 10px;
+}
+
+.payment-cards-accepted {
+    margin-bottom: 18px;
+}
+
 .payment-card-icon {
     color: var(--color-text-light);
 }

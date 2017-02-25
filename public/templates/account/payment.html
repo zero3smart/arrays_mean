@@ -1,10 +1,31 @@
-<md-content md-no-ink ng-cloak>
-    <h2>Billing Information</h2>
+<form name="billing_info" class="payment-form" novalidate>
+    <md-card md-no-ink ng-cloak>
+        <md-card-content md-padding>
+            <h2>{{ plan.name }}</h2>
 
-    <form name="billing_info" novalidate>
+            <div layout="row" layout-xs="column">
 
-        <div ng-cloak>
-            <md-content>
+                <md-input-container flex-gt-xs="30">
+                    <label>Number of users</label>
+                    <input name="quantity" required type="number" min="1" ng-min="1" step="1" ng-model="billing.quantity" />
+                    <div ng-messages="billing_info.quantity.$error">
+                        <div ng-message="min">Must be greater than 0.</div>
+                    </div>
+                </md-input-container>
+
+                <p flex-gt-xs="50" flex-offset-gt-xs="20">
+                    {{ billing.quantity }} {{ billing.quantity | pluralize: 'User' : 'Users' }}<br />
+                    {{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }} Per user, per month<br />
+                    <span><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * billing.quantity / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</span>
+                </p>
+            </div>
+        </md-card-content>
+
+        <md-divider></md-divider>
+
+        <md-card-content md-padding>
+            <div ng-cloak>
+                <h3>Payment Information</h3>
                 <md-tabs md-dynamic-height md-no-padding md-selected="selectedTab">
                     <md-tab label="Credit Card" md-on-select="onTabChanges('credit_card')">
                         <md-content>
@@ -17,102 +38,105 @@
                         </md-content>
                     </md-tab>
                 </md-tabs>
-            </md-content>
-        </div>
+            </div>
 
-        <h3>Billing Address</h3><br />
+        </md-card-content>
 
-        <ng-form name="billing_address">
+        <md-divider></md-divider>
 
-            <md-input-container class="md-block">
-                <label>Country</label>
-                <md-select name="country" ng-model="billing.country" required aa-reset-validity-on-change="invalid">
-                    <md-option ng-repeat="country in countries" value="{{country.code}}">{{country.name}}</md-option>
-                </md-select>
-                <div ng-messages="billing_address.address1.$error">
-                    <div ng-message="required">Country is required.</div>
-                    <div ng-message="invalid">Country is invalid.</div>
-                </div>
-            </md-input-container>
+        <md-card-content md-padding>
 
-            <md-input-container class="md-block">
-                <label>Address</label>
-                <input name="address1" ng-model="billing.address1" required aa-reset-validity-on-change="invalid" />
-                <div ng-messages="billing_address.address1.$error">
-                    <div ng-message="required">Address is required.</div>
-                    <div ng-message="invalid">Address is invalid.</div>
-                </div>
-            </md-input-container>
+            <h3>Billing Address</h3><br />
 
-            <md-input-container class="md-block">
-                <label>Address 2</label>
-                <!-- tooltip: Suite, Apt no -->
-                <input name="address2" ng-model="billing.address2" />
-            </md-input-container>
+            <ng-form name="billing_address">
 
-            <md-input-container class="md-block">
-                <label>City</label>
-                <input name="city" ng-model="billing.city" required aa-reset-validity-on-change="invalid" />
-                <div ng-messages="billing_address.city.$error">
-                    <div ng-message="required">City is required.</div>
-                    <div ng-message="invalid">City is invalid.</div>
-                </div>
-            </md-input-container>
-
-            <div layout="row">
                 <md-input-container>
-                    <label>State</label>
-                    <md-select name="state" ng-model="billing.state" required aa-reset-validity-on-change="invalid">
-                        <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
+                    <label>Country</label>
+                    <md-select name="country" ng-model="billing.country" required aa-reset-validity-on-change="invalid">
+                        <md-option ng-repeat="country in countries" value="{{country.code}}">{{country.name}}</md-option>
                     </md-select>
-                    <div ng-messages="billing_address.state.$error">
-                        <div ng-message="required">State is required.</div>
-                        <div ng-message="invalid">State is invalid.</div>
+                    <div ng-messages="billing_address.address1.$error">
+                        <div ng-message="required">Country is required.</div>
+                        <div ng-message="invalid">Country is invalid.</div>
                     </div>
                 </md-input-container>
-                <md-input-container>
-                    <label>ZIP Code</label>
-                    <input name="zip" ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" aa-reset-validity-on-change="invalid" />
-                    <div ng-messages="billing_address.zip.$error">
-                    <div ng-message="required">ZIP Code is required.</div>
-                    <div ng-message="minlength">ZIP Code must be at least 5 digits.</div>
-                    <div ng-message="maxlangth">ZIP Code must be less than 17 digits.</div>
-                    <div ng-message="invalid">ZIP Code is invalid.</div>
-                </div>
+
+                <md-input-container class="md-block">
+                    <label>Address</label>
+                    <input name="address1" ng-model="billing.address1" required aa-reset-validity-on-change="invalid" />
+                    <div ng-messages="billing_address.address1.$error">
+                        <div ng-message="required">Address is required.</div>
+                        <div ng-message="invalid">Address is invalid.</div>
+                    </div>
                 </md-input-container>
-            </div>
-        </ng-form>
-    </form>
 
-    <!-- <div layout="row">
-        <ul>
-            <li ng-repeat="error in errors">
-                {{ error.$.field }}: {{ error._ }}
-            </li>
-        </ul>
-    </div> -->
+                <md-input-container class="md-block">
+                    <label>Address 2</label>
+                    <!-- tooltip: Suite, Apt no -->
+                    <input name="address2" ng-model="billing.address2" />
+                </md-input-container>
 
-    <div layout="row" layout-align="space-between center">
+                <div layout-gt-sm="row">
 
-        <div ng-if="!billing.exists">
-            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo('pro-monthly')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
-                <span class="btn-label">Start Trial (Monthly)</span>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>City</label>
+                        <input name="city" ng-model="billing.city" required aa-reset-validity-on-change="invalid" />
+                        <div ng-messages="billing_address.city.$error">
+                            <div ng-message="required">City is required.</div>
+                            <div ng-message="invalid">City is invalid.</div>
+                        </div>
+                    </md-input-container>
+
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>State</label>
+                        <md-select name="state" ng-model="billing.state" required aa-reset-validity-on-change="invalid">
+                            <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
+                        </md-select>
+                        <div ng-messages="billing_address.state.$error">
+                            <div ng-message="required">State is required.</div>
+                            <div ng-message="invalid">State is invalid.</div>
+                        </div>
+                    </md-input-container>
+
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>ZIP Code</label>
+                        <input name="zip" ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" aa-reset-validity-on-change="invalid" />
+                        <div ng-messages="billing_address.zip.$error">
+                        <div ng-message="required">ZIP Code is required.</div>
+                        <div ng-message="minlength">ZIP Code must be at least 5 digits.</div>
+                        <div ng-message="maxlangth">ZIP Code must be less than 17 digits.</div>
+                        <div ng-message="invalid">ZIP Code is invalid.</div>
+                    </div>
+                    </md-input-container>
+                </div>
+            </ng-form>
+
+            <!-- <div layout="row">
+                <ul>
+                    <li ng-repeat="error in errors">
+                        {{ error.$.field }}: {{ error._ }}
+                    </li>
+                </ul>
+            </div> -->
+
+        </md-card-content>
+
+        <md-card-actions ng-if="!billing.exists" layout="row" layout-align="end center">
+
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, billing.quantity)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+                <span class="btn-label">Start Trial</span>
             </md-button>
 
-            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo('pro-monthly')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
-                <span class="btn-label">Start Trial (Monthly)</span>
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, billing.quantity)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+                <span class="btn-label">Start Trial</span>
             </md-button>
 
-            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
-                <span class="btn-label">Start Trial (Annual)</span>
+            <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
+                <span class="btn-label">Cancel</span>
             </md-button>
+        </md-card-actions>
 
-            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
-                <span class="btn-label">Start Trial (Annual)</span>
-            </md-button>
-        </div>
-
-        <div ng-if="billing.exists">
+        <md-card-actions ng-if="billing.exists" layout="row" layout-align="end center">
             <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo()" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
                 <span class="btn-label">Update Billing Information</span>
             </md-button>
@@ -120,11 +144,11 @@
             <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo()" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
                 <span class="btn-label">Update Billing Information</span>
             </md-button>
-        </div>
 
-        <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
-            <span class="btn-label">Cancel</span>
-        </md-button>
-    </div>
+            <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
+                <span class="btn-label">Cancel</span>
+            </md-button>
+        </md-card-actions>
 
-</md-content>
+    </md-card>
+</form>

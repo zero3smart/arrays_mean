@@ -1,9 +1,5 @@
 <md-content md-no-ink>
 
-    <div ng-if="!loaded">
-        <h3>Checking billing info&hellip;</h3>
-    </div>
-
     <div ng-if="loaded">
 
         <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
@@ -14,11 +10,47 @@
         <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
         </div>
 
-        <div ng-if="!billing.exists">
-            <h3>Upgrade to Arrays Pro</h3>
-            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
+        <div ng-if="!billing.exists" layout="row" layout-xs="column" layout-wrap>
+
+            <div flex="50" flex-xs="100" ng-repeat="plan in plans">
+
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-display-1">{{ plan.name }}</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content>
+                        <!-- {{ plan.plan_interval_unit }}<br /> -->
+                        <div class="md-display-3">{{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</div>
+                        Per user, per month
+                    </md-card-content>
+                    <md-card-actions layout="row">
+                        <md-button ui-sref="dashboard.account.payment({ plan_code: plan.plan_code })" class="md-dashboard">
+                            <span class="btn-label">Sign up</span>
+                        </md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
+
+            <div flex="50" flex-xs="100">
+                <md-card>
+                    <md-card-title>
+                        <md-card-title-text>
+                            <span class="md-display-1">Arrays Enterprise</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                    <md-card-content>
+                        <div class="md-display-3">Contact us</div>
+                    </md-card-content>
+                    <md-card-actions layout="row">
+                        <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
+                            <span class="btn-label">Sign up</span>
+                        </md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
+
         </div>
 
         <div ng-if="subscription.state === 'active'">
@@ -75,7 +107,7 @@
             </md-button>
         </div>
 
-        <div>
+        <div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
             <h3>Upgrade to Arrays Enterprise</h3>
 
             <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
