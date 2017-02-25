@@ -130,7 +130,17 @@ angular.module('arraysApp')
         $scope.changeCoercionSchemeByOperation = function (colName) {
 
 
+
+
             var coercion = $scope.coercionScheme[colName];
+
+            console.log("here");
+
+            console.log(coercion);
+            console.log( $scope.dataset.raw_rowObjects_coercionScheme)
+
+
+
 
             if (!$scope.dataset.raw_rowObjects_coercionScheme[colName]) {
                 $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
@@ -140,6 +150,8 @@ angular.module('arraysApp')
                 $scope.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
                 $scope.dialog.fieldForm.$setPristine();
             }
+
+            $scope.dialog.fieldForm.$setDirty();
             
         };
 

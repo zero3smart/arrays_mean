@@ -252,6 +252,7 @@ module.exports.remove = function (req, res) {
     // Remove datasource description with schema_id
     batch.push(function (done) {
      
+     
         datasource_description.find({schema_id: description._id})
         .populate('_team')
         .exec(function (err, results) {

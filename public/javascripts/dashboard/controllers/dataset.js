@@ -15,7 +15,6 @@ angular.module('arraysApp')
             };
 
             $scope.transitionTo = function(step) {
-                console.log(step);
                 $state.transitionTo(step, {id: $scope.dataset._id}, {
                     reload: true,
                     inherit: false,
