@@ -344,10 +344,9 @@ function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
         .populate({
             path: '_team',
             match: teamQuery,
-            // todo: select
             select: 'subdomain admin _id title'
         })
-        .sort('createdAt')
+        .sort({"createdAt": "desc"})
         .exec(function (err, datasets) {
             callback(err, datasets)
         })

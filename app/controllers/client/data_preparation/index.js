@@ -15,6 +15,9 @@ module.exports.BindData = function (req, callback) {
     var datasetArray = [];
 
     dataSourceDescriptions.GetAllDescriptions(req.user, function (err, descriptions) {
+        for(var i = 0; i < descriptions.length; i++) {
+            console.log(descriptions[i].createdAt);
+        }
 
         async.mapSeries(descriptions, iterateeFn, completionFn);
 
