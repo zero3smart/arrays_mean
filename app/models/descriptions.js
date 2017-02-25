@@ -40,8 +40,19 @@ var DatasourceDescription_scheme = Schema({
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
+
     fe_displayTitleOverrides: Object,
-    fe_designatedFields: Object,
+
+
+    // imageScraping: [],
+    objectTitle: String,
+
+    fe_image: {
+        field: String,
+        overwrite: {type: Boolean, default: false},
+        scraped: {type: Boolean,default: false}
+    } ,
+
     fe_fieldDisplayOrder: Array,
     fe_filters: {
         excludeFields: Array,
@@ -72,8 +83,6 @@ var DatasourceDescription_scheme = Schema({
     sample: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
-
-    imageScraping: [],
 
     fe_nestedObject: {
         prefix: String,

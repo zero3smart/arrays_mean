@@ -126,7 +126,8 @@ module.exports = function() {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
 		                                return;
 		                            });
-		                        } else if (task == 'postImport' && dataset.skipImageScraping == false) {
+		                        } else if (task == 'postImport' && dataset.skipImageScraping == false &&
+		                        		dataset.fe_image && dataset.fe_image.field) {
 
 		                             _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');

@@ -148,7 +148,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
       
 
             //
-            var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = "/" + source_pKey + "/gallery";
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -338,7 +337,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 if (err) return callback(err);     
 
-             
+
 
                 var data =
                 {
@@ -374,13 +373,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //
                     docs: docs,
                     //
-                    fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+                    fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
-                    //
-                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
-                    hasThumbs: hasThumbs,
-                    fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
-                    //
+
+                   
+                    hasThumbs:  (dataSourceDescription.fe_image.field) ? true: false,
+                    fieldKey_medThumbImageURL: dataSourceDescription.fe_image.field,
+                    scrapedImages: dataSourceDescription.fe_image.scraped,
+                   
                     sortBy: sortBy,
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
@@ -406,6 +406,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                 };
+
 
                 callback(null, data);
             });

@@ -157,7 +157,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                    relationshipSource_uid = joinDS.uid;
                                    relationshipSource_importRevision = joinDS.importRevision;
                                    if (needObjectTitle) {
-                                        var objectTitle = joinDS.fe_designatedFields.objectTitle;
+                                        var objectTitle = joinDS.objectTitle;
                                         fieldToAcquire["rowParams." + objectTitle] = 1;
                                     
 
@@ -244,16 +244,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 
                 //
                 var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
-                //
-                var designatedOriginalImageField = dataSourceDescription.fe_designatedFields.originalImageURL;
-                var hasDesignatedOriginalImageField = designatedOriginalImageField ? true : false;
-                var rowObjectHasOriginalImage = false;
-                if (hasDesignatedOriginalImageField) {
-                    var valueAtOriginalImageField = rowObject.rowParams[designatedOriginalImageField];
-                    if (typeof valueAtOriginalImageField !== 'undefined' && valueAtOriginalImageField != null && valueAtOriginalImageField != "") {
-                        rowObjectHasOriginalImage = true;
-                    }
-                }
+    
                 //
                 // Move the data structures to the human-readable keys so they are accessible by the template
                 var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -333,17 +324,20 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     rowObject: rowObject,
                     //
-                    fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+                    fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     //
-                    fieldKey_originalImageURL: hasDesignatedOriginalImageField ? designatedOriginalImageField : undefined,
-                    hasOriginalImage: rowObjectHasOriginalImage,
+                    hasOriginalImage:  (dataSourceDescription.fe_image.field) ? true: false,
+                    fieldKey_originalImageURL: dataSourceDescription.fe_image.field,
+                    scrapedImages: dataSourceDescription.fe_image.scraped,
+
+
                     //
                     ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle,
                     //
                     fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
-                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
+    
 
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,

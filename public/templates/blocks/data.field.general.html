@@ -104,17 +104,7 @@
     </md-input-container> -->
 
     <!-- <h3>Advanced</h3> -->
-    <md-input-container class="md-block" flex-gt-sm>
-        <label>Designated Field <span class="optional">(advanced)</span></label>
-        <md-select name="designatedField"
-                   ng-model="data.designatedField"
-                   aria-label="Designated Field - {{fieldName}}">
-            <md-option ng-repeat="field in availableDesignatedFields | filter: '!objectTitle'" ng-value="field">
-                {{field}}
-            </md-option>
-        </md-select>
-        <div class="md-errors-spacer"></div>
-    </md-input-container>
+
 </md-content>
 <!--  -->
 <md-dialog-actions layout="row" layout-align="end center">

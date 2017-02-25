@@ -14,15 +14,22 @@
                             <article id="object-id" class="object">
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
-                                    {% set title = team.title | lower %}
-                                    {% set url = makeURLfrom_relativePath(rowObject.rowParams[fieldKey_originalImageURL],
-                                        team.subdomain,datasetId,'image') %}
+                                
+                                   
                                         {% if scrapedImages %}
+                                        
+                                            {% set subdomain = team.subdomain | lower %}
+
+                                            {% set url = retrieveImageURLFromDoc(subdomain,rowObject.pKey,datasetId,'objectDetail')%}
+
                                             <img src="{{ url }}" class="object-featured img-responsive" />
+
                                         {% else %}
                                             <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="img-responsive" />
                                         {% endif %}
+
                                     {% endif %}
+
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
 

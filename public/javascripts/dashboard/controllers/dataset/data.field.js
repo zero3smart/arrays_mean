@@ -1,11 +1,10 @@
 angular.module('arraysApp')
     .controller('FieldDialogCtrl',['$scope','$mdDialog','$filter','fieldName','firstRecord','dataset',
-    	'availableTypeCoercions', 'availableDesignatedFields','custom','customFieldIndex','filterOnly', function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, 
+    	'availableTypeCoercions','custom','customFieldIndex','filterOnly', function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, 
     		custom, customFieldIndex, filterOnly) {
 
 		$scope.firstRecord = firstRecord;
         $scope.availableTypeCoercions = availableTypeCoercions;
-        $scope.availableDesignatedFields = availableDesignatedFields;
         $scope.custom = custom;
         $scope.customFieldIndex = customFieldIndex;
 
@@ -13,16 +12,9 @@ angular.module('arraysApp')
 
         var originalCoercionScheme = dataset.raw_rowObjects_coercionScheme[fieldName];
 
+      
         function refreshFieldByName(name) {
             // General
-            if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
-            for (var key in $scope.dataset.fe_designatedFields) {
-                if ($scope.dataset.fe_designatedFields[key] == name) {
-                    $scope.data.designatedField = key;
-                    break;
-                }
-            }
-
             if (!$scope.dataset.fe_fieldDisplayOrder) $scope.dataset.fe_fieldDisplayOrder = [];
             var index = $scope.dataset.fe_fieldDisplayOrder.indexOf(name);
             if (index != -1) $scope.data.displayOrder = index;
@@ -56,6 +48,7 @@ angular.module('arraysApp')
                 return elem.title == name;
             });
             if (!$scope.data.keywords) $scope.data.keywords = {title: name, choices: []};
+
         }
 
         $scope.reset = function () {
@@ -79,6 +72,8 @@ angular.module('arraysApp')
 
                 $scope.fieldName = $scope.customField.fieldName;
             }
+
+
 
             $scope.data = {};
 
@@ -212,10 +207,6 @@ angular.module('arraysApp')
                     $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
                     delete $scope.dataset.fe_excludeFields[originalFieldName];
                 }
-            }
-
-            if (typeof $scope.data.designatedField !== 'undefined') {
-                $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
             }
 
             var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);

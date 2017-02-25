@@ -1,8 +1,8 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
-        'modalService',
+    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources',
+     'availableTypeCoercions', 'modalService',
         function ($scope, $state, $q, DatasetService, AuthService, $mdToast,  $filter, dataset, additionalDatasources, availableTypeCoercions, 
-            availableDesignatedFields,modalService) {
+            modalService) {
             $scope.$parent.$parent.currentNavItem = 'data';
 
 
@@ -52,7 +52,6 @@ angular.module('arraysApp')
             };
 
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
-            if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.$parent.$parent.additionalDatasources = angular.copy(additionalDatasources);
@@ -133,7 +132,6 @@ angular.module('arraysApp')
                     firstRecord: firstRecord,
                     dataset: $scope.$parent.$parent.dataset,
                     availableTypeCoercions: availableTypeCoercions,
-                    availableDesignatedFields: availableDesignatedFields,
                     custom: custom,
                     customFieldIndex: customFieldIndex,
                     filterOnly: filterOnly
@@ -142,13 +140,6 @@ angular.module('arraysApp')
                 modalService.openDialog('field',data)
                 .then(function(savedDataset) {
                     $scope.$parent.$parent.dataset = savedDataset;
-
-                    if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
-
-                        for (var key in savedDataset.fe_designatedFields) {
-                            $scope.data.fe_designatedFields[key] = savedDataset.fe_designatedFields[key];
-                        }
-                    }
                     $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                     sortColumnsByDisplayOrder();
 
@@ -207,14 +198,7 @@ angular.module('arraysApp')
 
                 }));
 
-                dataset.imageScraping.map(function(sourceURL) {
-                    colsAvailable = colsAvailable.concat(sourceURL.setFields.map(function(field) {
-                        return field.newFieldName;
-                    }));
-                });
-
-        
-
+    
                 var data = {
 
                     dataset: dataset,
@@ -240,14 +224,8 @@ angular.module('arraysApp')
                 }
 
                 modalService.openDialog('imageScraping',data)
-                    .then(function (savedDataset) {
+                    .then(function (savedDataset){
                         $scope.$parent.$parent.dataset = savedDataset;
-                        // $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
-                        if (!$scope.data.designatedFields) $scope.data.designatedFields = {};
-                        for (var key in $scope.dataset.fe_designatedFields) {
-                            $scope.data.designatedFields[$scope.dataset.fe_designatedFields[key]] = key;
-                        }
-
                         sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
@@ -310,42 +288,30 @@ angular.module('arraysApp')
 
                     })
                 ).concat(
-                    $scope.$parent.$parent.dataset.imageScraping.reduce(function(imageScraping1, imageScraping2) {
-                        var setFields1 = imageScraping1.setFields || [],
-                            setFields2 = imageScraping2.setFields || [];
+                    // $scope.$parent.$parent.dataset.imageScraping.reduce(function(imageScraping1, imageScraping2) {
+                    //     var setFields1 = imageScraping1.setFields || [],
+                    //         setFields2 = imageScraping2.setFields || [];
 
 
-                        return setFields1.map(function(field) {
+                    //     return setFields1.map(function(field) {
+
+                    //         return {
+                    //             name: field.newFieldName,
+                    //             sample: null,
+                    //             custom: true
+                    //         };
+                    //     }).concat(setFields2.map(function(field) {
 
 
-                            if (!$scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName]) {
-                                $scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName] = false;
-                            }
+                    //         return {
+                    //             name: field.newFieldName,
+                    //             sample: null,
+                    //             custom: true
+                    //         };
 
 
-                            return {
-                                name: field.newFieldName,
-                                sample: null,
-                                custom: true
-                            };
-                        }).concat(setFields2.map(function(field) {
-
-
-                            if (!$scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName]) {
-                                $scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName] = false;
-
-                            }
-
-
-                            return {
-                                name: field.newFieldName,
-                                sample: null,
-                                custom: true
-                            };
-
-
-                        }));
-                    }, [])
+                    //     }));
+                    // }, [])
                 ).concat(
                     $scope.$parent.$parent.dataset.relationshipFields.map(function(relationshipField) {
 
@@ -393,10 +359,18 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
-                $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
-                for(designatedField in $scope.data.fe_designatedFields) {
-                        $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField];
+    
+                if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || 
+                        $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
+                    $scope.setDirty(4);
                 }
+
+                $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
+                $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
+
+                
+
+
             };
 
             $scope.reset = function () {
@@ -406,7 +380,13 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-                $scope.data.fe_designatedFields = dataset.fe_designatedFields;
+                $scope.data.objectTitle = dataset.objectTitle;
+                if (!dataset.fe_image) {
+                    dataset.fe_image = {
+                        overwrite : false
+                    }
+                }
+                $scope.data.fe_image = dataset.fe_image || {};
                 sortColumnsByDisplayOrder();
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
@@ -442,8 +422,18 @@ angular.module('arraysApp')
             // ---------------------------------------------------------
 
             $scope.reset();
+            $scope.overwriteDisabled = false;
 
-            $scope.data.fe_designatedFields = dataset.fe_designatedFields;
+            $scope.updateOverwrite = function() {
+
+                if ($scope.data.fe_image.field !==  $scope.$parent.$parent.dataset.fe_image.field) {
+                    $scope.data.fe_image.overwrite = true;
+                    $scope.overwriteDisabled = true;
+                } else {
+                    $scope.data.fe_image.overwrite = $scope.$parent.$parent.dataset.fe_image.overwrite;
+                    $scope.overwriteDisabled = false;
+                }
+            }
 
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui
@@ -499,17 +489,15 @@ angular.module('arraysApp')
                         delete finalizedDatasource.customFieldsToProcess;
                         delete finalizedDatasource.urls;
                         delete finalizedDatasource.description;
-                        delete finalizedDatasource.fe_designatedFields;
+                        delete finalizedDatasource.objectTitle;
                         delete finalizedDatasource.fe_excludeFields;
                         delete finalizedDatasource.fe_displayTitleOverrides;
                         delete finalizedDatasource.fe_fieldDisplayOrder;
-                        delete finalizedDatasource.imageScraping;
+                        // delete finalizedDatasource.imageScraping;
                         delete finalizedDatasource.isPublic;
                         delete finalizedDatasource.fe_views;
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
-
-
 
                         queue.push(DatasetService.save(finalizedDatasource));
                     });

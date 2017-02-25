@@ -6,7 +6,8 @@
 
         <div ng-if="!dirty && imported && !inProgress">
             <h2>Your data has been successfully processed!</h2>
-            <a href="#" ng-click="primaryAction.do()">View your visualization</a> or <a href="#" ng-click="navigate('dashboard.dataset.views')">continue editing</a>.
+            <a href="#" ng-click="primaryAction.do()">View your visualization</a> or 
+            <a href="#" ng-click="transitionTo('dashboard.dataset.views')">continue editing</a>.
         </div>
 
         <md-content class="md-block" ng-show="inProgress">

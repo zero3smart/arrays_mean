@@ -383,7 +383,7 @@ module.exports.get = function (req, res) {
 
 
                     batch.end(function(err) {
-                        console.log(err);
+         
 
                         if (err) return res.status(500).json(err);
                         description.columns = req.session[req.params.id].columns[description.connection.tableName];
@@ -949,14 +949,6 @@ module.exports.upload = function (req, res) {
 
 module.exports.getAvailableTypeCoercions = function (req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
-};
-
-module.exports.getAvailableDesignatedFields = function (req, res) {
-    return res.json({
-        availableDesignatedFields: [
-            "objectTitle", "originalImageURL", "medThumbImageURL"
-        ]
-    });
 };
 
 module.exports.getAvailableMatchFns = function (req, res) {

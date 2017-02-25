@@ -14,6 +14,15 @@ angular.module('arraysApp')
                 disabled: true
             };
 
+            $scope.transitionTo = function(step) {
+                console.log(step);
+                $state.transitionTo(step, {id: $scope.dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            }
+
             $scope.navigate = function(step) {
 
                 var errorHandler = function (error) {

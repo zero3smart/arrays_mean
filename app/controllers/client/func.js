@@ -900,7 +900,6 @@ function _filterObjFromQueryParams(queryParams) {
             filterObj[key] = queryParams[key];
         }
     }
-    console.log(filterObj)
     return filterObj;
 };
 

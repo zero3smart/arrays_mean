@@ -6,12 +6,10 @@ var sharp = require('sharp');
 var bucket = process.env.AWS_S3_BUCKET;
 var s3 = new aws.S3();
 var fs = require('fs');
+var async = require('async');
 
 function _uploadToS3(key,response,readFromFile,callback) {
-    var hostedFilePublicUrl = _appendKeyToBucket(key);
 
-
-  
     var payload = { 
         Bucket:bucket,
         Key: key,
@@ -23,8 +21,33 @@ function _uploadToS3(key,response,readFromFile,callback) {
         if (err) {
             winston.error("❌  AWS S3 write stream error for url " + hostedFilePublicUrl + " and dest filename " + destinationFileName, " err: " , err);
         }
-        return callback(err,hostedFilePublicUrl);
+        return callback(err)
+    })
+}
 
+function getImageAtUrl(remoteImageSourceURL,callback) {
+    var options = {
+        url :remoteImageSourceURL,
+        encoding:null,
+        timeout: 2500
+    }
+    request.get(options,function(err,response,data) {
+        if ( (err && (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')) || response == null) {
+            winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
+            return callback(null,null);
+        } else if (err) {
+            return callback(err,null);
+        }
+
+        var imageFormat = response.headers['content-type'].split('/')[1];
+
+        imageFormat = imageFormat.split(';')[0];
+
+        if (typeof sharp.format[imageFormat] !== 'undefined') {
+            return callback(null,data);
+        } else {
+            return callback(null,null);
+        }
     })
 }
 
@@ -76,116 +99,82 @@ module.exports.getAllIconsForTeam = _getAllIconsForTeam;
 
 
 
-
-function _proceedToStreamToHost(resize,remoteImageSourceURL, bucketKey, callback)
+function _proceedToStreamToHost(image,resize,folder,docPKey, callback)
 {
-        var options = {
-            url :remoteImageSourceURL,
-            encoding:null
+    sharp(image)
+    .metadata()
+    .then(function(info) {
+        var px = resize.size;
+        var img;
+        if (info.width < resize.size) {
+            px = info.width;
         }
+        if (resize.cropped) {
+            img = sharp(image).resize(px,px)
+        } else {
+            img = sharp(image).resize(px)
+        }
+        img.toBuffer()
+        .then(function(data) {
+            var keyName = folder + resize.view + '/' + docPKey;
+            _uploadToS3(keyName,data,false,callback);
+        },function(err) {
+            console.log("has err");
+            console.log(err);
+        })
+    },function(err) {
+        console.log("proceed to stream hosst with error");
+        console.log(err);
+    })
+}
 
-        request.get(options, function(err,response,body) {
 
-            if ( (err && (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')) || response == null) {
-                winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
-                return callback(null,null);
-            } else if (err) {
-                return callback(err);
-            }
 
-            var imageFormat = response.headers['content-type'].split('/')[1];
+module.exports.hostImageLocatedAtRemoteURL = function(folder,remoteImageSourceURL, overwrite,destinationFilenameSansExt, callback)
+{
 
-            imageFormat = imageFormat.split(';')[0];
+    var recommendedSizes = [
+        {"size": 763,"cropped": false, "view": "objectDetail"},
+        {"size": 210,"cropped": false, "view": "gallery"},
+        {"size": 60 ,"cropped": true, "view":  "timeline"}
+    ]
 
-            if (typeof sharp.format[imageFormat] !== 'undefined') {
-                if (typeof resize != 'undefined' && resize != null && !isNaN(resize)) {
-                     sharp(body)
-                    .resize(resize)
-                    .toBuffer()
-                    .then(function(data) {
-                       _uploadToS3(bucketKey,data,false,callback)
-                    },function(err) {
-                        winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
-                        return callback(null,null);
 
-                    })
+    getImageAtUrl(remoteImageSourceURL,function(err,imageBuffer) {
+        if (err || imageBuffer == null || !imageBuffer) {
+            return callback(err);
+        } else {
+            async.each(recommendedSizes,function(size,cb) {
+                if (overwrite == true) {
+                    _proceedToStreamToHost(imageBuffer,size,folder,destinationFilenameSansExt,cb);
                 } else {
-                    if (body) {
-                        _uploadToS3(bucketKey,body,false,callback)
+                    var keyName = folder +  size.view + '/' + destinationFilenameSansExt;
+                    var params = {
+                        Bucket: bucket,
+                        Key: keyName
+                    };
+                    try {
+                        s3.headObject(params,function(err,data) {
+                            if (data) {
+                                winston.info("💬  File already uploaded and overwrite is false for object with pKey " + destinationFilenameSansExt);
+                                cb();
+                            } else {
+                                console.log("head object err");
+                            }
+                        })
+                    } catch (err) {
 
+                        if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') { 
+                            _proceedToStreamToHost(imageBuffer,size,folder,destinationFilenameSansExt,cb);
+                        } else {
+                            console.log(err);
+                            cb(err);
+                        }
                     }
                 }
-            } else {
-                 winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
-                return callback(null,null);
-
-            }
-
-            
-        })
-
-
-}
-//
-//
-function _dotPlusExtnameSansQueryParamsFrom(url)
-{
-    var regex = /[#\\?]/g;
-    var extname = path.extname(url);
-    var endOfExt = extname.search(regex);
-    if (endOfExt > -1) {
-        extname = extname.substring(0, endOfExt);
-    }
-    
-    return extname;
-}
-
-
-function _appendKeyToBucket(key) {
-    return 'https://' + bucket + '.s3.amazonaws.com/' + key;
-}
-
-
-//
-//
-module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageSourceURL, destinationFilenameSansExt, hostingOpts, callback)
-{
-    //
-
-
-    var dotPlusExtname = _dotPlusExtnameSansQueryParamsFrom(remoteImageSourceURL);
-    var finalizedFilenameWithExt = destinationFilenameSansExt + dotPlusExtname; // construct after extracting ext from image src url
-    //
-    var hostedFilePublicUrl = _appendKeyToBucket(folder,finalizedFilenameWithExt);
-    //
-    hostingOpts = hostingOpts || {};
-    if (typeof hostingOpts.overwrite === 'undefined') {
-        hostingOpts.overwrite = false;
-    }
-    if (hostingOpts.overwrite == true) { // overwrite if exists
-        _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
-    } else {
-        var params = {
-            Bucket: bucket,
-            Key:  folder + finalizedFilenameWithExt
-        };
-        try {
-            s3.headObject(params, function (err, data) {
-                if (!err) {
-                    winston.info("💬  File already uploaded but overwrite:false for " + hostedFilePublicUrl);
-                    return callback(null, hostedFilePublicUrl);
-                }
-                // if (err.code == 'NotFound')
-                _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
-            });
-        } catch (err) {
-
-            (err);
-
-    
-            if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
-            }
+            },callback)
         }
-    }
+    })
+
+
 }
