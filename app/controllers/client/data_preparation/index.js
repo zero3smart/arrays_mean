@@ -16,7 +16,7 @@ module.exports.BindData = function (req, callback) {
 
     dataSourceDescriptions.GetAllDescriptions(req.user, function (err, descriptions) {
 
-        async.map(descriptions, iterateeFn, completionFn);
+        async.mapSeries(descriptions, iterateeFn, completionFn);
 
     });
 
