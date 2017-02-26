@@ -19,7 +19,8 @@ angular
 					availableDesignatedFields: data.availableDesignatedFields,
 					custom: data.custom,
 					customFieldIndex: data.customFieldIndex,
-					filterOnly: data.filterOnly
+					filterOnly: data.filterOnly,
+					columnIndex: data.columnIndex
 				}
 			})
 

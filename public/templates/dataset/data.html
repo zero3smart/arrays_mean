@@ -25,7 +25,8 @@
             </md-select>
 
             <md-switch ng-model="data.fe_image.overwrite"
-                ng-if="dataset.fe_image && dataset.fe_image.scraped && overwriteDisabled==false"
+                ng-if="dataset.fe_image && dataset.fe_image.scraped && overwriteDisabled==false &&
+                    dataset.dirty == 0"
                  aria-label="overwrite Image scraping">
                 overwrite existing images
            </md-switch>
@@ -109,7 +110,8 @@
                              ></md-checkbox>
                 </span>
 
-                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex)">
+                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex,
+                null,$index)">
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
                         <span ng-if="!field.custom">(Sample: {{ field.sample | limitTo:35 }})</span>
@@ -126,14 +128,16 @@
                 </span>
 
                 <span ng-hide="dataset.connection" flex="5" class="">
-                    {{ field.data_type }}
+
+                    {{ coercionScheme[field.name] | typeCoercionToString: field.data_type }}
                 </span>
 
                 <span flex="10"></span>
 
                 <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
 
-                    ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex)">
+                    ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex,
+                    null,$index)">
 
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>

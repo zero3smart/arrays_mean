@@ -58,9 +58,13 @@ app.filter('pluralize', function () {
 });
 
 app.filter('typeCoercionToString', function () {
-    return function (input) {
-        if (!input) return 'String';
-
+    return function (input,inferredType) {   
+        if (!input) {
+            if (inferredType) {
+                return inferredType;
+            }
+            return 'String';
+        }
         var opName = input.operation;
         if (opName == 'ProxyExisting') {
             return 'Proxy';
@@ -73,6 +77,12 @@ app.filter('typeCoercionToString', function () {
         } else if (opName == 'ToStringTrim') {
             return 'String Trim';
         } else {
+            if (opName == 'ToString') {
+                return 'String'; 
+            }
+            if (inferredType) {
+                return inferredType;
+            }
             return 'String'; // 'Unknown'
         }
     };

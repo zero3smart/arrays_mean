@@ -112,6 +112,7 @@ module.exports = function() {
 
 		        } else { // importProcessed || postImport || scrapeImages
 
+
 		            datasource_description.findById(job.data.id,function(err,dataset) {
 		                if (err || !dataset) return;
 
@@ -127,7 +128,8 @@ module.exports = function() {
 		                                return;
 		                            });
 		                        } else if (task == 'postImport' && dataset.skipImageScraping == false &&
-		                        		dataset.fe_image && dataset.fe_image.field) {
+		                        		dataset.fe_image && dataset.fe_image.field && (dirty == 1 || dirty == 2 ||
+		                        			(dirty == 3 && dataset.fe_image.scraped==false))) {
 
 		                             _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');

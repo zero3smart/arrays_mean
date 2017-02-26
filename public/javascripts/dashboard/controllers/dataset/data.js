@@ -125,7 +125,7 @@ angular.module('arraysApp')
             }
 
 
-            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
+            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly,columnIndex) {
 
                 var data = {
                     fieldName: fieldName,
@@ -134,7 +134,8 @@ angular.module('arraysApp')
                     availableTypeCoercions: availableTypeCoercions,
                     custom: custom,
                     customFieldIndex: customFieldIndex,
-                    filterOnly: filterOnly
+                    filterOnly: filterOnly,
+                    columnIndex: columnIndex
                 }
 
                 modalService.openDialog('field',data)
@@ -362,6 +363,9 @@ angular.module('arraysApp')
     
                 if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || 
                         $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
+                    if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {
+                        $scope.data.fe_image.scraped = false;
+                    }
                     $scope.setDirty(4);
                 }
 

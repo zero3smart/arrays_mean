@@ -1,18 +1,18 @@
 angular.module('arraysApp')
     .controller('FieldDialogCtrl',['$scope','$mdDialog','$filter','fieldName','firstRecord','dataset',
-    	'availableTypeCoercions','custom','customFieldIndex','filterOnly', function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, 
-    		custom, customFieldIndex, filterOnly) {
+    	'availableTypeCoercions','custom','customFieldIndex','filterOnly','columnIndex', 
+        function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, 
+    		custom, customFieldIndex, filterOnly,columnIndex) {
 
 		$scope.firstRecord = firstRecord;
         $scope.availableTypeCoercions = availableTypeCoercions;
         $scope.custom = custom;
         $scope.customFieldIndex = customFieldIndex;
+        $scope.columnIndex = columnIndex;
 
         var originalFieldName = fieldName;
-
         var originalCoercionScheme = dataset.raw_rowObjects_coercionScheme[fieldName];
 
-      
         function refreshFieldByName(name) {
             // General
             if (!$scope.dataset.fe_fieldDisplayOrder) $scope.dataset.fe_fieldDisplayOrder = [];
@@ -126,35 +126,6 @@ angular.module('arraysApp')
 
 
 
-
-        $scope.changeCoercionSchemeByOperation = function (colName) {
-
-
-
-
-            var coercion = $scope.coercionScheme[colName];
-
-            console.log("here");
-
-            console.log(coercion);
-            console.log( $scope.dataset.raw_rowObjects_coercionScheme)
-
-
-
-
-            if (!$scope.dataset.raw_rowObjects_coercionScheme[colName]) {
-                $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
-                $scope.dialog.fieldForm.$setDirty();
-
-            } else {
-                $scope.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
-                $scope.dialog.fieldForm.$setPristine();
-            }
-
-            $scope.dialog.fieldForm.$setDirty();
-            
-        };
-
         $scope.cancel = function () {
             $mdDialog.cancel();
         };
@@ -194,8 +165,14 @@ angular.module('arraysApp')
         };
 
         $scope.save = function () {
+
             // General
-    
+
+            var coercion = $scope.coercionScheme[$scope.fieldName];
+            $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
+            $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+
+
             if (originalCoercionScheme) {
                 if (originalCoercionScheme.operation == 'ToDate' && 
                     originalCoercionScheme.format !== $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName].format) {
@@ -209,6 +186,8 @@ angular.module('arraysApp')
                 }
             }
 
+
+    
          
             if (!filterOnly) {
                 var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
@@ -281,7 +260,7 @@ angular.module('arraysApp')
                 }
                 $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
             }
-
+ 
             $mdDialog.hide($scope.dataset);
         };
 

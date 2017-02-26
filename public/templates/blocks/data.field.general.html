@@ -31,7 +31,6 @@
                    name="dataType"
                    ng-model="coercionScheme[fieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                   ng-change="changeCoercionSchemeByOperation(fieldName, columnIndex)"
                    aria-label="Field Type - {{fieldName}}" placeholder="String">
             <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
                 {{coercion | typeCoercionToString}}
@@ -76,17 +75,17 @@
     </md-input-container>
 </div>
 
-<div ng-if="!custom && (dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+<div ng-if="!custom && (coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
     <md-input-container class="md-block" flex-gt-sm>
         <label>Format</label>
         <input type="text" name="dataType_format"
-               ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].format">
+               ng-model="coercionScheme[fieldName].format">
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
-               ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
+               ng-model="coercionScheme[fieldName].outputFormat">
     </md-input-container>
 </div>
 
