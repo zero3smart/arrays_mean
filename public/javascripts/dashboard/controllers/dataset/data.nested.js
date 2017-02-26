@@ -10,7 +10,7 @@
             $scope.data = {};
 
             if (!$scope.dataset.fe_nestedObject) $scope.dataset.fe_nestedObject = {};
-            if (!$scope.dataset.fe_nestedObject.criteria) {
+            if (!$scope.dataset.fe_nestedObject.criteria || !$scope.dataset.fe_nestedObject.criteria.fieldName) {
                 $scope.dataset.fe_nestedObject.criteria = {
                     operatorName: 'equal',
                     value: ''
@@ -49,7 +49,7 @@
                 $scope.additionalData.push({});
 
                 if (!datasource.fe_nestedObject) $scope.dataset.fe_nestedObject = {};
-                if (!datasource.fe_nestedObject.criteria) {
+                if (!datasource.fe_nestedObject.criteria || !datasource.fe_nestedObject.criteria.fieldName) {
                     datasource.fe_nestedObject.criteria = {
                         operatorName: 'equal',
                         value: ''
@@ -194,6 +194,8 @@
                     datasource.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                 });
             });
+
+          
 
             $mdDialog.hide({
                 dataset: $scope.dataset,

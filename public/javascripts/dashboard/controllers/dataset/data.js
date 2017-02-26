@@ -166,7 +166,8 @@ angular.module('arraysApp')
                 }
 
                 modalService.openDialog('nested',data)
-                .then(function(savedDataset) {
+                .then(function(result) {
+             
 
                     $scope.$parent.$parent.dataset = result.dataset;
                     $scope.$parent.$parent.additionalDatasources = result.additionalDatasources;

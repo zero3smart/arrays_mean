@@ -6,7 +6,8 @@
 
 	      	{% set subdomain = team.subdomain | lower %}
 	        {% set url = retrieveImageURLFromDoc(subdomain,doc.pKey,datasetId,'gallery') %}
-			<img src="{{ url }}" class="gallery-image" />
+			<img src="{{ url }}" class="gallery-image" scraped="true"/>
+			<input type="hidden" name="alternativeImgLink" value="{{doc.rowParams[fieldKey_medThumbImageURL]}}">
 		{% else %}	
 			<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="gallery-image" />
 		{% endif %}

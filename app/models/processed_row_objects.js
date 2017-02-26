@@ -1080,18 +1080,24 @@ module.exports.GenerateImageURLFieldsByScraping
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating fields by scraping images for \"" + datasetId + "\".");
        
-        var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
-        var mongooseModel = mongooseContext.Model;
+        var mongooseContext;
+        var mongooseModel;
 
         var datasetQuery = {};
+
         if (schemaId) {
-            datasetQuery["pKey"] = {$regex: "^" + schemaId + "-"}
+            datasetQuery["pKey"] = {$regex: "^" + datasetId + "-"}
+            mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(schemaId);
+        } else {
+             mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         }
+
+        mongooseModel = mongooseContext.Model;
 
         datasetQuery["rowParams." + imageSource.field] = {$exists: true};
         datasetQuery["rowParams." + imageSource.field] = {$ne: ""};
 
-        var folder =  dataSource_team_subdomain + '/datasets/' + datasetId + '/assets/images/';
+        var folder =  dataSource_team_subdomain + '/datasets/' + ((schemaId) ? schemaId: datasetId) + '/assets/images/';
 
         var description = require('./descriptions');
 

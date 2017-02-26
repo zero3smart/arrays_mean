@@ -40,7 +40,6 @@ function getImageAtUrl(remoteImageSourceURL,callback) {
         }
 
         var imageFormat = response.headers['content-type'].split('/')[1];
-
         imageFormat = imageFormat.split(';')[0];
 
         if (typeof sharp.format[imageFormat] !== 'undefined') {
@@ -103,7 +102,15 @@ function _proceedToStreamToHost(image,resize,folder,docPKey, callback)
 {
     sharp(image)
     .metadata()
+    .catch(function(err) {
+
+    })
     .then(function(info) {
+
+        if (!info) {
+            winston.info("❌  returning url as null, since Could not read the remote image metadata");
+            return callback();
+        }
         var px = resize.size;
         var img;
         if (info.width < resize.size) {
@@ -122,9 +129,6 @@ function _proceedToStreamToHost(image,resize,folder,docPKey, callback)
             console.log("has err");
             console.log(err);
         })
-    },function(err) {
-        console.log("proceed to stream hosst with error");
-        console.log(err);
     })
 }
 
@@ -141,6 +145,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,remoteImageSourceUR
 
 
     getImageAtUrl(remoteImageSourceURL,function(err,imageBuffer) {
+
         if (err || imageBuffer == null || !imageBuffer) {
             return callback(err);
         } else {

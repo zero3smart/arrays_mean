@@ -22,7 +22,9 @@
 
                                             {% set url = retrieveImageURLFromDoc(subdomain,rowObject.pKey,datasetId,'objectDetail')%}
 
-                                            <img src="{{ url }}" class="object-featured img-responsive" />
+                                            <img src="{{ url }}" class="object-featured img-responsive" scraped="true"/>
+
+                                            <input type="hidden" name="alternativeImgLink" value="{{rowObject.rowParams[fieldKey_originalImageURL]}}">
 
                                         {% else %}
                                             <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="img-responsive" />

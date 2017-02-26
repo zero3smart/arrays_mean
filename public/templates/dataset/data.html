@@ -17,7 +17,7 @@
 
         <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
             <label>Select the field you'd like to use as an image for each item</label>
-            <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
+            <md-select name="image field" aria-label="Item title"
                        ng-model="data.fe_image.field" ng-change="updateOverwrite()">
                 <md-option ng-repeat="column in dataset.columns | filter: {data_type: 'String'} track by column.name " value="{{column.name}}">
                     {{column.name}}

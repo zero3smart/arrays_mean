@@ -140,16 +140,18 @@ DatasourceDescription_scheme.pre('save',function(next) {
 DatasourceDescription_scheme.post('save',function(doc) {
     if (doc._wasNew) {
         this.populate('author _team',function(err,docPopulatedWithAuthor) {
-            if (err || !docPopulatedWithAuthor.author) {
-                winston.error('Viz created with error');
-                console.log(err);
-            } else {
-                nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
-                    if (err) winston.error('cannot send user alert email');
-                    else {
-                        winston.info('Viz created email sent');
-                    }
-                })
+            if (!docPopulatedWithAuthor.schema_id) {
+                if (err || !docPopulatedWithAuthor.author) {
+                    winston.error('Viz created with error');
+                    console.log(err);
+                } else {
+                    nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
+                        if (err) winston.error('cannot send user alert email');
+                        else {
+                            winston.info('Viz created email sent');
+                        }
+                    })
+                }
             }
         })
     }
