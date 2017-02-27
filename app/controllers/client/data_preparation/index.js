@@ -12,14 +12,14 @@ var _ = require("lodash");
 var User = require('../../../models/users');
 
 module.exports.BindData = function (req, callback) {
+    var datasetArray = [];
 
-    var teamsObj = {};
-   
+    dataSourceDescriptions.GetAllDescriptions(req.user, function (err, descriptions) {
+        for(var i = 0; i < descriptions.length; i++) {
+            console.log(descriptions[i].createdAt);
+        }
 
-
-    teamDescriptions.GetTeamsAndDatasources(req.user, function (err, teamWithDesc) {
-
-        async.map(teamWithDesc, iterateeFn, completionFn);
+        async.mapSeries(descriptions, iterateeFn, completionFn);
 
     });
 
@@ -34,7 +34,7 @@ module.exports.BindData = function (req, callback) {
                 var data = {
                     env: process.env,
                     user: user,
-                    sources: teamsObj
+                    sources: datasetArray
                 };
 
                 callback(err, data);
@@ -43,100 +43,66 @@ module.exports.BindData = function (req, callback) {
             var data = {
                 env: process.env,
                 user: user,
-                sources: teamsObj
+                sources: datasetArray
             };
             callback(err, data);
         }
     };
 
 
-    var iterateeFn = async.ensureAsync(function (teamDescription, cb) {
-
-
-
-        if (teamDescription.datasourceDescriptions.length == 0) {
-            return cb(null);
-        }
+    var iterateeFn = async.ensureAsync(function (description, cb) {
 
 
         var err = null;
-        subdomain = teamDescription.subdomain;
+        subdomain = description._team.subdomain;
 
-        var t = {
-            title: teamDescription.title,
-            subdomain: teamDescription.subdomain,
-            admin: teamDescription.admin,
-            editors: teamDescription.editors,
-            _id: teamDescription._id
+        raw_source_documents.Model.findOne({
+            primaryKey: description._id
+        }, function (err, doc) {
 
-        };
+            if (err) {
+                cb(err, null);
+            } else {
 
-
-        if (!teamsObj[subdomain]) {
-            teamsObj[subdomain] = {};
-        }
-
-        teamsObj[subdomain].team = t;
-
-
-        async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
-            
-
-
-            raw_source_documents.Model.findOne({
-                primaryKey: dataSourceDescription._id
-            }, function (err, doc) {
-
-                if (err) {
-                    innerCallback(err, null);
-                } else {
-
-                    var default_filterJSON;
-                    if (dataSourceDescription.fe_filters.default) {
-                        default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {})
-                    }
-                    var default_view = 'gallery';
-                    if (dataSourceDescription.fe_views.default_view) {
-                        default_view = dataSourceDescription.fe_views.default_view;
-                    }
-
-                   
-
-                    var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-                    var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-                    baseUrl += teamDescription.subdomain + "." + rootDomain
-
-
-                
-                    var s = {
-                        key:  dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
-                        _id: dataSourceDescription._id,
-                        sourceDoc: doc,
-                        title: dataSourceDescription.title,
-                        brandColor: dataSourceDescription.brandColor,
-                        description: dataSourceDescription.description,
-                        urls: dataSourceDescription.urls,
-                        default_view: default_view,
-                        default_filterJSON: default_filterJSON,
-                        datasetBaseLink: baseUrl,
-                        banner: dataSourceDescription.banner
-
-                    };
-
-                    if (!teamsObj[teamDescription.subdomain].dataSourceDescriptions) {
-                        teamsObj[teamDescription.subdomain].dataSourceDescriptions = [];
-                    }
-                    teamsObj[teamDescription.subdomain].dataSourceDescriptions.push(s);
-
-                    innerCallback(null);
+                var default_filterJSON;
+                if (description.fe_filters.default) {
+                    default_filterJSON = queryString.stringify(description.fe_filters.default || {})
+                }
+                var default_view = 'gallery';
+                if (description.fe_views.default_view) {
+                    default_view = description.fe_views.default_view;
                 }
 
-            })
+               
 
-        }, function (err) {
-            cb(err);
+                var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+                var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+                baseUrl += description._team.subdomain + "." + rootDomain
+
+                var reformattedDataset = {
+                    _id: description._id,
+                    key:  description.uid + '-r' + description.importRevision,
+                    sourceDoc: doc,
+                    title: description.title,
+                    brandColor: description.brandColor,
+                    description: description.description,
+                    urls: description.urls,
+                    default_view: default_view,
+                    default_filterJSON: default_filterJSON,
+                    datasetBaseLink: baseUrl,
+                    banner: description.banner,
+                    teamTitle: description._team.title,
+                    subdomain: description._team.subdomain,
+                    admin: description._team.admin,
+                };
+                
+                datasetArray.push(reformattedDataset);
+
+                cb(null);
+            }
+
         })
 
     })
@@ -146,5 +112,4 @@ module.exports.BindData = function (req, callback) {
 
 
     
-
 
