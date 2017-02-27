@@ -76,7 +76,8 @@
                     <div class="team-logo-circle" style="background-image:url('{{ team.logo_header }}');"></div>
                 </a>
                 <br style="font-size:0px;" />
-                <a class="navbar-brand navbar-brand-array-title" style="position:relative;top:-7px;" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                {{defaultView}}
+                <a class="navbar-brand navbar-brand-array-title" style="position:relative;top:-7px;" href="/{{ array_source_key }}/{{ defaultView | constructedRoutePath(filterObj, {
                     searchQ: searchQ,
                     searchCol: searchCol
                 }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
@@ -92,7 +93,7 @@
                     </svg>
                 </a>
                 <br/>
-                <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ defaultView | constructedRoutePath(filterObj, {
                     searchQ: searchQ,
                     searchCol: searchCol
                 }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
