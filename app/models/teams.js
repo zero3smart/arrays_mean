@@ -69,9 +69,6 @@ team.GetTeams = function(fn) {
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
 
-
-    // console.log(teamQuery);
-    // console.log(JSON.stringify(datasetQuery));
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
             populate: {

@@ -357,8 +357,8 @@ var _GetAllDescriptions = function (userId, callback) {
     function nonLoginUserQuery(cb) {
         var publicAndImportedDataset = {isPublic: true, imported: true, fe_visible: true, state: 'approved'};
         var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
-        // get descriptions and populate datasets with query/teams
-
+        getDescriptionsAndPopulateTeam({ $or: [ {'superTeam': true}, {'subscription.state': 'active'} ] },
+            {$or: [publicAndImportedDataset, publicAndConnectedDataset]}, cb)
     }
 
     if (userId) {
