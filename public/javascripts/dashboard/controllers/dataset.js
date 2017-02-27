@@ -109,39 +109,39 @@ angular.module('arraysApp')
                 $scope.navigate('dashboard.dataset.done');
             };
 
-            $scope.revert = function() {
-                function getOldData() {
-                    var deferred = $q.defer();
-                    DatasetService.get($scope.dataset._id)
-                    .then(function(data) {
-                        if (data.jobId !== 0) {
-                            deferred.reject({importing: true, datasetId: data._id});
-                        } else {
-                            deferred.resolve(data);
-                        }
-                    });
-                    return deferred.promise;
-                }
-
-                var oldDataPromise = getOldData();
-                oldDataPromise.then(function(dataset) {
-                    $scope.dataset = angular.copy(dataset);
-                    $scope.dataset.dirty = 0;
-
-                    // apply the same resets as in data.js reset()
-                    if (!dataset.columns) return;
-
-                    $scope.data = {};
-                    $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-                    $scope.data.fe_designatedFields = dataset.fe_designatedFields;
-
-                    // reload so each view's resets are applied
-                    // $state.reload();
-                    $scope.navigate($scope.currentStep); // will save dirty = 0
-                }, function(err) {
-                    // console.log(err)
-                });
-            };
+            // $scope.revert = function() {
+            //     function getOldData() {
+            //         var deferred = $q.defer();
+            //         DatasetService.get($scope.dataset._id)
+            //         .then(function(data) {
+            //             if (data.jobId !== 0) {
+            //                 deferred.reject({importing: true, datasetId: data._id});
+            //             } else {
+            //                 deferred.resolve(data);
+            //             }
+            //         });
+            //         return deferred.promise;
+            //     }
+            //
+            //     var oldDataPromise = getOldData();
+            //     oldDataPromise.then(function(dataset) {
+            //         $scope.dataset = angular.copy(dataset);
+            //         $scope.dataset.dirty = 0;
+            //
+            //         // apply the same resets as in data.js reset()
+            //         if (!dataset.columns) return;
+            //
+            //         $scope.data = {};
+            //         $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+            //         $scope.data.fe_designatedFields = dataset.fe_designatedFields;
+            //
+            //         // reload so each view's resets are applied
+            //         // $state.reload();
+            //         $scope.navigate($scope.currentStep); // will save dirty = 0
+            //     }, function(err) {
+            //         // console.log(err)
+            //     });
+            // };
 
             $scope.convertToURLSafe = function(input) {
                 return input.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
