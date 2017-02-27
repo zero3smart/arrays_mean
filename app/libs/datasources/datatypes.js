@@ -221,11 +221,11 @@ module.exports.doesExistFormat_fieldDataType_coercion_toString = function(field)
 module.exports.available_forFieldDataType_coercions = function() {
     return [
         {operation: 'ToString'},
-        {operation: 'ProxyExisting'},
+        // {operation: 'ProxyExisting'},
         {operation: 'ToDate', format: 'YYYY/MM/DD', outputFormat: 'MMMM Do, YYYY'},
         {operation: 'ToInteger'},
         {operation: 'ToFloat'},
-        {operation: 'ToStringTrim'}
+        // {operation: 'ToStringTrim'}
         ];
 };
 

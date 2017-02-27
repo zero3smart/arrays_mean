@@ -59,21 +59,23 @@ app.filter('pluralize', function () {
 
 app.filter('typeCoercionToString', function () {
     return function (input) {
-        if (!input) return 'String';
+        if (!input) return 'Text';
 
         var opName = input.operation;
-        if (opName == 'ProxyExisting') {
-            return 'Proxy';
-        } else if (opName == 'ToDate') {
+        // if (opName == 'ProxyExisting') {
+            // return 'Proxy';
+        if (opName == 'ToDate') {
             return 'Date';
         } else if (opName == 'ToInteger') {
-            return 'Integer';
+            // return 'Integer';
+            return 'Number';
         } else if (opName == 'ToFloat') {
-            return 'Float';
-        } else if (opName == 'ToStringTrim') {
-            return 'String Trim';
+            // return 'Float';
+            return 'Number';
+        // } else if (opName == 'ToStringTrim') {
+        //     return 'String Trim';
         } else {
-            return 'String'; // 'Unknown'
+            return 'Text'; // 'Unknown'
         }
     };
 });
