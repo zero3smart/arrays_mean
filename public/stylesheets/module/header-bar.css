@@ -171,7 +171,7 @@
 	border-radius: 1000px;
 }*/
 
-@media (min-width: 768px) {
+/*@media (min-width: 768px) {
 	.sidebar-filter-active {
 		top: 11px;
 		right: 23px;
@@ -179,7 +179,7 @@
 		height: 13px;
 		width: 13px;
 	}
-}
+}*/
 
 .light-text .active .sidebar-filter-active {
 	border-color: #FFFFFF;
