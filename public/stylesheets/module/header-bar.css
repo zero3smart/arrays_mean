@@ -158,7 +158,8 @@
 
 /* @group Filter active */
 
-.sidebar-filter-active {
+/* why is this here? */
+/*.sidebar-filter-active {
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -168,7 +169,7 @@
 	border-width: 2px;
 	border-style: solid;
 	border-radius: 1000px;
-}
+}*/
 
 @media (min-width: 768px) {
 	.sidebar-filter-active {
