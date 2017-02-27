@@ -192,8 +192,10 @@
 	color: var(--color-text-light);
 }
 
-.form-search .sort-control {
-    padding-top: 6px;
+@media (min-width: 768px) {
+	.form-search .sort-control {
+	    padding-top: 6px;
+	}
 }
 
 .form-search .sort-control .dropdown-toggle {
