@@ -103,6 +103,7 @@
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
 
                                                 {% if shouldLink %} 
+                                                    <h1>{{ columnValue }}</h1>
                                                     {% set trueValue = columnValue | removeComma(columnName,dataTypesConversion) %}
 
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, trueValue , false) %}
