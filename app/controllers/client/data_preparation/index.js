@@ -81,8 +81,6 @@ module.exports.BindData = function (req, callback) {
 
                 baseUrl += description._team.subdomain + "." + rootDomain
 
-                var descriptionId = description._id;
-
                 var reformattedDataset = {
                     _id: description._id,
                     key:  description.uid + '-r' + description.importRevision,
@@ -99,8 +97,7 @@ module.exports.BindData = function (req, callback) {
                     subdomain: description._team.subdomain,
                     admin: description._team.admin,
                 };
-                console.log(reformattedDataset)
-
+                
                 datasetArray.push(reformattedDataset);
 
                 cb(null);
