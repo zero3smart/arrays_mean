@@ -216,51 +216,37 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         fieldsNotToLinkAsGalleryFilter_byColName[key] = true;
                     }
                 }
+                
+                var customFields = dataSourceDescription.customFieldsToProcess[0].fieldsToMergeIntoArray;
+                var customFieldName = dataSourceDescription.customFieldsToProcess[0].fieldName;
+                for (var i = 0; i < customFields.length; i++) {
+                    // if one of the custom fields matching something from the raw row objects coercion scheme
+                    if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(customFields[i])) {
+                        var customFieldDisplayableVal = func.reverseDataToBeDisplayableVal(rowObject.rowParams[customFieldName][i], customFields[i], dataSourceDescription)
+                        rowObject.rowParams[customFieldName][i] = customFieldDisplayableVal
+                    }
+                }
 
-                // handle the custom/merged field formatting
-                for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
-                    var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
+                //
+                // Format any coerced fields as necessary - BEFORE we translate the keys into human readable forms
+                var rowParams = rowObject.rowParams;
+                var rowParams_keys = Object.keys(rowParams);
+                var rowParams_keys_length = rowParams_keys.length;
+                for (var i = 0; i < rowParams_keys_length; i++) {
+                    var key = rowParams_keys[i];
+                    var originalVal = rowParams[key];
+                    var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
 
-                    var customFieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
-
-                    formatCoercedFields(mergedFields, customFieldName)
+                    if (typeof dataSourceDescription.raw_rowObjects_coercionScheme[key] != 'undefined' &&  
+                        (dataSourceDescription.raw_rowObjects_coercionScheme[key].operation == 'ToFloat' || 
+                        dataSourceDescription.raw_rowObjects_coercionScheme[key].operation == 'ToInteger')) {
+                        if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                    }
+                
+                    rowParams[key] = displayableVal;
                 }
 
                 
-                // handles the rest of the rowParams fields formatting - ignores the custom fields - I wonder if there is a better way to recursively handle the custom fields
-                function formatCoercedFields(mergedFields, customFieldName) {
-
-                    var rowParams = rowObject.rowParams;
-                    var rowParams_keys = mergedFields || Object.keys(rowParams);
-                    for (var i = 0; i < rowParams_keys.length; i++) {
-                        var originalVal;
-                        var key = rowParams_keys[i];
-                        
-                        if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
-
-                            if (customFieldName != undefined) {
-                                originalVal = rowParams[customFieldName][i];
-                                console.log(originalVal)
-                                console.log("----------")
-                                rowParams[customFieldName][i] = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
-                                console.log(rowParams[customFieldName][i])
-                            } else {
-                                originalVal = rowParams[key];
-                                console.log(originalVal)
-                                console.log("----------")
-                                rowParams[key] = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
-                                console.log(rowParams[key])
-                            }
-                        }
-                        console.log("done with row " + i)
-                    }
-                    console.log("looped through all rows")
-
-                }
-                formatCoercedFields();
-                console.log("done with formatting")
-                console.log(rowObject.rowParams)
-
 
                 //
                 var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
