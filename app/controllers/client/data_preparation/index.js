@@ -105,7 +105,3 @@ module.exports.BindData = function (req, callback) {
 
 
 };
-
-
-    
-

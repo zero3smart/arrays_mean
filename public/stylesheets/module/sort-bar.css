@@ -3,7 +3,7 @@
 
 #array-controls {
 	z-index: 1;
-	background-color: #ffffff;
+	background-color: transparent;
 }
 
 /* @group Sort Bar */
@@ -12,22 +12,24 @@
 	position: relative;
 	z-index: 1;
 	padding-top: 15px;
-	padding-bottom: 15px;
+	/*padding-bottom: 15px;*/
+}
+
+.sort-bar.has-description {
 	border-top: 1px solid var(--color-divider);
-	/*border-bottom: 1px solid var(--color-divider);*/
     margin-top: -1px;
 }
 
 @media (min-width: 768px) {
-	.sort-bar {
-		/*padding-top: 30px;*/
-		/*padding-bottom: 25px;*/
+	.sort-bar-left, .sort-bar-right {
+        max-width: 50%;
 	}
 }
 
 .sort-control {
 	display: inline-block;
-	margin-right: 20px;
+	margin-right: 8px;
+	margin-bottom: 8px;
 	padding-right: 0;
 	padding-left: 0;
 	vertical-align: top;
@@ -39,9 +41,15 @@
 }
 
 .sort-direction {
-	margin-right: 0;
+	/*margin-right: 0;*/
     margin-left: 8px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    transition: border 400ms;
     cursor: pointer;
+}
+.sort-direction:first-child {
+    margin-left: 0;
 }
 
 .sort-direction span,
@@ -55,6 +63,26 @@
 .sort-control .dropdown-toggle {
 	padding-top: 6px;
 	padding-bottom: 6px;
+}
+
+/*overrides brandcolor hover*/
+/*.array-controls-pinned .sort-control .dropdown-toggle-label .label*/
+.sort-control.open .dropdown-toggle-label span.label,
+.sort-control .dropdown-toggle-label span.label {
+    color: var(--color-text-light);
+}
+/*.array-controls-pinned .sort-control .dropdown-toggle-label .sort-criteria*/
+.sort-control .dropdown-toggle-label span.sort-criteria {
+    color: var(--color-text-dark);
+}
+
+#array-controls .sort-bar-left .dropdown-toggle,
+#array-controls .sort-control-right,
+.map-container .sort-bar-left .dropdown-toggle,
+.map-container .sort-control-right {
+    padding-right: 12px;/**/
+    border: 1px solid #fff;
+    transition: border 400ms;
 }
 
 .sort-control #search-by.dropdown-toggle {
@@ -72,16 +100,22 @@
     padding-top: 0;
 }
 
+/*add border on map or on scroll;*/
+.array-controls-pinned #array-controls .sort-bar-left .dropdown-toggle,
+.array-controls-pinned #array-controls .sort-control-right,
+.array-controls-pinned #array-controls .sort-direction,
+.array-controls-pinned #array-controls .search-toggle,
 .map-container .sort-bar-left .dropdown-toggle,
 .map-container .sort-control-right {
     background: white;
     border: 1px solid #eee;
-    padding-right: 12px;
+    border-radius: 4px;
 }
 .map-container .sort-bar-left .dropdown-toggle {
     padding-bottom: 8px;
 }
-.map-container .sort-control-right {
+/*.map-container*/
+.sort-control-right {
     border-radius: 4px;
     padding-bottom: 4px;
 }
@@ -158,8 +192,10 @@
 	color: var(--color-text-light);
 }
 
-.form-search .sort-control {
-    padding-top: 6px;
+@media (min-width: 768px) {
+	.form-search .sort-control {
+	    padding-top: 6px;
+	}
 }
 
 .form-search .sort-control .dropdown-toggle {
@@ -181,7 +217,7 @@
 }
 
 .search-toggle .search-icon {
-	top: 0;
+	top: 2px;
 }
 
 .search-toggle:hover .search-icon,
@@ -212,8 +248,8 @@
 	#page .search-toggle {
 		display: inline-block;
 		padding-right: 10px;
-		padding-left: 10px;
-		padding-top: 10px;
+		padding-left: 0px;
+		padding-top: 8px;
 	}
 
 	.dropdown-panel.search-open,
@@ -295,7 +331,7 @@
 
 	.sort-control {
 		display: block;
-		margin: 0;
+		/*margin: 0 0 8px;*/
 	}
 
 	.array-gallery .dropdown.sort-control {
@@ -329,7 +365,7 @@
 /* @group Filter Bar */
 
 .filter-bar {
-	padding-top: 20px;
+	/*padding-top: 20px;*/
 	padding-bottom: 5px;
 }
 
@@ -351,18 +387,23 @@
 	display: inline-block;
 	margin-right: 5px;
 	margin-bottom: 10px;
-	margin-left: 5px;
-	padding: 4px 0 4px 15px;
+	/*margin-left: 5px;*/
+	padding: 5px 0 5px 15px;
 	border-width: 1px;
 	border-style: solid;
+    border-color: #eee;
 	border-radius: 1000px;
-	color: #777777;
+	background-color: #ffffff;
+	color: var(--color-text-light);
 	font-weight: normal;
-	font-size: 16px;
+	font-size: 18px;
+}
+
+.filter-tag .close {
+    font-size: 27px;
 }
 
 .filter-bar-fixed-bottom .filter-tag {
-	background-color: #ffffff;
 	box-shadow: var(--box-shadow);
 }
 
