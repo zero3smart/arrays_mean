@@ -23,112 +23,78 @@
                             </div><!-- .row -->
                         </header>
 
-                        {% for key,value in sources %}
+                        {% for description in sources %}
 
-                        {% if value.dataSourceDescriptions.length > 0 %}
+                            {{description.uid}}
 
-                        <!---   Hiding team for now -->
+                            <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
+                                <input type="radio" name="source_key" value="{{ description.key | splitSubdomain }}" class="hidden">
+                                <input type="hidden" name="default_filterJSON" value="{{ description.default_filterJSON }}" class="hidden">
+                                <input type="hidden" name="default_view" value="{{ description.default_view }}" class="hidden">
+                                <input type="hidden" name="subdomainUrl" value="{{description.datasetBaseLink}}" class="hidden">
+                                <div class="panel panel-default panel-source source-{{ description.key }} js-panel-array mobile-max-width"
+                                >
 
-                     <!--        <div class="radio">
-                                <label>
-                                    <input type="radio" name="subdomain" value="{{ addSubdomain(key) }}" class="hidden">
-                                    <div class="panel panel-default panel-source team-{{ key }} js-panel-team">
-    
-                                        <div class="panel-body border-top-color-brand">
-                                            <h2 class="panel-body-title">{{ value.team.title }}</h2>
-                                            <div class="panel-body-meta">
-                                                <div>
-                                                    <a class="panel-view-array color-brand">View Team</a>
-                                                </div>
-                                                <span class="source-count hidden-xs"> {% if not value.dataSourceDescriptions %}0 Dataset
-                                                {% else %}{{ value.dataSourceDescriptions.length | comma }} Dataset{{ "s" if value.dataSourceDescriptions.length != 1 else "" }} {% endif %}</span>
+                                {% if description.brandColor %}
+                                    <style scoped>
+                                        .source-{{ description.key }} .explore-tile-header {
+                                            background-color: {{ description.brandColor }};
+                                        }
+
+                                        {% if description.description %}
+                                        .source-{{ description.key }}:hover .explore-tile-description-container {
+                                            max-height: 100%;
+                                            transition: max-height 300ms linear;
+                                        }
+                                        {% endif %}
+                                    </style>
+                                {% endif %}
+
+                                <div class="explore-tile-body">
+                                    <div class="explore-tile-header">
+                                        <h2>{{ description.title }}</h2>
+                                        <div class="explore-tile-meta-wrapper">
+                                            <div class="explore-tile-meta">
+                                                By {{description.teamTitle}}
                                             </div>
-                                            <p class="panel-body-description">{{ value.team.description }}</p>
+                                            <div class="explore-tile-meta">
+                                                {% set comma = joiner() %}
+                                          
+                                                <span class="source-divider"></span>
+                                                <span class="source-updated">Updated: {{ description.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </label>
-                            </div> -->
+                                </div>
 
-                            <div class="row">
+                                {% if description.banner %}
+                                <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(description.banner,description.subdomain,description._id,'banner')  }}')">
+                                {% else %}
+                                <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ description.brandColor }}">
+                                {% endif %}
 
-                                {% for teamDesc in value.dataSourceDescriptions %}
-                                
-                                 {{teamDesc.uid}}
-
-                                <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
-                                    <input type="radio" name="source_key" value="{{ teamDesc.key | splitSubdomain }}" class="hidden">
-                                    <input type="hidden" name="default_filterJSON" value="{{ teamDesc.default_filterJSON }}" class="hidden">
-                                    <input type="hidden" name="default_view" value="{{ teamDesc.default_view }}" class="hidden">
-                                    <input type="hidden" name="subdomainUrl" value="{{teamDesc.datasetBaseLink}}" class="hidden">
-                                    <div class="panel panel-default panel-source source-{{ teamDesc.key }} js-panel-array mobile-max-width">
-                                        {% if teamDesc.brandColor %}
-                                            <style scoped>
-                                                .source-{{ teamDesc.key }} .explore-tile-header {
-                                                    background-color: {{ teamDesc.brandColor }};
-                                                }
-
-                                                {% if teamDesc.description %}
-                                                .source-{{ teamDesc.key }}:hover .explore-tile-description-container {
-                                                    max-height: 100%;
-                                                    transition: max-height 300ms linear;
-                                                }
+                                    {% if description.description %}
+                                    <div class="explore-tile-description-container">
+                                        <div class="explore-tile-description">
+                                        {% if description.description.length > 200 %}
+                                        {% set space = description.description.indexOf(' ', 190) %}
+                                            {% if space %}
+                                                {{ description.description.slice(0,space) + '...' }}
+                                            {% elif description.description.length > 215 %}
+                                                {{ description.description.slice(0,200) + '...' }}
+                                            {% else %}
+                                                {{ description.description }}
                                             {% endif %}
-                                            </style>
-                                        {% endif %}
-
-
-                                        <div class="explore-tile-body">
-                                            <div class="explore-tile-header">
-                                                <h2>{{ teamDesc.title }}</h2>
-                                                <div class="explore-tile-meta-wrapper">
-                                                    <div class="explore-tile-meta">
-                                                        By {{value.team.title}}
-                                                    </div>
-                                                    <div class="explore-tile-meta">
-                                                        {% set comma = joiner() %}
-                                                  
-                                                        <span class="source-divider"></span>
-                                                        <span class="source-updated">Updated: {{ teamDesc.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% if teamDesc.banner %}
-
-                    
-
-                                        <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(teamDesc.banner,key,teamDesc._id,'banner')  }}')">
                                         {% else %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ teamDesc.brandColor }}">
+                                            {{ description.description }}
                                         {% endif %}
-                                            {% if teamDesc.description %}
-                                            <div class="explore-tile-description-container">
-                                                <div class="explore-tile-description">
-                                                {% if teamDesc.description.length > 200 %}
-                                                {% set space = teamDesc.description.indexOf(' ', 190) %}
-                                                    {% if space %}
-                                                        {{ teamDesc.description.slice(0,space) + '...' }}
-                                                    {% elif teamDesc.description.length > 215 %}
-                                                        {{ teamDesc.description.slice(0,200) + '...' }}
-                                                    {% else %}
-                                                        {{ teamDesc.description }}
-                                                    {% endif %}
-                                                {% else %}
-                                                    {{ teamDesc.description }}
-                                                {% endif %}
-                                                </div>
-                                            </div>
-                                            {% endif %}
                                         </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
 
-                                    </div><!-- .panel -->
-                                </div><!-- .radio -->
-
-
-
-                                {% endfor %}
-                            </div>
-                            {% endif %}
+                            </div><!-- .panel -->
+                        </div><!-- .radio -->
 
                         {% endfor %}
                     </form>

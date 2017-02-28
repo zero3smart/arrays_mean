@@ -496,8 +496,12 @@ md-tooltip .md-content {
 }
 
 /*Dataset process data banner*/
+.dashboard-content {
+    position: relative;
+}
 .process-data {
     position: absolute;
+    top: -3em;
     left: 0;
     right: 0;
     text-align: center;
@@ -505,12 +509,11 @@ md-tooltip .md-content {
     color: white;
     padding: 0.5em;
 
-    top: 0;
     opacity: 0;
     transition: top 0.3s, opacity 0.3s;
 }
 .process-data.show {
-    top: 18px;
+    top: 0;
     opacity: 1;
 }
 .process-data a {

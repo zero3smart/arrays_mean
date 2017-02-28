@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <div id="array-controls" class="sort-bar clearfix">
+                            <div id="array-controls" class="sort-bar clearfix {{ 'has-description' if view_description }}">
 
                                 <nav class="sort-bar-left pull-left" role="navigation">
                                     {{
@@ -136,7 +136,7 @@
 
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
-                <h3 class="legend-title">Legend</h3>
+                <h3 class="legend-title">{{ groupBy or defaultGroupByColumnName_humanReadable }}</h3>
                 {% if groupedResults | length %}
                 <ul class="legend-list">
                     {# {% for result in groupedResults %}

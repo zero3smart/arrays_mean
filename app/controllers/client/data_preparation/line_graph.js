@@ -569,7 +569,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     // graphData contains all the data rows; used by the template to create the linechart
-                    graphData: graphData
+                    graphData: graphData,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
                 };
 
                 callback(err, data);
