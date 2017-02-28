@@ -15,6 +15,11 @@ angular.module('arraysApp')
                 disabled: true
             };
 
+            $scope.tutorial = {
+                show: true, // check here if viz is sample or if user has asked to be guided
+                message: ''
+            };
+
             $scope.navigate = function(step, anchor) {
                 var errorHandler = function (error) {
                     $mdToast.show(

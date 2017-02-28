@@ -4,6 +4,9 @@
     to save and publish changes.
     <!-- or <a href="#" ng-click="revert()">revert.</a> -->
 </div>
+<div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && !dataset.imported && (dataset.sample || tutorial.show) && tutorial.message }">
+    Tutorial: {{ tutorial.message }}
+</div>
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start" ng-if="!$state.is('dashboard.dataset.new')">
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Visualization Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Visualization' }}</h1>

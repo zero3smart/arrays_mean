@@ -49,10 +49,12 @@ angular.module('arraysApp')
                 }
             });
 
+            // $scope.tutorial.message = 'do the thing';
+
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             })
-            
+
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
             };
@@ -73,13 +75,13 @@ angular.module('arraysApp')
                 }
             };
 
-            
+
 
 
             var joinDataCols = [];
 
 
-            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join 
+            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join
                 && $scope.$parent.$parent.dataset.connection.join.tableName) {
 
                 DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
@@ -104,7 +106,7 @@ angular.module('arraysApp')
                 }
             }
 
-            
+
 
 
 
@@ -162,8 +164,8 @@ angular.module('arraysApp')
                                 $scope.dataset.joinCols = [];
                             }
 
-                            
-        
+
+
                             $mdDialog.hide($scope.dataset);
                         }
                     },
@@ -387,7 +389,7 @@ angular.module('arraysApp')
                             $scope.dialog.fieldForm.$setPristine();
                         }
                     }
-                    // slice off the word "To" 
+                    // slice off the word "To"
                     $scope.dataset.columns[colIndex].data_type = coercion.operation.slice(2);
                 };
 
@@ -969,21 +971,21 @@ angular.module('arraysApp')
 
             function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
 
-            
 
-              
-               
+
+
+
 
                 $scope.isSrcSet = function(isSrcSet,field) {
 
-               
+
                     if (!isSrcSet) {
                         delete field.resize;
                     } else {
                         delete field.size;
                     }
 
-        
+
 
                 }
 
@@ -999,7 +1001,7 @@ angular.module('arraysApp')
                     for (var i = 0; i < $scope.dataset.imageScraping.length ; i++) {
                         $scope.dataset.imageScraping[i].setFields.map(function(field) {
 
-                          
+
                             var fieldName = field.newFieldName;
                             delete $scope.dataset.fe_excludeFields[fieldName];
                         });
@@ -1566,7 +1568,7 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(5000)
                         );
-                        }, done = function() {  
+                        }, done = function() {
                             $scope.submitting = false;
 
                             $mdToast.show(
