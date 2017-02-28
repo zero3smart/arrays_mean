@@ -474,7 +474,7 @@ md-ink-bar {
 /*tool tips*/
 md-tooltip.md-default-theme .md-content,
 md-tooltip .md-content {
-	font-size: 13px !important;
+	font-size: 15px !important;
 	color: white !important;
 	background: var(--color-text-dark) !important;
 }
