@@ -228,8 +228,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     _groupedResults.forEach(function (el, i, arr) {
                         var displayableVal = func.ValueToExcludeByOriginalKey(
                             el.label, dataSourceDescription, groupBy_realColumnName, 'pieChart');
+                        displayableVal = func.formatCoercedFieldsPieChart(groupBy_realColumnName, displayableVal, dataSourceDescription);
                         if (!displayableVal) return;
-
                         finalizedButNotCoalesced_groupedResults.push({
                             value: el.value,
                             label: displayableVal
@@ -304,6 +304,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 

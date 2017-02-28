@@ -1016,3 +1016,34 @@ function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, cu
     return rowParams;
 }
 module.exports.formatCoercedFields = _formatCoercedFields;
+
+function _formatCoercedFieldsPieChart(key, value, dataSourceDescription) {
+    for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
+        var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
+        var fieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
+        if (fieldName === key) {
+            // check each of the merged fields
+            for (var i = 0; i < mergedFields.length; i++) {
+                return _formatCoercedFieldsPieChart(mergedFields[i], value, dataSourceDescription);
+            }
+        }
+    }
+    if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
+        // do something
+        try {
+            var displayableVal = _reverseDataToBeDisplayableVal(value, key, dataSourceDescription)
+            if (isNaN(displayableVal) == false) {
+                displayableVal = datatypes.displayNumberWithComma(displayableVal)
+            } else if (displayableVal === "Invalid date") {
+                return value;
+            }
+            return displayableVal;
+        } catch (e) {
+            console.log(e)
+            return value;
+        }
+    }
+
+    // return value;
+}
+module.exports.formatCoercedFieldsPieChart = _formatCoercedFieldsPieChart;
