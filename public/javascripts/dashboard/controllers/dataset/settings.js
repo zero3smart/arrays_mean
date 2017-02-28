@@ -22,7 +22,7 @@ angular.module('arraysApp')
                 $scope.submitForm($scope.formValidity);
             };
 
-            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' when finished to process your data.';
+            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
 

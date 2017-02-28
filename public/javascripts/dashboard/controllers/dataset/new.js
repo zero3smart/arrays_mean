@@ -6,7 +6,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
-            $scope.tutorial.message = 'Enter a name for your visualization and click \'Next\'.';
+            // $scope.tutorial.message = 'Enter a name for your visualization and click \'Next\'.';
 
             $scope.submitForm = function(isValid) {
 

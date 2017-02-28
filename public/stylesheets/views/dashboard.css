@@ -505,7 +505,7 @@ md-tooltip .md-content {
     left: 0;
     right: 0;
     text-align: center;
-	white-space: pre-line;
+	white-space: pre-wrap;
     background-color: #005CFF;
     color: white;
     padding: 0.5em;

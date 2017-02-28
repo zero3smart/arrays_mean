@@ -49,7 +49,7 @@ angular.module('arraysApp')
                 }
             });
 
-            $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' when done.';
+            $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
 
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);

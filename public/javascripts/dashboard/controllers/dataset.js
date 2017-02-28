@@ -21,7 +21,7 @@ angular.module('arraysApp')
              *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
              */
             $scope.tutorial = {
-                show: true, // check here if viz is sample or if user has asked to be guided
+                show: false, // only show on sample, for now
                 message: ''
             };
 
