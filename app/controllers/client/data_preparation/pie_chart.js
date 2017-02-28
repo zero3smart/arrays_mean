@@ -228,6 +228,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     _groupedResults.forEach(function (el, i, arr) {
                         var displayableVal = func.ValueToExcludeByOriginalKey(
                             el.label, dataSourceDescription, groupBy_realColumnName, 'pieChart');
+                        // format date types
                         displayableVal = func.formatCoercedFieldsPieChart(groupBy_realColumnName, displayableVal, dataSourceDescription);
                         if (!displayableVal) return;
                         finalizedButNotCoalesced_groupedResults.push({

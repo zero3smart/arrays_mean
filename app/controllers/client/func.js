@@ -773,59 +773,58 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
 
 //for object_detail
-var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
+// var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
 
  
    
 
-    var displayableVal = originalVal;
-    // var prototypeName = Object.prototype.toString.call(originalVal);
-    // if (prototypeName === '[object Date]') {
-    // }
-    // ^ We could check this but we ought to have the info, and checking the
-    // coersion scheme will make this function slightly more rigorous.
-    // Perhaps we could do some type-introspection automated formatting later
-    // here if needed, but I think generally that kind of thing would be done case-by-case
-    // in the template, such as comma-formatting numbers.
+//     var displayableVal = originalVal;
+//     // var prototypeName = Object.prototype.toString.call(originalVal);
+//     // if (prototypeName === '[object Date]') {
+//     // }
+//     // ^ We could check this but we ought to have the info, and checking the
+//     // coersion scheme will make this function slightly more rigorous.
+//     // Perhaps we could do some type-introspection automated formatting later
+//     // here if needed, but I think generally that kind of thing would be done case-by-case
+//     // in the template, such as comma-formatting numbers.
 
-    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
-    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
-        var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
-        if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.operation;
-            if (_do === "ToDate") {
-                if (originalVal == null || originalVal == "") {
-                    return originalVal; // do not attempt to format
-                }
+//     var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
+//     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+//         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
+//         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
+//             var _do = coersionSchemeOfKey.operation;
+//             if (_do === "ToDate") {
+//                 if (originalVal == null || originalVal == "") {
+//                     return originalVal; // do not attempt to format
+//                 }
 
-                var dateFormat = coersionSchemeOfKey.outputFormat;
-
-
-                // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
-                //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
-                //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
-                //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
-                //     }
-                // }
-
-                if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
-                    dateFormat = config.defaultDateFormat;
-                }
-
-                
-                displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
-            } else { // nothing to do? (no other types yet)
-            }
-        } else { // nothing to do?
-        }
-    } else { // nothing to do?
-    }
-    //
+//                 var dateFormat = coersionSchemeOfKey.outputFormat;
 
 
-    return displayableVal;
-};
-module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
+//                 // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
+//                 //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
+//                 //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
+//                 //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
+//                 //     }
+//                 // }
+
+//                 if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
+//                     dateFormat = config.defaultDateFormat;
+//                 }
+
+//                 displayableVal = moment(originalVal.toString(), moment.ISO_8601).utc().format(dateFormat);
+//             } else { // nothing to do? (no other types yet)
+//             }
+//         } else { // nothing to do?
+//         }
+//     } else { // nothing to do?
+//     }
+//     //
+
+
+//     return displayableVal;
+// };
+// module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
 
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
@@ -1002,12 +1001,12 @@ function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, cu
 
             if (customFieldName != undefined) {
                 originalVal = rowParams[customFieldName][i];
-                var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
+                var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
                 if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
                 rowParams[customFieldName][i] = displayableVal
             } else {
                 originalVal = rowParams[key];
-                var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
+                var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
                 if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
                 rowParams[key] = displayableVal;
             }
@@ -1029,9 +1028,8 @@ function _formatCoercedFieldsPieChart(key, value, dataSourceDescription) {
         }
     }
     if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
-        // do something
         try {
-            var displayableVal = _reverseDataToBeDisplayableVal(value, key, dataSourceDescription)
+            var displayableVal = _convertDateToBeRecognizable(value, key, dataSourceDescription)
             if (isNaN(displayableVal) == false) {
                 displayableVal = datatypes.displayNumberWithComma(displayableVal)
             } else if (displayableVal === "Invalid date") {
@@ -1047,3 +1045,4 @@ function _formatCoercedFieldsPieChart(key, value, dataSourceDescription) {
     // return value;
 }
 module.exports.formatCoercedFieldsPieChart = _formatCoercedFieldsPieChart;
+
