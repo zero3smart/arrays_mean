@@ -335,7 +335,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
-                    uid: dataSourceDescription.uid
+                    uid: dataSourceDescription.uid,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
                 };
                 callback(null, data);
             });
