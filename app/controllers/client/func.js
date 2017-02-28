@@ -1005,12 +1005,10 @@ function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, cu
                 var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
                 if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
                 rowParams[customFieldName][i] = displayableVal
-                    // return {"index": i, "displayableVal": displayableVal, "custom": true};
             } else {
                 originalVal = rowParams[key];
                 var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
                 if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
-                    // return {"index": i, "displayableVal": displayableVal, "custom": false};
                 rowParams[key] = displayableVal;
             }
         }
