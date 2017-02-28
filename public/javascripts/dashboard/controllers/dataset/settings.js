@@ -1,11 +1,14 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
-        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
 
             $scope.primaryAction.text = 'Publish';
 
-
+            // scroll to listing request, if hash
+            $timeout(function() {
+                $anchorScroll();
+            });
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
@@ -221,6 +224,18 @@ angular.module('arraysApp')
                         $scope.imageUploader.uploadAll();
 
                     });
+            };
+
+            $scope.deleteBanner = function() {
+                AssetService.deleteBanner($scope.dataset._id).then(function (data) {
+                    $scope.dataset.banner = data.dataset.banner
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Banner deleted successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                });
             };
 
         }

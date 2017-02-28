@@ -41,7 +41,7 @@
         </md-input-container>
 
 
-        <label>List on arrays.co</label>
+        <label id="request-listing">List on arrays.co</label>
 
 
         <div ng-if="(dataset.author | isSuperAdmin)">
@@ -118,9 +118,10 @@
 
             <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">
             <div layout="row" layout-align="start center">
-                <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0">
+                <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0" ng-if="!dataset.banner">
                    Choose File
                 </label>
+                <span><a href="" ng-if="dataset.banner" ng-click="deleteBanner()" class="warn">Remove</a></span>
             </div>
         </div>
 

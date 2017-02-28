@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <div id="array-controls" class="sort-bar clearfix">
+                            <div id="array-controls" class="sort-bar clearfix {{ 'has-description' if view_description }}">
 
                                 <nav class="sort-bar-left pull-left" role="navigation">
 
@@ -98,13 +98,13 @@
                                 <div class="sort-bar-right pull-right">
                                     <div class="sort-control">
                                         <div id="orientation" class="sort-direction" title="Toggle to view in horizontal or vertical mode">
-                                            <span class="horizontal glyphicon glyphicon-align-left"></span>
-                                            <span class="vertical glyphicon glyphicon-stats"></span>
+                                            <span class="horizontal icon-bars-h sort-direction-icon"></span>
+                                            <span class="vertical icon-bars-v sort-direction-icon"></span>
                                         </div>
 
                                         <div id="normalization" class="sort-direction" title="Toggle to view in absolute or relative mode">
-                                            <span class="absolute">#</span>
-                                            <span class="relative">%</span>
+                                            <span class="absolute icon-pound sort-direction-icon"></span>
+                                            <span class="relative icon-percent sort-direction-icon"></span>
                                         </div>
 
                                         <div id="sort-direction" class="sort-direction" title="Toggle to sort by ascending or descending">
@@ -189,7 +189,7 @@
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
                 <!-- <h3 class="legend-title">Legend</h3> -->
                 <!-- <p style="padding: 0 0 11px 40px">{{ stackBy }}</p> -->
-                <h3 class="legend-title">{{ stackBy }}</h3>
+                <h3 class="legend-title">{{ stackBy or defaultStackByColumnName_humanReadable }}</h3>
                 <ul class="legend-list"></ul>
             </nav>
 

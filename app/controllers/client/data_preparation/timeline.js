@@ -537,7 +537,8 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
+                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
 
                 };
 

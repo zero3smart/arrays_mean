@@ -12,17 +12,19 @@ var func = require('../func');
 var User = require('../../../models/users');
 
 // Prepare country geo data cache
-var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../../public/data/world.geo.json/countries.geo.json', 'utf8');
+var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../data/countries.geo.json', 'utf8');
 var __countries_geo_json = JSON.parse(__countries_geo_json_str);
-var cache_countryGeometryByLowerCasedCountryName = {};
+var cache_countryGeometryByCountryId = {};
+var __countryNameToIdDict_str = fs.readFileSync(__dirname + '/../../../data/countryNameToId.json', 'utf8');
+var cache_countryNameToIdDict = JSON.parse(__countryNameToIdDict_str);
 var numCountries = __countries_geo_json.features.length;
 for (var i = 0; i < numCountries; i++) {
     var countryFeature = __countries_geo_json.features[i];
-    var countryName = countryFeature.properties.name;
+    var countryId = countryFeature.id;
     var geometry = countryFeature.geometry;
-    cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
+    cache_countryGeometryByCountryId[countryId] = geometry;
 }
-// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
+// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByCountryId).length + " geometries by country name.");
 
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
@@ -37,6 +39,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // searchCol
     // embed
     // Other filters
+
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
@@ -52,7 +55,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 return;
             }
-
 
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -319,7 +321,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 highestValue = countAtCountry;
                             }
                             var countAtCountry_str = "" + countAtCountry;
-                            var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toString().toLowerCase()];
+                            var formattedCountryName = countryName.toString().toLowerCase().trim().replace(/ /g,"_");
+                            var countryId = cache_countryNameToIdDict.countries[formattedCountryName];
+                            var geometryForCountry = cache_countryGeometryByCountryId[countryId];
                             if (typeof geometryForCountry === 'undefined') {
                                 winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
 
@@ -417,7 +421,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-                    aggregateBy: aggregateBy
+                    aggregateBy: aggregateBy,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
 
                 };
                 callback(err, data);

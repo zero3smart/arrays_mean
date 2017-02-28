@@ -116,8 +116,10 @@
                              ></md-checkbox>
                 </span>
 
+
                 <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex,
                 null,$index)">
+
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
                         <span ng-if="!field.custom">(Sample: {{ field.sample | limitTo:35 }})</span>
@@ -135,7 +137,9 @@
 
                 <span ng-hide="dataset.connection" flex="5" class="">
 
+
                     {{ coercionScheme[field.name] | typeCoercionToString: field.data_type }}
+
                 </span>
 
                 <span flex="10"></span>

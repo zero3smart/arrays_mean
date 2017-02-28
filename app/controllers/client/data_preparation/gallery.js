@@ -152,7 +152,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
-            //         
+            //
+         
 
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
@@ -405,6 +406,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
                 };
 
 

@@ -4,7 +4,7 @@
     var component = GlobeMain.GlobeView = function(config) {
         var self = this;
 
-        this._onNodeClick = config.onNodeClick;
+        // this._onNodeClick = config.onNodeClick;
         this._onMouseDown = config.onMouseDown;
         this._onDrag = config.onDrag;
         this._onMouseUp = config.onMouseUp;
@@ -90,12 +90,12 @@
                 }
             },
             onMouseUp: function(event) {
-                if (self._drag && self._drag.distance < 10 && Date.now() - self._drag.startTime < 500) {
-                    var pointNode = self._hitTest(event);
-                    if (pointNode) {
-                        self._onNodeClick(pointNode);
-                    }
-                }
+                // if (self._drag && self._drag.distance < 10 && Date.now() - self._drag.startTime < 500) {
+                    // var pointNode = self._hitTest(event);
+                    // if (pointNode) {
+                    //     self._onNodeClick(pointNode);
+                    // }
+                // }
                 
                 self._drag = null;
 

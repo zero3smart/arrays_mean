@@ -183,7 +183,7 @@ function BarChart(selector, dataSet, options) {
         .style('fill', function(d, i, j) {
             return self._colors[d.label];
         }).on('mouseenter', function(d, i, j) {
-            self._barMouseEnterEventHandler(this, i, j, categoriesAndData);
+            self._barMouseEnterEventHandler(this, d, j, categoriesAndData)
         }).on('mouseout', function(d, i, j) {
             self._barMouseOutEventHandler(this, d, i, j);
         }).on('click', function(d, j, i){
@@ -374,9 +374,9 @@ BarChart.prototype.getValueFormatter = function() {
  * @param {Integer} i - bar number within series
  * @param {Integer} j - series number
  */
-BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categoriesAndData) {
-    var label = categoriesAndData[j][1][i].label;
-    var value = categoriesAndData[j][1][i].value;
+BarChart.prototype._barMouseEnterEventHandler = function(barElement, d, j, categoriesAndData) {
+    var label = d.label;
+    var value = d.value;
     var category = categoriesAndData[j][0];
 
     this._canvas.selectAll('rect.bar')

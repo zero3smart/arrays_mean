@@ -1,13 +1,6 @@
 {% macro default(displayTitleOverrides,routePath_base, filterObj, truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill, label=false, customClassName='') %}
-<div class="filter-bar {{ customClassName }}">
-    {% if label %}
-    <span class="filter-label ui-label">Filters:</span>
-    {% else %}
+<div class="filter-bar {{ customClassName }} hidden-xs">
     <div class="container-fluid">
-    {% endif %}
-
-
-
 
     {% for filterCol, filterVals in filterObj %}
 
@@ -19,18 +12,14 @@
 
             {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true, true) %}
 
-
-
             {% set routePath_withoutThisFilter = routePath_base | constructedRoutePath(filterObjForThisFilterColVal) %}
             {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
 
-            <span class="filter-tag border-color-brand">{{ displayTitleOverrides[filterCol] or filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+            <span class="filter-tag">{{ displayTitleOverrides[filterCol] or filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
 
         {% endfor %}
     {% endfor %}
 
-    {% if not label %}
     </div>
-    {% endif %}
 </div>
 {% endmacro %}

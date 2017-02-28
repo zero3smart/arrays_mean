@@ -41,7 +41,7 @@ $(document).ready(function () {
 
         //toDo: get view from api
 
-        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'bar-chart', 'pie-set', 'globe'];
+        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {
@@ -121,8 +121,8 @@ $(document).ready(function () {
     /**
      * Search criteria click dropdown item to select
      */
-    // $('.search-input')
-    //     .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
+    $('.search-input')
+        .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
 
     $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
@@ -134,8 +134,8 @@ $(document).ready(function () {
 
         $('.search-input')
             .attr('placeholder', newPlaceholder);
-        // $('.search-input')
-        //     .css('width', (newPlaceholder.length * 9) + 'px') ;
+        $('.search-input')
+            .css('width', (newPlaceholder.length * 9) + 'px') ;
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
@@ -193,7 +193,7 @@ $(document).ready(function () {
                             $('#embed-url').text(embedUrl);
                         });
                         /**
-                         * Initialize Share buttons
+                         * Initialize Sharrre buttons
                          */
                         $(this).find('#twitter').sharrre({
                             share: {
@@ -305,7 +305,7 @@ $(document).ready(function () {
     });
 
     $('#forget-pw').on('click',function(e) {
-        
+
     })
 
 

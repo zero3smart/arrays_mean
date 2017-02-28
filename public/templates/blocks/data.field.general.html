@@ -32,8 +32,8 @@
                    ng-model="coercionScheme[fieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
                    aria-label="Field Type - {{fieldName}}" placeholder="String">
-            <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
-                {{coercion | typeCoercionToString}}
+            <md-option ng-repeat="coercion in updatedDataTypes" ng-value="coercion.originalCoercion">
+                {{coercion.data_type}}
             </md-option>
         </md-select>
         <input type="text" value="Array" readonly="readonly" ng-if="custom && customFieldIndex != undefined">

@@ -5,8 +5,6 @@ angular.module('arraysApp')
             modalService) {
             $scope.$parent.$parent.currentNavItem = 'data';
 
-
-
             $scope.availableTypeCoercions = availableTypeCoercions;
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
@@ -26,7 +24,17 @@ angular.module('arraysApp')
                         break;
                     }
                 }
-            }
+            };
+
+            $scope.formatDataType = function(sample, data_type) {
+                if (data_type === 'Date') {
+                    return 'Date';
+                } else if (data_type === 'Integer' || data_type === 'Float' || data_type === 'Number') {
+                    return 'Number';
+                } else if (data_type === 'String' || data_type === 'Text') {
+                    return 'Text';
+                }
+            };
 
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.dataForm.$valid', function(validity) {
@@ -127,6 +135,7 @@ angular.module('arraysApp')
 
             $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly,columnIndex) {
 
+
                 var data = {
                     fieldName: fieldName,
                     firstRecord: firstRecord,
@@ -143,6 +152,7 @@ angular.module('arraysApp')
                     $scope.$parent.$parent.dataset = savedDataset;
                     $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                     sortColumnsByDisplayOrder();
+
 
                     $scope.vm.dataForm.$setDirty();
 
