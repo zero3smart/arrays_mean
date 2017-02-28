@@ -21,7 +21,7 @@ angular.module('arraysApp')
         function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
             $urlRouterProvider
-                    .otherwise('/dashboard/account/profile');
+              .otherwise('/dashboard/account/profile');
 
             $stateProvider
                     .state('dashboard', {
