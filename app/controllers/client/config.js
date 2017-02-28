@@ -14,6 +14,7 @@ var formatDefaultView = function(view) {
             return viewHalves.join('-' + replacedUppercase);
         }
     }
+    return view;
 }
 
 module.exports = {
