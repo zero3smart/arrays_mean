@@ -24,14 +24,43 @@
                 </md-option>
             </md-select>
 
-            <md-switch ng-model="data.fe_image.overwrite"
+            <br>w
+
+           <md-checkbox ng-model="data.fe_image.overwrite"
                 ng-if="dataset.fe_image && dataset.fe_image.scraped && overwriteDisabled==false &&
                     dataset.dirty == 0"
-                 aria-label="overwrite Image scraping">
+                aria-label="overwrite image scraping">
                 overwrite existing images
-           </md-switch>
+            </md-checkbox>
+
+
 
         </md-input-container>
+
+        <div ng-if="user.role=='superAdmin'" layout="row" ng-init="data.isHtmlSource=data.isHtmlSource || false;">
+
+            <md-input-container flex-gt-sm>
+                <md-checkbox
+                    ng-model="data.isHtmlSource"
+                    aria-label="scraping html source">
+                    Is a Html Source
+                </md-checkbox>
+            </md-input-container>
+
+            <md-input-container ng-if="data.isHtmlSource" flex-gt-sm>
+                <label>Selector</label>
+                <input type="text" name="selector"
+               ng-model="data.fe_image.selector">
+            </md-input-container>
+
+        </div>
+
+
+        
+
+
+
+
 
 
         <!-- <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3> -->

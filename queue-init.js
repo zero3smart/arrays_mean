@@ -129,7 +129,7 @@ module.exports = function() {
 		                            });
 		                        } else if (task == 'postImport' && dataset.skipImageScraping == false &&
 		                        		dataset.fe_image && dataset.fe_image.field && (dirty == 1 || dirty == 2 ||
-		                        			(dirty == 3 && dataset.fe_image.scraped==false))) {
+		                        			(dirty == 3 &&  (dataset.fe_image.scraped==false || dataset.fe_image.overwrite == true ) ))) {
 
 		                             _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
