@@ -216,44 +216,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         fieldsNotToLinkAsGalleryFilter_byColName[key] = true;
                     }
                 }
-
-
-                // handle the custom/merged field formatting
-                for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
-                    var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
-
-                    var customFieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
-
-                    formatCoercedFields(mergedFields, customFieldName)
-                }
-
-                // handles the rest of the rowParams fields formatting - ignores the custom fields - I wonder if there is a better way to recursively handle the custom fields
-                function formatCoercedFields(mergedFields, customFieldName) {
-
-                    var rowParams = rowObject.rowParams;
-                    var rowParams_keys = mergedFields || Object.keys(rowParams);
-                    for (var i = 0; i < rowParams_keys.length; i++) {
-                        var originalVal;
-                        var key = rowParams_keys[i];
-                        
-                        if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
-
-                            if (customFieldName != undefined) {
-                                originalVal = rowParams[customFieldName][i];
-                                var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
-                                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
-                                rowParams[customFieldName][i] = displayableVal
-                            } else {
-                                originalVal = rowParams[key];
-                                var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
-                                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
-                                rowParams[key] = displayableVal;
-                            }
-                        }
-                    }
-
-                }
-                formatCoercedFields();
+                // format dates
+                rowObject.rowParams = func.formatCoercedFields(rowObject, dataSourceDescription);
 
                 //
                 var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);

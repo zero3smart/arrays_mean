@@ -983,3 +983,38 @@ function _useLightBrandText(backgroundColor) {
 }
 
 module.exports.useLightBrandText = _useLightBrandText;
+
+function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, customFieldName) {
+    var rowParams = rowObject.rowParams;
+    var rowParams_keys = mergedFields || Object.keys(rowParams);
+    for (var i = 0; i < rowParams_keys.length; i++) {
+        var originalVal;
+        var key = rowParams_keys[i];
+        if (Array.isArray(rowParams[key])) {
+            for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
+                var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
+                var customFieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
+                return _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, customFieldName, dataSourceDescription)
+            }
+        };
+
+        if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
+
+            if (customFieldName != undefined) {
+                originalVal = rowParams[customFieldName][i];
+                var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
+                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                rowParams[customFieldName][i] = displayableVal
+                    // return {"index": i, "displayableVal": displayableVal, "custom": true};
+            } else {
+                originalVal = rowParams[key];
+                var displayableVal = _reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
+                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                    // return {"index": i, "displayableVal": displayableVal, "custom": false};
+                rowParams[key] = displayableVal;
+            }
+        }
+    }
+    return rowParams;
+}
+module.exports.formatCoercedFields = _formatCoercedFields;
