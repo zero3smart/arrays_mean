@@ -361,19 +361,22 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
-    
-                if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || 
-                        $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
+
+                $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
+                if (!$scope.$parent.$parent.dataset.fe_image || $scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || 
+                    $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
                     if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {
                         $scope.data.fe_image.scraped = false;
                     }
-                    $scope.setDirty(4);
+                    if ($scope.data.fe_image.field !== '') {
+                        $scope.setDirty(4);
+                    }  else {
+                        delete $scope.data.fe_image.field
+                    }
+                    
                 }
-
-                $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
+       
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
-
-                
 
 
             };
@@ -431,6 +434,8 @@ angular.module('arraysApp')
 
             $scope.updateOverwrite = function() {
 
+                if ($scope.data.fe_image == null || $scope.data.fe_image.field == "" ) return;
+
                 if ($scope.data.fe_image.field !==  $scope.$parent.$parent.dataset.fe_image.field) {
                     $scope.data.fe_image.overwrite = true;
                     $scope.overwriteDisabled = true;
@@ -444,6 +449,7 @@ angular.module('arraysApp')
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
+                console.log($scope.$parent.$parent.dataset)
 
                 if (isValid) {
                     $scope.submitting = true;
@@ -478,6 +484,9 @@ angular.module('arraysApp')
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
 
+
+
+
                     queue.push(DatasetService.save(finalizedDataset));
 
                     $scope.$parent.$parent.additionalDatasources.forEach(function(datasource) {
@@ -498,7 +507,6 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_excludeFields;
                         delete finalizedDatasource.fe_displayTitleOverrides;
                         delete finalizedDatasource.fe_fieldDisplayOrder;
-                        // delete finalizedDatasource.imageScraping;
                         delete finalizedDatasource.isPublic;
                         delete finalizedDatasource.fe_views;
                         delete finalizedDatasource.fe_filters;
