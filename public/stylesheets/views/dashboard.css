@@ -524,7 +524,12 @@ md-tooltip .md-content {
 .process-data a:hover {
     text-decoration: none;
 }
-
+@media (max-width: 959px) {
+	.process-data {
+	    font-size: 15px;
+		/*white-space: initial;*/
+	}
+}
 /* Dataset Breadcrumb */
 ._md-nav-button-text.placeholder {
 	color: var(--color-text-light);
