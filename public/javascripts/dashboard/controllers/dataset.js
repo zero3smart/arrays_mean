@@ -91,7 +91,7 @@ angular.module('arraysApp')
                             delete finalizedDatasource.customFieldsToProcess;
                             delete finalizedDatasource.urls;
                             delete finalizedDatasource.description;
-                            delete finalizedDatasource.fe_designatedFields;
+                            delete finalizedDatasource.objectTitle;
                             delete finalizedDatasource.fe_excludeFields;
                             delete finalizedDatasource.fe_displayTitleOverrides;
                             delete finalizedDatasource.fe_fieldDisplayOrder;
