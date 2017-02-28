@@ -215,7 +215,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     }
                 }
                 // format dates
-                rowObject.rowParams = func.formatCoercedFields(rowObject, dataSourceDescription);
+                rowObject.rowParams = func.formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription);
 
                 //
                 var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);

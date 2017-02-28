@@ -336,7 +336,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var displayableCategory;
                         if (groupBy_isDate) {
-                            displayableCategory = func.formatCoercedFieldsPieChart(groupBy_realColumnName, category, dataSourceDescription)
+                            displayableCategory = func.formatCoercedField(groupBy_realColumnName, category, dataSourceDescription)
                         } else {
                             displayableCategory = category;
                         }
@@ -353,7 +353,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableLabel;
                             if (el.label) {
                                 if(stackBy_isDate) {
-                                    displayableLabel = func.formatCoercedFieldsPieChart(stackBy_realColumnName, el.label, dataSourceDescription)
+                                    displayableLabel = func.formatCoercedField(stackBy_realColumnName, el.label, dataSourceDescription)
                                 } else {
                                     displayableLabel = el.label;
                                 }

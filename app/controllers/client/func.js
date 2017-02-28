@@ -929,7 +929,7 @@ function _useLightBrandText(backgroundColor) {
 
 module.exports.useLightBrandText = _useLightBrandText;
 
-function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, customFieldName) {
+function _formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription, mergedFields, customFieldName) {
     var rowParams = rowObject.rowParams;
     var rowParams_keys = mergedFields || Object.keys(rowParams);
     for (var i = 0; i < rowParams_keys.length; i++) {
@@ -939,7 +939,7 @@ function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, cu
             for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
                 var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
                 var customFieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
-                return _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, customFieldName, dataSourceDescription)
+                return _formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription, mergedFields, customFieldName, dataSourceDescription)
             }
         };
 
@@ -960,23 +960,22 @@ function _formatCoercedFields(rowObject, dataSourceDescription, mergedFields, cu
     }
     return rowParams;
 }
-module.exports.formatCoercedFields = _formatCoercedFields;
+module.exports.formatCoercedFieldsFromRowObject = _formatCoercedFieldsFromRowObject;
 
-function _formatCoercedFieldsPieChart(key, value, dataSourceDescription) {
+function _formatCoercedField(key, value, dataSourceDescription) {
     for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
         var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
         var fieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
         if (fieldName === key) {
             // check each of the merged fields
             for (var i = 0; i < mergedFields.length; i++) {
-                return _formatCoercedFieldsPieChart(mergedFields[i], value, dataSourceDescription);
+                return _formatCoercedField(mergedFields[i], value, dataSourceDescription);
             }
         }
     }
 
     if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
         try {
-            // console.log(key + ": " + value)
             var displayableVal = _convertDateToBeRecognizable(value, key, dataSourceDescription)
             if (isNaN(displayableVal) == false) {
                 displayableVal = datatypes.displayNumberWithComma(displayableVal)
@@ -992,5 +991,5 @@ function _formatCoercedFieldsPieChart(key, value, dataSourceDescription) {
 
     return value;
 }
-module.exports.formatCoercedFieldsPieChart = _formatCoercedFieldsPieChart;
+module.exports.formatCoercedField = _formatCoercedField;
 
