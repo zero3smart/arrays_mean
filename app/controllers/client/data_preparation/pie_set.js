@@ -250,13 +250,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var finalizedButNotCoalesced_groupedResults = {};
                     _.forEach(_groupedResults, function (el) {
                         // Group By
+                        var displayValGroupBy = func.formatCoercedFieldsPieChart(groupBy_realColumnName, el.groupBy, dataSourceDescription)
                         var displayableGroupBy = func.ValueToExcludeByOriginalKey(
-                            el.groupBy, dataSourceDescription, groupBy_realColumnName, 'pieSet');
+                            displayValGroupBy, dataSourceDescription, groupBy_realColumnName, 'pieSet');
                         if (!displayableGroupBy) return;
 
                         // Chart By
+                        var displayValChartBy = func.formatCoercedFieldsPieChart(chartBy_realColumnName, el.chartBy, dataSourceDescription)
                         var displayableChartBy = func.ValueToExcludeByOriginalKey(
-                            el.chartBy, dataSourceDescription, chartBy_realColumnName, 'pieSet');
+                            displayValChartBy, dataSourceDescription, chartBy_realColumnName, 'pieSet');
                         if (!displayableChartBy) return;
 
                         if (!finalizedButNotCoalesced_groupedResults[displayableChartBy]) finalizedButNotCoalesced_groupedResults[displayableChartBy] = [];

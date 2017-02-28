@@ -16,8 +16,6 @@ var isDate = function (dataSourceDescription, columnName) {
                 var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
                 var fieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
                 if (fieldName === columnName) {
-                    console.log("field name is column name")
-                    console.log(mergedFields[i])
                     return isDate(dataSourceDescription, mergedFields[i]);
                 }
             }

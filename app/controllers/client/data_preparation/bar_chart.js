@@ -353,7 +353,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableLabel;
                             if (el.label) {
                                 if(stackBy_isDate) {
-                                    console.log(el.label)
                                     displayableLabel = func.formatCoercedFieldsPieChart(stackBy_realColumnName, el.label, dataSourceDescription)
                                 } else {
                                     displayableLabel = el.label;
