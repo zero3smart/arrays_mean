@@ -15,6 +15,11 @@ angular.module('arraysApp')
                 disabled: true
             };
 
+            /**
+             *  Tutorial banner messages
+             *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
+             *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
+             */
             $scope.tutorial = {
                 show: true, // check here if viz is sample or if user has asked to be guided
                 message: ''

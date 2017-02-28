@@ -22,12 +22,11 @@ angular.module('arraysApp')
                 $scope.submitForm($scope.formValidity);
             };
 
-
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
-            })
+            });
 
-
+            $scope.tutorial.message = 'Here you can configure each view you want to use to visualize your data.\nClick \'Next\' when done.';
 
 
             $scope.$parent.$parent.currentNavItem = 'views';

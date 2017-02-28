@@ -40,6 +40,8 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
 
+            $scope.tutorial.message = 'Here you can add one or more data sources. Upload a spreadsheet and click \'Next\'.';
+
             $scope.$watch('dataset.connection.tableName', function(hasTable) {
 
                 if (!dataset.fileName) {
