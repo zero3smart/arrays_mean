@@ -40,8 +40,20 @@ var DatasourceDescription_scheme = Schema({
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
+
     fe_displayTitleOverrides: Object,
-    fe_designatedFields: Object,
+
+
+    // imageScraping: [],
+    objectTitle: String,
+
+    fe_image: {
+        field: String,
+        overwrite: {type: Boolean, default: false},
+        scraped: {type: Boolean,default: false},
+        selector : String //optional
+    } ,
+
     fe_fieldDisplayOrder: Array,
     fe_filters: {
         excludeFields: Array,
@@ -72,8 +84,6 @@ var DatasourceDescription_scheme = Schema({
     sample: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
-
-    imageScraping: [],
 
     fe_nestedObject: {
         prefix: String,
@@ -131,16 +141,18 @@ DatasourceDescription_scheme.pre('save',function(next) {
 DatasourceDescription_scheme.post('save',function(doc) {
     if (doc._wasNew) {
         this.populate('author _team',function(err,docPopulatedWithAuthor) {
-            if (err || !docPopulatedWithAuthor.author) {
-                winston.error('Viz created with error');
-                console.log(err);
-            } else {
-                nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
-                    if (err) winston.error('cannot send user alert email');
-                    else {
-                        winston.info('Viz created email sent');
-                    }
-                })
+            if (!docPopulatedWithAuthor.schema_id) {
+                if (err || !docPopulatedWithAuthor.author) {
+                    winston.error('Viz created with error');
+                    console.log(err);
+                } else {
+                    nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
+                        if (err) winston.error('cannot send user alert email');
+                        else {
+                            winston.info('Viz created email sent');
+                        }
+                    })
+                }
             }
         })
     }

@@ -58,8 +58,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-            var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
-            raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
+            var groupBy_isDate = config.isDate(dataSourceDescription, groupBy_realColumnName);
             var groupBy_outputInFormat = '';
 
             var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.barChart.outputInFormat,groupBy_realColumnName);
@@ -80,8 +79,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
 
-            var stackBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[stackBy_realColumnName] &&
-            raw_rowObjects_coercionSchema[stackBy_realColumnName].operation == "ToDate");
+            var stackBy_isDate = config.isDate(dataSourceDescription, stackBy_realColumnName);
 
 
 
@@ -338,13 +336,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var displayableCategory;
                         if (groupBy_isDate) {
-                            displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
+                            displayableCategory = func.formatCoercedField(groupBy_realColumnName, category, dataSourceDescription)
                         } else {
-                            displayableCategory = func.ValueToExcludeByOriginalKey(
-                                category, dataSourceDescription, groupBy_realColumnName, 'barChart');
-
-                            if (!displayableCategory) return;
+                            displayableCategory = category;
                         }
+                        displayableCategory = func.ValueToExcludeByOriginalKey(
+                            displayableCategory, dataSourceDescription, groupBy_realColumnName, 'barChart');
+
+                        if (!displayableCategory) return;
+
 
                         var finalizedButNotCoalesced_groupedResults = [];
 
@@ -353,13 +353,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableLabel;
                             if (el.label) {
                                 if(stackBy_isDate) {
-                                    displayableLabel = func.convertDateToBeRecognizable(el.label, stackBy_realColumnName, dataSourceDescription)
-                                    displayableLabel = func.ValueToExcludeByOriginalKey(
-                                        displayableLabel, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                    displayableLabel = func.formatCoercedField(stackBy_realColumnName, el.label, dataSourceDescription)
                                 } else {
-                                    displayableLabel = func.ValueToExcludeByOriginalKey(
-                                        el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                    displayableLabel = el.label;
                                 }
+                                displayableLabel = func.ValueToExcludeByOriginalKey(
+                                    displayableLabel, dataSourceDescription, stackBy_realColumnName, 'barChart');
                                 if (!displayableLabel) return;
 
                                 finalizedButNotCoalesced_groupedResults.push({

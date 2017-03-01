@@ -240,12 +240,44 @@ $(document).ready(function () {
      */
         // Small
     $('.gallery-image, .timeline-image').error(function () {
-        $(this).attr('src', '/images/image-not-found-sm.png');
+
+        var isScrapedImage = $(this).attr('scraped');
+
+        if (isScrapedImage == 'true') { //replace with alternative link
+             var $parent = $(this).parent();
+            var actualImageLink = $parent.find("[name='alternativeImgLink']").val();
+            $(this).attr('src', actualImageLink);
+            $(this).attr('scraped','false');
+
+
+        } else { //replace with image not found
+            $(this).attr('src', '/images/image-not-found-sm.png');
+        }
+
+    
+
     });
 
     // Large
     $('.object-featured').error(function () {
-        $(this).attr('src', '/images/image-not-found-lg.png');
+
+        var isScrapedImage = $(this).attr('scraped');
+
+        if (isScrapedImage == 'true') { //replace with alternative link
+             var $parent = $(this).parent();
+            var actualImageLink = $parent.find("[name='alternativeImgLink']").val();
+            $(this).attr('src', actualImageLink);
+            $(this).attr('scraped','false');
+
+
+        } else { //replace with image not found
+            $(this).attr('src', '/images/image-not-found-lg.png');
+        }
+
+        
+
+
+        // $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
     /**

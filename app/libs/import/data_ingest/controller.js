@@ -192,36 +192,28 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
   
-        
-    if (dataSourceDescription.dirty >= 0) { // dont omit scraping
+      
+    if (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) { // dont omit scraping
 
         winston.info("🔁  start image scraping");
         job.log("🔁  start image scraping");
-        async.eachSeries(
-            dataSourceDescription.imageScraping,
-            function (description, cb) {
 
-                processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription._id,
-                    dataSourceDescription.schemaId,
-                    description.htmlSourceAtURLInField,
-                    description.setFields,
-                    cb);
-            },
-            function (err) {
 
-                winston.info("✅  finished image scraping")
-                job.log("✅  finished image scraping");
 
-                if (err) { 
+         processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription._id,
+            dataSourceDescription.schemaId,
+            dataSourceDescription.fe_image,
+            function(err) {
+
+                 if (err) { 
 
                     winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                     return callback(err);
+                } else {
+                    callback();
                 }
 
-                callback();
-                 
-            }
-        );
+            })
 
      } else { //omit scraping
         winston.info(" ⚠️  skipping image scraping");

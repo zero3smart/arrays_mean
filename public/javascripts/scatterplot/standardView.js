@@ -178,8 +178,8 @@ scatterplot.view.standard.prototype.showTooltip = function (bubble, data) {
      * Append image if there is only one character.
      */
     if (data.density === 1) {
-        content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_designatedFields.medThumbImageURL] + ')"></div>' +
-            '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>';
+        content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_image.field] + ')"></div>' +
+            '<div class="scatterplot-tooltip-title">' + data[chart._metaData.objectTitle] + '</div>';
     }
     /*
      * Open tooltip's text container.

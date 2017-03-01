@@ -15,7 +15,30 @@ angular.module('arraysApp')
                 disabled: true
             };
 
-            $scope.navigate = function(step, anchor) {
+
+
+            $scope.transitionTo = function(step,anchor) {
+                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            }
+
+            $scope.navigate = function(step) {
+
+
+            /**
+             *  Tutorial banner messages
+             *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
+             *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
+             */
+            $scope.tutorial = {
+                show: false, // only show on sample, for now
+                message: ''
+            };
+
+
                 var errorHandler = function (error) {
                     $mdToast.show(
                         $mdToast.simple()
@@ -45,7 +68,7 @@ angular.module('arraysApp')
                         break;
                     case 'dashboard.dataset.settings':
                         if ($scope.dataset._id) {
-                            $location.hash(anchor || '');
+                            $location.hash('');
                             $location.path('/dashboard/dataset/settings/' + $scope.dataset._id);
                         }
                         break;
@@ -63,46 +86,49 @@ angular.module('arraysApp')
 
                 var queue = [];
 
-                var finalizedDataset = angular.copy($scope.dataset);
-                delete finalizedDataset.columns;
-                delete finalizedDataset.__v;
+                    var finalizedDataset = angular.copy($scope.dataset);
+                    delete finalizedDataset.columns;
+                    delete finalizedDataset.__v;
 
-                queue.push(DatasetService.save(finalizedDataset));
+                    queue.push(DatasetService.save(finalizedDataset));
 
-                if ($scope.additionalDatasources) {
-                    $scope.additionalDatasources.forEach(function(datasource) {
-                        var finalizedDatasource = angular.copy(datasource);
+                   if ($scope.additionalDatasources) {
 
-                        delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
-                        delete finalizedDatasource.raw_rowObjects_coercionScheme;
-                        delete finalizedDatasource._otherSources;
-                        delete finalizedDatasource._team;
-                        delete finalizedDatasource.title;
-                        delete finalizedDatasource.__v;
-                        delete finalizedDatasource.importRevision;
-                        delete finalizedDatasource.author;
-                        delete finalizedDatasource.updatedBy;
-                        delete finalizedDatasource.brandColor;
-                        delete finalizedDatasource.customFieldsToProcess;
-                        delete finalizedDatasource.urls;
-                        delete finalizedDatasource.description;
-                        delete finalizedDatasource.fe_designatedFields;
-                        delete finalizedDatasource.fe_excludeFields;
-                        delete finalizedDatasource.fe_displayTitleOverrides;
-                        delete finalizedDatasource.fe_fieldDisplayOrder;
-                        delete finalizedDatasource.imageScraping;
-                        delete finalizedDatasource.isPublic;
-                        delete finalizedDatasource.fe_views;
-                        delete finalizedDatasource.fe_filters;
-                        delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
+                        $scope.additionalDatasources.forEach(function(datasource) {
+                            var finalizedDatasource = angular.copy(datasource);
+                            delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
+                            delete finalizedDatasource.raw_rowObjects_coercionScheme;
+                            delete finalizedDatasource._otherSources;
+                            delete finalizedDatasource._team;
+                            delete finalizedDatasource.title;
+                            delete finalizedDatasource.__v;
+                            delete finalizedDatasource.importRevision;
+                            delete finalizedDatasource.author;
+                            delete finalizedDatasource.updatedBy;
+                            delete finalizedDatasource.brandColor;
+                            delete finalizedDatasource.customFieldsToProcess;
+                            delete finalizedDatasource.urls;
+                            delete finalizedDatasource.description;
+                            delete finalizedDatasource.objectTitle;
+                            delete finalizedDatasource.fe_excludeFields;
+                            delete finalizedDatasource.fe_displayTitleOverrides;
+                            delete finalizedDatasource.fe_fieldDisplayOrder;
+                            delete finalizedDatasource.imageScraping;
+                            delete finalizedDatasource.isPublic;
+                            delete finalizedDatasource.fe_views;
+                            delete finalizedDatasource.fe_filters;
+                            delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
 
-                        queue.push(DatasetService.save(finalizedDatasource));
-                    });
-                }
 
-                $q.all(queue)
-                    .then(done)
-                    .catch(errorHandler);
+
+                            queue.push(DatasetService.save(finalizedDatasource));
+                        });
+
+                   }
+
+                    $q.all(queue)
+                        .then(done)
+                        .catch(errorHandler);
             };
 
             $scope.processData = function() {

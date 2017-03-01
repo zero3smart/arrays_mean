@@ -57,25 +57,29 @@ app.filter('pluralize', function () {
     };
 });
 
-app.filter('typeCoercionToString', function () {
-    return function (input) {
-        if (!input) return 'Text';
 
-        var opName = input.operation;
+
+app.filter('typeCoercionToString', function () {
+
+    return function (input,inferredType) {
+        var data_type = (input)? input.operation: inferredType;
+       
         // if (opName == 'ProxyExisting') {
             // return 'Proxy';
-        if (opName == 'ToDate') {
+        if (data_type == 'ToDate') {
             return 'Date';
-        } else if (opName == 'ToInteger') {
+        } else if (data_type == 'ToInteger') {
             // return 'Integer';
             return 'Number';
-        } else if (opName == 'ToFloat') {
+        } else if (data_type == 'ToFloat') {
             // return 'Float';
             return 'Number';
         // } else if (opName == 'ToStringTrim') {
         //     return 'String Trim';
         } else {
+
             return 'Text'; // 'Unknown'
+
         }
     };
 });

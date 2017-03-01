@@ -1,129 +1,88 @@
 <md-dialog md-no-ink aria-label="Image Scraping" class="field-dialog">
     <aa-toolbar title="Image Scraping" class=""></aa-toolbar>
-
     <md-dialog-content>
         <form name="dialog.form">
-            <md-content layout-padding>
-                <div ng-repeat="imageScraping in dataset.imageScraping">
 
-                    <div layout="row" layout-align="start center">
-                        <md-input-container flex>
-                            <label>URL Source Field</label>
+    
+            <div ng-repeat="key in keys track by $index" >
 
-                            <md-select required name="imageScrapingField_{{$index}}"
-                                       ng-model="imageScraping.htmlSourceAtURLInField"
-                                       ng-change="verifyUniqueHtmlSource(imageScraping, $index)">
-                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
-                                    {{column.name}}
-                                </md-option>
-                            </md-select>
-                            <div ng-messages="dialog.form.imageScrapingField.$error">
-                                <div ng-message="required">This is required.</div>
-                                <div ng-message="unique">Must be unique.</div>
-                            </div>
-                        </md-input-container>
+                <div layout="row" layout-align="start center">
+                    <md-input-container>
+                      <label>Use As </label>
 
-                        <span flex="5"></span>
+                    
+                        <md-select required name="key_{{$index}}" ng-model="keys[$index]" ng-change="replaceKey(key,$index)">
+                            <md-option ng-repeat="opt in selectOptions" value="{{opt.value}}">
+                                {{opt.name}}
+                            </md-option>
+                        </md-select>
 
-                        <!-- aa-tooltip="Remove Image to Scrape" -->
-                        <span class="dashboard-list-icon warn" ng-click="removeImageToScrap($index);" aria-hidden="true"
-                            aria-label="Remove Image to Scrape" flex="5">
-                            <i class="fa fa-remove" aria-hidden="true"></i>
-                        </span>
-                    </div>
+                    </md-input-container>
 
-                    <fieldset ng-repeat="field in imageScraping.setFields" ng-init="show=[];srcset=field.size? true:false">
-                    {{ field.newFieldName || 'New scraped field' }}&ensp;<a href="#" ng-click="show[$index]==undefined? show[$index]=true: show[$index]=!show[$index]">Advanced</a>
+                     <span flex="5"></span>
 
+                    <md-input-container flex>
+                        <label>URL Source Field</label>
+                        <md-select required name="imageScraping_{{key}}_fieldName"
+                                   ng-model="data[key].fieldName">
+                            <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                {{column.name}}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
 
-                    <div ng-hide="!show[$index]">
-                        <div layout="row">
-                            <md-input-container class="md-block" flex>
-                                <label>New Field Name</label>
-                                <input type="text" required name="newField_{{$index}}"
-                                       ng-model="field.newFieldName"
-                                       ng-change="verifyValidNewFieldName(field.newFieldName, $index)" />
-                                <div ng-messages="dialog.form.newField.$error">
-                                    <div ng-message="required">This is required.</div>
-                                    <div ng-message="unique">Must be unique.</div>
-                                    <div ng-message="valid">Name is invalid</div>
-                                </div>
-                            </md-input-container>
+                     <span flex="5"></span>
 
-                            <span flex="5"></span>
-
-                            <div class="dashboard-list-icon warn">
-                                <md-button layout-align="end center" class=""
-                                           ng-click="removeField(imageScraping.setFields, $index)"
-                                           aria-label="Remove Field" ng-disabled="imageScraping.setFields.length <= 1">
-                                   <i class="fa fa-remove" aria-hidden="true"></i>
-                                </md-button>
-                            </div>
-                        </div>
-
-                        <div layout="row">
-                            <md-input-container class="md-block" flex="50">
-                                <label>Prepend To Image URL</label>
-                                <input type="text" name="prepend_{{$index}}" ng-model="field.prependToImageURLs"/>
-                            </md-input-container>
-
-
-
-                            <div flex="50">
-
-                                <md-checkbox ng-model="srcset" ng-click="isSrcSet(srcset,field)">Source set</md-checkbox>
-                            </div>
-
-
-                            <md-input-container ng-if="!srcset" class="md-block" flex="50">
-                                <label>Resize</label>
-                                <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" />
-                            </md-input-container>
-
-
-                            <md-input-container ng-if="srcset" class="md-block" flex="50">
-                                <label>Size</label>
-                                <input type="number" min="1" name="size_{{$index}}" ng-model="field.size" />
-                            </md-input-container>
-
-
-                        </div>
-
-                        <md-input-container class="md-block">
-                            <label>Designated Field</label>
-                            <md-select name="designatedField_{{$index}}"
-                                       ng-model="data.designatedFields[field.newFieldName]"
-                                       aria-label="Designated Field - {{fieldName}}">
-                                <md-option ng-repeat="designatedField in availableDesignatedFields | filter: '!objectTitle' " ng-value="designatedField">
-                                    {{designatedField}}
-                                </md-option>
-                            </md-select>
-                            <div class="md-errors-spacer"></div>
-                        </md-input-container>
-
-                        <md-input-container class="md-block">
-                            <label>Selector</label>
-                            <input type="text" name="selector_{{$index}}" ng-model="field.selector"/>
-                        </md-input-container>
-
-                    </div>
-                    </fieldset>
-
-
-
-                    <p style="margin-top: 8px">
-                        <a href="" class="md-dashboard" ng-click="addField(imageScraping.setFields)">
-                            Add another field
-                        </a>
-                    </p>
+                     <span class="dashboard-list-icon warn" ng-click="removeImageToScrap(keys[$index]);" aria-hidden="true"
+                        aria-label="Remove Image to Scrape" flex="5">
+                        <i class="fa fa-remove" aria-hidden="true"></i>
+                    </span>
                 </div>
 
-            </md-content>
+                &ensp;<a href="#" ng-click="data[key].showAdvanced=!data[key].showAdvanced;">Advanced</a>
 
+
+                <div ng-show="data[key].showAdvanced==true">
+
+                    <div layout="row">
+
+                        <md-input-container class="md-block" flex="50">
+                            <label>Prepend To Image URL</label>
+                            <input type="text" name="prepend_{{$index}}" ng-model="data[key].scraped.prependToImageURLs"/>
+                        </md-input-container>
+
+                        <div flex="50">
+
+                            <md-checkbox ng-model="srcset" ng-click="isSrcSet(srcset,data[key].scraped)">Source set</md-checkbox>
+                        </div>
+
+
+                        <md-input-container ng-if="!srcset" class="md-block" flex="50">
+                            <label>Resize</label>
+                            <input type="number" min="1" name="resize_{{$index}}" ng-model="data[key].scraped.resize" />
+                        </md-input-container>
+
+
+                        <md-input-container ng-if="srcset" class="md-block" flex="50">
+                            <label>Size</label>
+                            <input type="number" min="1" name="size_{{$index}}" ng-model="data[key].scraped.size" />
+                        </md-input-container>
+
+                    </div>
+
+                    <md-input-container class="md-block">
+                        <label>Selector</label>
+                        <input type="text" name="selector_{{$index}}" ng-model="data[key].scraped.selector"/>
+                    </md-input-container>
+
+                </div>
+            </div>
+           
             <md-dialog-actions layout="row" layout-align="space-between center" style="padding-left: 8px">
 
-                <md-button class="md-dashboard" ng-click="addImageToScrap()">
-                    Add more images to scrape
+                <md-button class="md-dashboard" ng-click="addImageToScrap(null)" ng-disabled="keys.indexOf('gridThumb') >= 0 && 
+                    keys.indexOf('original')>=0">
+                    Add another designated field
                 </md-button>
 
                 <div>
@@ -136,7 +95,10 @@
                     </md-button>
                 </div>
             </md-dialog-actions>
-            <!-- <aa-dialog-actions confirm="Save" cancel=""></aa-dialog-actions> -->
+
+
         </form>
+
     </md-dialog-content>
+
 </md-dialog>
