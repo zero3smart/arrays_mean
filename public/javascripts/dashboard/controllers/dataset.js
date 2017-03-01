@@ -16,18 +16,6 @@ angular.module('arraysApp')
             };
 
 
-
-            $scope.transitionTo = function(step,anchor) {
-                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
-                    reload: true,
-                    inherit: false,
-                    notify: true
-                });
-            }
-
-            $scope.navigate = function(step) {
-
-
             /**
              *  Tutorial banner messages
              *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
@@ -38,6 +26,16 @@ angular.module('arraysApp')
                 message: ''
             };
 
+
+            $scope.transitionTo = function(step,anchor) {
+                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            }
+
+            $scope.navigate = function(step) {
 
                 var errorHandler = function (error) {
                     $mdToast.show(

@@ -11,7 +11,7 @@
     <h4 ng-if="users.length > 0">Users</h4>
 
     <ul class="dashboard-list user-list" ng-cloak>
-        <li ng-repeat="person in users track by $index" layout="row" layout-align="none center">
+        <li ng-repeat="person in users track by $index" ng-if="team.admin !== person._id" layout="row" layout-align="none center">
 
             <!-- <div flex="10">
                 <img src="/images/image-not-found-sm.png" />
