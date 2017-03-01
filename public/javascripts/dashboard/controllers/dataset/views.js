@@ -357,31 +357,6 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-                /**
-                 *  Set defaults here
-                 *  TODO set these defaults per view,
-                 *  not globally, once the new view-settings-from-JSON-not-Mongo
-                 *  structure is in place
-                **/
-
-                // console.log($scope.data); // debug
-
-                var setViewSettingDefault = function(prop, def) {
-                    if(typeof $scope.data[prop] == 'undefined') {
-                        $scope.data[prop] = def;
-                    }
-                };
-
-                switch (viewName) {
-                case 'gallery':
-                    setViewSettingDefault('defaultSortOrderDescending', false); // ascending
-                    break;
-                case 'globe':
-                    setViewSettingDefault('pointColor', '#FEB600'); // Arrays orange
-                    break;
-                }
-                // TODO: for each view, each menu, set first menu item as default if none exist
-
                 // $scope.data.default_view = default_view;
 
                 // save or cancel before navigating back to include a field
@@ -474,6 +449,45 @@ angular.module('arraysApp')
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };
+
+                /**
+                 *  Set defaults here
+                 *  TODO set these defaults per view,
+                 *  not globally, once the new view-settings-from-JSON-not-Mongo
+                 *  structure is in place
+                **/
+
+                // console.log($scope.data, $scope.viewSetting); // debug
+
+                var setViewSettingDefault = function(prop, def) {
+                    if(typeof $scope.data[prop] == 'undefined') {
+                        $scope.data[prop] = def;
+                    }
+                };
+
+                switch (viewName) {
+                case 'gallery':
+                    setViewSettingDefault('defaultSortOrderDescending', false); // ascending
+                    break;
+                case 'globe':
+                    setViewSettingDefault('pointColor', '#FEB600'); // Arrays orange
+                    break;
+                }
+
+                // TODO: for each view, each menu, set first menu item as default if none exist
+                var menusInThisView = $scope.viewSetting.filter(function(setting) {
+                    return setting.inputType == 'menu';
+                });
+
+                for (var i = 0; i < menusInThisView.length; i++) {
+                    var thisMenu = menusInThisView[i];
+                    if(typeof $scope.data[thisMenu.name] == 'undefined') {
+                        var colsAvailableOfType = colsAvailable.filter($scope.DataTypeMatch(thisMenu.restrictColumnDataType));
+                        if(colsAvailableOfType.length) {
+                            $scope.data[thisMenu.name] = colsAvailableOfType[0];
+                        }
+                    }
+                }
 
                 $scope.save = function () {
 
