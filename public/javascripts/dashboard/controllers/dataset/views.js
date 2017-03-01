@@ -457,8 +457,6 @@ angular.module('arraysApp')
                  *  structure is in place
                 **/
 
-                // console.log($scope.data, $scope.viewSetting); // debug
-
                 var setViewSettingDefault = function(prop, def) {
                     if(typeof $scope.data[prop] == 'undefined') {
                         $scope.data[prop] = def;
@@ -474,18 +472,17 @@ angular.module('arraysApp')
                     break;
                 }
 
-                // TODO: for each view, each menu, set first menu item as default if none exist
-                var menusInThisView = $scope.viewSetting.filter(function(setting) {
-                    return setting.inputType == 'menu';
+                // get each menu without a default
+                var menusWithoutDefaults = $scope.viewSetting.filter(function(setting) {
+                    return setting.inputType == 'menu' && (typeof $scope.data[setting.name] == 'undefined');
                 });
 
-                for (var i = 0; i < menusInThisView.length; i++) {
-                    var thisMenu = menusInThisView[i];
-                    if(typeof $scope.data[thisMenu.name] == 'undefined') {
-                        var colsAvailableOfType = colsAvailable.filter($scope.DataTypeMatch(thisMenu.restrictColumnDataType));
-                        if(colsAvailableOfType.length) {
-                            $scope.data[thisMenu.name] = colsAvailableOfType[0];
-                        }
+                // set menu default to first avaiable field, if able--otherwise no fields (of type) are available
+                for (var i = 0; i < menusWithoutDefaults.length; i++) {
+                    var thisMenu = menusWithoutDefaults[i];
+                    var colsAvailableOfType = colsAvailable.filter($scope.DataTypeMatch(thisMenu.restrictColumnDataType));
+                    if(colsAvailableOfType.length) {
+                        $scope.data[thisMenu.name] = colsAvailableOfType[0];
                     }
                 }
 
