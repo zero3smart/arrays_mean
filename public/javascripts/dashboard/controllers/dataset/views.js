@@ -10,7 +10,6 @@ angular.module('arraysApp')
             }
 
 
-
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.viewsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -25,9 +24,7 @@ angular.module('arraysApp')
 
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
-            })
-
-
+            });
 
 
             $scope.$parent.$parent.currentNavItem = 'views';
@@ -48,7 +45,6 @@ angular.module('arraysApp')
             colsAvailable = colsAvailable.filter(function(fieldName){
                 return !$scope.dataset.fe_excludeFields[fieldName];
             });
-
 
 
             $scope.data = {};
@@ -90,9 +86,6 @@ angular.module('arraysApp')
             if (!$scope.data.default_view) {
                 $scope.makeDefaultView('gallery');
             }
-
-
-
 
 
             $scope.openViewDialog = function (evt, id) {
@@ -137,7 +130,6 @@ angular.module('arraysApp')
                         });
 
 
-
                 });
             };
             // open modal on load, for testing
@@ -170,8 +162,6 @@ angular.module('arraysApp')
                     var useCustomView = false;
 
 
-
-
                     for (var key in finalizedDataset.fe_views.views) {
 
                         if ($scope.customViews.indexOf(key) >= 0 && finalizedDataset.fe_views.views[key].visible==true) {
@@ -179,7 +169,6 @@ angular.module('arraysApp')
                             break;
                         }
                     }
-
 
 
                     finalizedDataset.useCustomView = useCustomView;
@@ -244,12 +233,11 @@ angular.module('arraysApp')
 
                 };
 
-                var getPkeyFromDatasource = function(title,importRevision) {
-                    var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
-                    return uid + '-r' + importRevision;
-                };
-
-
+                // unused
+                // var getPkeyFromDatasource = function(title,importRevision) {
+                //     var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                //     return uid + '-r' + importRevision;
+                // };
 
 
                 $scope.loadDatasetsForMapping = function() {
@@ -261,7 +249,7 @@ angular.module('arraysApp')
                                 $scope.otherDatasetsloaded = true;
                                 for (var i = 0; i < all.length; i++) {
                                     if (all[i].title !== dataset.title) {
-                                        var mappingPkey = all[i]._id
+                                        var mappingPkey = all[i]._id;
                                         // var mappingPkey = getPkeyFromDatasource(all[i].title,
                                         //     all[i].importRevision);
                                         $scope.otherAvailableDatasets.push({
@@ -304,18 +292,17 @@ angular.module('arraysApp')
                 };
 
                 $scope.removeIconField = function(settingName, index) {
-                    $scope.data[settingName].conditions.splice(index, 1)
-                }
-
-                $scope.initBackgroundColors = function(settingName) {
-                    assignNestedDataValues(settingName);
-                }
-
+                    $scope.data[settingName].conditions.splice(index, 1);
+                };
 
                 $scope.initBackgroundColors = function(settingName) {
                     assignNestedDataValues(settingName);
                 };
 
+
+                $scope.initBackgroundColors = function(settingName) {
+                    assignNestedDataValues(settingName);
+                };
 
 
                 var findDependency = function (settingName) {
@@ -338,8 +325,8 @@ angular.module('arraysApp')
 
                 $scope.makeRelative = function(Url) {
                     // assets is the only thing that is constant so we can split on it and then prepend it back on the relative url
-                    var splitUrl = Url.split("assets")[1];
-                    var relativeUrl = "/assets" + splitUrl;
+                    var splitUrl = Url.split('assets')[1];
+                    var relativeUrl = '/assets' + splitUrl;
                     return relativeUrl;
                 };
 
@@ -503,11 +490,6 @@ angular.module('arraysApp')
                     $mdDialog.hide($scope.dataset);
                 };
             }
-
-
-
-
-
 
 
         }
