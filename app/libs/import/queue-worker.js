@@ -133,6 +133,7 @@ queue.worker.process('scrapeImages', function(job,done) {
     batch.end(function(err) {
 
         if (!err) {
+
             var updateQuery =  {$set: {dirty:0,imported:true}};
             var multi = {multi: true};
             if (description.schema_id) {
@@ -145,6 +146,7 @@ queue.worker.process('scrapeImages', function(job,done) {
            
             
         }
+
        
 
     })
@@ -275,7 +277,15 @@ queue.worker.process('postImport',function(job,done) {
     })
 
     batch.push(function(done) {
-        var updateQuery =  {$set: {dirty:0,imported:true}};
+
+        var updateQuery;
+
+
+        if (description.fe_image && description.fe_image.field && description.fe_image.scraped == false) { //need to scrape, dont update dirty now
+            updateQuery =  {$set: {imported:true}};
+        } else { //last step, can update dirty now
+            updateQuery =  {$set: {dirty:0,imported:true}};
+        }
         var multi = {multi: true};
         if (description_schemaId) { //update parent 
             datasource_description.update({$or: [{_id:id}, {_id: description_schemaId}]}, updateQuery,multi,done);

@@ -6,8 +6,26 @@
     AuthService.$inject = ['$window', '$q', '$http','Team'];
     function AuthService($window, $q, $http,Team) {
 
-        var isLoggedIn = false;
+        var currentUser = function () {
+            if ($window.sessionStorage.user) {
+                return JSON.parse($window.sessionStorage.user);
+            } else {
+                return null;
+            }
+        };
 
+        var currentTeam = function () {
+            if ($window.sessionStorage.team) {
+                return JSON.parse($window.sessionStorage.team);
+            } else {
+                return null;
+            }
+        };
+
+        var isLoggedIn = (currentUser() !== null)? true: false;
+
+        
+        
         var getToken = function () {
             var user = currentUser();
             if (user) {
@@ -114,8 +132,6 @@
             team.subscription = team.subscription || {};
             team.subscription.state = team.subscription.state || {};
 
-   
-
             if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'active' || team.subscription.state === 'canceled')) {
 
 
@@ -123,6 +139,7 @@
 
             } else {
                 deferred.reject();
+         
                 $window.location.href="/dashboard/account/profile";
             }
 
@@ -137,23 +154,6 @@
                 return null;
             }
         }
-
-        var currentUser = function () {
-            if ($window.sessionStorage.user) {
-                return JSON.parse($window.sessionStorage.user);
-            } else {
-                return null;
-            }
-        };
-
-        var currentTeam = function () {
-            if ($window.sessionStorage.team) {
-                return JSON.parse($window.sessionStorage.team);
-            } else {
-                return null;
-            }
-        };
-
 
         var switchTeam = function (teamId) {
             var deferred = $q.defer();

@@ -126,9 +126,6 @@ angular.module('arraysApp')
 
                 if (datasourceIndex == -1) {
 
-                    if (!dataset.fe_designatedFields) {
-                        dataset.fe_designatedFields = {};
-                    }
 
                     $scope.$parent.$parent.dataset = dataset;
 

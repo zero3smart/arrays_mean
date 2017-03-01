@@ -21,7 +21,7 @@ angular.module('arraysApp')
         function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
             $urlRouterProvider
-                    .otherwise('/dashboard/account/profile');
+              .otherwise('/dashboard/account/profile');
 
             $stateProvider
                     .state('dashboard', {
@@ -209,9 +209,6 @@ angular.module('arraysApp')
                             }],
                             availableTypeCoercions: ['DatasetService', function (DatasetService) {
                                 return DatasetService.getAvailableTypeCoercions();
-                            }],
-                            availableDesignatedFields: ['DatasetService', function (DatasetService) {
-                                return DatasetService.getAvailableDesignatedFields();
                             }]
                         }
                     })
