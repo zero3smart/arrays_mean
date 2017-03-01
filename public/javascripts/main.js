@@ -283,7 +283,7 @@ $(document).ready(function () {
 
 
 
-    $('#logout').on('click',function(e) {
+    $('a#logout').on('click',function(e) {
 
         e.preventDefault();
         $.get('/auth/logout')
