@@ -50,7 +50,8 @@ var DatasourceDescription_scheme = Schema({
     fe_image: {
         field: String,
         overwrite: {type: Boolean, default: false},
-        scraped: {type: Boolean,default: false}
+        scraped: {type: Boolean,default: false},
+        selector : String //optional
     } ,
 
     fe_fieldDisplayOrder: Array,

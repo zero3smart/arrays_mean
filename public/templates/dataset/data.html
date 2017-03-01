@@ -20,7 +20,7 @@
             <md-select name="image field" aria-label="Item title"
                        ng-model="data.fe_image.field" ng-change="updateOverwrite()">
                 <md-option value=""></md-option>
-                <md-option ng-repeat="column in dataset.columns | filter: {data_type: 'String'} track by column.name " value="{{column.name}}">
+                <md-option ng-repeat="column in dataset.columns | filter: {data_type: 'Text'} track by column.name " value="{{column.name}}">
                     {{column.name}}
                 </md-option>
             </md-select>

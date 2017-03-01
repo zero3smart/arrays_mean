@@ -780,28 +780,27 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
     });
 };
 
-// only needed for moma scraping
+// only needed for image scraping using selector
 var xray = require('x-ray');
 var xray_instance = xray();
 
 
 var image_hosting = require('../libs/utils/aws-image-hosting');
 
-// extracting moma url from srcset
-// function extractRawUrl(scrapedString) {
+// customize it for string coming back from scraper
+function extractRawUrl(scrapedString) {
 
-//     if (!scrapedString) {
-//         return "";
-//     }
+    if (!scrapedString) {
+        return "";
+    }
 
-//     var urlsAndSizes = scrapedString.split(', ');
-//     var largestSize = urlsAndSizes[3];
-//     if (largestSize == undefined) {
-//         console.log(urlsAndSizes);
-//     }
-//     var url = largestSize.split(' ');
-//     return 'http://www.moma.org/' + url[0];
-// }
+    var urlsAndSizes = scrapedString.split('_');
+    var largestSize = urlsAndSizes[0];
+    if (largestSize == undefined) {
+        console.log(urlsAndSizes);
+    }
+    return largestSize + 'jpg';
+}
 
 function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, selector,outterCallback) {
     var htmlSourceAtURL = doc["rowParams"][imageField];
@@ -814,10 +813,13 @@ function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, sel
     }
 
     //update moma url and then export to csv
-    xray_instance(htmlSourceAtURL,selector)(function(err,scrapedString) {
+    xray_instance(htmlSourceAtURL,selector)
+    .timeout(20000)
+    (function(err,scrapedString) {
         if (err) {
             console.log(err);
-        } else {
+        } else {    
+  
            
                
             var u = extractRawUrl(scrapedString);
@@ -831,7 +833,7 @@ function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, sel
             };
 
             mongooseModel.update(bulkOperationQueryFragment,{$set: {"rowParams.imageURL": u}},function(err,d) {
-                return outterCallback(null,null,null,null,null,null,null,null);
+                return outterCallback(null,null,null,null,null,null,null,selector);
 
             });
         }
@@ -841,18 +843,22 @@ function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, sel
 
 
 function updateDocWithImageUrl(job,folder,mongooseModel, doc, url, hostingOpt,selector,outterCallback) {
+    //generating url only, no actual scraping
+    if (selector && selector !== '' && typeof selector == 'string') {
+        return outterCallback(null);
+    }
 
-    // var destinationFilenameSansExt = doc.pKey;
-    // if (!hostingOpt) {
-    //     hostingOpt = true;
-    // }
+    var destinationFilenameSansExt = doc.pKey;
+    if (!hostingOpt) {
+        hostingOpt = true;
+    }
 
-    // image_hosting.hostImageLocatedAtRemoteURL(folder, url, hostingOpt,destinationFilenameSansExt, 
-    //     function (err) {
+    image_hosting.hostImageLocatedAtRemoteURL(folder, url, hostingOpt,destinationFilenameSansExt, 
+        function (err) {
 
-    //     winston.info("🔁  Download/host image source for different sizes and views for doc " + doc.pKey);
-    //     return outterCallback(err);
-    // });
+        winston.info("🔁  Download/host image source for different sizes and views for doc " + doc.pKey);
+        return outterCallback(err);
+    });
 }
 
 
@@ -886,7 +892,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously\
 
-            var N = 1; //concurrency limit
+            var N = 30; //concurrency limit
 
             var counter = 0;
 
@@ -907,21 +913,27 @@ module.exports.GenerateImageURLFieldsByScraping
             q.drain = function() {
                 winston.info("📡  all items are processed for scraping, successfully scraped all of the images ");
 
-                description.findOne({_id:datasetId},function(err,dataset) {
+                if (!imageSource.selector || imageSource.selector == null || imageSource.selector == '') {
 
-                    if (err) return callback(err);
+                    description.findOne({_id:datasetId},function(err,dataset) {
 
-                    dataset.fe_image.scraped = true;
+                        if (err) return callback(err);
 
-                    if (dataset.fe_image.overwrite == true) {
-                        dataset.fe_image.overwrite = false;
-                    }
+                        dataset.fe_image.scraped = true;
 
-                    dataset.markModified('fe_image');
+                        if (dataset.fe_image.overwrite == true) {
+                            dataset.fe_image.overwrite = false;
+                        }
 
-                    dataset.save(callback);
-                })
-                 
+                        dataset.markModified('fe_image');
+
+                        dataset.save(callback);
+                    })
+
+                } else {
+                    callback(null); // all url has been saved to processed row objects
+                }
+
             }
 
 
