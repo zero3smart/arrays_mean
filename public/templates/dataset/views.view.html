@@ -468,13 +468,19 @@
                                             ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)"
                                             layout="row" layout-align="start center"
                                             >
+
+                                            <!-- TODO Add tooltip. Hover below causes tooltip to clip -->
+                                            <!-- aa-tooltip="{{ data.default_view == view.name ? 'Default view must be visible' : (dataset.fe_views.views[view.name].visible ? 'Set view as not visible' : 'Set view as visible') }}" -->
+                                            <!-- <span flex="10"
+                                                aa-toolip="Include/exclude field">
+                                                [checkbox]
+                                            </span> -->
                                             <md-checkbox name="Include/exclude"
                                                          ng-if="setting.selectExcludeBy"
                                                          ng-checked="data[setting.selectExcludeBy].indexOf(col) == -1"
-                                                         ng-click="includeExcludeCol(col,data[setting.selectExcludeBy])"
+                                                         ng-click="includeExcludeCol(col,data[setting.selectExcludeBy],data[setting.name] == col)"
                                                          aria-label="Include/exclude"
-                                                         flex="10">
-                                            </md-checkbox>
+                                                         flex="10"></md-checkbox>
                                             <span flex="10"
                                                 class="dashboard-list-icon view"
                                                 ng-class="{'default-view': data[setting.name] == col}"

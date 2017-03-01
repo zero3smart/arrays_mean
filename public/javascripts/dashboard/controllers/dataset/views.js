@@ -402,12 +402,14 @@ angular.module('arraysApp')
                     };
                 };
 
-                $scope.includeExcludeCol = function(col, array) {
-                    var ndex = array.indexOf(col);
-                    if (ndex == -1) {
-                        array.push(col);
-                    } else {
-                        array.splice(ndex, 1);
+                $scope.includeExcludeCol = function(col, array, isDefault) {
+                    if(!isDefault) {
+                        var ndex = array.indexOf(col);
+                        if (ndex == -1) {
+                            array.push(col);
+                        } else {
+                            array.splice(ndex, 1);
+                        }
                     }
                 };
 
