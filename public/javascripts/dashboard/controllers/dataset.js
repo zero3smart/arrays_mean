@@ -69,13 +69,13 @@ angular.module('arraysApp')
                             $location.path('/dashboard/dataset/settings/' + $scope.dataset._id);
                         }
                         break;
-                    case 'dashboard.dataset.done':
+                    case 'dashboard.dataset.process':
                         /** removing if statement--should not be an issue--
                          *  this is only called from processData(),
                          *  which only appears after dataset is imported
                          */
                         // if ( ($scope.dataset.fe_listed && $scope.dataset.fe_visible && $scope.dataset.fe_views.default_view )|| (!$scope.dataset.fe_listed && !$scope.dataset.fe_visible) ) {
-                        $location.path('/dashboard/dataset/done/' + $scope.dataset._id);
+                        $location.path('/dashboard/dataset/process/' + $scope.dataset._id);
                         // }
                         break;
                     }
@@ -128,7 +128,7 @@ angular.module('arraysApp')
             };
 
             $scope.processData = function() {
-                $scope.navigate('dashboard.dataset.done');
+                $scope.navigate('dashboard.dataset.process');
             };
 
             // $scope.revert = function() {

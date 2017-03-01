@@ -36,7 +36,7 @@ angular.module('arraysApp')
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             if ($filter('isSuperAdmin')(dataset.author) ) {
-                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false
+                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false;
             }
 
             $scope.$parent.$parent.dataset = dataset;
@@ -52,7 +52,7 @@ angular.module('arraysApp')
                     if(dataset.imported) {
 
                         DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
-                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
+                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed});
 
                     }
                 }
@@ -64,7 +64,7 @@ angular.module('arraysApp')
                 .then(function(response) {
                     if (response.status == 200 && response.data) {
                         $scope.$parent.$parent.dataset = response.data;
-                         $mdToast.show(
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Request submitted!')
                                 .position('top right')
@@ -72,9 +72,9 @@ angular.module('arraysApp')
                         );
                     }
 
-                })
+                });
 
-            }
+            };
 
             $scope.updateListingOnArrays = function(approved) {
 
@@ -88,9 +88,9 @@ angular.module('arraysApp')
 
 
                             if (!$filter('isSuperAdmin')(dataset.author)) {
-            
+
                                 $scope.$parent.$parent.dataset = response.data;
-                                 $mdToast.show(
+                                $mdToast.show(
                                     $mdToast.simple()
                                         .textContent('Dataset updated with approval state setting!')
                                         .position('top right')
@@ -100,7 +100,7 @@ angular.module('arraysApp')
                             }
 
                         }
-                    })
+                    });
 
                 } else {
 
@@ -109,55 +109,54 @@ angular.module('arraysApp')
                         dataset.state = 'approved';
                     }
                 }
-            }
+            };
 
 
             $scope.submitForm = function(isValid) {
                 // debugger;
 
                 // if (isValid) {
-                    $scope.submitting = true;
-                    if (!dataset.author) {
-                        dataset.author = $scope.user._id;
-                        dataset._team = $scope.team._id;
-                        dataset.fe_displayTitleOverrides = {};
-                    }
-                    dataset.updatedBy = $scope.user._id;
+                $scope.submitting = true;
+                if (!dataset.author) {
+                    dataset.author = $scope.user._id;
+                    dataset._team = $scope.team._id;
+                    dataset.fe_displayTitleOverrides = {};
+                }
+                dataset.updatedBy = $scope.user._id;
 
-                    var finalizedDataset = angular.copy(dataset);
-                    delete finalizedDataset.columns;
+                var finalizedDataset = angular.copy(dataset);
+                delete finalizedDataset.columns;
 
 
+                DatasetService.save(finalizedDataset).then(function (response) {
 
-                    DatasetService.save(finalizedDataset).then(function (response) {
+                    if (response.status == 200) {
 
-                        if (response.status == 200) {
-
-                            $mdToast.show(
+                        $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
 
-                            $state.transitionTo('dashboard.dataset.done', {id: response.data.id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
-                        }
-                        $scope.submitting = false;
-                    }, function (error) {
+                        $state.transitionTo('dashboard.dataset.process', {id: response.data.id}, {
+                            reload: true,
+                            inherit: false,
+                            notify: true
+                        });
+                    }
+                    $scope.submitting = false;
+                }, function (error) {
 
 
-                        $mdToast.show(
+                    $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(5000)
                         );
-                        $scope.submitting = false;
-                    });
+                    $scope.submitting = false;
+                });
                 // }
             };
 
@@ -208,7 +207,7 @@ angular.module('arraysApp')
                     '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
                     return url;
                 }
-            }
+            };
 
             $scope.imageUploader.onBeforeUploadItem = function (item) {
                 item.headers['Content-Type'] = item.file.type;
@@ -230,7 +229,7 @@ angular.module('arraysApp')
 
             $scope.deleteBanner = function() {
                 AssetService.deleteBanner($scope.dataset._id).then(function (data) {
-                    $scope.dataset.banner = data.dataset.banner
+                    $scope.dataset.banner = data.dataset.banner;
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent('Banner deleted successfully!')

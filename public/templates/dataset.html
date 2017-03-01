@@ -1,4 +1,4 @@
-<div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.done') && dataset.imported }"><!--
+<div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.process') && dataset.imported }"><!--
 -->You have unsaved changes. <a href="#" ng-click="processData()">Process data</a> to save and publish changes.<!--
 or <a href="#" ng-click="revert()">revert.</a>
 --></div>
@@ -19,7 +19,7 @@ or <a href="#" ng-click="revert()">revert.</a>
 <div class="array-content dataset">
 
     <ng-include src="'templates/blocks/dataset.breadcrumb.html'"
-                ng-if="!$state.is('dashboard.dataset.list') && !$state.is('dashboard.dataset.new') && !$state.is('dashboard.dataset.done')"></ng-include>
+                ng-if="!$state.is('dashboard.dataset.list') && !$state.is('dashboard.dataset.new') && !$state.is('dashboard.dataset.process')"></ng-include>
 
     <div ui-view class="ext-content"></div>
 

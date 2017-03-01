@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
+    .controller('DatasetProcessCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
         function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
 
 
@@ -85,8 +85,6 @@ angular.module('arraysApp')
             }
 
 
-
-
             function refreshForm() {
                 $scope.dirty = 0;
                 $scope.imported = true;
@@ -94,14 +92,11 @@ angular.module('arraysApp')
             }
 
 
-
             function getJobStatus(datasetId) {
-
 
 
                 DatasetService.getJobStatus(datasetId)
                 .then(function(job) {
-
 
 
                     if (job.id == 0) {
@@ -160,7 +155,6 @@ angular.module('arraysApp')
 
 
             }
-
 
 
             function importProcess(id) {
@@ -246,10 +240,7 @@ angular.module('arraysApp')
                 var id = datasource._id;
 
 
-
-
                 if ($scope.additionalDatasources.length == 0) {
-
 
 
                     if (datasource.dirty == 1) {
@@ -307,18 +298,13 @@ angular.module('arraysApp')
                 var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
                     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
                     makeFieldValuePairs(dataset.fe_filters.default);
-                $window.open(url, "_blank");
+                $window.open(url, '_blank');
             };
 
             $scope.showAdvanced = false;
             $scope.toggleShowAdvanced = function() {
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
-            }
-
-
-
-
-
+            };
 
 
             $scope.$parent.$parent.dataset = dataset;
@@ -344,19 +330,14 @@ angular.module('arraysApp')
                 $scope.additionalDatasources.map(function(ds) {
 
 
-                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName}
-                })
-            })
-
-
-
+                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName};
+                });
+            });
 
 
             $scope.dirty = dataset.connection? 0: $scope.$parent.$parent.dataset.dirty;
 
             $scope.imported =  dataset.connection? true: $scope.$parent.$parent.dataset.imported;
-
-
 
 
             $scope.additionalDatasources.forEach(function(datasource) {
@@ -390,10 +371,7 @@ angular.module('arraysApp')
                 }
 
 
-
             };
-
-
 
 
             var datasourceIndex = -1;

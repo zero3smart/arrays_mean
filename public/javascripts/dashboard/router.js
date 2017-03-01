@@ -10,7 +10,7 @@ angular.module('arraysApp')
             $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
                 event.preventDefault();
                 if (error.importing == true) {
-                    $state.go('dashboard.dataset.done', {id: error.datasetId});
+                    $state.go('dashboard.dataset.process', {id: error.datasetId});
                 }
             });
         }
@@ -115,10 +115,9 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
 
-                               
 
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    
+
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
 
                                 } else if (user.role == 'editor') {
@@ -129,7 +128,7 @@ angular.module('arraysApp')
                                 } else {
                                     return [];
                                 }
-        
+
                             }]
                         }
                     })
@@ -138,7 +137,7 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {                        
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
                                 return DatasetService.get($stateParams.id);
                             }]
                         }
@@ -170,7 +169,7 @@ angular.module('arraysApp')
                                     } else {
                                         deferred.resolve(data);
                                     }
-                                })
+                                });
                                 return deferred.promise;
 
                             }],
@@ -186,12 +185,12 @@ angular.module('arraysApp')
                                                 return false;
 
                                             }
-                                        })
+                                        });
 
                                     }
                                     deferred.resolve(additionalDatasets);
 
-                                })
+                                });
                                 return deferred.promise;
                             }]
                         }
@@ -230,10 +229,10 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('dashboard.dataset.done', {
-                        url: '/done/:id',
-                        templateUrl: 'templates/dataset/done.html',
-                        controller: 'DatasetDoneCtrl',
+                    .state('dashboard.dataset.process', {
+                        url: '/process/:id',
+                        templateUrl: 'templates/dataset/process.html',
+                        controller: 'DatasetProcessCtrl',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
