@@ -16,6 +16,7 @@ angular.module('arraysApp')
             };
 
 
+
             $scope.transitionTo = function(step,anchor) {
                 $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
                     reload: true,
@@ -25,6 +26,18 @@ angular.module('arraysApp')
             }
 
             $scope.navigate = function(step) {
+
+
+            /**
+             *  Tutorial banner messages
+             *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
+             *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
+             */
+            $scope.tutorial = {
+                show: false, // only show on sample, for now
+                message: ''
+            };
+
 
                 var errorHandler = function (error) {
                     $mdToast.show(

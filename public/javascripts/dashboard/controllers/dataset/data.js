@@ -41,10 +41,12 @@ angular.module('arraysApp')
                 }
             });
 
+            $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
+
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             })
-            
+
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
             };
@@ -64,13 +66,13 @@ angular.module('arraysApp')
                 }
             };
 
-            
+
 
 
             var joinDataCols = [];
 
 
-            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join 
+            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join
                 && $scope.$parent.$parent.dataset.connection.join.tableName) {
 
                 DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
@@ -95,7 +97,7 @@ angular.module('arraysApp')
                 }
             }
 
-            
+
 
 
 
@@ -113,6 +115,7 @@ angular.module('arraysApp')
                 }
 
                 modalService.openDialog('joinTable',data)
+
                 .then(function(savedDataset) {
                      joinDataCols = savedDataset.joinCols;
                      delete savedDataset.joinCols;
@@ -137,15 +140,13 @@ angular.module('arraysApp')
                     columnIndex: columnIndex
                 }
 
+
                 modalService.openDialog('field',data)
                 .then(function(savedDataset) {
                     $scope.$parent.$parent.dataset = savedDataset;
                     $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                     sortColumnsByDisplayOrder();
-
-
                     $scope.vm.dataForm.$setDirty();
-
                     if(filterOnly) {
                         $scope.openFabricatedFilterDialog();
                     }
@@ -236,13 +237,16 @@ angular.module('arraysApp')
             };
 
 
+
             $scope.openJoinDialog = function() {
                 var data = {
                     dataset: $scope.$parent.$parent.dataset,
                     fields: $scope.originalFields
                 }
 
+
                 modalService.openDialog('field',data)
+
                     .then(function (savedDataset) {
 
                         $scope.$parent.$parent.dataset = savedDataset;
@@ -462,7 +466,7 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(5000)
                         );
-                        }, done = function() {  
+                        }, done = function() {
                             $scope.submitting = false;
 
                             $mdToast.show(
