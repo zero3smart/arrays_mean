@@ -9,9 +9,6 @@ module.exports = function (nunjucks_env,env) {
 
     nunjucks_env.addFilter('comma', commaFilter);
     // General/shared
-    nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
-        return moment(date).utc().format("MMMM Do, YYYY");
-    });
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear_array', function (date) {
         return moment(date).utc().format("MMM D, YYYY");
     });
