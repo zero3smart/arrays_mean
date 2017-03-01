@@ -32,8 +32,8 @@ function _appendKeyToBucket(key) {
 function getImageAtUrl(remoteImageSourceURL,callback) {
     var options = {
         url :remoteImageSourceURL,
-        encoding:null,
-        timeout: 3000
+        encoding: null,
+        timeout: 10000
     }
     request.get(options,function(err,response,data) {
         if ( (err && (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')) || response == null) {

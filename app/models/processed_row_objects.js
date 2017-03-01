@@ -813,8 +813,7 @@ function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, sel
     }
 
     //update moma url and then export to csv
-    xray_instance(htmlSourceAtURL,selector)
-    .timeout(20000)
+    xray_instance.timeout(100000)(htmlSourceAtURL,selector)
     (function(err,scrapedString) {
         if (err) {
             console.log(err);
@@ -933,7 +932,6 @@ module.exports.GenerateImageURLFieldsByScraping
                 } else {
                     callback(null); // all url has been saved to processed row objects
                 }
-
             }
 
 
