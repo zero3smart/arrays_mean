@@ -25,8 +25,6 @@ angular.module('arraysApp')
                 });
             }
 
-            $scope.navigate = function(step) {
-
 
             /**
              *  Tutorial banner messages
@@ -38,6 +36,8 @@ angular.module('arraysApp')
                 message: ''
             };
 
+
+            $scope.navigate = function(step) {
 
                 var errorHandler = function (error) {
                     $mdToast.show(
