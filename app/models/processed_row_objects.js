@@ -101,9 +101,7 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 }
 
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_id,
-                                                                   parentId,
-                                                                   callback) {
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job, dataset_id, parentId, callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataset_id + "\".");
 
@@ -164,10 +162,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_i
     });
 };
 
-module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_team_subdomain,dataSource_uid,
-                                                                     dataSource_importRevision,
-                                                                     dataSource_title,
-                                                                     callback) {
+module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_team_subdomain, dataSource_uid, dataSource_importRevision, dataSource_title, callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
