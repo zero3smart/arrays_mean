@@ -374,10 +374,13 @@ angular.module('arraysApp')
 
                 switch (viewName) {
                 case 'gallery':
-                    setViewSettingDefault('defaultSortOrderDescending', true);
+                    setViewSettingDefault('defaultSortOrderDescending', false); // ascending
+                    break;
+                case 'globe':
+                    setViewSettingDefault('pointColor', '#FEB600'); // Arrays orange
                     break;
                 }
-
+                // TODO: for each view, each menu, set first menu item as default if none exist
 
                 // $scope.data.default_view = default_view;
 
