@@ -16,8 +16,11 @@
 
         </md-input-container>
 
+        <p ng-if="dataset.sample">Sample visualizations cannot be made public.</p>
+
         <md-input-container class="md-block publish-settings">
             <label style="margin-bottom: 15px">Privacy settings</label>
+
 
             <!-- <md-switch ng-model="dataset.fe_visible"
                 ng-change="updatePublishSettings()"
@@ -41,17 +44,16 @@
         </md-input-container>
 
 
-        <label id="request-listing">List on arrays.co</label>
 
-
-        <div ng-if="(dataset.author | isSuperAdmin)">
+        <md-input-container ng-if="(dataset.author | isSuperAdmin)" class="md-block publish-settings">
+            <label style="margin-bottom: 15px" id="request-listing">List on arrays.co</label>
             <md-switch ng-model="showOnArraysCo"
                 ng-change="updateListingOnArrays(showOnArraysCo)"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
-                aria-label="Make dataset accessible on arrays.co">
+                aria-label="List visualization on arrays.co">
                 List visualization on arrays.co
             </md-switch>
-        </div>
+        </md-input-container>
 
         <div>
             <md-button ng-hide="dataset.connection || dataset.sample || user.role=='superAdmin'"
@@ -105,7 +107,7 @@
         </md-input-container> -->
 
         <div>
-            <label>Select a color for your visualization page</label>
+            <label style="margin-bottom: 15px">Select a color for your visualization page</label>
             <aa-color-picker selected="dataset.brandColor"></aa-color-picker>
         </div>
 

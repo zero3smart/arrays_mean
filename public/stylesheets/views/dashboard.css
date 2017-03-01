@@ -474,7 +474,7 @@ md-ink-bar {
 /*tool tips*/
 md-tooltip.md-default-theme .md-content,
 md-tooltip .md-content {
-	font-size: 13px !important;
+	font-size: 15px !important;
 	color: white !important;
 	background: var(--color-text-dark) !important;
 }
@@ -505,6 +505,7 @@ md-tooltip .md-content {
     left: 0;
     right: 0;
     text-align: center;
+	white-space: pre-wrap;
     background-color: #005CFF;
     color: white;
     padding: 0.5em;
@@ -523,7 +524,12 @@ md-tooltip .md-content {
 .process-data a:hover {
     text-decoration: none;
 }
-
+@media (max-width: 959px) {
+	.process-data {
+	    font-size: 15px;
+		/*white-space: initial;*/
+	}
+}
 /* Dataset Breadcrumb */
 ._md-nav-button-text.placeholder {
 	color: var(--color-text-light);
