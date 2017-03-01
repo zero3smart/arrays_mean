@@ -357,6 +357,28 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
+                /**
+                 *  Set defaults here
+                 *  TODO set these defaults per view,
+                 *  not globally, once the new view-settings-from-JSON-not-Mongo
+                 *  structure is in place
+                **/
+
+                // console.log($scope.data); // debug
+
+                var setViewSettingDefault = function(prop, def) {
+                    if(typeof $scope.data[prop] == 'undefined') {
+                        $scope.data[prop] = def;
+                    }
+                };
+
+                switch (viewName) {
+                case 'gallery':
+                    setViewSettingDefault('defaultSortOrderDescending', true);
+                    break;
+                }
+
+
                 // $scope.data.default_view = default_view;
 
                 // save or cancel before navigating back to include a field
