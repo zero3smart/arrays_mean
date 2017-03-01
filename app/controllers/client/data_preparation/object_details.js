@@ -249,8 +249,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     var valueAtOriginalKey = rowObject.rowParams[originalKey];
                     rowObject.rowParams[overrideTitle] = valueAtOriginalKey;
-                    console.log(rowObject.rowParams)
-                    console.log("line 298")
                     //
                     if (fieldsNotToLinkAsGalleryFilter_byColName[originalKey] == true) {
                         delete fieldsNotToLinkAsGalleryFilter_byColName[originalKey];
@@ -295,7 +293,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (process.env.NODE_ENV == 'enterprise') {
                     splitSubdomain = source_pKey;
                 }
-                console.log("Line 343")
           
               
                 //

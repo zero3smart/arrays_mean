@@ -377,10 +377,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                                 el2.rowParams[sortBy_realColumnName], dataSourceDescription, sortBy_realColumnName, 'timeline');
 
                             //Format the date value
-                            console.log(el2.rowParams[sortBy_realColumnName])
                             el2.rowParams[sortBy_realColumnName] = func.convertDateToBeRecognizable(displayableVal, sortBy_realColumnName, dataSourceDescription);
-                            console.log('---------------')                    
-                            console.log(el2.rowParams[sortBy_realColumnName])
 
                             results.push(el2);
                         });
