@@ -72,7 +72,6 @@ router.delete('/dataset/job/:id' ,ctrlDataset.killJob);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
-router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesignatedFields);
 router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import

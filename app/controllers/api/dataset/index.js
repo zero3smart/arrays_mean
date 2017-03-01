@@ -174,7 +174,10 @@ module.exports.approvalRequest = function(req,res) {
             if (dataset.state == 'pending') {
                 nodemailer.newVizWaitingForApproval(dataset,done);
             } else {
-                nodemailer.notifyVizApprovalAction(dataset,done);
+                if (!dataset.author.isSuperAdmin()) {
+                    nodemailer.notifyVizApprovalAction(dataset,done);
+                }
+                
             }
         })
     })
@@ -248,6 +251,7 @@ module.exports.remove = function (req, res) {
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
+     
      
         datasource_description.find({schema_id: description._id})
         .populate('_team')
@@ -380,7 +384,7 @@ module.exports.get = function (req, res) {
 
 
                     batch.end(function(err) {
-                        console.log(err);
+         
 
                         if (err) return res.status(500).json(err);
                         description.columns = req.session[req.params.id].columns[description.connection.tableName];
@@ -563,9 +567,9 @@ module.exports.save = function (req, res) {
                         || (doc.schema_id && !_.isEqual(value, description[key])))) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
-
+                        
                         doc[key] = value;
-
+                        
                         if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
                             console.log('cleared join session columns stored');
                             req.session.columns[req.body._id + "_join"];
@@ -946,14 +950,6 @@ module.exports.upload = function (req, res) {
 
 module.exports.getAvailableTypeCoercions = function (req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
-};
-
-module.exports.getAvailableDesignatedFields = function (req, res) {
-    return res.json({
-        availableDesignatedFields: [
-            "objectTitle", "originalImageURL", "medThumbImageURL"
-        ]
-    });
 };
 
 module.exports.getAvailableMatchFns = function (req, res) {

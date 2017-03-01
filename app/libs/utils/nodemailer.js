@@ -118,13 +118,12 @@ module.exports.newTeamCreatedEmail = function(team,cb) {
 
 module.exports.newVizCreatedEmail = function(viz,cb) {
 
-	if (process.env.NODE_ENV !== 'development') {
-		var userName = viz.author.firstName + ' ' + viz.author.lastName;
+	
+	var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz Created (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName,viz.author.email,viz.createdAt,
 		subject,cb);
-
-	}
+	
 	
 }
 

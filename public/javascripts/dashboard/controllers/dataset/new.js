@@ -6,6 +6,8 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+            // $scope.tutorial.message = 'Enter a name for your visualization and click \'Next\'.';
+
             $scope.submitForm = function(isValid) {
 
                 if (isValid) {
@@ -51,7 +53,7 @@ angular.module('arraysApp')
             return {
                 restrict: 'A',
                 require: 'ngModel',
-                scope: {    
+                scope: {
                     datasetId : '=',
                     submittingFlag: '='
 
@@ -70,7 +72,7 @@ angular.module('arraysApp')
                         .then(function(response) {
 
                             scope.submittingFlag = false;
-                      
+
                             if (response.status == 200) {
                                 if (response.data.length > 0) {
 
@@ -80,7 +82,7 @@ angular.module('arraysApp')
                                         deferred.reject(false);
 
                                     }
-                                    
+
 
                                 } else {
                                     deferred.resolve(true);

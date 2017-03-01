@@ -55,8 +55,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
 
-            var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
-            raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
+            var groupBy_isDate = config.isDate(dataSourceDescription, groupBy_realColumnName);
             var groupBy_outputInFormat = '';
 
             var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.lineGraph.outputInFormat,groupBy_realColumnName);
@@ -385,7 +384,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableVal;
 
                             if (groupBy_isDate) {
-                                displayableVal = func.convertDateToBeRecognizable(el.label, groupBy_realColumnName, dataSourceDescription);
+                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription)
+                                console.log(displayableVal)
                             } else {
                                 displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');

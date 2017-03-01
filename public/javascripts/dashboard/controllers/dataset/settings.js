@@ -22,6 +22,8 @@ angular.module('arraysApp')
                 $scope.submitForm($scope.formValidity);
             };
 
+            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
+
             // still needed now that this step comes later?
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
@@ -85,13 +87,18 @@ angular.module('arraysApp')
                         if (response.status == 200 && response.data) {
 
 
-                            $scope.$parent.$parent.dataset = response.data;
-                             $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Dataset approval state updated!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                            if (!$filter('isSuperAdmin')(dataset.author)) {
+            
+                                $scope.$parent.$parent.dataset = response.data;
+                                 $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('Dataset updated with approval state setting!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
+
+                            }
+
                         }
                     })
 

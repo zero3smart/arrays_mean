@@ -15,7 +15,29 @@ angular.module('arraysApp')
                 disabled: true
             };
 
-            $scope.navigate = function(step, anchor) {
+
+            $scope.transitionTo = function(step,anchor) {
+                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+
+
+            /**
+             *  Tutorial banner messages
+             *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
+             *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
+             */
+            $scope.tutorial = {
+                show: false, // only show on sample, for now
+                message: ''
+            };
+
+
+            $scope.navigate = function(step) {
+
                 var errorHandler = function (error) {
                     $mdToast.show(
                         $mdToast.simple()
@@ -36,7 +58,6 @@ angular.module('arraysApp')
                         break;
                     case 'dashboard.dataset.data':
                         if ($scope.dataset.uid) {
-
                             $location.path('/dashboard/dataset/data/' + $scope.dataset._id);
                         }
                         break;
@@ -45,7 +66,6 @@ angular.module('arraysApp')
                         break;
                     case 'dashboard.dataset.settings':
                         if ($scope.dataset._id) {
-                            $location.hash(anchor || '');
                             $location.path('/dashboard/dataset/settings/' + $scope.dataset._id);
                         }
                         break;
@@ -70,9 +90,9 @@ angular.module('arraysApp')
                 queue.push(DatasetService.save(finalizedDataset));
 
                 if ($scope.additionalDatasources) {
+
                     $scope.additionalDatasources.forEach(function(datasource) {
                         var finalizedDatasource = angular.copy(datasource);
-
                         delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
                         delete finalizedDatasource.raw_rowObjects_coercionScheme;
                         delete finalizedDatasource._otherSources;
@@ -86,7 +106,7 @@ angular.module('arraysApp')
                         delete finalizedDatasource.customFieldsToProcess;
                         delete finalizedDatasource.urls;
                         delete finalizedDatasource.description;
-                        delete finalizedDatasource.fe_designatedFields;
+                        delete finalizedDatasource.objectTitle;
                         delete finalizedDatasource.fe_excludeFields;
                         delete finalizedDatasource.fe_displayTitleOverrides;
                         delete finalizedDatasource.fe_fieldDisplayOrder;
@@ -96,13 +116,15 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
 
+
                         queue.push(DatasetService.save(finalizedDatasource));
                     });
+
                 }
 
                 $q.all(queue)
-                    .then(done)
-                    .catch(errorHandler);
+                        .then(done)
+                        .catch(errorHandler);
             };
 
             $scope.processData = function() {

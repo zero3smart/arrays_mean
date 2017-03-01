@@ -78,6 +78,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
 
                 var sourceDescription = {
+                    _id: dataSourceDescription._id,
                     key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                     sourceDoc: doc,
                     title: dataSourceDescription.title,
