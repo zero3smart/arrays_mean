@@ -115,6 +115,8 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field, na
         return 0;
 
     } else if (opName == 'ToFloat') {
+        var commaRE = /,/g
+        inString = inString.replace(commaRE, '');
         if (!isNaN(parseFloat(inString)));
             return parseFloat(inString);
         return 0;
