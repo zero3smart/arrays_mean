@@ -26,16 +26,6 @@ angular.module('arraysApp')
                 }
             };
 
-            $scope.formatDataType = function(sample, data_type) {
-                if (data_type === 'Date') {
-                    return 'Date';
-                } else if (data_type === 'Integer' || data_type === 'Float' || data_type === 'Number') {
-                    return 'Number';
-                } else if (data_type === 'String' || data_type === 'Text') {
-                    return 'Text';
-                }
-            };
-
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {

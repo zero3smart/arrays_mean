@@ -568,16 +568,8 @@ module.exports.save = function (req, res) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
                         
-
-                        console.log(key == 'fe_image');
-                        console.log(value.field == "");
-        
-                        
                         doc[key] = value;
                         
-
-                        
-
                         if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
                             console.log('cleared join session columns stored');
                             req.session.columns[req.body._id + "_join"];

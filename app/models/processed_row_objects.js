@@ -781,8 +781,8 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
 };
 
 // only needed for moma scraping
-// var xray = require('x-ray');
-// var xray_instance = xray();
+var xray = require('x-ray');
+var xray_instance = xray();
 
 
 var image_hosting = require('../libs/utils/aws-image-hosting');
@@ -814,45 +814,45 @@ function scrapeImages(job,folder,mongooseModel, doc, imageField, hostingOpt, sel
     }
 
     //update moma url and then export to csv
-    // xray_instance(htmlSourceAtURL,selector)(function(err,scrapedString) {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
+    xray_instance(htmlSourceAtURL,selector)(function(err,scrapedString) {
+        if (err) {
+            console.log(err);
+        } else {
            
                
-    //         var u = extractRawUrl(scrapedString);
-    //         console.log(u);
+            var u = extractRawUrl(scrapedString);
+            console.log(u);
 
 
-    //         var bulkOperationQueryFragment =
-    //         {
-    //             pKey: doc.pKey,
-    //             srcDocPKey: doc.srcDocPKey
-    //         };
+            var bulkOperationQueryFragment =
+            {
+                pKey: doc.pKey,
+                srcDocPKey: doc.srcDocPKey
+            };
 
-    //         mongooseModel.update(bulkOperationQueryFragment,{$set: {"rowParams.imageURL": u}},function(err,d) {
-    //             return outterCallback(null,null,null,null,null,null,null,null);
+            mongooseModel.update(bulkOperationQueryFragment,{$set: {"rowParams.imageURL": u}},function(err,d) {
+                return outterCallback(null,null,null,null,null,null,null,null);
 
-    //         });
-    //     }
-    // })
+            });
+        }
+    })
 }
 
 
 
 function updateDocWithImageUrl(job,folder,mongooseModel, doc, url, hostingOpt,selector,outterCallback) {
 
-    var destinationFilenameSansExt = doc.pKey;
-    if (!hostingOpt) {
-        hostingOpt = true;
-    }
+    // var destinationFilenameSansExt = doc.pKey;
+    // if (!hostingOpt) {
+    //     hostingOpt = true;
+    // }
 
-    image_hosting.hostImageLocatedAtRemoteURL(folder, url, hostingOpt,destinationFilenameSansExt, 
-        function (err) {
+    // image_hosting.hostImageLocatedAtRemoteURL(folder, url, hostingOpt,destinationFilenameSansExt, 
+    //     function (err) {
 
-        winston.info("🔁  Download/host image source for different sizes and views for doc " + doc.pKey);
-        return outterCallback(err);
-    });
+    //     winston.info("🔁  Download/host image source for different sizes and views for doc " + doc.pKey);
+    //     return outterCallback(err);
+    // });
 }
 
 
@@ -886,7 +886,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously\
 
-            var N = 30; //concurrency limit
+            var N = 1; //concurrency limit
 
             var counter = 0;
 

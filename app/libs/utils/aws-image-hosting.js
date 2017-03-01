@@ -25,6 +25,10 @@ function _uploadToS3(key,response,readFromFile,callback) {
     })
 }
 
+function _appendKeyToBucket(key) {
+    return 'https://' + bucket + '.s3.amazonaws.com/' + key;
+}
+
 function getImageAtUrl(remoteImageSourceURL,callback) {
     var options = {
         url :remoteImageSourceURL,

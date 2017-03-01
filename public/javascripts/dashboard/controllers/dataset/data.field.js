@@ -13,6 +13,9 @@ angular.module('arraysApp')
         var originalFieldName = fieldName;
         var originalCoercionScheme = dataset.raw_rowObjects_coercionScheme[fieldName];
 
+        $scope.updatedDataTypes = [{data_type: 'Date', originalCoercion:{operation: 'ToDate'}}, {data_type: 'Number', originalCoercion: {operation: 'ToInteger'}}, {data_type: 'Text', originalCoercion: {operation: 'ToString'}}];
+
+
         function refreshFieldByName(name) {
             // General
             if (!$scope.dataset.fe_fieldDisplayOrder) $scope.dataset.fe_fieldDisplayOrder = [];
@@ -164,6 +167,8 @@ angular.module('arraysApp')
             }
         };
 
+
+
         $scope.save = function () {
 
             // General
@@ -186,8 +191,13 @@ angular.module('arraysApp')
                 }
             }
 
+            if ($scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] === "ToInteger") {
+                var floatRE = /[^0-9,]/;
+                if (floatRE.test($scope.firstRecord)) {
+                    $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = {operation: "ToFloat"};
+                }
+            }
 
-    
          
             if (!filterOnly) {
                 var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;

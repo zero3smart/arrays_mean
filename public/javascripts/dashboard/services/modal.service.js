@@ -16,7 +16,6 @@ angular
 					firstRecord: data.firstRecord,
 					dataset: data.dataset,
 					availableTypeCoercions: data.availableTypeCoercions,
-					// availableDesignatedFields: data.availableDesignatedFields,
 					custom: data.custom,
 					customFieldIndex: data.customFieldIndex,
 					filterOnly: data.filterOnly,

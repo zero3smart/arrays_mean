@@ -97,16 +97,6 @@
             })
         };
 
-        // var getAvailableDesignatedFields = function() {
-        //     return $http.get('api/dataset/getAvailableDesignatedFields')
-        //     .then(function(response) {
-        //         var data = response.data;
-        //         return data.availableDesignatedFields;
-        //     }).catch(function(err) {
-        //         console.log(err);
-        //         return [];
-        //     })
-        // };
 
         var getAvailableMatchFns = function() {
             return $http.get('api/dataset/getAvailableMatchFns')
@@ -189,7 +179,6 @@
             approvalRequest: approvalRequest,
             getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
-            // getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,
             getDatasetsWithQuery: getDatasetsWithQuery,
             getMappingDatasourceCols: getMappingDatasourceCols,
