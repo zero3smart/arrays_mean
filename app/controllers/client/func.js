@@ -545,6 +545,7 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
         }
         var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
+            // console.log("uniqueFieldValuesByFieldName equals null")
             callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
