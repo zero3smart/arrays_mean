@@ -121,8 +121,13 @@ $(document).ready(function () {
     /**
      * Search criteria click dropdown item to select
      */
+    var searchInputPlaceholder = $('.search-input').attr('placeholder');
+    var searchWidth;
+    if (searchInputPlaceholder != undefined) searchWidth = searchInputPlaceholder.length * 9;
+    else searchWidth = 9;
     $('.search-input')
-        .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
+        .css('width', searchWidth + 'px');
+
 
     $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
