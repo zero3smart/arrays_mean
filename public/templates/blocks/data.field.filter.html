@@ -64,11 +64,11 @@
         </md-button>
     </fieldset>
 
-    <fieldset class="standard" ng-if="customFieldIndex == undefined">
+<!--     <fieldset class="standard" ng-if="customFieldIndex == undefined">
         <md-input-container class="md-block">
             <label>{{fieldName}}</label>
-            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
-                      name="valuesToExcludeSelf"
+            <md-chips ng-model="data.keywords.choices"
+                      name="keywords"
                       md-enable-chip-edit="true"
                       placeholder="Enter a Value" secondary-placeholder="+Value"
                       ng-trim="false">
@@ -78,11 +78,11 @@
                 </md-chip-template>
             </md-chips>
         </md-input-container>
-    </fieldset>
+    </fieldset> -->
 
     <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined">
         <label>Exclude filters by keyword</label>
-        <md-chips ng-model="data.keywords.choices" name="keywords"
+        <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]" name="valuesToExcludeSelf"
                   md-enable-chip-edit="true"
                   placeholder="Enter a keyword" secondary-placeholder="Add keyword">
         </md-chips>
