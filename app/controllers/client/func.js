@@ -774,24 +774,17 @@ module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFilter
 
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
-    var dateToFormat = new Date(originalVal)
-    try{
-        var displayableVal = dateToFormat.toISOString();
-    }
-    catch(e) {
-        console.log(e + ": " + dateToFormat)
-        var displayableVal = originalVal;
-    }
-    // var prototypeName = Object.prototype.toString.call(originalVal);
-    // if (prototypeName === '[object Date]') {
-    // }
-    // ^ We could check this but we ought to have the info, and checking the
-    // coersion scheme will make this function slightly more rigorous.
-    // Perhaps we could do some type-introspection automated formatting later
-    // here if needed, but I think generally that kind of thing would be done case-by-case
-    // in the template, such as comma-formatting numbers.
-    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
-    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+    if (dataSourceDescription.raw_rowObjects_coercionScheme[key].operation === "ToDate") {
+        var dateToFormat = new Date(originalVal)
+        try{
+            var displayableVal = dateToFormat.toISOString();
+        }
+        catch(e) {
+            console.log(e + ": " + dateToFormat)
+            var displayableVal = originalVal;
+        }
+
+        var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
             var _do = coersionSchemeOfKey.operation;
@@ -800,11 +793,12 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
                     return originalVal; // do not attempt to format
                 }
                 var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format(coersionSchemeOfKey.outputFormat);
+                return newDateValue;
             }
         }
+        return displayableVal;
     }
-    //
-    return newDateValue;
+    return originalVal;
 };
 module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
