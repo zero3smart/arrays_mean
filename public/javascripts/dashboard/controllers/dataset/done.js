@@ -358,10 +358,16 @@ angular.module('arraysApp')
 
 
 
-
             $scope.additionalDatasources.forEach(function(datasource) {
 
-                if (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) {
+  
+
+                if ($scope.dirty == 0 && datasource.dirty > 0) {
+                    $scope.dirty = datasource.dirty;
+                }
+
+                if ( (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) || 
+                       ($scope.dirty == 0 && datasource.dirty > $scope.dirty) ) {
                     $scope.dirty = datasource.dirty;
                 }
                 $scope.imported = $scope.imported && datasource.imported;
@@ -369,13 +375,16 @@ angular.module('arraysApp')
                 if (dataset.jobId == 0 && datasource.jobId !== 0) {
 
                     $scope.inProgress = true;
+                    $scope.currentWorkingDataset = datasource;
                     getJobStatus(datasource._id);
                     return false;
                 }
 
             });
 
+
             $scope.killCurrentJob = function() {
+
 
                 if ($scope.currentJobId !== null) {
                     DatasetService.killJob($scope.currentWorkingDataset._id)

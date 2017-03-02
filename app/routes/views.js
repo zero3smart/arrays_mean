@@ -69,7 +69,9 @@ View.getAllCustomViews(function(err,customViews) {
                 if (!team) {
                     team = view.name;
                 }
-                var controller = require('../../user/' + team + '/src/' + view.name);
+                // var controller = require('../../user/' + team + '/src/' + view.name);
+                 var controller = require('../../user/rhodium-group/src/' + view.name);
+
 
                 controller.BindData(req,function(err,bindData) {
                     if (err) {

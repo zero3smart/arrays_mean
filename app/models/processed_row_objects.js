@@ -692,18 +692,19 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
         //
 
         var query = {};
-        if (parentId && typeof parentId  === 'string' && parentId != '') {
-            query = {pKey: {$regex: "^" + datasetId + "-"}};
-        }
-        if (query_optl == null || typeof query_optl === 'undefined') {
-            query = {};
-        } else {
-            for (var opt in query_optl) {
-                query[opt] = query_optl[opt];
-            }
-        }
 
-        // console.log(query);
+        if (typeof parentId !== 'undefined') {
+            query = {pKey: {$regex: "^" + datasetId + "-"}};
+        } 
+        // if (query_optl == null || typeof query_optl === 'undefined') {
+        //     query = {};
+        // } else {
+        //     for (var opt in query_optl) {
+        //         query[opt] = query_optl[opt];
+        //     }
+        // }
+
+        console.log(query);
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
