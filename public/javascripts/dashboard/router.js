@@ -85,19 +85,19 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    // .state('dashboard.account.upgradeEnterprise', {
-                    //     url: '/upgrade/enterprise',
-                    //     controller: 'BillingCtrl',
-                    //     templateUrl: 'templates/account/upgrade.enterprise.html',
-                    //     resolve: {
-                    //         users: function() {
-                    //             return {};
-                    //         },
-                    //         plans: function() {
-                    //             return {};
-                    //         },
-                    //     }
-                    // })
+                    .state('dashboard.account.upgradeEnterprise', {
+                        url: '/upgrade/enterprise',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/upgrade.enterprise.html',
+                        resolve: {
+                            users: function() {
+                                return {};
+                            },
+                            plans: ['Plans', function (Plans) {
+                                return Plans.get();
+                            }]
+                        }
+                    })
                     // .state('dashboard.account.close', {
                     //     url: '/close',
                     //     controller: 'BillingCtrl',
