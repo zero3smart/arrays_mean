@@ -60,8 +60,7 @@
                                             <div class="explore-tile-meta">
                                                 {% set comma = joiner() %}
                                           
-                                                <span class="source-divider"></span>
-                                                <span class="source-updated">Updated: {{ description.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                <span class="source-updated">Updated {{ description.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
                                             </div>
                                         </div>
                                     </div>
