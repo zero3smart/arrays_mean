@@ -1,11 +1,23 @@
 <div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
     <h2>Plan Summary</h2>
-    <p>
-        {{ subscription.plan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}<br />
-        Cost per User: {{ plan.unit_amount_in_cents.USD._ / 100 | currency : $ : 0 }}<br />
-        <span ng-if="subscription.plan.plan_code === 'pro-monthly'"><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
-        <span ng-if="subscription.plan.plan_code === 'pro-annual'"><strong>Total per year:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
+
+    <div class="md-headline">{{ plan.name }}</div>
+
+    <div ng-if="plan.display_quantity._ === 'true'">
+        {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}
         <br />
-        <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
-    </p>
+        <strong>{{ plan.unit_amount_in_cents.USD._ / 100 | currency : $ : 0 }}</strong> Per user, per month
+        <br />
+    </div>
+
+    <span ng-if="plan.plan_interval_length._ === '1'"><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
+
+    <span ng-if="plan.plan_interval_length._ === '12'"><strong>Total per year:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
+    <br />
+
+    <div ng-if="plan.plan_interval_length._ === '1'">Billed monthly</div>
+    <div ng-if="plan.plan_interval_length._ === '12'">Billed annually</div>
+    <br />
+
+    <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
 </div>

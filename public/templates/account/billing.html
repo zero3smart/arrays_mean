@@ -3,6 +3,7 @@
     <div ng-if="loaded">
 
         <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+
         <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left }} {{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
 
         <div ng-if="billing.exists">
@@ -10,94 +11,32 @@
         <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
         </div>
 
-        <div ng-if="!billing.exists" layout="row" layout-xs="column" layout-wrap>
-
-            <div flex="50" flex-xs="100" ng-repeat="plan in plans">
-
-                <md-card>
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-display-1">{{ plan.name }}</span>
-                        </md-card-title-text>
-                    </md-card-title>
-                    <md-card-content>
-                        <!-- {{ plan.plan_interval_unit }}<br /> -->
-                        <div class="md-display-3">{{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</div>
-                        Per user, per month
-                    </md-card-content>
-                    <md-card-actions layout="row">
-                        <md-button ui-sref="dashboard.account.payment({ plan_code: plan.plan_code })" class="md-dashboard">
-                            <span class="btn-label">Sign up</span>
-                        </md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
-
-            <div flex="50" flex-xs="100">
-                <md-card>
-                    <md-card-title>
-                        <md-card-title-text>
-                            <span class="md-display-1">Arrays Enterprise</span>
-                        </md-card-title-text>
-                    </md-card-title>
-                    <md-card-content>
-                        <div class="md-display-3">Contact us</div>
-                    </md-card-content>
-                    <md-card-actions layout="row">
-                        <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
-                            <span class="btn-label">Sign up</span>
-                        </md-button>
-                    </md-card-actions>
-                </md-card>
-            </div>
-
-        </div>
-
         <div ng-if="subscription.state === 'active'">
-        <hr>
 
-            <form name="quantity_form" novalidate>
+            <form name="quantity_form" novalidate ng-if="plan.display_quantity._ === 'true'">
+
+                <hr>
+
                 <md-input-container>
                     <label>Users</label>
-                    <input name="quantity" required type="number" min="{{ datasetsQuantity }}" ng-min="{{ datasetsQuantity }}" step="1" ng-model="subscription.quantity._" />
-                    <div ng-messages="quantity_form.quantity.$error" ng-if="datasetsQuantity <= 1">
+                    <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="subscription.quantity._" />
+                    <div ng-messages="quantity_form.quantity.$error" ng-if="users.length < 1">
                         <div ng-message="min">Must be greater than 0.</div>
                     </div>
-                    <div ng-messages="quantity_form.quantity.$error" ng-if="datasetsQuantity > 1">
+                    <div ng-messages="quantity_form.quantity.$error" ng-if="users.length > 0">
                         <div ng-message="min">Cannot be less than the number of users on your team.</div>
                     </div>
                 </md-input-container>
 
                 <div layout="row" layout-align="space-between center">
                     <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!quantity_form.$dirty || quantity_form.$invalid">
-                        <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-monthly'">Save and Update Monthly Billing Amount</span>
-                        <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-annual'">Save and Update Yearly Billing Amount</span>
-                    </md-button>
-
-                    <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'pro-annual'" ng-disabled="quantity_form.$invalid">
-                        <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
-                    </md-button>
+                        <span class="btn-label">Save and Update Billing Amount</span>
                 </div>
             </form>
 
         </div>
 
-        <div ng-if="subscription.state != 'active' && subscription.state != 'canceled' && subscription.state != 'expired' && billing.exists">
-            <hr>
-            <h3>Start Free Trial of Arrays Pro</h3>
-
-            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
-        </div>
-
-        <div ng-if="subscription.state === 'expired'">
-            <h3>Upgrade to Arrays Pro</h3>
-
-            <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
-        </div>
+        <hr ng-if="billing.exists">
 
         <div ng-if="subscription.state === 'canceled'">
             <h3>Reactivate Subscription</h3>
@@ -106,18 +45,12 @@
                 <span class="btn-label">Reactivate Subscription</span>
             </md-button>
         </div>
-
-        <div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
-            <h3>Upgrade to Arrays Enterprise</h3>
-
-            <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
-        </div>
-
-        <hr>
-
+        
         <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription.state === 'active'">Cancel Subscription</a>
+
+        <div ng-if="!billing.exists">
+            <ng-include src="'templates/blocks/account.billing.plans.html'"></ng-include>
+        </div>
 
     </div>
 

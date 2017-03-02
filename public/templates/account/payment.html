@@ -1,22 +1,26 @@
 <form name="billing_info" class="payment-form" novalidate>
     <md-card md-no-ink ng-cloak>
-        <md-card-content md-padding>
+        <md-card-content md-padding ng-if="!billing.exists">
             <h2>{{ plan.name }}</h2>
 
             <div layout="row" layout-xs="column">
 
-                <md-input-container flex-gt-xs="30">
+                <md-input-container flex-gt-xs="30" ng-if="plan.display_quantity._ === 'true'">
                     <label>Number of users</label>
-                    <input name="quantity" required type="number" min="1" ng-min="1" step="1" ng-model="billing.quantity" />
+                    <input name="quantity" required type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" />
                     <div ng-messages="billing_info.quantity.$error">
                         <div ng-message="min">Must be greater than 0.</div>
                     </div>
                 </md-input-container>
 
-                <p flex-gt-xs="50" flex-offset-gt-xs="20">
-                    {{ billing.quantity }} {{ billing.quantity | pluralize: 'User' : 'Users' }}<br />
+                <div ng-if="plan.display_quantity._ === 'true'" flex-gt-xs="20">
+
+                </div>
+
+                <p flex-gt-xs="50">
+                    {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}<br />
                     {{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }} Per user, per month<br />
-                    <span><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * billing.quantity / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</span>
+                    <span><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</span>
                 </p>
             </div>
         </md-card-content>
@@ -123,11 +127,11 @@
 
         <md-card-actions ng-if="!billing.exists" layout="row" layout-align="end center">
 
-            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, billing.quantity)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
                 <span class="btn-label">Start Trial</span>
             </md-button>
 
-            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, billing.quantity)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
                 <span class="btn-label">Start Trial</span>
             </md-button>
 

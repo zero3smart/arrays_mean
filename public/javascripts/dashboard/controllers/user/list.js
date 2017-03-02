@@ -19,7 +19,7 @@ angular
                 if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
                     $scope.primaryAction.disabled = false;
                 } else {
-                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.users.length ? false : true; // limit based on billing
+                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.users.length + 1 ? false : true; // limit based on billing
                 }
             };
 

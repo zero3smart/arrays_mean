@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 'plans', 
-        function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService, plans) {
+    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
+        function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
 
             /* Code for limiting # of datasets based on subscription quantity (keeping for later) */
             /*// Get datasets for quantity limit
@@ -11,18 +11,20 @@ angular.module('arraysApp')
                     });
 
                     // Don't allow subscription quantity to go to zero if there are no datasets
-                    $scope.datasetsQuantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
+                    $scope.quantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
                 }, function(err) {});*/
+
+            $scope.users = users;
 
             // Set plans data after promise from router resolves
             plans.$promise.then(function(data) {
                 $scope.plans = data.data.plans.plan;
-                // console.log(data.data.plans.plan);
+                console.log(data.data.plans.plan);
 
-                $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
+                if ($stateParams.plan_code) {
+                    $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
+                }
             });
-
-            $scope.datasetsQuantity = 1;
 
             $scope.loaded = false;
 
@@ -36,14 +38,24 @@ angular.module('arraysApp')
             var d = new Date();
 
             $scope.billing = {
-                quantity: 1,
-
                 month: parseInt(('0' + (d.getMonth() + 1)).slice(-2)), // Set current month and year
                 year: d.getFullYear(),
 
                 country: 'US',
                 account_type: 'checking'
             };
+
+            $scope.subscription = {
+                quantity: {
+                    _: parseInt($stateParams.quantity) || 1
+                }
+            }
+
+            $scope.plan = {
+                plan_interval_length: {
+                    _: '12'
+                }
+            }
 
             // Which cards to validated against in the CC input
             $scope.cardsAccepted = [
@@ -54,6 +66,19 @@ angular.module('arraysApp')
                 'Diners Club',
                 'JCB'
             ];
+
+
+            // Watch billing period for changes for filtering plans
+            // $scope.$watch('billing.plan_period', function(newValue, oldValue){
+
+            //     // Check if value has changes
+            //     if (newValue === oldValue) {
+            //         return;
+            //     }
+
+            //     console.log($scope.billing.plan_period);
+
+            // });
 
 
             // Get account info from Recurly
@@ -161,6 +186,9 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
+                        console.log($scope.subscription);
+                        console.log($scope.plan);
+
                         if (callback) return callback();
                     }
                 }, function(err) {});
@@ -196,10 +224,10 @@ angular.module('arraysApp')
             $scope.availableStates = [{"name":"Alabama","abbreviation":"AL"},{"name":"Alaska","abbreviation":"AK"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Arizona","abbreviation":"AZ"},{"name":"Arkansas","abbreviation":"AR"},{"name":"California","abbreviation":"CA"},{"name":"Colorado","abbreviation":"CO"},{"name":"Connecticut","abbreviation":"CT"},{"name":"Delaware","abbreviation":"DE"},{"name":"District Of Columbia","abbreviation":"DC"},{"name":"Federated States Of Micronesia","abbreviation":"FM"},{"name":"Florida","abbreviation":"FL"},{"name":"Georgia","abbreviation":"GA"},{"name":"Guam","abbreviation":"GU"},{"name":"Hawaii","abbreviation":"HI"},{"name":"Idaho","abbreviation":"ID"},{"name":"Illinois","abbreviation":"IL"},{"name":"Indiana","abbreviation":"IN"},{"name":"Iowa","abbreviation":"IA"},{"name":"Kansas","abbreviation":"KS"},{"name":"Kentucky","abbreviation":"KY"},{"name":"Louisiana","abbreviation":"LA"},{"name":"Maine","abbreviation":"ME"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Maryland","abbreviation":"MD"},{"name":"Massachusetts","abbreviation":"MA"},{"name":"Michigan","abbreviation":"MI"},{"name":"Minnesota","abbreviation":"MN"},{"name":"Mississippi","abbreviation":"MS"},{"name":"Missouri","abbreviation":"MO"},{"name":"Montana","abbreviation":"MT"},{"name":"Nebraska","abbreviation":"NE"},{"name":"Nevada","abbreviation":"NV"},{"name":"New Hampshire","abbreviation":"NH"},{"name":"New Jersey","abbreviation":"NJ"},{"name":"New Mexico","abbreviation":"NM"},{"name":"New York","abbreviation":"NY"},{"name":"North Carolina","abbreviation":"NC"},{"name":"North Dakota","abbreviation":"ND"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Ohio","abbreviation":"OH"},{"name":"Oklahoma","abbreviation":"OK"},{"name":"Oregon","abbreviation":"OR"},{"name":"Palau","abbreviation":"PW"},{"name":"Pennsylvania","abbreviation":"PA"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Rhode Island","abbreviation":"RI"},{"name":"South Carolina","abbreviation":"SC"},{"name":"South Dakota","abbreviation":"SD"},{"name":"Tennessee","abbreviation":"TN"},{"name":"Texas","abbreviation":"TX"},{"name":"Utah","abbreviation":"UT"},{"name":"Vermont","abbreviation":"VT"},{"name":"Virgin Islands","abbreviation":"VI"},{"name":"Virginia","abbreviation":"VA"},{"name":"Washington","abbreviation":"WA"},{"name":"West Virginia","abbreviation":"WV"},{"name":"Wisconsin","abbreviation":"WI"},{"name":"Wyoming","abbreviation":"WY"}];
 
 
-            $scope.openBillingDialog = function(ev, template) {
+            $scope.openBillingDialog = function(ev) {
                 $mdDialog.show({
                     controller: BillingDialogController,
-                    templateUrl: 'templates/blocks/account.billing.' + template + '.html',
+                    templateUrl: 'templates/blocks/account.billing.monthly.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     // clickOutsideToClose: true,
@@ -207,17 +235,15 @@ angular.module('arraysApp')
                     locals: {
                         billing: $scope.billing,
                         plan: $scope.plan,
-                        annualplan: $scope.annualplan,
                         subscription: $scope.subscription,
                         Subscriptions: Subscriptions
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, billing, plan, annualplan, subscription, Subscriptions) {
+            function BillingDialogController($scope, $mdDialog, billing, plan, subscription, Subscriptions) {
                 $scope.billing = billing;
                 $scope.plan = plan;
-                $scope.annualplan = annualplan;
                 $scope.subscription = subscription;
 
                 $scope.hide = function() {
