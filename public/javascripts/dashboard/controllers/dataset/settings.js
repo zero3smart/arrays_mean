@@ -238,8 +238,8 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                     );
                     if ($scope.imageUploader.queue.length > 0) {
-                    $scope.imageUploader.queue = [];
-                }
+                        $scope.imageUploader.queue = [];
+                    }
                 });
             };
 
