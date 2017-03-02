@@ -943,12 +943,12 @@ function _formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription, mer
             if (customFieldName != undefined) {
                 originalVal = rowParams[customFieldName][i];
                 var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
-                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                if (isNaN(displayableVal) == false && dataSourceDescription.raw_rowObjects_coercionScheme[key].operation != "ToDate") displayableVal = datatypes.displayNumberWithComma(displayableVal)
                 rowParams[customFieldName][i] = displayableVal
             } else {
                 originalVal = rowParams[key];
                 var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
-                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                if (isNaN(displayableVal) == false && dataSourceDescription.raw_rowObjects_coercionScheme[key].operation != "ToDate") displayableVal = datatypes.displayNumberWithComma(displayableVal)
                 rowParams[key] = displayableVal;
             }
         }
@@ -972,7 +972,7 @@ function _formatCoercedField(key, value, dataSourceDescription) {
     if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
         try {
             var displayableVal = _convertDateToBeRecognizable(value, key, dataSourceDescription)
-            if (isNaN(displayableVal) == false) {
+            if (isNaN(displayableVal) == false && dataSourceDescription.raw_rowObjects_coercionScheme[key].operation != "ToDate") {
                 displayableVal = datatypes.displayNumberWithComma(displayableVal)
             } else if (displayableVal === "Invalid date") {
                 return value;
