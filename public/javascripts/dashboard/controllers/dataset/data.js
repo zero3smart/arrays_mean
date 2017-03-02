@@ -471,7 +471,8 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                         );
 
-                        $state.transitionTo('dashboard.dataset.process', {id: dataset._id}, {
+                        var nextState = $scope.$parent.$parent.dataset.dirty ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                        $state.transitionTo(nextState, {id: dataset._id}, {
                             reload: true,
                             inherit: false,
                             notify: true

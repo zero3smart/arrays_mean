@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
-        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
+    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout',
+        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout) {
 
 
             //-- helper functions ---//
@@ -41,7 +41,6 @@ angular.module('arraysApp')
 
                 } else if ($scope.jobs[$scope.jobs.length-1].state == 'complete'){
 
-
                     getJobStatus(datasetId);
 
                 } else if ($scope.jobs[$scope.jobs.length-1].state == 'failed') {
@@ -68,11 +67,10 @@ angular.module('arraysApp')
             }
 
 
-            function refreshForm() {
-                $scope.dirty = 0;
-                $scope.imported = true;
-
-            }
+            // function refreshForm() {
+            //     $scope.dirty = 0;
+            //     $scope.imported = true;
+            // }
 
 
             function getJobStatus(datasetId) {
@@ -104,7 +102,6 @@ angular.module('arraysApp')
 
                 if (datasourceIndex == -1) {
 
-
                     $scope.$parent.$parent.dataset = dataset;
 
                     dataset.dirty = 0;
@@ -131,11 +128,9 @@ angular.module('arraysApp')
 
                     }
 
-
                 } else {
                     allDone();
                 }
-
 
             }
 
@@ -206,7 +201,10 @@ angular.module('arraysApp')
             function allDone() {
 
                 $scope.inProgress = false;
-                refreshForm();
+
+                // refreshForm();
+                $scope.dirty = 0;
+                $scope.imported = true;
 
                 $scope.togglePublish();
 
@@ -216,6 +214,13 @@ angular.module('arraysApp')
                         .position('top right')
                         .hideDelay(3000)
                 );
+
+                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+
             }
 
             function importDatasource(datasource) {
@@ -266,17 +271,10 @@ angular.module('arraysApp')
             }
             //----
 
-            // TODO this is temporary, the process should be automated
-            $scope.primaryAction.text = 'Next';
-            $scope.primaryAction.do = function() {
-                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
-                    reload: true,
-                    inherit: false,
-                    notify: true
-                });
-            };
+            $scope.primaryAction.text = ''; // will hide button
+            $scope.primaryAction.do = angular.noop(); // overwrite with noop, just in case
+
             $scope.$watch('dirty', function(dirty) {
-                $scope.primaryAction.disabled = dirty;
                 if(dirty && !$scope.inProgress && !dataset.connection) {
                     $scope.importData();
                 }
