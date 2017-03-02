@@ -52,6 +52,7 @@ angular.module('arraysApp')
             $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
 
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
+            if (!dataset.fe_visible) {dataset.fe_visible = true;}
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.$parent.$parent.additionalDatasources = angular.copy(additionalDatasources);
@@ -468,7 +469,7 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                             );
 
-                            $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                            $state.transitionTo('dashboard.dataset.process', {id: dataset._id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true

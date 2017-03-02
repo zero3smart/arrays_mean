@@ -1,33 +1,16 @@
 angular.module('arraysApp')
-    .controller('DatasetProcessCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
-        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
+    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
+        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
 
 
             //-- helper functions ---//
 
-            function makeFieldValuePairs(obj) {
-                var fieldValuePairs  = [], result;
-                for (var p in obj) {
-                    if( obj.hasOwnProperty(p) ) {
-                        fieldValuePairs.push(p + '=' + obj[p]);
-                    }
-                }
-                result = fieldValuePairs.join('&');
-                if (result !== '') {
-                    result = '?' + result;
-                }
-                return result;
-            }
-
-
             function errorHandler(response) {
-
                 var error = response.data.error;
                 $scope.importLogger.push('❌ Import failed due to ' + error);
 
                 $scope.inProgress = false;
             }
-
 
             function getJobAndLog (datasetId) {
 
@@ -273,7 +256,6 @@ angular.module('arraysApp')
 
             //this block has to come first, do not move
 
-
             if (dataset.jobId !== 0) {
                 $scope.inProgress = true;
 
@@ -284,22 +266,21 @@ angular.module('arraysApp')
             }
             //----
 
-
-            $scope.primaryAction.text = 'View';
+            // TODO this is temporary, the process should be automated
+            $scope.primaryAction.text = 'Next';
+            $scope.primaryAction.do = function() {
+                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
             $scope.$watch('dirty', function(dirty) {
                 $scope.primaryAction.disabled = dirty;
                 if(dirty && !$scope.inProgress && !dataset.connection) {
                     $scope.importData();
                 }
             });
-
-
-            $scope.primaryAction.do = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
-                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                    makeFieldValuePairs(dataset.fe_filters.default);
-                $window.open(url, '_blank');
-            };
 
             $scope.showAdvanced = false;
             $scope.toggleShowAdvanced = function() {

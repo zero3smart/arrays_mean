@@ -1,33 +1,59 @@
 angular.module('arraysApp')
-
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
-        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
-
-            $scope.primaryAction.text = 'Publish';
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window) {
 
             // scroll to listing request, if hash
             $timeout(function() {
                 $anchorScroll();
             });
 
-            $scope.$watch('vm.settingsForm.$valid', function(validity) {
+            var _submitForm = function() {
+                $scope.submitForm($scope.formValidity);
+            };
 
+            var _viewViz = function() {
+                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                    makeFieldValuePairs(dataset.fe_filters.default);
+                $window.open(url, '_blank');
+            };
+
+            function makeFieldValuePairs(obj) {
+                var fieldValuePairs  = [], result;
+                for (var p in obj) {
+                    if( obj.hasOwnProperty(p) ) {
+                        fieldValuePairs.push(p + '=' + obj[p]);
+                    }
+                }
+                result = fieldValuePairs.join('&');
+                if (result !== '') {
+                    result = '?' + result;
+                }
+                return result;
+            }
+
+            $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
                     $scope.primaryAction.disabled = !validity;
                 }
-
             });
-            $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.formValidity);
-            };
+
+            $scope.$watch('vm.settingsForm.$dirty', function(dirty) {
+                if (dirty) {
+                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.do = _submitForm;
+                } else { // false or undefined
+                    $scope.primaryAction.text = 'View';
+                    $scope.primaryAction.do = _viewViz;
+                }
+            }, true);
 
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            if (!dataset.fe_visible) {dataset.fe_visible = true;}
             if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
             // if (!dataset.url) {
@@ -113,51 +139,46 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function(isValid) {
-                // debugger;
 
-                // if (isValid) {
                 $scope.submitting = true;
+
                 if (!dataset.author) {
                     dataset.author = $scope.user._id;
                     dataset._team = $scope.team._id;
                     dataset.fe_displayTitleOverrides = {};
                 }
+
                 dataset.updatedBy = $scope.user._id;
 
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
 
-
                 DatasetService.save(finalizedDataset).then(function (response) {
 
                     if (response.status == 200) {
-
                         $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
-
-                        $state.transitionTo('dashboard.dataset.process', {id: response.data.id}, {
-                            reload: true,
-                            inherit: false,
-                            notify: true
-                        });
-                    }
-                    $scope.submitting = false;
-                }, function (error) {
-
-
-                    $mdToast.show(
                             $mdToast.simple()
-                                .textContent(error)
+                                .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
+                            );
+                    }
+
+                    $scope.submitting = false;
+                    $scope.vm.settingsForm.$setPristine();
+
+                    // NOTE attempting to open _blank here will fire pop up blocker
+
+                }, function (error) {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(error)
+                            .position('top right')
+                            .hideDelay(5000)
                         );
+
                     $scope.submitting = false;
                 });
-                // }
             };
 
             // banner upload
