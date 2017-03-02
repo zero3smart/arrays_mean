@@ -470,6 +470,8 @@ angular.module('arraysApp')
                     setViewSettingDefault('defaultSortOrderDescending', false); // ascending
                     break;
                 case 'map':
+                    setViewSettingDefault('coordColor', '#FEB600'); // Arrays orange
+                    break;
                 case 'globe':
                     setViewSettingDefault('pointColor', '#FEB600'); // Arrays orange
                     break;
