@@ -545,6 +545,7 @@ module.exports.save = function (req, res) {
     } else {
 
         // Update of Existing Dataset
+        delete req.body.__v;
         datasource_description.findById(req.body._id)
             .populate('schema_id')
             .populate('author')
