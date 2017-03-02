@@ -273,7 +273,7 @@ module.exports.deleteImage = function (req, res) {
             if(err) {
                 return res.status(401).send({error:'unauthorized'});
             } else {
-                var key = teamDoc.subdomain + "/assets/logo/" + req.params.filename;
+                var key = teamDoc.subdomain + "/assets/" + req.params.folder +"/" + req.params.filename;
                 // delete the key from s3
                 s3FileHosting.deleteObject(key, function(err, data) {
                     if(err) {
