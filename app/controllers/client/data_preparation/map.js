@@ -421,7 +421,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-                    aggregateBy: aggregateBy
+                    aggregateBy: aggregateBy,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
 
                 };
                 callback(err, data);

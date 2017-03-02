@@ -82,8 +82,10 @@
                                                 </div>
                                             </div>
                                         </div>
+
+
                                         {% if source.banner %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('{{ source.banner }}')">
+                                        <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,team.subdomain,source._id,'banner')}}')">
                                         {% else %}
                                         <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}">
                                         {% endif %}

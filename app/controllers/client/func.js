@@ -545,6 +545,7 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
         }
         var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
+            // console.log("uniqueFieldValuesByFieldName equals null")
             callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
@@ -772,81 +773,19 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
 };
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
 
-//for object_detail
-var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
-
- 
-   
-
-    var displayableVal = originalVal;
-    // var prototypeName = Object.prototype.toString.call(originalVal);
-    // if (prototypeName === '[object Date]') {
-    // }
-    // ^ We could check this but we ought to have the info, and checking the
-    // coersion scheme will make this function slightly more rigorous.
-    // Perhaps we could do some type-introspection automated formatting later
-    // here if needed, but I think generally that kind of thing would be done case-by-case
-    // in the template, such as comma-formatting numbers.
-
-    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
-    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
-        var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
-        if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.operation;
-            if (_do === "ToDate") {
-                if (originalVal == null || originalVal == "") {
-                    return originalVal; // do not attempt to format
-                }
-
-                var dateFormat = coersionSchemeOfKey.outputFormat;
-
-
-                // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
-                //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
-                //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
-                //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
-                //     }
-                // }
-
-                if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
-                    dateFormat = config.defaultDateFormat;
-                }
-
-                
-                displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
-            } else { // nothing to do? (no other types yet)
-            }
-        } else { // nothing to do?
-        }
-    } else { // nothing to do?
-    }
-    //
-
-
-    return displayableVal;
-};
-module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
-
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
-    var dateToFormat = new Date(originalVal)
-    try{
-        var displayableVal = dateToFormat.toISOString();
-    }
-    catch(e) {
-        console.log(e + ": " + dateToFormat)
-        var displayableVal = originalVal;
-    }
-    // var prototypeName = Object.prototype.toString.call(originalVal);
-    // if (prototypeName === '[object Date]') {
-    // }
-    // ^ We could check this but we ought to have the info, and checking the
-    // coersion scheme will make this function slightly more rigorous.
-    // Perhaps we could do some type-introspection automated formatting later
-    // here if needed, but I think generally that kind of thing would be done case-by-case
-    // in the template, such as comma-formatting numbers.
-    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
-    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+    if (dataSourceDescription.raw_rowObjects_coercionScheme[key].operation === "ToDate") {
+        var dateToFormat = new Date(originalVal)
+        try{
+            var displayableVal = dateToFormat.toISOString();
+        }
+        catch(e) {
+            console.log(e + ": " + dateToFormat)
+            var displayableVal = originalVal;
+        }
+
+        var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
             var _do = coersionSchemeOfKey.operation;
@@ -855,11 +794,12 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
                     return originalVal; // do not attempt to format
                 }
                 var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format(coersionSchemeOfKey.outputFormat);
+                return newDateValue;
             }
         }
+        return displayableVal;
     }
-    //
-    return newDateValue;
+    return originalVal;
 };
 module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
@@ -983,3 +923,68 @@ function _useLightBrandText(backgroundColor) {
 }
 
 module.exports.useLightBrandText = _useLightBrandText;
+
+function _formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription, mergedFields, customFieldName) {
+    var rowParams = rowObject.rowParams;
+    var rowParams_keys = mergedFields || Object.keys(rowParams);
+    for (var i = 0; i < rowParams_keys.length; i++) {
+        var originalVal;
+        var key = rowParams_keys[i];
+        if (Array.isArray(rowParams[key])) {
+            for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
+                var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
+                var customFieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
+                return _formatCoercedFieldsFromRowObject(rowObject, dataSourceDescription, mergedFields, customFieldName, dataSourceDescription)
+            }
+        };
+
+        if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
+
+            if (customFieldName != undefined) {
+                originalVal = rowParams[customFieldName][i];
+                var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
+                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                rowParams[customFieldName][i] = displayableVal
+            } else {
+                originalVal = rowParams[key];
+                var displayableVal = _convertDateToBeRecognizable(originalVal, key, dataSourceDescription);
+                if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+                rowParams[key] = displayableVal;
+            }
+        }
+    }
+    return rowParams;
+}
+module.exports.formatCoercedFieldsFromRowObject = _formatCoercedFieldsFromRowObject;
+
+function _formatCoercedField(key, value, dataSourceDescription) {
+    for (var i = 0; i < dataSourceDescription.customFieldsToProcess.length; i++) {
+        var mergedFields = dataSourceDescription.customFieldsToProcess[i].fieldsToMergeIntoArray;
+        var fieldName = dataSourceDescription.customFieldsToProcess[i].fieldName;
+        if (fieldName === key) {
+            // check each of the merged fields
+            for (var i = 0; i < mergedFields.length; i++) {
+                return _formatCoercedField(mergedFields[i], value, dataSourceDescription);
+            }
+        }
+    }
+
+    if (dataSourceDescription.raw_rowObjects_coercionScheme.hasOwnProperty(key)) {
+        try {
+            var displayableVal = _convertDateToBeRecognizable(value, key, dataSourceDescription)
+            if (isNaN(displayableVal) == false) {
+                displayableVal = datatypes.displayNumberWithComma(displayableVal)
+            } else if (displayableVal === "Invalid date") {
+                return value;
+            }
+            return displayableVal;
+        } catch (e) {
+            console.log(e)
+            return value;
+        }
+    }
+
+    return value;
+}
+module.exports.formatCoercedField = _formatCoercedField;
+

@@ -1,11 +1,14 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
-        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
 
             $scope.primaryAction.text = 'Publish';
 
-
+            // scroll to listing request, if hash
+            $timeout(function() {
+                $anchorScroll();
+            });
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
@@ -18,6 +21,8 @@ angular.module('arraysApp')
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
             };
+
+            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
 
@@ -82,13 +87,18 @@ angular.module('arraysApp')
                         if (response.status == 200 && response.data) {
 
 
-                            $scope.$parent.$parent.dataset = response.data;
-                             $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Dataset approval state updated!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                            if (!$filter('isSuperAdmin')(dataset.author)) {
+            
+                                $scope.$parent.$parent.dataset = response.data;
+                                 $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('Dataset updated with approval state setting!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
+
+                            }
+
                         }
                     })
 
@@ -216,6 +226,18 @@ angular.module('arraysApp')
                         $scope.imageUploader.uploadAll();
 
                     });
+            };
+
+            $scope.deleteBanner = function() {
+                AssetService.deleteBanner($scope.dataset._id).then(function (data) {
+                    $scope.dataset.banner = data.dataset.banner
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Banner deleted successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                });
             };
 
         }

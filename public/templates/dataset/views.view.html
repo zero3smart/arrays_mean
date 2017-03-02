@@ -87,9 +87,9 @@
 <div ng-if="(setting.inputType == 'select' && viewName != 'map') || (setting.inputType == 'select' && viewName == 'map' && (setting.name == 'coordTitle' || setting.name == 'latitudeField' || setting.name == 'longitudeField' || setting.name == 'radiusBy') && data.plotCoordinates == true)" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <small class="pull-right" ng-if="dep">
-        Dropdown selections are based on {{dep.display}}
-    </small>
+    <!-- <small class="pull-right" ng-if="dep"> -->
+        <!-- Dropdown selections are based on {{dep.display}} -->
+    <!-- </small> -->
     <small class="pull-right" ng-if="setting.restrictColumnDataType">
         Field type is restricted to {{setting.restrictColumnDataType.toLowerCase()}}.
     </small>
@@ -362,9 +362,9 @@
 <div ng-if="setting.inputType == 'selectSecondaryColumn' && data.defaultGalleryConditionalBackground" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <small class="pull-right" ng-if="dep">
-        Dropdown selections are based on {{dep.display}}
-    </small>
+    <!-- <small class="pull-right" ng-if="dep"> -->
+        <!-- Dropdown selections are based on {{dep.display}} -->
+    <!-- </small> -->
     <small class="pull-right" ng-if="setting.restrictColumnDataType">
         Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}}.
     </small>

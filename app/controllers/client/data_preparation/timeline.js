@@ -84,7 +84,6 @@ module.exports.BindData = function(req, urlQuery, callback) {
             var sortBy_realColumnName = sortBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy, dataSourceDescription) :
                 dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
 
-            var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = '/' + source_pKey + '/timeline';
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
@@ -377,7 +376,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                                 el2.rowParams[sortBy_realColumnName], dataSourceDescription, sortBy_realColumnName, 'timeline');
 
                             //Format the date value
-                            el2.rowParams[sortBy_realColumnName] = func.convertDateToBeRecognizable(displayableVal, sortBy_realColumnName, dataSourceDescription);                    
+                            el2.rowParams[sortBy_realColumnName] = func.convertDateToBeRecognizable(displayableVal, sortBy_realColumnName, dataSourceDescription);
 
                             results.push(el2);
                         });
@@ -491,12 +490,19 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     numPages: groupSize === -1 ? Math.ceil(nonpagedCount / config.pageSize) : Math.ceil(nonpagedCount / groupsLimit),
                     nonpagedCount: nonpagedCount,
                     //
-                    fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+                    fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
+
+
+
                     //
-                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
-                    hasThumbs: hasThumbs,
-                    fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
+
+
+                    hasThumbs:  (dataSourceDescription.fe_image.field) ? true: false,
+                    fieldKey_medThumbImageURL: dataSourceDescription.fe_image.field,
+                    scrapedImages: dataSourceDescription.fe_image.scraped,
+
+
                     //
                     groupedResults: groupedResults,
                     groupBy: groupBy,
@@ -531,7 +537,8 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
+                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
 
                 };
 

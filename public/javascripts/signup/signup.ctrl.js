@@ -95,8 +95,8 @@
 	}])
 
 
-	signupModule.controller('passwordCtrl',['$scope','User','$stateParams','$window',function($scope,User,$stateParams,
-		$window) {
+	signupModule.controller('passwordCtrl',['$scope','User','$stateParams','$window','$state',function($scope,User,$stateParams,
+		$window,$state) {
 
 	
 		$scope.userId = $stateParams.userId;
@@ -109,7 +109,7 @@
 			.$promise
 			.then(function(response) {
 				if (response.data == 'ok') {
-					$scope.success = true;
+					$state.go('reset.success',{successMsg: ' Success! Please check your email for the reset account password instructions!'});
 				}
 			},function(response) {
 				$scope.err = response.data.err;

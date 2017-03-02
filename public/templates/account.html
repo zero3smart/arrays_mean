@@ -1,3 +1,8 @@
+<div class="process-data"
+    ng-class="{ 'show': (team.subscription.state !== 'active' && team.subscription.state !== 'canceled' && !team.superTeam) }">
+     <!-- && (user.role === 'admin' || user.role === 'superAdmin) -->
+    Please <a href="dashboard/account/billing">enter your billing information</a> to finish setting up your account.
+</div>
 <header>
     <h1>Account Settings</h1>
 </header>

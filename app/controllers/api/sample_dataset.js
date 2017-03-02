@@ -62,7 +62,7 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
             callback(err, null);
             } else {
                 // since these are all type Mixed, we need to set markModified to true
-                var mixedFields = ['raw_rowObjects_coercionScheme', 'fe_excludeFields', 'fe_displayTitleOverrides', 'fe_designatedFields', 'fe_objectShow_customHTMLOverrideFnsByColumnNames'];
+                var mixedFields = ['raw_rowObjects_coercionScheme', 'fe_excludeFields', 'fe_displayTitleOverrides', 'objectTitle', 'fe_objectShow_customHTMLOverrideFnsByColumnNames'];
                 var duplicatedDescription = dataset;
 
                 duplicatedDescription._id = ObjectId();

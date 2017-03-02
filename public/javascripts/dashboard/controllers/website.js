@@ -4,12 +4,9 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
-            $scope.deleteFile = function(url, type) {
-                var keyWithEndBit = url.split("amazonaws.com")[1];
-                var assetType = keyWithEndBit.split("logo")
-                keyWithEndBit = assetType[0] + type + assetType[1]
-                var key = keyWithEndBit.split("?")[0];
-                AssetService.deleteImage($scope.team._id, key).then(function (data) {
+            $scope.deleteFile = function(url, folder) {
+                var fileName = url.split("logo/")[1].split("?")[0];
+                AssetService.deleteImage($scope.team._id, folder, fileName).then(function (data) {
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Image deleted successfully!')
@@ -22,15 +19,14 @@ angular.module('arraysApp')
             }
 
             $scope.deleteIcon = function(url) {
-                var key = url.split("amazonaws.com")[1]
-                AssetService.deleteImage($scope.team._id, key).then(function (data) {
+                var fileName = url.split('/').pop();
+                AssetService.deleteImage($scope.team._id, 'icon', fileName).then(function (data) {
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent('Icon deleted successfully!')
                             .position('top right')
                             .hideDelay(3000)
                     );
-                    // get icons?
                     AssetService.loadIcons()
                     .then(function(data) {
                         $scope.iconsUrl = data;

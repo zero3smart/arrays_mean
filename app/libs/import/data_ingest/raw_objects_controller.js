@@ -189,7 +189,6 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
             var rowObject_primaryKey = parentId ? datasetId + "-" + (lineNr - 1) : "" + (lineNr - 1) ;
 
-
             var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, insertTo , rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {

@@ -21,7 +21,7 @@
 
                         <md-input-container class="md-block" flex-gt-sm>
                             <label>Nested Fields</label>
-                            <md-select required name="fields" ng-model="data.fields" multiple>
+                            <md-select required name="fields" ng-model="originalFields" multiple>
                                 <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
                                     {{column.name}}
                                 </md-option>

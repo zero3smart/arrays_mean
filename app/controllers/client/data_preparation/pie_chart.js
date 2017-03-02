@@ -228,8 +228,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     _groupedResults.forEach(function (el, i, arr) {
                         var displayableVal = func.ValueToExcludeByOriginalKey(
                             el.label, dataSourceDescription, groupBy_realColumnName, 'pieChart');
+                        // format date types
+                        displayableVal = func.formatCoercedField(groupBy_realColumnName, displayableVal, dataSourceDescription);
                         if (!displayableVal) return;
-
                         finalizedButNotCoalesced_groupedResults.push({
                             value: el.value,
                             label: displayableVal
@@ -304,6 +305,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -366,7 +368,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // Aggregate By
                     aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-                    aggregateBy: aggregateBy
+                    aggregateBy: aggregateBy,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
                 };
                 callback(err, data);
             });

@@ -121,8 +121,13 @@ $(document).ready(function () {
     /**
      * Search criteria click dropdown item to select
      */
-    // $('.search-input')
-    //     .css('width', ($('.search-input').attr('placeholder').length * 9) + 'px');
+    var searchInputPlaceholder = $('.search-input').attr('placeholder');
+    var searchWidth;
+    if (searchInputPlaceholder != undefined) searchWidth = searchInputPlaceholder.length * 9;
+    else searchWidth = 9;
+    $('.search-input')
+        .css('width', searchWidth + 'px');
+
 
     $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
@@ -134,8 +139,8 @@ $(document).ready(function () {
 
         $('.search-input')
             .attr('placeholder', newPlaceholder);
-        // $('.search-input')
-        //     .css('width', (newPlaceholder.length * 9) + 'px') ;
+        $('.search-input')
+            .css('width', (newPlaceholder.length * 9) + 'px') ;
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
@@ -240,12 +245,44 @@ $(document).ready(function () {
      */
         // Small
     $('.gallery-image, .timeline-image').error(function () {
-        $(this).attr('src', '/images/image-not-found-sm.png');
+
+        var isScrapedImage = $(this).attr('scraped');
+
+        if (isScrapedImage == 'true') { //replace with alternative link
+             var $parent = $(this).parent();
+            var actualImageLink = $parent.find("[name='alternativeImgLink']").val();
+            $(this).attr('src', actualImageLink);
+            $(this).attr('scraped','false');
+
+
+        } else { //replace with image not found
+            $(this).attr('src', '/images/image-not-found-sm.png');
+        }
+
+    
+
     });
 
     // Large
     $('.object-featured').error(function () {
-        $(this).attr('src', '/images/image-not-found-lg.png');
+
+        var isScrapedImage = $(this).attr('scraped');
+
+        if (isScrapedImage == 'true') { //replace with alternative link
+             var $parent = $(this).parent();
+            var actualImageLink = $parent.find("[name='alternativeImgLink']").val();
+            $(this).attr('src', actualImageLink);
+            $(this).attr('scraped','false');
+
+
+        } else { //replace with image not found
+            $(this).attr('src', '/images/image-not-found-lg.png');
+        }
+
+        
+
+
+        // $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
     /**
@@ -273,12 +310,12 @@ $(document).ready(function () {
     });
 
     $('#forget-pw').on('click',function(e) {
-        
+
     })
 
 
 
-    $('#logout').on('click',function(e) {
+    $('a#logout').on('click',function(e) {
 
         e.preventDefault();
         $.get('/auth/logout')
