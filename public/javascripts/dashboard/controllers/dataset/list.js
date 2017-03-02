@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets', 
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets',
         function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets) {
 
             // Get subscription quantity to limit number of datasets
@@ -56,7 +56,7 @@ angular.module('arraysApp')
                             });
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('Dataset deleted successfully!')
+                                    .textContent('Visualization deleted.')
                                     .position('top right')
                                     .hideDelay(3000)
                             );

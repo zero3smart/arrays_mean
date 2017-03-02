@@ -212,7 +212,7 @@ angular.module('arraysApp')
 
                 $mdToast.show(
                     $mdToast.simple()
-                        .textContent('Dataset imported successfully!')
+                        .textContent('Visualization imported!')
                         .position('top right')
                         .hideDelay(3000)
                 );

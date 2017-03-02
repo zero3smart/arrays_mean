@@ -452,29 +452,31 @@ angular.module('arraysApp')
                     $scope.submitting = true;
 
                     var errorHandler = function (error) {
-                            $scope.submitting = false;
-                            $mdToast.show(
-                            $mdToast.simple()
-                                .textContent(error)
-                                .position('top right')
-                                .hideDelay(5000)
-                            );
-                        }, done = function() {
-                            $scope.submitting = false;
+                        $scope.submitting = false;
+                        $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(error)
+                            .position('top right')
+                            .hideDelay(5000)
+                        );
+                    };
 
-                            $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Dataset updated successfully!')
-                                .position('top right')
-                                .hideDelay(3000)
-                            );
+                    var done = function() {
+                        $scope.submitting = false;
 
-                            $state.transitionTo('dashboard.dataset.process', {id: dataset._id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
-                        };
+                        $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Visualization updated!')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
+                        $state.transitionTo('dashboard.dataset.process', {id: dataset._id}, {
+                            reload: true,
+                            inherit: false,
+                            notify: true
+                        });
+                    };
 
                     var queue = [];
 

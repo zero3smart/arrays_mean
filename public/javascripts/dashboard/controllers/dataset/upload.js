@@ -85,7 +85,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Connected to the database successfully!')
+                                .textContent('Database connection successful!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -94,7 +94,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Error connecting to the database')
+                                .textContent('Error connecting to the database.')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -146,7 +146,7 @@ angular.module('arraysApp')
                     if (!response.error && response.id) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent(fileItem.file.name + ' was uploaded successfully!')
+                                .textContent(fileItem.file.name + ' uploaded!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -247,7 +247,7 @@ angular.module('arraysApp')
 
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent(dataset.fileName + ' uploaded successfully!')
+                            .textContent(dataset.fileName + ' uploaded!')
                             .position('top right')
                             .hideDelay(3000)
                     );
@@ -297,7 +297,7 @@ angular.module('arraysApp')
                         if(notify) {
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent(toastFileName + ' removed successfully!')
+                                    .textContent(toastFileName + ' removed.')
                                     .position('top right')
                                     .hideDelay(5000)
                             );
@@ -316,7 +316,7 @@ angular.module('arraysApp')
                         if(notify) {
                             $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent(additionalDatasource.fileName + ' was removed successfully!')
+                                        .textContent(additionalDatasource.fileName + ' removed.')
                                         .position('top right')
                                         .hideDelay(5000)
                                 );
@@ -387,7 +387,7 @@ angular.module('arraysApp')
                     }
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('All data sources successfully cleared!')
+                            .textContent('All data sources cleared.')
                             .position('top right')
                             .hideDelay(3000)
                     );

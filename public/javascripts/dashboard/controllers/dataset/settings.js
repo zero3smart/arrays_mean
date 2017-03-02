@@ -118,7 +118,7 @@ angular.module('arraysApp')
                                 $scope.$parent.$parent.dataset = response.data;
                                 $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Dataset updated with approval state setting!')
+                                        .textContent('Approval state updated!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -158,7 +158,7 @@ angular.module('arraysApp')
                     if (response.status == 200) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
+                                .textContent('Visualization updated!')
                                 .position('top right')
                                 .hideDelay(3000)
                             );
@@ -211,7 +211,7 @@ angular.module('arraysApp')
                         }
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Image upload successfully!')
+                                .textContent('Image uploaded!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -253,7 +253,7 @@ angular.module('arraysApp')
                     $scope.dataset.banner = data.dataset.banner;
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('Banner deleted successfully!')
+                            .textContent('Banner deleted.')
                             .position('top right')
                             .hideDelay(3000)
                     );
