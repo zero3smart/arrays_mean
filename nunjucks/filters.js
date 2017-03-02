@@ -21,6 +21,9 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('isArray', function (val) {
         return Array.isArray(val);
     });
+    nunjucks_env.addFilter('initial', function (str) {
+        return str.slice(0, 1);
+    })
 
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
 
