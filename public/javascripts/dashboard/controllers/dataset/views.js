@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService','user',
-        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService', 'user', '$window', 'viewUrlService',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user,$window,viewUrlService) {
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -48,7 +48,6 @@ angular.module('arraysApp')
             });
 
 
-
             $scope.data = {};
 
             $scope.data.default_view = dataset.fe_views.default_view;
@@ -88,9 +87,6 @@ angular.module('arraysApp')
             if (!$scope.data.default_view) {
                 $scope.makeDefaultView('gallery');
             }
-
-
-
 
 
             $scope.openViewDialog = function (evt, id) {
@@ -135,9 +131,14 @@ angular.module('arraysApp')
                         });
 
 
-
                 });
             };
+
+            $scope.openViewPreview = function(viewName) {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName);
+                $window.open(url, '_blank');
+            };
+
             // open modal on load, for testing
             // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // barChart
             // $scope.openViewDialog(null, "581a83b24fc526c798a72559"); // lineGraph
@@ -168,8 +169,6 @@ angular.module('arraysApp')
                     var useCustomView = false;
 
 
-
-
                     for (var key in finalizedDataset.fe_views.views) {
 
                         if ($scope.customViews.indexOf(key) >= 0 && finalizedDataset.fe_views.views[key].visible==true) {
@@ -177,7 +176,6 @@ angular.module('arraysApp')
                             break;
                         }
                     }
-
 
 
                     finalizedDataset.useCustomView = useCustomView;
@@ -248,8 +246,6 @@ angular.module('arraysApp')
                 };
 
 
-
-
                 $scope.loadDatasetsForMapping = function() {
 
                     if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
@@ -259,7 +255,7 @@ angular.module('arraysApp')
                                 $scope.otherDatasetsloaded = true;
                                 for (var i = 0; i < all.length; i++) {
                                     if (all[i].title !== dataset.title) {
-                                        var mappingPkey = all[i]._id
+                                        var mappingPkey = all[i]._id;
                                         // var mappingPkey = getPkeyFromDatasource(all[i].title,
                                         //     all[i].importRevision);
                                         $scope.otherAvailableDatasets.push({
@@ -302,18 +298,17 @@ angular.module('arraysApp')
                 };
 
                 $scope.removeIconField = function(settingName, index) {
-                    $scope.data[settingName].conditions.splice(index, 1)
-                }
-
-                $scope.initBackgroundColors = function(settingName) {
-                    assignNestedDataValues(settingName);
-                }
-
+                    $scope.data[settingName].conditions.splice(index, 1);
+                };
 
                 $scope.initBackgroundColors = function(settingName) {
                     assignNestedDataValues(settingName);
                 };
 
+
+                $scope.initBackgroundColors = function(settingName) {
+                    assignNestedDataValues(settingName);
+                };
 
 
                 var findDependency = function (settingName) {
@@ -336,8 +331,8 @@ angular.module('arraysApp')
 
                 $scope.makeRelative = function(Url) {
                     // assets is the only thing that is constant so we can split on it and then prepend it back on the relative url
-                    var splitUrl = Url.split("assets")[1];
-                    var relativeUrl = "/assets" + splitUrl;
+                    var splitUrl = Url.split('assets')[1];
+                    var relativeUrl = '/assets' + splitUrl;
                     return relativeUrl;
                 };
 
@@ -501,11 +496,6 @@ angular.module('arraysApp')
                     $mdDialog.hide($scope.dataset);
                 };
             }
-
-
-
-
-
 
 
         }

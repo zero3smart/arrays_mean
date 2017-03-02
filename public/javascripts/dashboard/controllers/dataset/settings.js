@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window',
-        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window', 'viewUrlService',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window, viewUrlService) {
 
             // scroll to listing request, if hash
             $timeout(function() {
@@ -12,25 +12,26 @@ angular.module('arraysApp')
             };
 
             var _viewViz = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
-                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                    makeFieldValuePairs(dataset.fe_filters.default);
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view);
+                // var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                //     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                //     makeFieldValuePairs(dataset.fe_filters.default);
                 $window.open(url, '_blank');
             };
 
-            function makeFieldValuePairs(obj) {
-                var fieldValuePairs  = [], result;
-                for (var p in obj) {
-                    if( obj.hasOwnProperty(p) ) {
-                        fieldValuePairs.push(p + '=' + obj[p]);
-                    }
-                }
-                result = fieldValuePairs.join('&');
-                if (result !== '') {
-                    result = '?' + result;
-                }
-                return result;
-            }
+            // function makeFieldValuePairs(obj) {
+            //     var fieldValuePairs  = [], result;
+            //     for (var p in obj) {
+            //         if( obj.hasOwnProperty(p) ) {
+            //             fieldValuePairs.push(p + '=' + obj[p]);
+            //         }
+            //     }
+            //     result = fieldValuePairs.join('&');
+            //     if (result !== '') {
+            //         result = '?' + result;
+            //     }
+            //     return result;
+            // }
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
