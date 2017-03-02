@@ -289,7 +289,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;
-            $scope.$parent.$parent.currentNavItem = 'Done';
+            $scope.$parent.$parent.currentNavItem = '';
             $scope.importLogger = [];
             $scope.datasetsToProcess = [];
             $scope.currentWorkingDataset = $scope.$parent.$parent.dataset;
