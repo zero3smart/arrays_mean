@@ -425,14 +425,59 @@ module.exports.defaultLoginTeam = function(req,res) {
 }
 
 module.exports.delete = function(req, res) {
-    User.findById(req.params.id, function(err, user) {
-        if (err) return res.send(err);
-        if (!user) return res.send(new Error('No User Exists'));
 
-        user.remove(function(err) {
-            if (err) return res.send(err);
-            winston.info("✅  Removed user : " + user._id);
-            res.json({success: 'ok'});
-        });
-    });
+
+
+
+    if (!req.user) {
+        return res.status(401).send({error: 'unauthorized'});
+    }
+
+    var batch = new Batch();
+    batch.concurrency(1);
+    var u;
+    var a;
+
+    batch.push(function(done) {
+
+
+        User.findById(req.params.id)
+        .populate('defaultLoginTeam')
+        .exec(function(err,user) {
+
+            if (err) return done(err);
+            if (!user) return done(new Error('No User Exists'));
+            u = user;
+            a = user.defaultLoginTeam.admin;
+            console.log(a);
+            done();
+
+        })
+
+    })
+
+    batch.push(function(done) {
+
+
+        datasource_descriptions.update({author:u._id},{$set:{author:a}},done);
+    })
+
+    batch.push(function(done) {
+      
+        datasource_descriptions.update({updatedBy:u._id},{$set:{updatedBy: a}},done);
+    })
+
+    batch.push(function(done) {
+        user.remove(done);
+    })
+
+    batch.end(function(err) {
+        if (err) return res.send(err);
+        else {
+             winston.info("✅  Removed user : " + user._id);
+            res.json({success:'ok'});
+        }
+
+    })
+
 };

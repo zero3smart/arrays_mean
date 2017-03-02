@@ -15,6 +15,7 @@ $(window).load(function () {
 });
 
 $(document).ready(function () {
+
     /**
      * Select source dataset on click
      */
@@ -259,11 +260,10 @@ $(document).ready(function () {
             $(this).attr('src', '/images/image-not-found-sm.png');
         }
 
-    
-
     });
 
     // Large
+
     $('.object-featured').error(function () {
 
         var isScrapedImage = $(this).attr('scraped');
@@ -278,11 +278,6 @@ $(document).ready(function () {
         } else { //replace with image not found
             $(this).attr('src', '/images/image-not-found-lg.png');
         }
-
-        
-
-
-        // $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
     /**
