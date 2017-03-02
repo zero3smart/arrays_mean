@@ -52,7 +52,7 @@ $(function () {
 		}
 
 		signupFooter.classList.add('show-signup-footer');
-
+		document.querySelector('.site-content').style.paddingBottom = "64px";
 
 		declineSignup.addEventListener('click', function(e) {
 			e.preventDefault();
