@@ -98,16 +98,6 @@ angular.module('arraysApp')
                     //         },
                     //     }
                     // })
-                    // .state('dashboard.account.upgradePro', {
-                    //     url: '/upgrade/pro',
-                    //     controller: 'BillingCtrl',
-                    //     templateUrl: 'templates/account/upgrade.pro.html'
-                    // })
-                    // .state('dashboard.account.startProTrial', {
-                    //     url: '/upgrade/proTrial',
-                    //     controller: 'BillingCtrl',
-                    //     templateUrl: 'templates/account/upgrade.pro-trial.html'
-                    // })
                     // .state('dashboard.account.close', {
                     //     url: '/close',
                     //     controller: 'BillingCtrl',

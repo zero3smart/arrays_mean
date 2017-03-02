@@ -2,24 +2,12 @@ angular.module('arraysApp')
     .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
         function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
 
-            /* Code for limiting # of datasets based on subscription quantity (keeping for later) */
-            /*// Get datasets for quantity limit
-            DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
-                .then(function(res) {
-                    var filteredDatasets = res.filter(function(dataset) {
-                        return dataset.sample === false;
-                    });
-
-                    // Don't allow subscription quantity to go to zero if there are no datasets
-                    $scope.quantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
-                }, function(err) {});*/
-
             $scope.users = users;
 
             // Set plans data after promise from router resolves
             plans.$promise.then(function(data) {
                 $scope.plans = data.data.plans.plan;
-                console.log(data.data.plans.plan);
+                // console.log(data.data.plans.plan);
 
                 if ($stateParams.plan_code) {
                     $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
@@ -66,19 +54,6 @@ angular.module('arraysApp')
                 'Diners Club',
                 'JCB'
             ];
-
-
-            // Watch billing period for changes for filtering plans
-            // $scope.$watch('billing.plan_period', function(newValue, oldValue){
-
-            //     // Check if value has changes
-            //     if (newValue === oldValue) {
-            //         return;
-            //     }
-
-            //     console.log($scope.billing.plan_period);
-
-            // });
 
 
             // Get account info from Recurly
@@ -186,8 +161,8 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        console.log($scope.subscription);
-                        console.log($scope.plan);
+                        // console.log($scope.subscription);
+                        // console.log($scope.plan);
 
                         if (callback) return callback();
                     }
@@ -227,7 +202,7 @@ angular.module('arraysApp')
             $scope.openBillingDialog = function(ev) {
                 $mdDialog.show({
                     controller: BillingDialogController,
-                    templateUrl: 'templates/blocks/account.billing.monthly.html',
+                    templateUrl: 'templates/blocks/account.billing.change-plan.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     // clickOutsideToClose: true,
