@@ -18,6 +18,10 @@ module.exports = function() {
 	var _finishAllImportingSteps = function(dataset) {
 		var user = dataset.lastImportInitiatedBy;
 		var team = dataset._team;
+		if (team == undefined && dataset.schema_id && dataset.schema_id._team) {
+			team = dataset.schema_id._team;
+		}
+		
 		nodemailer.sendVizFinishProcessingEmail(user,dataset,team,function(err) {
 			if (err) console.log(err);
 			dataset.jobId = 0;
@@ -125,7 +129,7 @@ module.exports = function() {
 
 
 		            datasource_description.findById(job.data.id)
-		            .populate('lastImportInitiatedBy _team')
+		            .populate('lastImportInitiatedBy _team schema_id schema_id._team')
 		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 

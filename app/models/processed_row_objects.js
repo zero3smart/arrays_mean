@@ -704,7 +704,7 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
         //     }
         // }
 
-        console.log(query);
+
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
