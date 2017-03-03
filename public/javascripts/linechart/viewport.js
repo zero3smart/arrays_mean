@@ -12,7 +12,6 @@ linechart.viewport = function (data, options) {
 
     this._data = data.data.map(function (lineData) {
 
-
         return lineData.map(function (d) {
             d.date = new Date(d.date);
             return d;
