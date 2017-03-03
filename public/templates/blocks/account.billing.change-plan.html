@@ -1,7 +1,7 @@
-<md-dialog md-no-ink aria-label="Monthly Billing">
+<md-dialog md-no-ink aria-label="Update Plan">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Monthly Billing</h2>
+            <h2>Update Plan</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <span class="icon-close-big" aria-label="Close dialog"></span>
@@ -12,7 +12,7 @@
     <md-dialog-content layout-padding>
         <md-content>
             <p>
-                Are you sure you want to increase your plan to <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}</strong>?
+                Are you sure you want to change your plan to <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
                 Your account will be charged during the next billing cycle.
             </p>
             <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
@@ -20,10 +20,10 @@
 
         <md-dialog-actions layout="row" layout-align="end center">
             <md-button class="md-dashboard confirm" ng-click="updateQuantity()">
-                Update Plan
+                <span class="btn-label">Update Plan</span>
             </md-button>
             <md-button class="md-dashboard" ng-click="cancel()">
-                Cancel
+                <span class="btn-label">Cancel</span>
             </md-button>
         </md-dialog-actions>
 

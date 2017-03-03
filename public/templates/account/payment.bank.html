@@ -1,43 +1,49 @@
-<h3>Bank Account Information</h3>
-
 <ng-form name="payment_bank">
 
-    <md-input-container class="md-block">
-        <label>Name on Account</label>
-        <input name="name_on_account" ng-model="billing.name_on_account" required aa-reset-validity-on-change="invalid"/>
-        <div ng-messages="payment_bank.name_on_account.$error">
-            <div ng-message="required">Name on Account is required.</div>
-        </div>
-    </md-input-container>
+    <div layout-gt-sm="row">
 
-    <md-input-container class="md-block">
-        <label>Routing Number</label>
-        <input name="routing_number" ng-model="billing.routing_number"required ng-pattern="/^\d+$/" aa-reset-validity-on-change="invalid"/>
-        <div ng-messages="payment_bank.routing_number.$error">
-            <div ng-message="required">Routing Number is required.</div>
-            <div ng-message="pattern">Routing Number must be numeric.</div>
-            <div ng-message="invalid">Routing Number is invalid.</div>
-        </div>
-    </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Name on Account</label>
+            <input name="name_on_account" ng-model="billing.name_on_account" required aa-reset-validity-on-change="invalid"/>
+            <div ng-messages="payment_bank.name_on_account.$error">
+                <div ng-message="required">Name on Account is required.</div>
+            </div>
+        </md-input-container>
 
-    <md-input-container class="md-block">
-        <label>Account Number</label>
-        <input name="account_number" ng-model="billing.account_number" required ng-pattern="/^\d+$/" aa-reset-validity-on-change="invalid"/>
-        <div ng-messages="payment_bank.account_number.$error">
-            <div ng-message="required">Account Number is required.</div>
-            <div ng-message="pattern">Account Number must be numeric.</div>
-            <div ng-message="invalid">Account Number is invalid.</div>
-        </div>
-    </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Routing Number</label>
+            <input name="routing_number" ng-model="billing.routing_number"required ng-pattern="/^\d+$/" aa-reset-validity-on-change="invalid"/>
+            <div ng-messages="payment_bank.routing_number.$error">
+                <div ng-message="required">Routing Number is required.</div>
+                <div ng-message="pattern">Routing Number must be numeric.</div>
+                <div ng-message="invalid">Routing Number is invalid.</div>
+            </div>
+        </md-input-container>
 
-    <md-input-container class="md-block">
-        <label>Confirm Account Number</label>
-        <input name="confirm_account_number" ng-model="billing.confirm_account_number" required ng-pattern="billing.account_number"/>
-        <div ng-messages="payment_bank.confirm_account_number.$error">
-            <div ng-message="required">Confirm Account Number is required.</div>
-            <div ng-message="pattern">Must match Account Number.</div>
-        </div>
-    </md-input-container>
+    </div>
+
+    <div layout-gt-sm="row">
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Account Number</label>
+            <input name="account_number" ng-model="billing.account_number" required ng-pattern="/^\d+$/" aa-reset-validity-on-change="invalid"/>
+            <div ng-messages="payment_bank.account_number.$error">
+                <div ng-message="required">Account Number is required.</div>
+                <div ng-message="pattern">Account Number must be numeric.</div>
+                <div ng-message="invalid">Account Number is invalid.</div>
+            </div>
+        </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Confirm Account Number</label>
+            <input name="confirm_account_number" ng-model="billing.confirm_account_number" required ng-pattern="billing.account_number"/>
+            <div ng-messages="payment_bank.confirm_account_number.$error">
+                <div ng-message="required">Confirm Account Number is required.</div>
+                <div ng-message="pattern">Must match Account Number.</div>
+            </div>
+        </md-input-container>
+
+    </div>
 
     <h4>Account Type</h4>
 
