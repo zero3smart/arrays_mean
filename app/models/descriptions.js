@@ -579,6 +579,7 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
+
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
 
@@ -592,6 +593,8 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .exec(function(err, foundUser) {
 
                         if (err) return fn(err);
+                    
+
                         if (!foundUser) {
 
                             if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();

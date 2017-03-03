@@ -20,6 +20,9 @@ module.exports = function() {
 		var team = dataset._team;
 		if (team == undefined && dataset.schema_id && dataset.schema_id._team) {
 			team = dataset.schema_id._team;
+			if (!user) {
+				user = dataset.schema_id.lastImportInitiatedBy;
+			}
 		}
 		
 		nodemailer.sendVizFinishProcessingEmail(user,dataset,team,function(err) {
