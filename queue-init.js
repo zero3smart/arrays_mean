@@ -17,10 +17,7 @@ module.exports = function() {
 
 	var _finishAllImportingSteps = function(dataset) {
 
-		console.log(dataset);
 
-
-		
 		var user = dataset.lastImportInitiatedBy;
 		var team = dataset._team;
 		if (team == undefined && dataset.schema_id && dataset.schema_id._team) {
@@ -137,7 +134,7 @@ module.exports = function() {
 
 
 		            datasource_description.findById(job.data.id)
-		            .populate('lastImportInitiatedBy _team schema_id schema_id._team schema_id.lastImportInitiatedBy')
+		            ..deepPopulate('lastImportInitiatedBy _team schema_id schema_id._team schema_id.lastImportInitiatedBy')
 		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 
