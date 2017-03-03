@@ -3,11 +3,15 @@ angular
     .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team',
         function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team) {
 
-            $scope.primaryAction.disabled = false;
+            $scope.primaryAction.disabled = true;
             $scope.primaryAction.text = 'Invite User';
 
             $scope.users = users;
             $scope.datasets = datasets;
+
+            users.$promise.then(function(users) {
+                $scope.updatePrimaryActionAbility();
+            });
 
             $scope.updatePrimaryActionAbility = function() {
                 if ($scope.$parent.team && $scope.$parent.team.subscription && $scope.$parent.team.subscription.quantity) {
@@ -22,8 +26,6 @@ angular
                     $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.users.length + 1 ? false : true; // limit based on billing
                 }
             };
-
-            $scope.updatePrimaryActionAbility();
 
             $scope.primaryAction.do = function(ev) {
                 $scope.openUserDialog(ev, {});
