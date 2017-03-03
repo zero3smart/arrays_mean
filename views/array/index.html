@@ -44,7 +44,7 @@
                                         {% if description.description %}
                                         .source-{{ description.key }}:hover .explore-tile-description-container {
                                             max-height: 100%;
-                                            transition: max-height 300ms linear;
+                                            transition: max-height 300ms ease;
                                         }
                                         {% endif %}
                                     </style>
@@ -59,7 +59,7 @@
                                             </div>
                                             <div class="explore-tile-meta">
                                                 {% set comma = joiner() %}
-                                          
+
                                                 <span class="source-updated">Updated {{ description.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
                                             </div>
                                         </div>
