@@ -36,9 +36,11 @@
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>
 
+                <span flex="5"></span>
+
                 <!-- TODO also check if !jobId || jobId == 0 && imported -->
                 <span class="dashboard-list-icon"
-                    aa-tooltip="{{ dataset.dirty ? 'You must process data before previewing' : 'Open preview' }}"
+                    aa-tooltip="{{ dataset.dirty ? 'You must process data before previewing' : 'Open preview in new tab' }}"
                     ng-class="{'disabled': dataset.dirty }"
                     ng-click="openViewPreview(view.name)" flex="5">
                     <i class="fa {{ dataset.dirty ? 'fa-eye-slash' : 'fa-eye' }}" aria-hidden="true"></i>

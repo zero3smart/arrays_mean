@@ -135,8 +135,10 @@ angular.module('arraysApp')
             };
 
             $scope.openViewPreview = function(viewName) {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName);
-                $window.open(url, '_blank');
+                if (!dataset.dirty) {
+                    var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName);
+                    $window.open(url, '_blank');
+                }
             };
 
             // open modal on load, for testing
@@ -240,11 +242,11 @@ angular.module('arraysApp')
 
                 };
 
-                var getPkeyFromDatasource = function(title,importRevision) {
-                    var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
-                    return uid + '-r' + importRevision;
-                };
-
+                // unused
+                // var getPkeyFromDatasource = function(title,importRevision) {
+                //     var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                //     return uid + '-r' + importRevision;
+                // };
 
                 $scope.loadDatasetsForMapping = function() {
 
