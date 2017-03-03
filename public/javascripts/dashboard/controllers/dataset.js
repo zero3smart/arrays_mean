@@ -16,14 +16,6 @@ angular.module('arraysApp')
             };
 
 
-            $scope.transitionTo = function(step,anchor) {
-                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
-                    reload: true,
-                    inherit: false,
-                    notify: true
-                });
-            };
-
 
             /**
              *  Tutorial banner messages
@@ -34,6 +26,16 @@ angular.module('arraysApp')
                 show: false, // only show on sample, for now
                 message: ''
             };
+
+
+
+            $scope.transitionTo = function(step,anchor) {
+                $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            }
 
 
             $scope.navigate = function(step) {

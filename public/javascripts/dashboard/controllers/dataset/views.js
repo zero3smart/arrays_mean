@@ -27,7 +27,6 @@ angular.module('arraysApp')
 
             $scope.tutorial.message = 'Here you can configure each view you want to use to visualize your data.\nClick \'Next\' to continue.';
 
-
             $scope.$parent.$parent.currentNavItem = 'views';
 
 
@@ -410,12 +409,14 @@ angular.module('arraysApp')
                     };
                 };
 
-                $scope.includeExcludeCol = function(col, array) {
-                    var ndex = array.indexOf(col);
-                    if (ndex == -1) {
-                        array.push(col);
-                    } else {
-                        array.splice(ndex, 1);
+                $scope.includeExcludeCol = function(col, array, isDefault) {
+                    if(!isDefault) {
+                        var ndex = array.indexOf(col);
+                        if (ndex == -1) {
+                            array.push(col);
+                        } else {
+                            array.splice(ndex, 1);
+                        }
                     }
                 };
 
@@ -457,6 +458,45 @@ angular.module('arraysApp')
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };
+
+                /**
+                 *  Set defaults here
+                 *  TODO set these defaults per view,
+                 *  not globally, once the new view-settings-from-JSON-not-Mongo
+                 *  structure is in place
+                **/
+
+                var setViewSettingDefault = function(prop, def) {
+                    if(typeof $scope.data[prop] == 'undefined') {
+                        $scope.data[prop] = def;
+                    }
+                };
+
+                switch (viewName) {
+                case 'gallery':
+                    setViewSettingDefault('defaultSortOrderDescending', false); // ascending
+                    break;
+                case 'map':
+                    setViewSettingDefault('coordColor', '#FEB600'); // Arrays orange
+                    break;
+                case 'globe':
+                    setViewSettingDefault('pointColor', '#FEB600'); // Arrays orange
+                    break;
+                }
+
+                // get each menu without a default
+                var menusWithoutDefaults = $scope.viewSetting.filter(function(setting) {
+                    return setting.inputType == 'menu' && (typeof $scope.data[setting.name] == 'undefined');
+                });
+
+                // set menu default to first avaiable field, if able--otherwise no fields (of type) are available
+                for (var i = 0; i < menusWithoutDefaults.length; i++) {
+                    var thisMenu = menusWithoutDefaults[i];
+                    var colsAvailableOfType = colsAvailable.filter($scope.DataTypeMatch(thisMenu.restrictColumnDataType));
+                    if(colsAvailableOfType.length) {
+                        $scope.data[thisMenu.name] = colsAvailableOfType[0];
+                    }
+                }
 
                 $scope.save = function () {
 

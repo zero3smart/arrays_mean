@@ -34,11 +34,20 @@
 					templateUrl:'templates/blocks/reset.password.html',
 					controller: 'passwordCtrl'
 				})
+				.state('reset.success', {
+					url: '/success',
+					params: {
+						successMsg: null
+					},
+					controller: function($scope,$stateParams) {
+						$scope.successMsg = $stateParams.successMsg;
+					},
+					template: '<h2>{{successMsg}}</h2>'
+				})
 				.state('signup.email', {
 					url: '/email',
 					templateUrl: 'templates/blocks/signup.email.html',
 					controller: 'mainCtrl'
-
 				})
 				.state('signup.info', {
 					url: '/info/:id',

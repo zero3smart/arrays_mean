@@ -392,6 +392,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
             });
 
             var galleryItem_htmlWhenMissingImage;
+            var hasMissingImageIcon = false;
 
             if (dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage;
@@ -439,10 +440,13 @@ module.exports.BindData = function(req, urlQuery, callback) {
                         htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
 
                     }
+                    // after checking all the conditions
+                    if (htmlElem !== '') {
+                        hasMissingImageIcon = true;
+                    }
                     return htmlElem;
                 };
             }
-
 
 
             var user = null;
@@ -525,6 +529,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
+                    hasMissingImageIcon: hasMissingImageIcon,
                     //
                     searchQ: searchQ,
                     searchCol: searchCol,

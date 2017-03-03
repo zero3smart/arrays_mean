@@ -285,7 +285,6 @@ angular.module('arraysApp')
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
             };
 
-
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;

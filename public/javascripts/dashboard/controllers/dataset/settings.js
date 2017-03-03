@@ -191,7 +191,7 @@ angular.module('arraysApp')
                         name: 'imageFilter',
                         fn: function (item) {
                             var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                            return '|jpg|png|jpeg|bmp|'.indexOf(type) !== -1;
                         }
                     }
                 ],
@@ -258,6 +258,9 @@ angular.module('arraysApp')
                             .position('top right')
                             .hideDelay(3000)
                     );
+                    if ($scope.imageUploader.queue.length > 0) {
+                        $scope.imageUploader.queue = [];
+                    }
                 });
             };
 
