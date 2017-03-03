@@ -37,13 +37,13 @@ angular.module('arraysApp')
                 quantity: {
                     _: parseInt($stateParams.quantity) || 1
                 }
-            }
+            };
 
             $scope.plan = {
                 plan_interval_length: {
                     _: '12'
                 }
-            }
+            };
 
             // Which cards to validated against in the CC input
             $scope.cardsAccepted = [
@@ -185,6 +185,7 @@ angular.module('arraysApp')
                 Subscriptions.update({ subscrId: subscrId }, { quantity: quantity })
                 .$promise.then(function(res) {
                     // console.log(res.data);
+
                     $scope.$parent.team.subscription.quantity = quantity;
                     $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     return callback();
@@ -351,9 +352,13 @@ angular.module('arraysApp')
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
-                            $scope.$parent.team.subscription.state = 'active';
+                            $scope.$parent.team.subscription.state = res.data.subscription.state;
+                            $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
                         } else {
-                            $scope.$parent.team.subscription = { state: 'active'};
+                            $scope.$parent.team.subscription = {
+                                state: res.data.subscription.state,
+                                quantity: res.data.subscription.quantity._
+                            };
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
@@ -371,7 +376,15 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        $scope.$parent.team.subscription.state = 'active';
+                        if ($scope.$parent.team.subscription) {
+                            $scope.$parent.team.subscription.state = res.data.subscription.state;
+                            $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        } else {
+                            $scope.$parent.team.subscription = {
+                                state: res.data.subscription.state,
+                                quantity: res.data.subscription.quantity._
+                            };
+                        }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
@@ -385,9 +398,15 @@ angular.module('arraysApp')
                 Subscriptions.cancel({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
-                    $scope.$parent.team.subscription.state = 'canceled';
-                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-                    $state.go('dashboard.account.billing');
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // console.log(res.data);
+                    }
                 });
             };
 
@@ -396,9 +415,15 @@ angular.module('arraysApp')
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
-                    $scope.$parent.team.subscription.state = 'active';
-                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-                    getSubscriptions();
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                        getSubscriptions();
+                    } else {
+                        // console.log(res.data);
+                    }
                 });
             };
 
