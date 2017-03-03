@@ -31,7 +31,7 @@
 
                         {% if sources | length %}
                         <div class="row">
-                            {% for source in sources %}
+                            {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
                             <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
                                 <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
                                 <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">

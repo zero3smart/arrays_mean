@@ -23,7 +23,7 @@
                             </div><!-- .row -->
                         </header>
 
-                        {% for description in sources %}
+                        {% for description in sources | sort(reverse=true,attribute='updatedAt') %}
 
                             {{description.uid}}
 
