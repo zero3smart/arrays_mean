@@ -82,10 +82,11 @@ function _deleteDataset(description,cb) {
         data.Contents.forEach(function(content) {
             param.Delete.Objects.push({Key: content.Key});
         })
+
         s3.deleteObjects(param,function(err,data) {
             if (err) return cb(err);
-            if (!data.Contents) return cb();
-            if (data.Contents.length == 1000) return _deleteDataset(description,cb);
+            if (!data.Deleted) return cb();
+            if (data.Deleted.length == 1000) return _deleteDataset(description,cb);
             else {
                 return cb();
             }
@@ -133,7 +134,6 @@ function _deleteObject(key,cb) {
         Bucket : bucket,
         Key: key
     }
-    console.log(params)
     s3.deleteObject(params,function(err,data) {
         console.log(err)
         console.log(data)

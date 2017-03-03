@@ -9,9 +9,6 @@ module.exports = function (nunjucks_env,env) {
 
     nunjucks_env.addFilter('comma', commaFilter);
     // General/shared
-    nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
-        return moment(date).utc().format("MMMM Do, YYYY");
-    });
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear_array', function (date) {
         return moment(date).utc().format("MMM D, YYYY");
     });
@@ -24,6 +21,9 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('isArray', function (val) {
         return Array.isArray(val);
     });
+    nunjucks_env.addFilter('initial', function (str) {
+        return str.slice(0, 1);
+    })
 
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
 
@@ -204,6 +204,7 @@ module.exports = function (nunjucks_env,env) {
             }
         }
         //
+
         return filterObj;
     });
     // Array views - Filter value to display
@@ -220,7 +221,7 @@ module.exports = function (nunjucks_env,env) {
         if (typeof filterVal == 'number') {
             console.log("n")
         }
-        var output = output + '';
+        var output = '';
         if (!isNaN(filterVal.min))
             output = filterVal.min + ' – ';
         else if (filterVal.min)
@@ -238,19 +239,16 @@ module.exports = function (nunjucks_env,env) {
             }
         }
 
-
         return output;
     });
     // Array views - Filters for bubbles
     nunjucks_env.addFilter('filterValuesForBubble', function (filterVal) {
-
-     
-
         if (Array.isArray(filterVal)) {
             return filterVal;
         } else if (typeof filterVal === 'string') {
             try {
                 var vals = JSON.parse(filterVal);
+
                 if (Array.isArray(vals))
                     return vals;
             } catch (e) {
@@ -371,8 +369,6 @@ module.exports = function (nunjucks_env,env) {
 
 
     nunjucks_env.addGlobal('makeURLfrom_relativePath',function(relativePath,subdomain,datasetId,type) {
-
-
         if (relativePath.slice(0,4) == 'http') {
             return relativePath;
         }
@@ -381,23 +377,22 @@ module.exports = function (nunjucks_env,env) {
         datasetId + '/assets/'
         if (type == 'banner') {
             key += 'banner/' + relativePath; 
-        } else if (type == 'image') {
-            key += 'images/' + relativePath
-        }
+        } 
 
         
         return key;
 
-
-
-
-
     })
 
+    nunjucks_env.addGlobal('retrieveImageURLFromDoc',function(subdomain,docPKey,datasetId,viewType) {
+    
 
+        var key = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + subdomain + '/datasets/' +
+        datasetId + '/assets/images/';
 
+        return key += viewType +'/' + docPKey;
 
-
+    })
 
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
         var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');

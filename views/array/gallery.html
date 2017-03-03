@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-sm-12">
 
-                        <div class="sort-bar clearfix">
+                        <div class="sort-bar clearfix {{ 'has-description' if view_description }}">
 
                             <nav class="sort-bar-left pull-left" role="navigation">
 
@@ -91,25 +91,24 @@
                             </div>
 
                         </div>
-
-                        {% if isFilterActive %}
-                            {{
-                            filter.default(displayTitleOverrides,
-                                routePath_base | constructedRoutePath(null, {
-                                    searchQ: searchQ,
-                                    searchCol: searchCol,
-                                    sortDir: sortDir,
-                                    sortBy: sortBy}),
-                                filterObj,
-                                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
-                                true
-                            )
-                            }}
-                        {% endif %}
-
                     </div>
                 </div><!-- .row -->
             </div><!-- .container-fluid -->
+
+            {% if isFilterActive %}
+                {{
+                filter.default(displayTitleOverrides,
+                    routePath_base | constructedRoutePath(null, {
+                        searchQ: searchQ,
+                        searchCol: searchCol,
+                        sortDir: sortDir,
+                        sortBy: sortBy}),
+                    filterObj,
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill
+                )
+                }}
+            {% endif %}
+
         </div><!-- #array-controls -->
 
         <div class="array-content">

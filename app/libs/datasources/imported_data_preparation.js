@@ -37,7 +37,7 @@ function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dat
 
 
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
-        return dataSourceDescription.fe_designatedFields.objectTitle;
+        return dataSourceDescription.objectTitle;
     }
 
 
@@ -93,7 +93,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
     var rowParams_keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    fe_displayTitleOverrides["" + dataSourceDescription.objectTitle] = humanReadableColumnName_objectTitle;
     //
     var originalKeys = Object.keys(fe_displayTitleOverrides);
     var originalKeys_length = originalKeys.length;

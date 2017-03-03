@@ -40,8 +40,20 @@ var DatasourceDescription_scheme = Schema({
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
+
     fe_displayTitleOverrides: Object,
-    fe_designatedFields: Object,
+
+
+    // imageScraping: [],
+    objectTitle: String,
+
+    fe_image: {
+        field: String,
+        overwrite: {type: Boolean, default: false},
+        scraped: {type: Boolean,default: false},
+        selector : String //optional
+    } ,
+
     fe_fieldDisplayOrder: Array,
     fe_filters: {
         excludeFields: Array,
@@ -73,8 +85,6 @@ var DatasourceDescription_scheme = Schema({
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
-    imageScraping: [],
-
     fe_nestedObject: {
         prefix: String,
         fields: Array,
@@ -90,6 +100,7 @@ var DatasourceDescription_scheme = Schema({
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
+    lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0},
@@ -131,16 +142,18 @@ DatasourceDescription_scheme.pre('save',function(next) {
 DatasourceDescription_scheme.post('save',function(doc) {
     if (doc._wasNew) {
         this.populate('author _team',function(err,docPopulatedWithAuthor) {
-            if (err || !docPopulatedWithAuthor.author) {
-                winston.error('Viz created with error');
-                console.log(err);
-            } else {
-                nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
-                    if (err) winston.error('cannot send user alert email');
-                    else {
-                        winston.info('Viz created email sent');
-                    }
-                })
+            if (!docPopulatedWithAuthor.schema_id) {
+                if (err || !docPopulatedWithAuthor.author) {
+                    winston.error('Viz created with error');
+                    console.log(err);
+                } else {
+                    nodemailer.newVizCreatedEmail(docPopulatedWithAuthor,function(err) {
+                        if (err) winston.error('cannot send user alert email');
+                        else {
+                            winston.info('Viz created email sent');
+                        }
+                    })
+                }
             }
         })
     }
@@ -339,6 +352,77 @@ var _checkCollection = function (datasource_description, schemaKey, eachCb) {
 /* -------   end helper function ------------  */
 
 // Customize the model
+function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
+    datasource_description.find(datasetQuery)
+        .populate({
+            path: '_team',
+            match: teamQuery,
+            select: 'subdomain admin _id title'
+        })
+        .sort({"createdAt": "desc"})
+        .exec(function (err, datasets) {
+            callback(err, datasets)
+        })
+};
+
+var _GetAllDescriptions = function (userId, callback) {
+
+    function nonLoginUserQuery(cb) {
+        var publicAndImportedDataset = {isPublic: true, imported: true, fe_visible: true, state: 'approved'};
+        var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
+        getDescriptionsAndPopulateTeam({ $or: [ {'superTeam': true}, {'subscription.state': 'active'} ] },
+            {$or: [publicAndImportedDataset, publicAndConnectedDataset]}, cb)
+    }
+
+    if (userId) {
+        User.findById(userId)
+            .populate('_team')
+            .populate('defaultLoginTeam')
+            .exec(function (err, foundUser) {
+                if (err) return callback(err);
+                if (!foundUser) return nonLoginUserQuery(callback);
+                var importedDataset = {imported: true, fe_visible: true, state: 'approved'};
+                var connectedDataset = {connection: {$ne: null}, fe_listed: true, fe_visible: true};
+
+                if(foundUser.isSuperAdmin()) {
+                    // get descriptionsand populate dataset with query/teams 
+                    getDescriptionsAndPopulateTeam({}, {$or: [importedDataset, connectedDataset] }, callback);
+                } else if (foundUser.defaultLoginTeam.admin == userId) {
+                    var myTeamId = foundUser.defaultLoginTeam._id;
+                    var otherTeams = {_team: {$ne: myTeamId}, isPublic: true};
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id};
+
+                    // get descriptions and populate dataset with query/teams
+                    getDescriptionsAndPopulateTeam(
+                        {$or: [{'superTeam': true}, {'subscription.state': 'active'} ] }, 
+                        {$and: [
+                            {$or: [myTeam, otherTeams]}, 
+                            {$or: [importedDataset, connectedDataset]}
+                        ]}, 
+                        callback)
+
+                } else { 
+                    var myTeamId = foundUser.defaultLoginTeam._id;
+                    var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
+
+
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] };
+
+                    // get descriptions populate
+                    getDescriptionsAndPopulateTeam(
+                        {$or: [{'superTeam': true}, {'subscription.state': 'active'}]},
+                        {$and: [
+                            {$or: [myTeam, otherTeams]},
+                            {$or: [importedDataset, connectedDataset]}
+                        ]}, 
+                    callback)
+                }
+            });
+    } else {
+        nonLoginUserQuery(callback);
+    }
+};
+datasource_description.GetAllDescriptions = _GetAllDescriptions;
 
 var _GetDescriptions = function (fn) {
 

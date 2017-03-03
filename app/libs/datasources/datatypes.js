@@ -108,12 +108,15 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field, na
 
 
     } else if (opName == 'ToInteger') {
-        inString = inString.replace(',','');
+        var commaRE = /,/g
+        inString = inString.replace(commaRE,'');
         if (!isNaN(parseInt(inString)))
             return parseInt(inString);
         return 0;
 
     } else if (opName == 'ToFloat') {
+        var commaRE = /,/g
+        inString = inString.replace(commaRE, '');
         if (!isNaN(parseFloat(inString)));
             return parseFloat(inString);
         return 0;
@@ -221,11 +224,11 @@ module.exports.doesExistFormat_fieldDataType_coercion_toString = function(field)
 module.exports.available_forFieldDataType_coercions = function() {
     return [
         {operation: 'ToString'},
-        {operation: 'ProxyExisting'},
+        // {operation: 'ProxyExisting'},
         {operation: 'ToDate', format: 'YYYY/MM/DD', outputFormat: 'MMMM Do, YYYY'},
         {operation: 'ToInteger'},
         {operation: 'ToFloat'},
-        {operation: 'ToStringTrim'}
+        // {operation: 'ToStringTrim'}
         ];
 };
 

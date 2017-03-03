@@ -273,9 +273,7 @@ module.exports.deleteImage = function (req, res) {
             if(err) {
                 return res.status(401).send({error:'unauthorized'});
             } else {
-                // var unset = {$unset: {}};
-                var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
-
+                var key = teamDoc.subdomain + "/assets/" + req.params.folder +"/" + req.params.filename;
                 // delete the key from s3
                 s3FileHosting.deleteObject(key, function(err, data) {
                     if(err) {
@@ -283,9 +281,9 @@ module.exports.deleteImage = function (req, res) {
                     } else {
 
                         // if the url is in the database
-                        if(req.params.type == "logo_header") {
+                        if(req.params.folder == "logo_header") {
                             teamDoc.logo_header = undefined;
-                        } else if(req.params.type == "logo"){
+                        } else if(req.params.folder == "logo"){
                             teamDoc.logo = undefined;
                         } else {
                             return res.json({message: 'ok'});
@@ -296,7 +294,7 @@ module.exports.deleteImage = function (req, res) {
                 })  
             }
         })
-    }  else {
+    } else {
         return res.status(401).send({error:'unauthorized'});
     }
 }

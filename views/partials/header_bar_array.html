@@ -9,6 +9,7 @@
     }
 
     .color-brand-hover:hover,
+    .color-brand-hover:focus,
     .dropdown-toggle:hover .color-brand-hover,
     .open .color-brand-hover,
     .search-toggle:hover .color-brand-hover,
@@ -76,7 +77,8 @@
                     <div class="team-logo-circle" style="background-image:url('{{ team.logo_header }}');"></div>
                 </a>
                 <br style="font-size:0px;" />
-                <a class="navbar-brand navbar-brand-array-title" style="position:relative;top:-7px;" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                {{defaultView}}
+                <a class="navbar-brand navbar-brand-array-title" style="position:relative;top:-7px;" href="/{{ array_source_key }}/{{ defaultView | constructedRoutePath(filterObj, {
                     searchQ: searchQ,
                     searchCol: searchCol
                 }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
@@ -92,7 +94,7 @@
                     </svg>
                 </a>
                 <br/>
-                <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ defaultView | constructedRoutePath(filterObj, {
                     searchQ: searchQ,
                     searchCol: searchCol
                 }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
@@ -101,8 +103,7 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter"
-                                                                              aria-hidden="true"></span>{% if
+                        <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span>{% if
                             isFilterActive %}<span class="sidebar-filter-active"></span>{% endif
                             %}</a>
                     </li>

@@ -59,6 +59,7 @@ router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForR
 router.get('/dataset/jobStatus/:id',ctrlDataset.getJobStatus);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
+router.get('/dataset/deleteBanner/:id', ctrlDataset.deleteBanner);
 
 
 // dataset upload
@@ -71,7 +72,6 @@ router.delete('/dataset/job/:id' ,ctrlDataset.killJob);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
-router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesignatedFields);
 router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import
@@ -110,7 +110,7 @@ router.post('/team', ctrlTeam.create);
 router.get('/team', ctrlTeam.getAll);
 router.get('/team/search', ctrlTeam.search);
 router.get('/team/loadIcons', ctrlTeam.loadIcons);
-router.get('/team/deleteImage/:id/:subdomain/:assets/:type/:filename', ctrlTeam.deleteImage);
+router.get('/team/deleteImage/:id/:folder/:filename', ctrlTeam.deleteImage);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);

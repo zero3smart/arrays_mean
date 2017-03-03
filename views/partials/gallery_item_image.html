@@ -1,21 +1,25 @@
 <li class="gallery-item gallery-item-image">
 	<a href="/{{ array_source_key  }}/{{ doc._id }}{{ '?embed=true' if embedded }}">
-        {% set subdomain = team.subdomain | lower %}
-        <!-- again, this is a hacky solution for moma that we will need to remove down the line -->
-        {% set url = makeURLfrom_relativePath(doc.rowParams[fieldKey_medThumbImageURL],
-                                        team.subdomain,datasetId,'image') %}
+   
+   
+      	{% if scrapedImages %}
 
-        {% if scrapedImages %}
-			<img src="{{ url }}" class="gallery-image" />
+	      	{% set subdomain = team.subdomain | lower %}
+	        {% set url = retrieveImageURLFromDoc(subdomain,doc.pKey,datasetId,'gallery') %}
+			<img src="{{ url }}" class="gallery-image" scraped="true"/>
+			<input type="hidden" name="alternativeImgLink" value="{{doc.rowParams[fieldKey_medThumbImageURL]}}">
 		{% else %}	
 			<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="gallery-image" />
 		{% endif %}
+
+
 		<div class="gallery-tooltip border-top-color-brand">
 			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
 			<div class="gallery-object-title-ellipses">
 				<h2>…</h2>
 			</div>
 		</div>
+
 	</a>
 </li>
 

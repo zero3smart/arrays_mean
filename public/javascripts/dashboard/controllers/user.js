@@ -3,4 +3,8 @@ angular
     .controller('UserCtrl', ['$scope', '$state',
         function($scope, $state) {
 
+            $scope.primaryAction = {
+                disabled: true
+            };
+
         }]);

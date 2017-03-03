@@ -56,9 +56,15 @@
 
 .legend-toggle {
     display: inline-block;
-    margin-left: 20px;
+    margin-left: 8px;
     color: var(--color-text-dark);
-    padding-top: 4px;
+    padding: 3px 2px 1px 3px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+}
+.array-controls-pinned .legend-toggle {
+    background: white;
+    border: 1px solid #eee;
 }
 
 .legend-open .legend-toggle {
@@ -67,7 +73,7 @@
 
 .legend-toggle > span {
     display: inline-block;
-    width: 1em;
+    /*width: 1em;*/
 }
 
 .sort-bar .dropdown-toggle span,
@@ -80,7 +86,7 @@
 }
 
 .legend {
-    padding-top: 50px;
+    padding-top: 25px;
     padding-bottom: 50px;
     width: 100%;
     background-color: var(--color-background);
@@ -113,7 +119,8 @@
 }
 
 .legend-title {
-    margin-bottom: 40px;
+    font-size: 18px;
+    margin-bottom: 30px;
     padding-left: 40px;
     margin-top: 0;
 }

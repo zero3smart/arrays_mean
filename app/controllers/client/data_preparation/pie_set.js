@@ -250,13 +250,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var finalizedButNotCoalesced_groupedResults = {};
                     _.forEach(_groupedResults, function (el) {
                         // Group By
+                        var displayValGroupBy = func.formatCoercedField(groupBy_realColumnName, el.groupBy, dataSourceDescription)
                         var displayableGroupBy = func.ValueToExcludeByOriginalKey(
-                            el.groupBy, dataSourceDescription, groupBy_realColumnName, 'pieSet');
+                            displayValGroupBy, dataSourceDescription, groupBy_realColumnName, 'pieSet');
                         if (!displayableGroupBy) return;
 
                         // Chart By
+                        var displayValChartBy = func.formatCoercedField(chartBy_realColumnName, el.chartBy, dataSourceDescription)
                         var displayableChartBy = func.ValueToExcludeByOriginalKey(
-                            el.chartBy, dataSourceDescription, chartBy_realColumnName, 'pieSet');
+                            displayValChartBy, dataSourceDescription, chartBy_realColumnName, 'pieSet');
                         if (!displayableChartBy) return;
 
                         if (!finalizedButNotCoalesced_groupedResults[displayableChartBy]) finalizedButNotCoalesced_groupedResults[displayableChartBy] = [];
@@ -421,7 +423,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // Aggregate By
                     aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-                    aggregateBy: aggregateBy
+                    aggregateBy: aggregateBy,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
                 };
                 callback(err, data);
             })

@@ -2,6 +2,7 @@ var cluster = require('cluster');
 var datasource_description = require('./app/models/descriptions');
 
 var kue = require('kue');
+var nodemailer = require('./app/libs/utils/nodemailer');
 
 var queue = kue.createQueue({
 	redis: process.env.REDIS_URL
@@ -10,12 +11,22 @@ var queue = kue.createQueue({
 
 
 
+
+
 module.exports = function() {
+
+	var _finishAllImportingSteps = function(dataset) {
+		var user = dataset.lastImportInitiatedBy;
+		var team = dataset._team;
+		nodemailer.sendVizFinishProcessingEmail(user,dataset,team,function(err) {
+			if (err) console.log(err);
+			dataset.jobId = 0;
+			dataset.save();
+		})
+	}
 
 
 	var _initJob = function(datasetId,jobName,cb) {
-
-
 
 		var job = queue.create(jobName, {
 	        id: datasetId
@@ -112,7 +123,10 @@ module.exports = function() {
 
 		        } else { // importProcessed || postImport || scrapeImages
 
-		            datasource_description.findById(job.data.id,function(err,dataset) {
+
+		            datasource_description.findById(job.data.id)
+		            .populate('lastImportInitiatedBy _team')
+		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 
 		                var dirty = dataset.dirty;
@@ -126,7 +140,9 @@ module.exports = function() {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
 		                                return;
 		                            });
-		                        } else if (task == 'postImport' && dataset.skipImageScraping == false) {
+		                        } else if (task == 'postImport' && dataset.skipImageScraping == false &&
+		                        		dataset.fe_image && dataset.fe_image.field && (dirty == 1 || dirty == 2 ||
+		                        			(dirty == 3 &&  (dataset.fe_image.scraped==false || dataset.fe_image.overwrite == true ) ))) {
 
 		                             _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
@@ -136,15 +152,13 @@ module.exports = function() {
 
 		                            datasource_description.datasetsNeedToReimport(dataset._id,function(err,jsonObj) {
 		                                if (err) return;
-		                                dataset.jobId = 0;
-		                                dataset.save();
+		                                _finishAllImportingSteps(dataset);
 		                                _initJobForMergedDatasets(jsonObj);
 		                            })
 		                        }
 
 		                    } else {
-		                        dataset.jobId = 0;
-		                        dataset.save();
+		                        _finishAllImportingSteps(dataset);
 		                        _initJobForAppendedDatasets(childrenDatasets,dirty,task);
 		                        
 		                        
