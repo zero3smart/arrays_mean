@@ -16,6 +16,11 @@ var queue = kue.createQueue({
 module.exports = function() {
 
 	var _finishAllImportingSteps = function(dataset) {
+
+		console.log(dataset);
+
+
+		
 		var user = dataset.lastImportInitiatedBy;
 		var team = dataset._team;
 		if (team == undefined && dataset.schema_id && dataset.schema_id._team) {
