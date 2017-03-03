@@ -74,7 +74,7 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
             populate: {
                 'datasourceDescriptions': {
                     match: datasetQuery,
-                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
+                    select: 'description uid urls title importRevision updatedAt updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
                 },
                 'datasourceDescriptions.updatedBy': {
                     select: 'firstName lastName'
@@ -121,8 +121,8 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
 
                     getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] },
-                     { $and: [{ $or: [myTeam, otherTeams] }, 
-                     {$or:[importedDataset,connectedDataset] } ] }, 
+                     { $and: [{ $or: [myTeam, otherTeams] },
+                     {$or:[importedDataset,connectedDataset] } ] },
                      fn);
 
 
@@ -197,7 +197,7 @@ team.GetTeamBySubdomain = function(req, fn) {
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
 
 
-                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, 
+                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] },
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
 
 
@@ -208,8 +208,8 @@ team.GetTeamBySubdomain = function(req, fn) {
                     var myTeam = { $or: [{ _id: { $in: foundUser._editors } }, { _id: { $in: foundUser._viewers } }] };
 
 
-                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam' : true }, 
-                        { 'subscription.state': 'active' } ] }, 
+                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam' : true },
+                        { 'subscription.state': 'active' } ] },
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset]}] }, fn);
                 } else { // get published dataset if currentUser is not one of the viewers
                     getPublishedDataset(fn);
@@ -259,7 +259,7 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                             if (responseData.data.subscription) {
 
                                 var subscription = responseData.data.subscription;
-                                
+
                                 if (team.subscription) {
                                     if (team.subscription.state == 'active' && subscription.state == 'canceled') {
 
@@ -269,9 +269,9 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                     }
 
                                 }
-                                
 
-                                
+
+
 
                                 team.subscription = {
                                     activated_at: subscription.activated_at._,
@@ -308,7 +308,7 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                             else {
                                                 winston.info('send user alert email with subscription update');
                                             }
-                                                  
+
                                         })
                                     }
                                     return callback(responseData.statusCode, null, responseData);

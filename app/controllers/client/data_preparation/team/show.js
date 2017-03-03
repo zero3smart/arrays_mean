@@ -1,6 +1,6 @@
 var async = require('async');
 var queryString = require('querystring');
-var _ = require("lodash");
+var _ = require('lodash');
 
 var dataSourceDescriptions = require('../../../../models/descriptions');
 var teamDescriptions = require('../../../../models/teams');
@@ -19,7 +19,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
         var err = null;
 
 
-
         if (dataSourceDescription.connection) {
 
             var default_view = 'gallery';
@@ -28,10 +27,8 @@ module.exports.BindData = function (req, teamDescription, callback) {
             }
 
 
-
-            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + " " + dataSourceDescription.updatedBy.lastName
-            var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
-
+            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
+            var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
 
 
             var sourceDescription = {
@@ -48,10 +45,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
             };
 
 
-
             cb(err, sourceDescription);
-
-
 
 
         } else {
@@ -74,13 +68,14 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                     default_view = dataSourceDescription.fe_views.default_view;
                 }
-                var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + " " + dataSourceDescription.updatedBy.lastName
-                var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
+                var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
+                var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
 
                 var sourceDescription = {
                     _id: dataSourceDescription._id,
                     key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                     sourceDoc: doc,
+                    updatedAt: dataSourceDescription.updatedAt,
                     title: dataSourceDescription.title,
                     brandColor: dataSourceDescription.brandColor,
                     description: dataSourceDescription.description,
@@ -93,20 +88,14 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 };
 
 
-
                 cb(err, sourceDescription);
             });
 
 
-
         }
- 
-
-
 
 
     });
-
 
 
     var completionFn = function (err, sourceDescriptions) {
@@ -116,15 +105,11 @@ module.exports.BindData = function (req, teamDescription, callback) {
         var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
 
-
         if (process.env.NODE_ENV !== 'enterprise') {
 
-            baseUrl += teamDescription.subdomain + ".";
+            baseUrl += teamDescription.subdomain + '.';
         }
         baseUrl += rootDomain;
-
-
-
 
 
         var data = {
@@ -140,7 +125,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 if (err) return callback(err);
                 data.user = user;
                 callback(err, data);
-            })
+            });
         } else {
             callback(err, data);
         }
