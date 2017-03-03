@@ -52,14 +52,25 @@ $(function () {
 		}
 
 		signupFooter.classList.add('show-signup-footer');
-		document.querySelector('.site-content').style.paddingBottom = "64px";
 
+		//to avoid covering any visualization data
+		document.querySelector('.site-content').style.paddingBottom = "64px";
+		// to avoid covering any filters
+		var filter = document.querySelector('.filter-tag');
+		if (filter) {
+			filter.style.marginBottom = "50px";
+			document.querySelector('.site-content').style.paddingBottom = "92px";
+		}
 		declineSignup.addEventListener('click', function(e) {
 			e.preventDefault();
 
 			if (mainFooter != null) {
 				mainFooter.style.paddingBottom = '25px';
 			}
+			if (filter) {
+				filter.style.marginBottom = "10px";
+			}
+			document.querySelector('.site-content').style.paddingBottom = "0px";
 
 			signupFooter.classList.remove('show-signup-footer');
 			signupFooter.classList.add('close-signup-footer');
