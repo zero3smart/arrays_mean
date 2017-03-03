@@ -986,11 +986,17 @@ module.exports.download = function (req, res) {
 
 
 module.exports.preImport = function (req, res) {
-
-    queue.initJob(req.params.id, 'preImport',function(err,jobId) {
-        if (err) res.status(500).send(err);
-        return res.status(200).send('ok');
+    var importedBy = req.user;
+    datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
+    .exec(function(err) {
+        if (err) return res.status(500).send(err);
+        queue.initJob(req.params.id, 'preImport',function(err,jobId) {
+            if (err) return res.status(500).send(err);
+            return res.status(200).send('ok');
+        })
     })
+
+    
 }
 
 module.exports.getJobStatus = function(req,res) {
@@ -1005,29 +1011,44 @@ module.exports.getJobStatus = function(req,res) {
 
 
 module.exports.importProcessed = function(req, res) {
-
-     queue.initJob(req.params.id,'importProcessed',function(err,jobId) {
-        if (err) res.status(500).send(err);
-        return res.status(200).send('ok');
+    var importedBy = req.user;
+    datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
+    .exec(function(err) {
+        if (err) return res.status(500).send(err);
+        queue.initJob(req.params.id,'importProcessed',function(err,jobId) {
+            if (err) return res.status(500).send(err);
+            return res.status(200).send('ok');
+        })
     })
+
 }
 
 
 
 module.exports.scrapeImages = function(req, res) {
 
-     queue.initJob(req.params.id,'scrapeImages',function(err,jobId) {
-        if (err) res.status(500).send(err);
-        return res.status(200).send('ok');
+    var importedBy = req.user;
+    datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
+    .exec(function(err) {
+        if (err) return res.status(500).send(err);
+        queue.initJob(req.params.id,'scrapeImages',function(err,jobId) {
+            if (err) return res.status(500).send(err);
+            return res.status(200).send('ok');
+        })
     })
 }
 
 
 module.exports.postImport = function (req, res) {
 
-     queue.initJob(req.params.id,'postImport',function(err,jobId) {
-        if (err) res.status(500).send(err);
-        return res.status(200).send('ok');
+    var importedBy = req.user;
+    datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
+    .exec(function(err) {
+        if (err) return res.status(500).send(err);
+        queue.initJob(req.params.id,'postImport',function(err,jobId) {
+            if (err) return res.status(500).send(err);
+            return res.status(200).send('ok');
+        })
     })
 };
 
