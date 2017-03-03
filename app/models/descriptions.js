@@ -583,6 +583,9 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
 
+            console.log(datasourceDescription);
+            
+
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if ( (!datasourceDescription.fe_visible || !datasourceDescription.imported) && !datasourceDescription.connection ) return fn();

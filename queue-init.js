@@ -132,7 +132,7 @@ module.exports = function() {
 
 
 		            datasource_description.findById(job.data.id)
-		            .populate('lastImportInitiatedBy _team schema_id schema_id._team')
+		            .populate('lastImportInitiatedBy _team schema_id schema_id._team schema_id.lastImportInitiatedBy')
 		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 
