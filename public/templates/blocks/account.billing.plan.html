@@ -6,10 +6,12 @@
     <div ng-if="plan.display_quantity._ === 'true'">
         {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}
         <br />
-        <strong>{{ plan.unit_amount_in_cents.USD._ / 100 | currency : $ : 0 }}</strong> Per user, per month
+        <strong>{{ plan.unit_amount_in_cents.USD._ / 100 | currency : $ : 0 }}</strong> <span ng-if="plan.plan_interval_length._ === '1'">Per user, per month</span>
+        <span ng-if="plan.plan_interval_length._ === '12'">Per user, per year</span>
+
         <br />
     </div>
-
+    
     <span ng-if="plan.plan_interval_length._ === '1'"><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
 
     <span ng-if="plan.plan_interval_length._ === '12'"><strong>Total per year:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency : $ : 0 }}</span>
