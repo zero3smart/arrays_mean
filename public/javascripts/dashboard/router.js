@@ -62,38 +62,59 @@ angular.module('arraysApp')
                         resolve: {
                             restrict: function(AuthService) {
                                 return AuthService.ensureIsAdmin();
-                            }
+                            },
+                            users: ['User', 'AuthService', function(User, AuthService) { //all users in this team, except myself
+                                var currentTeam = AuthService.currentTeam();
+                                return User.getAll({teamId: currentTeam._id});
+                            }],
+                            plans: ['Plans', function (Plans) {
+                                return Plans.get();
+                            }]
                         }
                     })
                     .state('dashboard.account.payment', {
-                        url: '/payment',
+                        url: '/payment/:plan_code/:quantity',
                         controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/payment.html'
+                        templateUrl: 'templates/account/payment.html',
+                        resolve: {
+                            users: function() {
+                                return {};
+                            },
+                            plans: ['Plans', function (Plans) {
+                                return Plans.get();
+                            }]
+                        }
                     })
                     .state('dashboard.account.upgradeEnterprise', {
                         url: '/upgrade/enterprise',
                         controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/upgrade.enterprise.html'
+                        templateUrl: 'templates/account/upgrade.enterprise.html',
+                        resolve: {
+                            users: function() {
+                                return {};
+                            },
+                            plans: ['Plans', function (Plans) {
+                                return Plans.get();
+                            }]
+                        }
                     })
-                    .state('dashboard.account.upgradePro', {
-                        url: '/upgrade/pro',
-                        controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/upgrade.pro.html'
-                    })
-                    .state('dashboard.account.startProTrial', {
-                        url: '/upgrade/proTrial',
-                        controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/upgrade.pro-trial.html'
-                    })
-                    .state('dashboard.account.close', {
-                        url: '/close',
-                        controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/close.html'
-                    })
+                    // .state('dashboard.account.close', {
+                    //     url: '/close',
+                    //     controller: 'BillingCtrl',
+                    //     templateUrl: 'templates/account/close.html'
+                    // })
                     .state('dashboard.account.cancel', {
                         url: '/cancel',
                         controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/cancel.html'
+                        templateUrl: 'templates/account/cancel.html',
+                        resolve: {
+                            users: function() {
+                                return {};
+                            },
+                            plans: ['Plans', function (Plans) {
+                                return Plans.get();
+                            }]
+                        }
                     })
                     //
                     .state('dashboard.dataset', {

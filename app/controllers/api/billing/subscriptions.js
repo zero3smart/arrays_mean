@@ -34,6 +34,7 @@ module.exports.create = function(req, res) {
                     account: {
                         account_code: user.defaultLoginTeam._id.toString()  // *required
                     },
+                    quantity: req.body.quantity,
                     currency: 'USD'                // *required
 
                 }, function(err, response) {

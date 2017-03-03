@@ -163,20 +163,15 @@
 .item-initial {
     display: block;
     position: absolute;
-    background-color: lightgray;
     vertical-align: middle;
     text-align: center;
     height: 32px;
     width: 32px;
     line-height: 32px;
-    bottom: 16px;
-    left: 0px;
-    border-radius: 100%;
     font-size: 18px;
     font-weight: bold;
-    color: white;
-    margin-left: 22.65px;
-    margin-bottom: 10px;
+    color: lightgray;
+    margin: 22.89px;
 }
 
 /* @end Tooltip */

@@ -3,8 +3,33 @@ angular
     .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team',
         function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team) {
 
+            $scope.primaryAction.disabled = true;
+            $scope.primaryAction.text = 'Invite User';
+
             $scope.users = users;
             $scope.datasets = datasets;
+
+            users.$promise.then(function(users) {
+                $scope.updatePrimaryActionAbility();
+            });
+
+            $scope.updatePrimaryActionAbility = function() {
+                if ($scope.$parent.team && $scope.$parent.team.subscription && $scope.$parent.team.subscription.quantity) {
+                    $scope.subscriptionQuantity = parseInt($scope.$parent.team.subscription.quantity);
+                } else {
+                    $scope.subscriptionQuantity = 0;
+                }
+
+                if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
+                    $scope.primaryAction.disabled = false;
+                } else {
+                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.users.length + 1 ? false : true; // limit based on billing
+                }
+            };
+
+            $scope.primaryAction.do = function(ev) {
+                $scope.openUserDialog(ev, {});
+            };
 
             $scope.remove = function(person, ev) {
 
@@ -32,7 +57,8 @@ angular
                 .then(function () {
                     person.$remove(function(res) {
                         if (res.success == 'ok') {
-                            $scope.users.splice($scope.users.indexOf(person),1);
+                            $scope.users.splice($scope.users.indexOf(person), 1);
+                            $scope.updatePrimaryActionAbility();
 
                              $mdToast.show(
                                 $mdToast.simple()
