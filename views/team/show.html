@@ -32,7 +32,7 @@
                         {% if sources | length %}
                         <div class="row">
                             {% for source in sources %}
-                            <div class="explore-tile col-sm-6 col-xs-12">
+                            <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
                                 <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
                                 <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
                                 <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
@@ -70,15 +70,7 @@
                                                 </div>
                                                 <div class="explore-tile-meta">
 
-                                                    {% if source.sourceDoc %}
-
-                                                    <span class="source-count">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
-                                                    <span class="source-divider"></span>
-
-                                                    {% endif %}
-
-                                                   
-                                                    <span class="source-updated">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                    <span class="source-updated">Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
                                                 </div>
                                             </div>
                                         </div>

@@ -379,6 +379,10 @@ angular.module('arraysApp')
                     }
                     
                 }
+
+                if ($scope.$parent.$parent.dataset.dirty == 1 || $scope.$parent.$parent.dataset.dirty == 2) {
+                     $scope.data.fe_image.overwrite = false;
+                }
        
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
 

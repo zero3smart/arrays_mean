@@ -100,6 +100,7 @@ var DatasourceDescription_scheme = Schema({
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
+    lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0},

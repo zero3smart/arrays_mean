@@ -48,9 +48,28 @@ function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Actio
 
 }
 
+module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
+	var default_view = dataset.fe_views.default_view;
+	var datasetLink = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+	datasetLink += team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
+
+	var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + dataset.title + '" has finished importing. <br>You can view your dataset here: ' +  datasetLink + '<br><br><br> ArraysTeam';
+	var mailOptions = {
+		from : 'info@arrays.co',
+		to: user.email,
+		subject: 'Dataset Import Finished',
+		html: htmlText
+	}
+
+	sendEmail(mailOptions,cb);
+
+
+}
+
 function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
 	var sub = '[Dataset Display Status]: ' + state;
-	var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') is ' + state + ' to be listed on arrays.co.';
+	var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') has been ' + state + ' for listing on arrays.co.';
 	var mailOptions = {
 		from: 'info@arrays.co', 
 		to: authorEmail,

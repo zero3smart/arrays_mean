@@ -160,4 +160,18 @@
     display: block;
 }
 
+.item-initial {
+    display: block;
+    position: absolute;
+    vertical-align: middle;
+    text-align: center;
+    height: 32px;
+    width: 32px;
+    line-height: 32px;
+    font-size: 18px;
+    font-weight: bold;
+    color: lightgray;
+    margin: 22.89px;
+}
+
 /* @end Tooltip */
