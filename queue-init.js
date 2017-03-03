@@ -144,7 +144,7 @@ module.exports = function() {
 		                        		dataset.fe_image && dataset.fe_image.field && (dirty == 1 || dirty == 2 ||
 		                        			(dirty == 3 &&  (dataset.fe_image.scraped==false || dataset.fe_image.overwrite == true ) ))) {
 
-		                             _initJob(job.data.id,'scrapeImages',function(err) {
+		                            _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
 		                                return;
 		                            });
@@ -158,10 +158,9 @@ module.exports = function() {
 		                        }
 
 		                    } else {
-		                        _finishAllImportingSteps(dataset);
+		                    	dataset.jobId = 0;
+								dataset.save();
 		                        _initJobForAppendedDatasets(childrenDatasets,dirty,task);
-		                        
-		                        
 		                    }
 		                })
 		            })
