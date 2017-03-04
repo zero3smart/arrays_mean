@@ -48,13 +48,13 @@
         <br />
         <br />
         <div ng-if="!plan" layout="row" layout-align="center center">
-            <md-button ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: newPlan.quantity })" class="md-dashboard">
+            <md-button ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: newPlan.quantity })" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                 <span class="btn-label">Start Free Trial</span>
             </md-button>
         </div>
         <div ng-if="plan">
             <div ng-if="planItem.plan_code != plan.plan_code" layout="row" layout-align="center center">
-                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard">
+                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                     <span class="btn-label">Select This Plan</span>
                 </md-button>
             </div>
@@ -64,6 +64,9 @@
                     <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
                 </md-button>
             </div>
+        </div>
+        <div ng-if="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 ">
+            <span class="md-caption">Reduce Users to 1 to select this plan</span>
         </div>
         <br />
         <br />
