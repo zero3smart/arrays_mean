@@ -39,10 +39,9 @@ angular.module('arraysApp')
                 }
             };
 
-            $scope.plan = {
-                plan_interval_length: {
-                    _: '12'
-                }
+            $scope.newPlan = {
+                quantity: 1,
+                plan_interval_length: '12'
             };
 
             // Which cards to validated against in the CC input
@@ -152,6 +151,8 @@ angular.module('arraysApp')
 
                         // Set current Plan
                         $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, $scope.plans);
+                        $scope.newPlan.plan_interval_length = $scope.plan.plan_interval_length._;
+                        $scope.newPlan.quantity = $scope.subscription.quantity._;
                         // console.log($scope.subscription);
 
                         // Calculate trial days remaining
@@ -180,16 +181,24 @@ angular.module('arraysApp')
             };
 
 
-            //Update subscription quantity
-            var updateQuantity = function(subscrId, quantity, callback) {
-                Subscriptions.update({ subscrId: subscrId }, { quantity: quantity })
+            //Update subscription plan
+            var updateSubscription = function(subscrId, plan_code, quantity, callback) {
+
+                Subscriptions.update({ subscrId: subscrId }, {
+                    quantity: quantity,
+                    plan_code: plan_code
+                })
                 .$promise.then(function(res) {
                     // console.log(res.data);
 
-                    $scope.$parent.team.subscription.quantity = quantity;
+                    $scope.$parent.team.subscription.state = res.data.subscription.state;
+                    $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
                     $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-                    return callback();
-                }, function(err) {});
+
+                    getSubscriptions(function() {
+                        $mdDialog.hide();
+                    });
+                });
             };
 
 
@@ -200,7 +209,7 @@ angular.module('arraysApp')
             $scope.availableStates = [{"name":"Alabama","abbreviation":"AL"},{"name":"Alaska","abbreviation":"AK"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Arizona","abbreviation":"AZ"},{"name":"Arkansas","abbreviation":"AR"},{"name":"California","abbreviation":"CA"},{"name":"Colorado","abbreviation":"CO"},{"name":"Connecticut","abbreviation":"CT"},{"name":"Delaware","abbreviation":"DE"},{"name":"District Of Columbia","abbreviation":"DC"},{"name":"Federated States Of Micronesia","abbreviation":"FM"},{"name":"Florida","abbreviation":"FL"},{"name":"Georgia","abbreviation":"GA"},{"name":"Guam","abbreviation":"GU"},{"name":"Hawaii","abbreviation":"HI"},{"name":"Idaho","abbreviation":"ID"},{"name":"Illinois","abbreviation":"IL"},{"name":"Indiana","abbreviation":"IN"},{"name":"Iowa","abbreviation":"IA"},{"name":"Kansas","abbreviation":"KS"},{"name":"Kentucky","abbreviation":"KY"},{"name":"Louisiana","abbreviation":"LA"},{"name":"Maine","abbreviation":"ME"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Maryland","abbreviation":"MD"},{"name":"Massachusetts","abbreviation":"MA"},{"name":"Michigan","abbreviation":"MI"},{"name":"Minnesota","abbreviation":"MN"},{"name":"Mississippi","abbreviation":"MS"},{"name":"Missouri","abbreviation":"MO"},{"name":"Montana","abbreviation":"MT"},{"name":"Nebraska","abbreviation":"NE"},{"name":"Nevada","abbreviation":"NV"},{"name":"New Hampshire","abbreviation":"NH"},{"name":"New Jersey","abbreviation":"NJ"},{"name":"New Mexico","abbreviation":"NM"},{"name":"New York","abbreviation":"NY"},{"name":"North Carolina","abbreviation":"NC"},{"name":"North Dakota","abbreviation":"ND"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Ohio","abbreviation":"OH"},{"name":"Oklahoma","abbreviation":"OK"},{"name":"Oregon","abbreviation":"OR"},{"name":"Palau","abbreviation":"PW"},{"name":"Pennsylvania","abbreviation":"PA"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Rhode Island","abbreviation":"RI"},{"name":"South Carolina","abbreviation":"SC"},{"name":"South Dakota","abbreviation":"SD"},{"name":"Tennessee","abbreviation":"TN"},{"name":"Texas","abbreviation":"TX"},{"name":"Utah","abbreviation":"UT"},{"name":"Vermont","abbreviation":"VT"},{"name":"Virgin Islands","abbreviation":"VI"},{"name":"Virginia","abbreviation":"VA"},{"name":"Washington","abbreviation":"WA"},{"name":"West Virginia","abbreviation":"WV"},{"name":"Wisconsin","abbreviation":"WI"},{"name":"Wyoming","abbreviation":"WY"}];
 
 
-            $scope.openBillingDialog = function(ev) {
+            $scope.openBillingDialog = function(ev, plan_code, quantity) {
                 $mdDialog.show({
                     controller: BillingDialogController,
                     templateUrl: 'templates/blocks/account.billing.change-plan.html',
@@ -211,16 +220,25 @@ angular.module('arraysApp')
                     locals: {
                         billing: $scope.billing,
                         plan: $scope.plan,
+                        plans: $scope.plans,
                         subscription: $scope.subscription,
-                        Subscriptions: Subscriptions
+                        Subscriptions: Subscriptions,
+                        plan_code: plan_code,
+                        quantity: quantity
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, billing, plan, subscription, Subscriptions) {
+            function BillingDialogController($scope, $mdDialog, billing, plan, plans, subscription, Subscriptions, plan_code, quantity) {
                 $scope.billing = billing;
-                $scope.plan = plan;
-                $scope.subscription = subscription;
+                $scope.plan = getPlanFromPlans(plan_code, plans);
+                $scope.subscription = angular.copy(subscription); // Don't bind to parent controller's scope
+
+                if ($scope.plan.display_quantity._ === 'false') {
+                    $scope.subscription.quantity._ = 1;
+                } else {
+                    $scope.subscription.quantity._ = quantity;
+                }
 
                 $scope.hide = function() {
                     $mdDialog.hide();
@@ -230,25 +248,12 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
-                $scope.updateQuantity = function() {
-                    var subscrId = $scope.subscription.uuid;
-                    updateQuantity(subscrId, $scope.subscription.quantity._, function() {
-                        $mdDialog.hide();
-                    });
-                };
-
-                $scope.updatePlanCode = function(plan_code) {
+                $scope.updateSubscription = function(plan_code, quantity) {
                     // console.log(plan_code);
+                    // console.log(quantity);
+
                     var subscrId = $scope.subscription.uuid;
-                    Subscriptions.update({ subscrId: subscrId }, {
-                        quantity: $scope.subscription.quantity._,
-                        plan_code: plan_code
-                    })
-                    .$promise.then(function(res) {
-                        // console.log(res.data);
-                        getSubscriptions(function() {
-                            getPlans();
-                        });
+                    updateSubscription(subscrId, plan_code, quantity, function() {
                         $mdDialog.hide();
                     });
                 };

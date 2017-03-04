@@ -11,31 +11,6 @@
         <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
         </div>
 
-        <div ng-if="subscription.state === 'active'">
-
-            <form name="quantity_form" novalidate ng-if="plan.display_quantity._ === 'true'">
-
-                <hr>
-
-                <md-input-container>
-                    <label>Users</label>
-                    <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="subscription.quantity._" />
-                    <div ng-messages="quantity_form.quantity.$error" ng-if="users.length < 1">
-                        <div ng-message="min">Must be greater than 0.</div>
-                    </div>
-                    <div ng-messages="quantity_form.quantity.$error" ng-if="users.length > 0">
-                        <div ng-message="min">Cannot be less than the number of users on your team.</div>
-                    </div>
-                </md-input-container>
-
-                <div layout="row" layout-align="space-between center">
-                    <md-button class="md-dashboard" ng-click="openBillingDialog($event)" ng-disabled="!quantity_form.$dirty || quantity_form.$invalid">
-                        <span class="btn-label">Save and Update Plan</span>
-                </div>
-            </form>
-
-        </div>
-
         <hr ng-if="billing.exists">
 
         <div ng-if="subscription.state === 'canceled'">
@@ -46,9 +21,12 @@
             </md-button>
         </div>
         
-        <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription.state === 'active'">Cancel Subscription</a>
+        <div ng-if="subscription.state === 'active'">
+            <a ui-sref="dashboard.account.cancel" class="warn">Cancel Subscription</a>
+            <hr>
+        </div>
 
-        <div ng-if="!billing.exists">
+        <div ng-if="subscription.state !== 'canceled'">
             <ng-include src="'templates/blocks/account.billing.plans.html'"></ng-include>
         </div>
 
