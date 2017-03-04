@@ -451,7 +451,7 @@
                                             {{ setting.description }}
                                         </p>
 
-                                        <md-button class="md-dashboard" ng-if="colsAvailableOfType.length" ng-click="includeExcludeColsFromMenu(colsAvailableOfType, data[setting.selectExcludeBy], data[setting.name])">
+                                        <md-button class="md-dashboard" ng-if="colsAvailableOfType.length && setting.selectExcludeBy" ng-click="includeExcludeColsFromMenu(colsAvailableOfType, data[setting.selectExcludeBy], data[setting.name])">
                                             {{ excludeAllFromMenu ? 'Exclude' : 'Include' }} All
                                         </md-button>
                                     </div>
