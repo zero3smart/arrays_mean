@@ -106,7 +106,7 @@
 
 				  <span ng-hide="env.node_env == 'enterprise'" class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
 				  <input ng-disabled="invitedUser" name="subdomain" ng-model="user._team.subdomain" unique-subdomain
-				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
+				  type="text" class="form-control" ng-pattern="/^[a-z0-9]*$/" required>
 				  <span ng-hide="env.node_env=='enterprise'" class="input-group-addon">{{"." + env.host}}</span>
 			</div>
 

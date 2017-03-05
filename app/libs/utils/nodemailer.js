@@ -50,11 +50,25 @@ function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Actio
 
 module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
 	var default_view = dataset.fe_views.default_view;
+	
+	var datasetTitle = dataset.title;
+	var datasetUID = dataset.uid;
+	var datasetRevision = dataset.revision;
+
+	if (dataset.schema_id && !(datasetTitle || datasetUID || datasetRevision)) {
+
+		datasetTitle = dataset.schema_id.title;
+		datasetUID = dataset.schema_id.uid;
+		datasetRevision = dataset.schema_id.importRevision;
+		default_view = dataset.schema_id.fe_views.default_view;
+
+	}
+
 	var datasetLink = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+	datasetLink += team.subdomain + '.' + rootDomain + '/' + datasetUID + '-r' + datasetRevision + '/' + default_view;
 
-	datasetLink += team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
 
-	var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + dataset.title + '" has finished importing. <br>You can view your dataset here: ' +  datasetLink + '<br><br><br> ArraysTeam';
+	var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + datasetTitle + '" has finished importing. <br>You can view your dataset here: ' +  datasetLink + '<br><br><br> ArraysTeam';
 	var mailOptions = {
 		from : 'info@arrays.co',
 		to: user.email,
@@ -115,7 +129,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 		to: user.email,
 		subject: 'Welcome To Arrays!',
 		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
-		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
+		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br>The Arrays Team"
 
 	}
 	sendEmail(mailOptions,function(err) {

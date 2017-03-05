@@ -869,7 +869,7 @@ module.exports.GenerateImageURLFieldsByScraping
         var datasetQuery = {};
 
         if (schemaId) {
-            datasetQuery["pKey"] = {$regex: "^" + datasetId + "-"}
+            // datasetQuery["pKey"] = {$regex: "^" + datasetId + "-"}
             mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(schemaId);
         } else {
              mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
@@ -909,8 +909,10 @@ module.exports.GenerateImageURLFieldsByScraping
                 winston.info("📡  all items are processed for scraping, successfully scraped all of the images ");
 
                 if (!imageSource.selector || imageSource.selector == null || imageSource.selector == '') {
+                    var dataset = datasetId;
+                    if (schemaId) dataset = schemaId;
 
-                    description.findOne({_id:datasetId},function(err,dataset) {
+                    description.findOne({_id:dataset},function(err,dataset) {
 
                         if (err) return callback(err);
 
