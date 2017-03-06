@@ -16,17 +16,34 @@ angular.module('arraysApp')
             };
 
 
+            /**
+             * If dataset is "dirty", show browser dialog to remind user to save changes
+             */
+            function beforeUnloadMessage(e) {
+                // show this message, if browser allows custom text (not any modern browsers)
+                var dialogText = 'You have unsaved changes. Are you sure you want to leave this page?';
+                e.returnValue = dialogText;
+                return dialogText;
+            }
+            $scope.$watch('dataset.dirty', function(dirty) {
+                if(dirty) {
+                    window.addEventListener('beforeunload', beforeUnloadMessage, false);
+                }
+                else {
+                    window.removeEventListener('beforeunload', beforeUnloadMessage, false);
+                }
+            });
+
 
             /**
-             *  Tutorial banner messages
-             *  TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
-             *  there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
+             * Tutorial banner messages
+             * TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
+             * there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
              */
             $scope.tutorial = {
                 show: false, // only show on sample, for now
                 message: ''
             };
-
 
 
             $scope.transitionTo = function(step,anchor) {
@@ -35,7 +52,7 @@ angular.module('arraysApp')
                     inherit: false,
                     notify: true
                 });
-            }
+            };
 
 
             $scope.navigate = function(step) {
