@@ -302,6 +302,8 @@ module.exports.deleteImage = function (req, res) {
 
 module.exports.switchAdmin = function(req,res) {
 
+    return res.status(200).send('ok');
+
     var newAdminId = req.params.id;
     if (req.user) {
         var batch = new Batch();
@@ -360,9 +362,10 @@ module.exports.switchAdmin = function(req,res) {
                     oldAdmin.markModified('_editors');
                     oldAdmin.markModified('_viewers');
                     var index = oldAdmin._team.indexOf(team._id);
-                    oldAdmin._team.splice(index,1);
-                    if (oldAdmin.defaultLoginTeam == team._id) {
-                        oldAdmin.defaultLoginTeam = undefined;
+                    if (index >= 0 )  oldAdmin._team.splice(index,1);
+
+                    if (oldAdmin.defaultLoginTeam.equals(team._id)) {
+                        oldAdmin.defaultLoginTeam = (oldAdmin._team.length > 0) ? oldAdmin._team[0] : null;
                     }
                     oldAdmin.markModified('_team');
                     oldAdmin.markModified('defaultLoginTeam');

@@ -19,6 +19,7 @@ angular
             })
 
             $scope.user = AuthService.currentUser();
+
             $scope.teams = AuthService.allTeams();
 
  

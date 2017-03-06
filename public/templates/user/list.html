@@ -19,7 +19,7 @@
             <!-- <div flex="10">
                 <img src="/images/image-not-found-sm.png" />
             </div> -->
-
+            
             <span ng-class="{'pending': user.invited[person._id]}" flex>
                 <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
                 <span class="dashboard-list-name" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>

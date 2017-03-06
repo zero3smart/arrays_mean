@@ -7,8 +7,11 @@
     function AuthService($window, $q, $http,Team) {
 
         var currentUser = function () {
+            var user;
             if ($window.sessionStorage.user) {
-                return JSON.parse($window.sessionStorage.user);
+                user = JSON.parse($window.sessionStorage.user);
+                if (user.error && user.error == 'unauthorized') $window.location.href = '/auth/login';
+                else return user;
             } else {
                 return null;
             }
@@ -51,12 +54,15 @@
 
         var reload = function(cb) {
 
+ 
+
             $http.get('/api/user/currentUser')
                 .then(function (result) {
 
                     var userData = result.data;
-                    if (userData) {
 
+
+                    if (userData) {
 
                         isLoggedIn = true;  
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
@@ -65,7 +71,8 @@
                         if (userData.role == "superAdmin") {
                             Team.query()
                             .$promise.then(function(allTeams) {
-                                 $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
+
+                                $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
                                  cb({success:true})
                             })
                         } else {
@@ -145,11 +152,15 @@
         };
 
         var allTeams = function() {
-             if ($window.sessionStorage.teams) {
-                return JSON.parse($window.sessionStorage.teams);
-            } else {
-                return null;
+
+
+            var teams = null;
+            try {
+                teams = JSON.parse($window.sessionStorage.teams)
+            } catch(e) {
+              console.log(e);
             }
+            return teams;
         }
 
         var switchTeam = function (teamId) {
@@ -191,8 +202,6 @@
 
                                 }
                             }
-
-                            // console.log(cu);
                             $window.sessionStorage.setItem('user', JSON.stringify(cu));
                             deferred.resolve();
                         },function() {

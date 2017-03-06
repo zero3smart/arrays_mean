@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team',
-        function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team) {
+    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team','$window',
+        function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team,$window) {
 
             $scope.primaryAction.disabled = true;
             $scope.primaryAction.text = 'Invite User';
@@ -55,10 +55,8 @@ angular
                     }
                 })
                 .then(function () {
-                    console.log("here");
 
                     person.$remove(function(res) {
-                        console.log(res);
                         if (res.success == 'ok') {
                             $scope.users.splice($scope.users.indexOf(person), 1);
                             $scope.updatePrimaryActionAbility();
@@ -100,6 +98,14 @@ angular
                             team: $scope.team,
                             datasets: $scope.datasets
                         }
+                    }).then(function(object) {
+
+                        console.log("user dialog comes back");
+                        console.log(object);
+
+                        $scope.users.push(object.invitedUser);
+                        $scope.$parent.user.invited = object.user.invited;
+                        $window.sessionStorage.setItem('user', JSON.stringify($scope.$parent.user));
                     })
                 // }
             };
@@ -135,6 +141,17 @@ angular
                     {name: "None", value: ''}
 
                 ];
+
+                $scope.hide = function(data) {
+                    console.log("calling hide");
+                    console.log(data);
+                    $mdDialog.hide(data);
+                };
+                $scope.cancel = function() {
+                    $mdDialog.cancel();
+                };
+
+
 
                 $scope.saveUser = function() {
                     bindUserRolesToSelectedUser();
@@ -270,7 +287,9 @@ angular
                         .then(function(response) {
                             if (response.status == 200) {
                                 var user = response.data.user;
-                                // $scope.$parent.$parent.user.invited = user.invited; // todo
+                                var invitedUser = response.data.invitedUser;
+
+
                                 $mdToast.show(
                                     $mdToast.simple()
                                         .textContent('Invitation email sent!')
@@ -279,7 +298,8 @@ angular
                                 );
 
                                 $scope.selectedUser = null;
-                                $scope.hide();
+
+                                $scope.hide({user:user,invitedUser: invitedUser});
                             }
                         },function(err) {
                             $mdToast.show(
@@ -290,6 +310,8 @@ angular
                             );
                         })
                 }
+
+
 
                 $scope.makeTeamAdmin = function(ev, person) {
 
@@ -306,8 +328,8 @@ angular
                             controller: function($scope, $mdDialog, person, team) {
                                 $scope.person = person;
                                 $scope.team = team;
-                                $scope.hide = function() {
-                                    $mdDialog.hide();
+                                $scope.hide = function(data) {
+                                    $mdDialog.hide(data);
                                 };
                                 $scope.cancel = function() {
                                     $mdDialog.cancel();
@@ -318,11 +340,11 @@ angular
 
                             Team.switchAdmin({_id:$scope.selectedUser._id})
                             .$promise.then(function(res) {
-                                if (!res.error) {
+                                if (!res.error) { 
                                     AuthService.reload(function(data) {
                                         if (data.success) {
-                                            $scope.$parent.team = AuthService.currentTeam();
-                                            $scope.$parent.users = User.getAll({teamId: $scope.$parent.team._id});
+                                            // $scope.$parent.team = AuthService.currentTeam();
+                                            // $scope.$parent.users = User.getAll({teamId: $scope.$parent.team._id});
 
                                             $mdToast.show(
                                                 $mdToast.simple()
@@ -330,6 +352,8 @@ angular
                                                     .position('top right')
                                                     .hideDelay(3000)
                                             );
+                                            var team = AuthService.currentTeam();
+                                            $scope.hide({team: team, users:User.getAll({teamId: team._id})});
 
                                         } else {
                                             $mdToast.show(
@@ -350,12 +374,7 @@ angular
                         });
                 }
 
-                $scope.hide = function() {
-                    $mdDialog.hide();
-                };
-                $scope.cancel = function() {
-                    $mdDialog.cancel();
-                };
+               
             }
 
 

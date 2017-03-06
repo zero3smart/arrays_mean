@@ -106,6 +106,8 @@ module.exports.get = function (req, res) {
                             role = 'viewer';
                         }
                     }
+
+    
                     
                     var userInfo = {
                         _id: user._id,
@@ -122,6 +124,7 @@ module.exports.get = function (req, res) {
                         defaultLoginTeam: user.defaultLoginTeam
                     }
 
+
                     return res.status(200).json(userInfo);
                     
                 })
@@ -136,6 +139,7 @@ module.exports.get = function (req, res) {
                 if (err) {
                     res.send(err);
                 } else {
+                    console.log(user);
                     user.team = user._team;
                     res.json(user);
                 }
@@ -426,7 +430,7 @@ module.exports.defaultLoginTeam = function(req,res) {
 
 module.exports.delete = function(req, res) {
 
-
+  
 
 
     if (!req.user) {
@@ -449,7 +453,6 @@ module.exports.delete = function(req, res) {
             if (!user) return done(new Error('No User Exists'));
             u = user;
             a = user.defaultLoginTeam.admin;
-            console.log(a);
             done();
 
         })
@@ -468,13 +471,13 @@ module.exports.delete = function(req, res) {
     })
 
     batch.push(function(done) {
-        user.remove(done);
+        u.remove(done);
     })
 
     batch.end(function(err) {
         if (err) return res.send(err);
         else {
-             winston.info("✅  Removed user : " + user._id);
+            winston.info("✅  Removed user : " + u._id);
             res.json({success:'ok'});
         }
 

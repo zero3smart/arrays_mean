@@ -1,4 +1,5 @@
 <ul class="nav">
+
     <li class="sidebar-label">
         <a class="sidebar-label">{{user.firstName}} {{user.lastName}}</a>
     </li>
@@ -28,12 +29,15 @@
         <a ui-sref="dashboard.dataset.list" role="button">Visualizations</a>
     </li>
 
-    <li ng-if="((user.role=='admin' || user.role=='superAdmin') && (team.superTeam  || team.subscription.state=='active' || team.subscription.state=='canceled')) && team.subscription.quantity > 1 || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
+
+    <li ng-if="((user.role=='admin' || user.role=='superAdmin') && (team.superTeam  || team.subscription.state=='active' || team.subscription.state=='canceled')) && (team.subscription.quantity > 1 || team.superTeam) " ng-class="{'active': currentMenuItem === 'user'}">
         <a ui-sref="dashboard.user.list" role="button">Users</a>
     </li>
 
     <li ng-if="team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled' || user.role=='superAdmin'" class="sidebar-link">
         <span>
+
+
             <a href="{{subdomain}}" target="_blank" ng-click="updateSubdomain()">View Website</a>
         </span>
     </li>
