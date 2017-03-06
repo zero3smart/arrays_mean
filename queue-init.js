@@ -16,8 +16,17 @@ var queue = kue.createQueue({
 module.exports = function() {
 
 	var _finishAllImportingSteps = function(dataset) {
+
+
 		var user = dataset.lastImportInitiatedBy;
 		var team = dataset._team;
+		if (team == undefined && dataset.schema_id && dataset.schema_id._team) {
+			team = dataset.schema_id._team;
+			if (!user) {
+				user = dataset.schema_id.lastImportInitiatedBy;
+			}
+		}
+		
 		nodemailer.sendVizFinishProcessingEmail(user,dataset,team,function(err) {
 			if (err) console.log(err);
 			dataset.jobId = 0;
@@ -125,11 +134,15 @@ module.exports = function() {
 
 
 		            datasource_description.findById(job.data.id)
-		            .populate('lastImportInitiatedBy _team')
+		            .deepPopulate('lastImportInitiatedBy _team schema_id schema_id._team schema_id.lastImportInitiatedBy')
 		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 
 		                var dirty = dataset.dirty;
+		                var fe_image = dataset.fe_image;
+		                if (dataset.schema_id && dataset.schema_id.fe_image) {
+		                	fe_image = dataset.schema_id.fe_image;
+		                }
 
 		                datasource_description.find({schema_id: job.data.id},function(err,childrenDatasets) {
 		                    if (err) return;
@@ -141,10 +154,10 @@ module.exports = function() {
 		                                return;
 		                            });
 		                        } else if (task == 'postImport' && dataset.skipImageScraping == false &&
-		                        		dataset.fe_image && dataset.fe_image.field && (dirty == 1 || dirty == 2 ||
-		                        			(dirty == 3 &&  (dataset.fe_image.scraped==false || dataset.fe_image.overwrite == true ) ))) {
+		                        		fe_image && fe_image.field && (dirty == 1 || dirty == 2 ||
+		                        			(dirty == 3 &&  (fe_image.scraped==false || fe_image.overwrite == true ) ))) {
 
-		                             _initJob(job.data.id,'scrapeImages',function(err) {
+		                            _initJob(job.data.id,'scrapeImages',function(err) {
 		                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
 		                                return;
 		                            });
@@ -158,10 +171,9 @@ module.exports = function() {
 		                        }
 
 		                    } else {
-		                        _finishAllImportingSteps(dataset);
+		                    	dataset.jobId = 0;
+								dataset.save();
 		                        _initJobForAppendedDatasets(childrenDatasets,dirty,task);
-		                        
-		                        
 		                    }
 		                })
 		            })

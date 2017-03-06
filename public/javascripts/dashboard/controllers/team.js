@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','$mdToast','$mdDialog',
-        function ($scope, $state, AuthService,Team,$mdToast,$mdDialog) {
+    .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','$mdToast','$mdDialog','$window',
+        function ($scope, $state, AuthService,Team,$mdToast,$mdDialog,$window) {
 
             $scope.openAddTeamDialog = function(ev) {
                 $mdDialog.show({
@@ -17,6 +17,7 @@ angular
                 })
                 .then(function(team) {
                     $scope.teams.push(team);
+                    $window.sessionStorage.setItem('teams', JSON.stringify($scope.teams));
                 });
             };
 
@@ -118,7 +119,7 @@ angular
 
                         if (data.length == 0) {
 
-                            if (/^[a-z0-9\-]*$/.test($scope.newTeam.subdomain)) {
+                            if (/^[a-z0-9]*$/.test($scope.newTeam.subdomain)) {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                                 $scope.vm.teamForm.subdomain.$setValidity('pattern', true);
                             } else {
