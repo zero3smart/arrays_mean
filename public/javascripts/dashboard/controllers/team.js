@@ -51,6 +51,7 @@ angular
                           
                                if (response.message == 'ok') {
                                     $scope.teams.splice(index,1);
+                                    $window.sessionStorage.setItem('teams', JSON.stringify($scope.teams));
 
                                      $mdToast.show(
                                         $mdToast.simple()
