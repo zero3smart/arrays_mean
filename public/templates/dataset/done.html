@@ -7,10 +7,10 @@
         <div ng-if="!dirty && imported && !inProgress">
             <h2>Your data has been successfully processed!</h2>
 
-            <a href="#" ng-click="primaryAction.do()">View your visualization</a> or 
-            <a href="#" ng-click="transitionTo('dashboard.dataset.views')">continue editing</a>.
+            <a class="pointer" ng-click="primaryAction.do()">View your visualization</a> or
+            <a class="pointer" ng-click="transitionTo('dashboard.dataset.views')">continue editing</a>.
             <p ng-if="dataset.fe_visible && dataset.fe_listed">
-                <a href="#" ng-click="transitionTo('dashboard.dataset.settings', 'request-listing')">Request for your visualization to be listed on arrays.co</a>.
+                <a class="pointer" ng-click="transitionTo('dashboard.dataset.settings', 'request-listing')">Request for your visualization to be listed on arrays.co</a>.
             </p>
 
 
@@ -21,7 +21,7 @@
         </md-content>
 
         <p ng-if="dirty && user.role=='superAdmin'" style="margin-top: 15px;">
-            <a href="#" ng-click="toggleShowAdvanced()">Advanced</a>
+            <a class="pointer" ng-click="toggleShowAdvanced()">Advanced</a>
         </p>
 
         <md-content class="md-block" md-colors="{background: 'grey'}" ng-hide="!showAdvanced">

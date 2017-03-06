@@ -1,6 +1,6 @@
 <div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.done') && dataset.imported }"><!--
--->You have unsaved changes. <a href="#" ng-click="processData()">Process data</a> to save and publish changes.<!--
-or <a href="#" ng-click="revert()">revert.</a>
+-->You have unsaved changes. <a class="pointer" ng-click="processData()">Process data</a> to save and publish changes.<!--
+or <a class="pointer" ng-click="revert()">revert.</a>
 --></div>
 <div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }">{{ tutorial.message }}</div>
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start" ng-if="!$state.is('dashboard.dataset.new')">
