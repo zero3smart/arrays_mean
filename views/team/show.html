@@ -30,81 +30,11 @@
                         </header>
 
                         {% if sources | length %}
-                        <div class="row">
                             {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
-                            <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
-                                <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
-                                <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
-                                <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
 
-                                <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
+                                {% include "../partials/tile.html" %}
 
-                                <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array mobile-max-width">
-                                    {% if source.brandColor %}
-                                        <style scoped>
-                                            .source-{{ source.key }} .explore-tile-header {
-                                                background-color: {{ source.brandColor }};
-                                            }
-
-                                            {% if source.description %}
-                                            .source-{{ source.key }}:hover .explore-tile-description-container {
-                                                max-height: 100%;
-                                                transition: max-height 300ms ease;
-                                            }
-                                            {% endif %}
-                                        </style>
-                                    {% endif %}
-
-                                    <div class="explore-tile-body">
-                                        <div class="explore-tile-header">
-                                            <h2>{{ source.title }}</h2>
-                                            <div class="explore-tile-meta-wrapper">
-                                                <div class="explore-tile-meta">
-                                                    <span> By {{source.author}}</span>
-                                                </div>
-                                                <div class="explore-tile-meta hidden-xs">
-                                                    {% set comma = joiner() %}
-                                                    {% for url in source.urls -%}
-                                                      {{ comma() }} <span><a href="{{ url }}" class="source-link source-underline" target="_blank">Source</a></span>
-                                                    {%- endfor %}
-                                                </div>
-                                                <div class="explore-tile-meta">
-
-                                                    <span class="source-updated">{{ source.updatedAt | dateFormattedAs_monthDayYear_array }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        {% if source.banner %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,team.subdomain,source._id,'banner')}}')">
-                                        {% else %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}">
-                                        {% endif %}
-                                            {% if source.description %}
-                                            <div class="explore-tile-description-container team-tile-description">
-                                                <div class="explore-tile-description">
-                                                {% if source.description.length > 300 %}
-                                                {% set space = source.description.indexOf(' ', 290) %}
-                                                    {% if space %}
-                                                        {{ source.description.slice(0,space) + '...' }}
-                                                    {% elif source.description.length > 325 %}
-                                                        {{ source.description.slice(0,300) + '...' }}
-                                                    {% else %}
-                                                        {{ source.description }}
-                                                    {% endif %}
-                                                {% else %}
-                                                    {{ source.description }}
-                                                {% endif %}
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div><!-- .panel -->
-                            </div>
                             {% endfor %}
-                        </div>
 
                         {% else %}
                           <h1 class='array-title'>This team has no visualizations listed</h1>
