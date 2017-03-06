@@ -70,7 +70,6 @@ View.getAllCustomViews(function(err,customViews) {
                     team = view.name;
                 }
                 var controller = require('../../user/' + team + '/src/' + view.name);
-
                 controller.BindData(req,function(err,bindData) {
                     if (err) {
                          winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);

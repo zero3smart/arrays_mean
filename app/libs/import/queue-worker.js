@@ -116,7 +116,7 @@ queue.worker.process('scrapeImages', function(job,done) {
             description = data;
 
              if (description.schema_id) { //merge with parent description
-                description_schemaId = description.schema_id.id;
+                description_schemaId = description.schema_id._id;
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
             } 
             done();

@@ -130,7 +130,7 @@ var DatasourceDescription_scheme = Schema({
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team',
-        'author']});
+        'author', 'lastImportInitiatedBy', 'schema_id.lastImportInitiatedBy', 'schema_id.lastImportInitiatedBy._team']});
 
 
 
@@ -353,6 +353,7 @@ var _checkCollection = function (datasource_description, schemaKey, eachCb) {
 
 // Customize the model
 function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
+    
     datasource_description.find(datasetQuery)
         .populate({
             path: '_team',
@@ -579,9 +580,11 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
+
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
 
+    
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if ( (!datasourceDescription.fe_visible || !datasourceDescription.imported) && !datasourceDescription.connection ) return fn();
@@ -592,6 +595,8 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .exec(function(err, foundUser) {
 
                         if (err) return fn(err);
+                    
+
                         if (!foundUser) {
 
                             if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
