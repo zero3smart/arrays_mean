@@ -396,6 +396,17 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     return filterObj;
 }
 
+/**
+Make space for filter
+*/
+var filter = document.querySelector('.filter-tag');
+if (filter) {
+    document.querySelector('.site-content').style.paddingBottom = "60px";
+}
+if (!filter) {
+    document.querySelector('.site-content').style.paddingBottom = "0px";
+}
+
 
 function convertQueryStringToObject(inputString) {
     if (inputString == '') return {};
