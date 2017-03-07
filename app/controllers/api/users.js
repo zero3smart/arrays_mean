@@ -68,6 +68,9 @@ module.exports.getAll = function(req,res) {
 module.exports.get = function (req, res) {
 
     var id = req.params.id;
+
+    console.log(req.user);
+    
     if (id == 'currentUser') {
         if (!req.user) {
 
@@ -449,7 +452,6 @@ module.exports.delete = function(req, res) {
             if (!user) return done(new Error('No User Exists'));
             u = user;
             a = user.defaultLoginTeam.admin;
-            console.log(a);
             done();
 
         })

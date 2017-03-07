@@ -52,9 +52,15 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
 	var default_view = dataset.fe_views.default_view;
 	var datasetLink = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
-	datasetLink += team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
-
-	var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + dataset.title + '" has finished importing. <br>You can view your dataset here: ' +  datasetLink + '<br><br><br> ArraysTeam';
+	var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + dataset.title + '" has finished importing.';
+	if (default_view !== undefined) {
+		datasetLink += team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
+		htmlText += '<br>You can view your dataset here: ' +  datasetLink;
+	} else {
+		datasetLink = baseURL += '/dashboard/dataset/views/' + dataset._id ;
+		htmlText += '<br>You can continue to edit your dataset here through this link:<br>' + datasetLink;
+	}
+	htmlText += '<br><br><br> ArraysTeam';
 	var mailOptions = {
 		from : 'info@arrays.co',
 		to: user.email,

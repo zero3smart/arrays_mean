@@ -4,6 +4,7 @@ angular.module('arraysApp')
     .run(
     ['$rootScope', '$state', '$stateParams',
         function ($rootScope, $state, $stateParams) {
+
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
 
@@ -21,7 +22,7 @@ angular.module('arraysApp')
         function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
             $urlRouterProvider
-              .otherwise('/dashboard/account/profile');
+                .otherwise('/dashboard/account/profile');
 
             $stateProvider
                     .state('dashboard', {
@@ -102,8 +103,10 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset.html',
                         controller: 'DatasetCtrl',
                         resolve: {
-                            restrict: function(AuthService) {
+                            restrict: function(auth,AuthService) {
+
                                 return AuthService.ensureActiveSubscription();
+
                             }
                         }
                     })
@@ -216,7 +219,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/views.html',
                         controller: 'DatasetViewsCtrl as vm',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams','restrict', function (DatasetService, $stateParams) {
 
                                 return DatasetService.get($stateParams.id);
                             }],
@@ -224,7 +227,7 @@ angular.module('arraysApp')
                             views: ['View', function (View) {
                                 return View.query().$promise;
                             }],
-                            user: ['AuthService', function (AuthService) {
+                            user: ['AuthService', 'restrict', function (AuthService) {
                                 return AuthService.currentUser();
                             }]
                         }

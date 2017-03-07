@@ -19,8 +19,7 @@ var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
-    secret: process.env.SESSION_SECRET,
-    userProperty: 'payload'
+    secret: process.env.SESSION_SECRET
 }).unless({
     path: [/\/api\/user/i,
         /\/api\/team/i,
@@ -28,10 +27,13 @@ var auth = ejwt({
     ]
 });
 
-router.use(auth, function (err, req, res, next) {
-    if (err.name == 'UnauthorizedError') {
 
-        console.log(err);
+
+
+
+router.use('/',auth, function (err, req, res, next) {
+    console.log(err);
+    if (err.name == 'UnauthorizedError') {
         res.status(401).send('unauthorized');
     } else {
         return next();

@@ -45,7 +45,7 @@
     "jsonwebtoken": "^7.1.9",
     "kue": "^0.11.5",
     "kue-ui": "^0.1.0",
-    "lodash": "^4.17.1",
+    "lodash": "^4.17.4",
     "moment": "^2.12.0",
     "mongoose": "^4.4.9",
     "mongoose-deep-populate": "^3.0.0",

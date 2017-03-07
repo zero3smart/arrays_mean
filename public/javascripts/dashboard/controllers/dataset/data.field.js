@@ -173,10 +173,12 @@ angular.module('arraysApp')
 
             // General
 
-            var coercion = $scope.coercionScheme[$scope.fieldName];
-            $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
-            $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
 
+            if ($scope.customFieldIndex == undefined) {
+                var coercion = $scope.coercionScheme[$scope.fieldName];
+                $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
+                $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+            }
 
             if (originalCoercionScheme) {
                 if (originalCoercionScheme.operation == 'ToDate' && 

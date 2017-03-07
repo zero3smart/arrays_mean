@@ -25,6 +25,11 @@ var DatasourceDescription_scheme = Schema({
 
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
+
+    master_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
+    draftType : String,
+    //view,data
+
     banner: String,
     format: String, //csv, tsv, json
     connection: Object,
@@ -32,7 +37,7 @@ var DatasourceDescription_scheme = Schema({
     brandColor: String,
     urls: Array,
     description: String,
-    fe_visible: {type: Boolean, default: false},
+    fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: false},
 
     useCustomView: {type: Boolean, default: false},
@@ -132,15 +137,13 @@ DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team',
         'author']});
 
-
-
 DatasourceDescription_scheme.pre('save',function(next) {
     this._wasNew = this.isNew;
     next();
 })
 
 DatasourceDescription_scheme.post('save',function(doc) {
-    if (doc._wasNew) {
+    if (doc._wasNew && !doc.master_id) {
         this.populate('author _team',function(err,docPopulatedWithAuthor) {
             if (!docPopulatedWithAuthor.schema_id) {
                 if (err || !docPopulatedWithAuthor.author) {

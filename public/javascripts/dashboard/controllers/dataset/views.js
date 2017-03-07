@@ -43,7 +43,7 @@ angular.module('arraysApp')
 
             }));
             colsAvailable = colsAvailable.filter(function(fieldName){
-                return !$scope.dataset.fe_excludeFields[fieldName];
+                return ! ($scope.dataset.fe_excludeFields || ($scope.dataset.fe_excludeFields && $scope.dataset.fe_excludeFields[fieldName])) ;
             });
 
 
