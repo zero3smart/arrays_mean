@@ -399,8 +399,10 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
 /**
 Make space for filter
 */
+var pageScrolls = $("body").height() > $(window).height();
 var filter = document.querySelector('.filter-tag');
-if (filter) {
+var arrayView = window.location.pathname.split("/")[2];
+if (filter && !(arrayView == "map" || arrayView == "globe")) {
     document.querySelector('.site-content').style.paddingBottom = "60px";
 }
 if (!filter) {
