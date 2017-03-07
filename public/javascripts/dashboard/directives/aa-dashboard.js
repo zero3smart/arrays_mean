@@ -49,7 +49,7 @@ angular.module('arraysApp')
                     '#009E9D',
                     '#7A00F6',
                     '#dddddd',
-                    '#4A4A4A'
+                    '#707070'
                 ];
 
                 scope.unlist = scope.unlist || [];
