@@ -26,7 +26,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
 
-
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
 

@@ -450,12 +450,16 @@
                                     <ul class="dashboard-list user-list"
                                         ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">
                                         <li ng-if="currentMenu == 'Aggregate By'" layout="row" layout-align="start center">
+                                            <md-checkbox name="Include/exclude"
+                                                         ng-checked="data[setting.selectExcludeBy].indexOf('Number of Items') == -1"
+                                                         ng-click="includeExcludeCol('Number of Items',data[setting.selectExcludeBy],data[setting.name] == 'Number of Items')"
+                                                         aria-label="Include/exclude"
+                                                         flex="10"></md-checkbox>
                                             <span flex="10"
                                                 class="dashboard-list-icon view"
                                                 ng-class="{'default-view': data[setting.name] == 'Number of Items'}"
                                                 ng-click="(data[setting.selectExcludeBy].indexOf('Number of Items') == -1) ? (data[setting.name] = 'Number of Items') : angular.noop()"
                                                 >
-                                                <!-- aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}" -->
                                                 <i class="fa fa-lg fa-home" aria-hidden="true"></i>
                                             </span>
                                             <span>Number of Items</span>
@@ -487,7 +491,6 @@
                                                 [checkbox]
                                             </span> -->
                                             <md-checkbox name="Include/exclude"
-                                                         ng-if="setting.selectExcludeBy"
                                                          ng-checked="data[setting.selectExcludeBy].indexOf(col) == -1"
                                                          ng-click="includeExcludeCol(col,data[setting.selectExcludeBy],data[setting.name] == col)"
                                                          aria-label="Include/exclude"
