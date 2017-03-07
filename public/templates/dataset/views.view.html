@@ -415,7 +415,7 @@
                                 <label ng-if="( viewSetting | filter:{'inputType':'menu'}:true ).length > 1">
                                     Configure Menus
                                 </label>
-                                <md-select aria-label="Select menu" ng-model="currentMenu"
+                                <md-select aria-label="Select menu" ng-model="currentMenuDisplayName"
                                     flex="25"
                                     ng-hide="( viewSetting | filter:{'inputType':'menu'}:true ).length == 1">
                                     <md-option ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
@@ -426,27 +426,35 @@
                                     </md-option>
                                 </md-select>
                                 <div ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
-                                        ng-if="(currentMenu == setting.displayAs) && !setting.settingNestedField">
-                                    <p ng-if="!(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length">
-                                        <span class="warn">
-                                            No fields
-                                            {{ setting.restrictColumnDataType ? 'of ' + setting.restrictColumnDataType + ' type' : '' }}
-                                            available for this menu.
-                                            <br /><br />
-                                        </span>
-                                        <!-- <md-button class="md-dashboard" ng-click="goToData()">
-                                            Include a field
-                                        </md-button> -->
-                                    </p>
-                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length == 1 && !setting.description">
-                                        Include this field in the <strong>{{currentMenu}}</strong> menu:
-                                    </p>
-                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length > 1 && !setting.description">
-                                        Include these fields in the <strong>{{currentMenu}}</strong> menu:
-                                    </p>
-                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length && setting.description">
-                                        {{ setting.description }}
-                                    </p>
+                                     ng-if="(currentMenuDisplayName == setting.displayAs) && !setting.settingNestedField"
+                                     ng-init="colsAvailableOfType = (colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType))">
+                                    <div layout="row" layout-align="space-between center" style="margin-bottom: 15px;">
+                                        <p ng-if="!colsAvailableOfType.length">
+                                            <span class="warn">
+                                                No fields
+                                                {{ setting.restrictColumnDataType ? 'of ' + setting.restrictColumnDataType + ' type' : '' }}
+                                                available for this menu.
+                                                <br /><br />
+                                            </span>
+                                            <!-- <md-button class="md-dashboard" ng-click="goToData()">
+                                                Include a field
+                                                (helper to navigate back to field settings)
+                                            </md-button> -->
+                                        </p>
+                                        <p ng-if="colsAvailableOfType.length == 1 && !setting.description">
+                                            Include this field in the <strong>{{currentMenuDisplayName}}</strong> menu:
+                                        </p>
+                                        <p ng-if="colsAvailableOfType.length > 1 && !setting.description">
+                                            Include these fields in the <strong>{{currentMenuDisplayName}}</strong> menu:
+                                        </p>
+                                        <p ng-if="colsAvailableOfType.length && setting.description">
+                                            {{ setting.description }}
+                                        </p>
+
+                                        <md-button class="md-dashboard" ng-if="colsAvailableOfType.length && setting.selectExcludeBy" ng-click="includeExcludeColsFromMenu(colsAvailableOfType, data[setting.selectExcludeBy], data[setting.name])">
+                                            {{ excludeAllFromMenu ? 'Exclude' : 'Include' }} All
+                                        </md-button>
+                                    </div>
                                     <ul class="dashboard-list user-list"
                                         ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">
                                         <!-- <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
@@ -465,7 +473,7 @@
                                             <span>Object Title</span>
                                         </li> -->
                                         <li ng-if="setting.selectFrom=='column'"
-                                            ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)"
+                                            ng-repeat="col in colsAvailableOfType"
                                             layout="row" layout-align="start center"
                                             >
 

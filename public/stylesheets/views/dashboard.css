@@ -504,7 +504,7 @@ md-tooltip .md-content {
     background-repeat: no-repeat;
     background-position: 50%;
     background-size: contain;
-    
+
     opacity: .5;
 }
 
@@ -741,6 +741,9 @@ ul.aa-color-picker {
 	text-overflow: ellipsis;
 	white-space: nowrap;
     overflow: hidden;
+}
+.dataset .field-data-type {
+	color: var(--color-text-light);
 }
 .dataset .field:after {
     content: "";

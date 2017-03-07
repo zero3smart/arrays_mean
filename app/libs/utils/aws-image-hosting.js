@@ -19,7 +19,8 @@ function _uploadToS3(key,response,readFromFile,callback) {
 
     s3.upload(payload,function(err) {
         if (err) {
-            winston.error("❌  AWS S3 write stream error for url " + hostedFilePublicUrl + " and dest filename " + destinationFileName, " err: " , err);
+            winston.error("❌  AWS S3 write stream error");
+            console.log(err);
         }
         return callback(err)
     })

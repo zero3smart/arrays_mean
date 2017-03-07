@@ -23,7 +23,6 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
             
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
-                
             } else {
                  import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription,job, eachCb);
             }
@@ -136,6 +135,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
+                
             } else {
                  _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, function(err) {
 

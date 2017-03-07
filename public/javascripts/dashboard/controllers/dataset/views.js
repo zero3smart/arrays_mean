@@ -402,15 +402,27 @@ angular.module('arraysApp')
                     };
                 };
 
-                $scope.includeExcludeCol = function(col, array, isDefault) {
+                $scope.includeExcludeCol = function(col, array, isDefault, forceExclude) {
                     if(!isDefault) {
                         var ndex = array.indexOf(col);
                         if (ndex == -1) {
                             array.push(col);
-                        } else {
+                        } else if (!forceExclude) {
                             array.splice(ndex, 1);
                         }
                     }
+                };
+
+                $scope.excludeAllFromMenu = true; // setting this for all menus, for now
+
+                $scope.includeExcludeColsFromMenu = function(colsAvailableOfType, excludeByArray, menuDefault) {
+
+                    for (var i = 0; i < colsAvailableOfType.length; i++) {
+                        var col = colsAvailableOfType[i];
+                        $scope.includeExcludeCol(col, excludeByArray, menuDefault == col, $scope.excludeAllFromMenu);
+                    }
+
+                    $scope.excludeAllFromMenu = !$scope.excludeAllFromMenu;
                 };
 
                 $scope.excludeBy = function(excludeValueArray) {

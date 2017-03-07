@@ -692,18 +692,19 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
         //
 
         var query = {};
-        if (parentId && typeof parentId  === 'string' && parentId != '') {
-            query = {pKey: {$regex: "^" + datasetId + "-"}};
-        }
-        if (query_optl == null || typeof query_optl === 'undefined') {
-            query = {};
-        } else {
-            for (var opt in query_optl) {
-                query[opt] = query_optl[opt];
-            }
-        }
 
-        // console.log(query);
+        if (typeof parentId !== 'undefined') {
+            query = {pKey: {$regex: "^" + datasetId + "-"}};
+        } 
+        // if (query_optl == null || typeof query_optl === 'undefined') {
+        //     query = {};
+        // } else {
+        //     for (var opt in query_optl) {
+        //         query[opt] = query_optl[opt];
+        //     }
+        // }
+
+
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
@@ -868,7 +869,7 @@ module.exports.GenerateImageURLFieldsByScraping
         var datasetQuery = {};
 
         if (schemaId) {
-            datasetQuery["pKey"] = {$regex: "^" + datasetId + "-"}
+            // datasetQuery["pKey"] = {$regex: "^" + datasetId + "-"}
             mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(schemaId);
         } else {
              mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
@@ -908,8 +909,10 @@ module.exports.GenerateImageURLFieldsByScraping
                 winston.info("📡  all items are processed for scraping, successfully scraped all of the images ");
 
                 if (!imageSource.selector || imageSource.selector == null || imageSource.selector == '') {
+                    var dataset = datasetId;
+                    if (schemaId) dataset = schemaId;
 
-                    description.findOne({_id:datasetId},function(err,dataset) {
+                    description.findOne({_id:dataset},function(err,dataset) {
 
                         if (err) return callback(err);
 

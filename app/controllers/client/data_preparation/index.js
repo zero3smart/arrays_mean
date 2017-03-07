@@ -51,6 +51,8 @@ module.exports.BindData = function (req, callback) {
 
 
         var err = null;
+        if (!description._team) return cb(null);
+        
         subdomain = description._team.subdomain;
 
         raw_source_documents.Model.findOne({
