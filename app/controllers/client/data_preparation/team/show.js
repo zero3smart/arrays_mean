@@ -119,7 +119,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
             baseUrl: baseUrl
 
         };
-
+        console.log(data)
         if (req.user) {
             User.findById(req.user, function(err, user) {
                 if (err) return callback(err);
