@@ -4,12 +4,7 @@
     </div>
     <ul class="sidebar-filter-group">
 
-
-
         {% for field in uniqueFieldValuesByFieldName %}
-
-
-
 
             {% if field.values | length == 1 %}
                 {% set isThisAnActiveFilterColumn = false %}
@@ -47,7 +42,7 @@
                             mapBy: mayBy,
                             aggregateBy: aggregateBy }) %}
                     {% endif %}
-                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand text-color-brand" if isThisAnActiveFilter else "" }}">
                          <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                     </a>
                 </li>
@@ -69,8 +64,6 @@
 
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
                         <!-- don't show object title -->
-
-
 
                         {% if displayTitleOverrides[field.name] == "Object Title" %}
                             <span class="sidebar-filter-fieldname">{{ field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand text-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
@@ -100,11 +93,13 @@
                                 }) %}
 
                                 {% if isMultiselectable %}
-                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                                    <a href="{{ urlForFilterValue }}"
+                                        class="{{ "sidebar-filter-toggle-active background-color-brand text-color-brand-all" if isThisAnActiveFilter else "text-color-brand-hover" }}">
                                         <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                                     </a>
                                 {% else %}
-                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                                    <a href="{{ urlForFilterValue }}"
+                                        class="{{ "sidebar-filter-active background-color-brand text-color-brand-all" if isThisAnActiveFilter else "text-color-brand-hover" }}">
                                         {{ fieldValue }}
                                     </a>
                                 {% endif %}
@@ -113,6 +108,8 @@
                     </ul>
                 </li>
             {% endif %}
+
         {% endfor %}
+
     </ul>
 </nav>

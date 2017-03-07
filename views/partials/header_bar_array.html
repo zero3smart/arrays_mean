@@ -8,7 +8,14 @@
         color: {{ '#4A4A4A' if brandColor == '#dddddd' else brandColor }};
     }
 
-    .text-color-brand {
+    .text-color-brand,
+    .text-color-brand-all,
+    .sidebar-filter a.text-color-brand,
+    .sidebar-filter a.text-color-brand-all {
+        color: {{ '#FFF' if brandWhiteText else '#000' }};
+    }
+    .text-color-brand-hover:hover,
+    .text-color-brand-all:hover {
         color: {{ '#FFF' if brandWhiteText else '#000' }};
     }
 
