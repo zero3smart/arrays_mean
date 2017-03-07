@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope','DatasetService','$q',
+    .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope', 'DatasetService', '$q',
         function($scope, $location, $state, $rootScope, DatasetService, $q) {
 
             $scope.currentStep = $state.current.name;
@@ -8,6 +8,7 @@ angular.module('arraysApp')
             $rootScope.$on('$stateChangeStart',
                 function(event, toState){
                     $scope.currentStep = toState.name;
+                    window.removeEventListener('beforeunload', beforeUnloadMessage, false);
                 }
             );
 
