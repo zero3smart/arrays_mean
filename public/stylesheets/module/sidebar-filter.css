@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/sidebar-filter.css */
 
 /* @group Sliding Transition */
@@ -119,12 +119,14 @@
 .sidebar-filter-group-item > a {
 	position: relative;
 	border-top: 1px solid var(--color-sidebar-bg);
-	background-color: var(--color-sidebar-fg);
 	box-shadow: var(--box-shadow);
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 16px;
 	line-height: 1em;
+}
+.sidebar-filter-group-item > a:not(.background-color-brand) {
+    background-color: var(--color-sidebar-fg);
 }
 
 .sidebar-filter-group-item:first-child > a {
@@ -134,7 +136,7 @@
 .sidebar-filter .badge {
 	float: right;
 	width: 1.5em;
-	color: var(--color-text-dark);
+	/*color: var(--color-text-dark);*/
 	font-size: 13px;
 }
 
@@ -161,7 +163,9 @@
 	padding-top: 13px;
 	padding-bottom: 13px;
 	border-top: 1px solid var(--color-sidebar-fg);
-	background-color: var(--color-sidebar-bg);
+}
+.sidebar-filter-toggle > a:not(.background-color-brand) {
+    background-color: var(--color-sidebar-bg);
 }
 
 .sidebar-filter-toggle:hover .sidebar-filter-toggle-check:before {

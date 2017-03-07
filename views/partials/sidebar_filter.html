@@ -47,7 +47,7 @@
                             mapBy: mayBy,
                             aggregateBy: aggregateBy }) %}
                     {% endif %}
-                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active color-brand" if isThisAnActiveFilter else "" }}">
+                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
                          <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                     </a>
                 </li>
@@ -73,9 +73,9 @@
 
 
                         {% if displayTitleOverrides[field.name] == "Object Title" %}
-                            <span class="sidebar-filter-fieldname">{{ field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                            <span class="sidebar-filter-fieldname">{{ field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand text-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
                         {% else %}
-                            <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                            <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand text-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
                             {%endif%}
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
