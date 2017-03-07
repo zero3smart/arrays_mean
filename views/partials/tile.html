@@ -2,8 +2,11 @@
     <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
     <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
     <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
-
-    <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
+    {% if baseUrl %}
+        <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
+    {% else %}
+        <input type="hidden" name="subdomainUrl" value="{{source.baseUrl}}" class="hidden">
+    {% endif %}
 
     <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array mobile-max-width">
         {% if source.brandColor %}
@@ -42,7 +45,9 @@
             </div>
 
 
-            {% if source.banner %}
+            {% if source.banner and team.subdomain%}
+            <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,team.subdomain,source._id,'banner')}}')">
+            {% elif source.banner and source.subdomain %}
             <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,source.subdomain,source._id,'banner')}}')">
             {% else %}
             <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}">

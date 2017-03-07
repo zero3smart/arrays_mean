@@ -90,7 +90,7 @@ module.exports.BindData = function (req, callback) {
                     urls: description.urls,
                     default_view: default_view,
                     default_filterJSON: default_filterJSON,
-                    datasetBaseLink: baseUrl,
+                    baseUrl: baseUrl,
                     banner: description.banner,
                     teamTitle: description._team.title,
                     subdomain: description._team.subdomain,
