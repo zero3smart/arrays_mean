@@ -236,8 +236,7 @@ angular.module('arraysApp')
                     fields: $scope.originalFields
                 };
 
-
-                modalService.openDialog('field',data)
+                modalService.openDialog('join', data)
 
                     .then(function (savedDataset) {
 
