@@ -368,7 +368,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             } else {
                                 finalizedButNotCoalesced_groupedResults.push({
                                     value: el.value,
-                                    label: 'default'
+                                    label: '(not specified)'
                                 });
                             }
                         });
@@ -432,9 +432,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             //     offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
                             //     graphData.categories.push(offsetTime);
                             // } else {
-                                graphData.categories.push(category);
+                            graphData.categories.push(category);
                             // }
-
                             graphData.data.push(stackedResultsByGroup[category]);
                         }
                     }
