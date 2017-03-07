@@ -309,10 +309,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     //
-                    hasOriginalImage:  (dataSourceDescription.fe_image.field) ? true: false,
-                    fieldKey_originalImageURL: dataSourceDescription.fe_image.field,
-                    scrapedImages: dataSourceDescription.fe_image.scraped,
-
+                    hasOriginalImage:  (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? true: false,
+                    fieldKey_originalImageURL: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? 
+                    dataSourceDescription.fe_image.field: null,
+                    scrapedImages: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? dataSourceDescription.fe_image.scraped : null,
 
                     //
                     ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle,

@@ -81,11 +81,6 @@
                             Join with another dataset
                         </md-button>
                     </md-menu-item>
-                    <md-menu-item>
-                        <md-button ng-click="toggleExclude(excludeAll)">
-                            Include/Exclude all fields
-                        </md-button>
-                    </md-menu-item>
                 </md-menu-content>
             </md-menu>
         </div>
@@ -94,7 +89,12 @@
             <span class="btn-label">Join Tables</span>
         </md-button>
 
-        <h4 class="no-padding">We found these fields in your data source:</h4>
+        <div layout="row" layout-align="space-between center" class="no-padding">
+            <h4>We found these fields in your data source:</h4>
+            <md-button class="md-dashboard" ng-click="toggleExclude(excludeAll)">
+                {{ excludeAll ? 'Exclude' : 'Include' }} all fields
+            </md-button>
+        </div>
 
         <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
 
@@ -135,11 +135,8 @@
                     </span>
                 </span>
 
-                <span ng-hide="dataset.connection" flex="5" class="">
-
-
+                <span ng-hide="dataset.connection" flex="5" class="field-data-type">
                     {{ coercionScheme[field.name] | typeCoercionToString: field.data_type }}
-
                 </span>
 
                 <span flex="10"></span>

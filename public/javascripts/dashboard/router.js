@@ -188,7 +188,6 @@ angular.module('arraysApp')
                                 .then(function(data) {
 
                                     if (data.jobId !== 0) {
-                                        console.log(data._id);
                                         deferred.reject({importing: true, datasetId: data._id});
                                     } else {
                                         deferred.resolve(data);

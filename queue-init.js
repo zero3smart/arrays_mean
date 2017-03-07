@@ -138,10 +138,13 @@ module.exports = function() {
 		            .exec(function(err,dataset) {
 		                if (err || !dataset) return;
 
-		                var dirty = dataset.dirty;
+		                var dirty = dataset.dirty; 
 		                var fe_image = dataset.fe_image;
 		                if (dataset.schema_id && dataset.schema_id.fe_image) {
 		                	fe_image = dataset.schema_id.fe_image;
+
+
+		                	if (dirty == 0 && dataset.schema_id.dirty > dirty) dirty = dataset.schema_id.dirty;
 		                }
 
 		                datasource_description.find({schema_id: job.data.id},function(err,childrenDatasets) {

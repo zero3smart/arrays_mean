@@ -55,7 +55,10 @@ angular
                     }
                 })
                 .then(function () {
+                    console.log("here");
+
                     person.$remove(function(res) {
+                        console.log(res);
                         if (res.success == 'ok') {
                             $scope.users.splice($scope.users.indexOf(person), 1);
                             $scope.updatePrimaryActionAbility();
