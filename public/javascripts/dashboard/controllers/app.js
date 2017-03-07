@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav','env',
-        function ($scope, $state, AuthService, $window, $location, $mdSidenav,env) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav', 'env', '$mdDialog',
+        function ($scope, $state, AuthService, $window, $location, $mdSidenav, env, $mdDialog) {
 
             $scope.env = env;
 
@@ -21,11 +21,29 @@ angular
             /** If dataset is dirty, remind user to save before navigating away */
             $scope.sidebarNavigate = function(state) {
                 if($scope.currentMenuItem == 'dataset' && $scope.dataset.dirty) {
-                    alert('You have unsaved changes');
+                    $mdDialog.show({
+                        controller: unsavedChangesDialogCtrl,
+                        controllerAs: 'dialog',
+                        templateUrl: 'templates/blocks/dataset.unsaved.html',
+                        clickOutsideToClose: true,
+                        fullscreen: true // Only for -xs, -sm breakpoints.
+                    }).then(function() {
+                        console.log('Revert changes!');
+                        $state.go(state);
+                    });
                 } else {
                     $state.go(state);
                 }
             };
+
+            function unsavedChangesDialogCtrl($scope, $mdDialog) {
+                $scope.hide = function() {
+                    $mdDialog.hide();
+                };
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+            }
 
             $scope.user = AuthService.currentUser();
             $scope.teams = AuthService.allTeams();
