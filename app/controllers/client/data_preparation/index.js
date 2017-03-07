@@ -93,6 +93,7 @@ module.exports.BindData = function (req, callback) {
                     teamTitle: description._team.title,
                     subdomain: description._team.subdomain,
                     admin: description._team.admin,
+                    author: description._team.title
                 };
 
                 datasetArray.push(reformattedDataset);
