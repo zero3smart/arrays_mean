@@ -42,7 +42,7 @@
                             mapBy: mayBy,
                             aggregateBy: aggregateBy }) %}
                     {% endif %}
-                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand text-color-brand" if isThisAnActiveFilter else "" }}">
+                    <a href="{{ urlForFilterValue }}" class="{{ "background-color-brand text-color-brand" if isThisAnActiveFilter else "" }}">
                          <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                     </a>
                 </li>
@@ -94,7 +94,7 @@
 
                                 {% if isMultiselectable %}
                                     <a href="{{ urlForFilterValue }}"
-                                        class="{{ "sidebar-filter-toggle-active background-color-brand text-color-brand-all" if isThisAnActiveFilter else "text-color-brand-hover" }}">
+                                        class="{{ "background-color-brand text-color-brand-all" if isThisAnActiveFilter else "text-color-brand-hover" }}">
                                         <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                                     </a>
                                 {% else %}
