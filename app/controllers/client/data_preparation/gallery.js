@@ -201,7 +201,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function (done) {
                 raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
-
                     sourceDoc = _sourceDoc;
                     done();
                 });
@@ -211,7 +210,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function (done) {
                 processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
                     if (err) return done(err);
-
                     sampleDoc = _sampleDoc;
                     done();
                 });
@@ -222,9 +220,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
-
-
-               
                     done();
                 });
             });
