@@ -6,7 +6,7 @@
 	signupModule.controller('mainCtrl',['$scope','User','$state', function($scope,User,$state){
 		$scope.user = {};
 
-		
+
 
 
 		$scope.createUser = function() {
@@ -16,7 +16,7 @@
 
 			if ($scope.user._id && !$scope.user._team) {
 				$state.go('signup.info',{id: $scope.user._id});
-				
+
 			} else {
 				var user = new User($scope.user);
 				user.$save(function(user) {
@@ -36,7 +36,7 @@
 
 		var userId = $stateParams.id;
 		$scope.invitedUser = false;
-		$scope.showPasswordToolTip = false;
+		// $scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
 
 
@@ -55,7 +55,7 @@
 			.then(function(data) {
 				if ($scope.invitedUser) {
 					$state.go('signup.success',{isInvite: true,id:null});
-				} else { 
+				} else {
 					if ($scope.user.activated) {
 						$state.go('signup.success',{isInvite: true,id:null});
 					} else {
@@ -79,7 +79,7 @@
 		$scope.login = function() {
 			$window.location.href = 'auth/login';
 		}
-		
+
 	}])
 
 	signupModule.controller('errorCtrl',['$scope','$stateParams','$window',function($scope,$stateParams,$window) {
@@ -88,7 +88,7 @@
 		$scope.message = $stateParams.msg;
 		$scope.login = function() {
 			$window.location.href = 'auth/login';
-			
+
 
 		}
 
@@ -98,7 +98,7 @@
 	signupModule.controller('passwordCtrl',['$scope','User','$stateParams','$window','$state',function($scope,User,$stateParams,
 		$window,$state) {
 
-	
+
 		$scope.userId = $stateParams.userId;
 		$scope.msg = $stateParams.msg;
 		$scope.err = $stateParams.err;
@@ -135,13 +135,13 @@
 
 		$scope.login = function() {
 			$window.location.href = 'auth/login';
-			
+
 
 		}
 
-		
+
 	}])
 
-	
+
 
 })();
