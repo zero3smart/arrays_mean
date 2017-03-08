@@ -31,16 +31,10 @@
 
                         {% if sources | length %}
                             {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
-
                                 {% include "../partials/tile.html" %}
-
                             {% endfor %}
-                        </div>
-
                         {% else %}
-                          <h1 class='array-title'>This team has no visualizations listed</h1>
-                          <h2><a href="/dashboard/dataset/list">Create a visualization</a></h2>
-
+                            <h3>This team has no visualizations listed.</h3>
                         {% endif %}
                     </form>
                 </section>
