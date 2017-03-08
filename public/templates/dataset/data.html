@@ -66,7 +66,7 @@
                             Add a new field
                         </md-button>
                     </md-menu-item>
-                    <md-menu-item>
+                    <md-menu-item ng-if="user.role=='superAdmin'">
                         <md-button ng-click="openNestedDialog()">
                             Group data together
                         </md-button>
