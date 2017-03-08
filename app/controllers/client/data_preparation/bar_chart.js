@@ -106,41 +106,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.barChart_aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
-
-            // Aggregate By Available
-            var colNames_orderedForAggregateByDropdown = undefined;
-            for (var colName in raw_rowObjects_coercionSchema) {
-                var colValue = raw_rowObjects_coercionSchema[colName];
-                if (colValue.operation == "ToInteger") {
-
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!colNames_orderedForAggregateByDropdown) {
-                            colNames_orderedForAggregateByDropdown = [];
-                            if (!numberOfRecords_notAvailable)
-                                colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-                        colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
-                    }
-
-                }
-            }
-
-            if (colNames_orderedForAggregateByDropdown) {
-                if (colNames_orderedForAggregateByDropdown.length == 1)
-                    colNames_orderedForAggregateByDropdown = undefined;
-            }
-
-            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
-
-
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
@@ -487,7 +452,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_isDate: groupBy_isDate,
                     groupBy_outputInFormat: groupBy_outputInFormat,
                     // Aggregate By
-                    colNames_orderedForAggregateByDropdown: colNames_orderedForAggregateByDropdown,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'barChart', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     // Stack By

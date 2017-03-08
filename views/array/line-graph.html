@@ -51,21 +51,19 @@
                                 )
                                 }}
 
-                                {% if aggregateBy_humanReadable_available %}
-                                    {{
-                                    dropdown.default(
-                                        'Aggregate By',
-                                        aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
-                                        aggregateBy_humanReadable_available,
-                                        routePath_base | constructedRoutePath(filterObj, {
-                                            searchCol: searchCol,
-                                            searchQ: searchQ,
-                                            groupBy: groupBy,
-                                            aggregateBy: ''
-                                        })
-                                    )
-                                    }}
-                                {% endif %}
+                                {{
+                                dropdown.default(
+                                    'Aggregate By',
+                                    aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                    colNames_orderedForAggregateByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        groupBy: groupBy,
+                                        aggregateBy: ''
+                                    })
+                                )
+                                }}
                             </nav>
 
                             <div class="sort-bar-right pull-right">
@@ -80,7 +78,6 @@
                                     filterObj
                                 )
                                 }}
-
                                 {% include "../partials/legend-toggle.html" %}
                             </div>
 
