@@ -870,9 +870,9 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
     }
     //
     var displayableVal = originalVal;
-    if (originalVal == null) {
+    if (originalVal == null && dataSourceDescription.includeEmptyFields) {
         displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-    } else if (originalVal === "") {
+    } else if (originalVal === "" && dataSourceDescription.includeEmptyFields) {
         displayableVal = "(not specified)"; // we want to show a category for it rather than it appearing broken by lacking a category
     }
 
