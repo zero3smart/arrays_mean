@@ -21,11 +21,12 @@ baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDoma
 var br = '<br>';
 var brbr = br + br;
 var emailFooter =
-    'Arrays Software, LLC' + br +
-    'info@arrays.co' + brbr +
-    '<a href="https://www.facebook.com/arraysapp/">Facebook</a> | ' +
-    '<a href="https://www.twitter.com/arraysapp/">Twitter</a> | ' +
-    '<a href="https://www.instagram.com/arraysapp/">Instagram</a>';
+    'Questions? Contact Arrays support at support@arrays.co';
+    // 'Arrays Software, LLC' + br +
+    // 'info@arrays.co' + brbr +
+    // '<a href="https://www.facebook.com/arraysapp/">Facebook</a> | ' +
+    // '<a href="https://www.twitter.com/arraysapp/">Twitter</a> | ' +
+    // '<a href="https://www.instagram.com/arraysapp/">Instagram</a>';
 
 
 /**
@@ -152,22 +153,23 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 
 /** Update user on visualization display status */
 function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
-    var sub = '[Dataset Display Status]: ' + state;
+    var titleCaseState = state[0].charAt(0).toUpperCase() + state.slice(1);
     var mailOptions = {
         from: 'info@arrays.co',
         to: authorEmail,
-        subject: sub,
+        subject: 'Visualization Listing Request: ' + titleCaseState,
         html:
             authorName + ',' + brbr +
             'Your visualization "' + datasetTitle +
-            '" has been ' + state + ' for listing on Arrays.'
+            '" has been ' + state + ' for listing on Arrays.' + brbr +
+            emailFooter
     };
 
     sendEmail(mailOptions,cb);
 }
 
 module.exports.notifyVizApprovalAction = function(viz,cb) {
-    var authorName = viz.author.firstName + ' ' + viz.author.lastName ;
+    var authorName = viz.author.firstName + ' ' + viz.author.lastName;
     sendVizDisplayStatusUpdate(viz.state,authorName, viz.author.email,viz.title,cb);
 };
 
