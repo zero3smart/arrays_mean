@@ -189,7 +189,6 @@ function BarChart(selector, dataSet, options) {
         }).on('click', function(d, j, i){
             self._barClickEventHandler(categoriesAndData, j, i);
         });
-
     /*
      * Legend Data
      */
