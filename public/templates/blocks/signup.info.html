@@ -84,7 +84,7 @@
     <subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
     <div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
-        <label>{{ env.node_env !== 'enterprise'? 'Your subdomain' : 'Unique Team Identifier' }} </label>
+        <label>{{ env.node_env !== 'enterprise'? 'Team subdomain' : 'Unique Team Identifier' }} </label>
 
         <div class="input-group">
             <span ng-hide="env.node_env == 'enterprise'" class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
