@@ -1,10 +1,15 @@
 var express = require('express');
 var router = express.Router();
 
+var auth = require('http-auth');
+var ipfilter = require('express-ipfilter');
+// var Xml2js = require('xml2js');
+// var parser = new Xml2js.Parser({explicitArray: false});
+
+var bodyParser = require('body-parser');
+require('body-parser-xml')(bodyParser);
 
 // Basic HTTP Auth for Recurly Webhooks
-var auth = require('http-auth');
-
 var authConfig = {
     RECURLY_WEBHOOKS_USERNAME: process.env.RECURLY_WEBHOOKS_USERNAME ? process.env.RECURLY_WEBHOOKS_USERNAME : '',
     RECURLY_WEBHOOKS_PASSWORD: process.env.RECURLY_WEBHOOKS_PASSWORD ? process.env.RECURLY_WEBHOOKS_PASSWORD : ''
@@ -21,7 +26,6 @@ router.use(auth.connect(basic));
 
 
 // Filter IP Addresses to only allow requests from Recurly Webhooks servers
-var ipfilter = require('express-ipfilter');
 var IpDeniedError = ipfilter.IpDeniedError;
 var ips = [
     '50.18.192.88',
@@ -37,6 +41,10 @@ var ips = [
 router.use(ipfilter.IpFilter(ips, {mode: 'allow'}));
 
 
+// Parse XML
+router.use(bodyParser.xml());
+
+
 // Handle IP Filter errors
 router.use(function(err, req, res, next) {
     console.log('Webhooks Error:', err.name + ': ' + err.message);
@@ -48,9 +56,19 @@ router.use(function(err, req, res, next) {
 });
 
 
-// Test route
-router.post('/test', function(req, res) {
-    console.log(req);
+// Process XML requests
+router.post('/', function(req, res) {
+    console.log(req.body);
+
+    if (req.body.new_subscription_notification || req.body.updated_subscription_notification || req.body.canceled_subscription_notification || req.body.expired_subscription_notification || req.body.renewed_subscription_notification) {
+        console.log('Webhook notification: Subscription updated');
+
+        
+
+    } else {
+        console.log('Webhook notification ignored because it doesn\'t pertain to subscriptions');
+    }
+
     res.send('webhooks url');
 });
 
