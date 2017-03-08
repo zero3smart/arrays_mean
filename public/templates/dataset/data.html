@@ -55,7 +55,7 @@
 
             <span flex="5"></span> -->
 
-            <md-menu ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('contentMenu') !== -1 ) && !dataset.connection">
+            <md-menu ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('contentMenu') > -1 ) && !dataset.connection">
                 <md-button class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu()">
                     <span class="btn-label">More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></span></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
