@@ -19,9 +19,13 @@ var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
 baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
 
-
-
-
+var emailFooter =
+    'Arrays Software, LLC<br>' +
+    'info@arrays.co<br><br>' +
+    '<a href="https://www.facebook.com/arraysapp/">Facebook</a> | ' +
+    '<a href="https://www.twitter.com/arraysapp/">Twitter</a> | ' +
+    '<a href="https://www.instagram.com/arraysapp/">Instagram</a>'
+    ;
 
 function sendEmail (mailOptions,callback) {
 	transporter.sendMail(mailOptions,function(err,info) {
@@ -34,8 +38,8 @@ function sendEmail (mailOptions,callback) {
 
 
 function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Action,cb) {
-	var htmlText = 'Team Name: ' + teamName + '<br>Subdomain: ' + subdomain + '<br>Action User Name: ' + 
-	userName + '<br>Action User Email: ' + userEmail + '<br>DateTime: ' + DateTime + '<br>Action: ' + 
+	var htmlText = 'Team Name: ' + teamName + '<br>Subdomain: ' + subdomain + '<br>Action User Name: ' +
+	userName + '<br>Action User Email: ' + userEmail + '<br>DateTime: ' + DateTime + '<br>Action: ' +
 	Action;
 	var mailOptions = {
 		from: 'info@arrays.co',
@@ -50,7 +54,7 @@ function sendUserAlertEmail(teamName,subdomain,userName,userEmail,DateTime,Actio
 
 module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
 	var default_view = dataset.fe_views.default_view;
-	
+
 	var datasetTitle = dataset.title;
 	var datasetUID = dataset.uid;
 	var datasetRevision = dataset.revision;
@@ -85,7 +89,7 @@ function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb
 	var sub = '[Dataset Display Status]: ' + state;
 	var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') has been ' + state + ' for listing on arrays.co.';
 	var mailOptions = {
-		from: 'info@arrays.co', 
+		from: 'info@arrays.co',
 		to: authorEmail,
 		subject: sub,
 		html: htmlText
@@ -105,7 +109,7 @@ module.exports.sendResetPasswordEmail = function(user,cb) {
 		from : 'info@arrays.co',
 		to: user.email,
 		subject: 'Account Password Reset',
-		html: "Hi " + user.firstName + ",<br> To reset the password of your Arrays account, please click the link below: <br>"	+ 
+		html: "Hi " + user.firstName + ",<br> To reset the password of your Arrays account, please click the link below: <br>"	+
 		resetLink + "<br>"
 	}
 	sendEmail(mailOptions,function(err) {
@@ -128,7 +132,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 		from: 'info@arrays.co',
 		to: user.email,
 		subject: 'Welcome To Arrays!',
-		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
+		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" +
 		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br>The Arrays Team"
 
 	}
@@ -151,13 +155,13 @@ module.exports.newTeamCreatedEmail = function(team,cb) {
 
 module.exports.newVizCreatedEmail = function(viz,cb) {
 
-	
+
 	var userName = viz.author.firstName + ' ' + viz.author.lastName;
 	var subject = 'Viz Created (id: ' + viz._id + ', title: ' + viz.title + ')';
 	sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName,viz.author.email,viz.createdAt,
 		subject,cb);
-	
-	
+
+
 }
 
 // this should be sending to email other than useralerts , since it requires actions
@@ -210,10 +214,13 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
     var mailOptions = {
     	from: 'info@arrays.co',
     	to: invitee.email,
-    	subject: 'Invitation from Team ' + team.title,
-    	html: 'Hi! <br>This is a notice that the admin of the team ' +
-    	team.title + " invited you to join their projects. <br> Please use the" + 
-    	" following link to accept the invitation: <a href='" + invitationLink + "'> here</a><br><br> Sincerely, <br> The Arrays Team"
+        subject: 'Invitation to join \'' + team.title + '\' on Arrays',
+        html:
+            'The admin of <b>' + team.title + '</b> has invited you to join their team on Arrays.<br><br>' +
+            'Use the following link to accept their invitation:<br><br>' +
+            '<a href="' + invitationLink + '">' + invitationLink + '</a><br><br>' +
+            'This link will expire in two hours.<br><br>' +
+            emailFooter
     }
     sendEmail(mailOptions,function(err) {
     	console.log(err);
@@ -222,5 +229,3 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
     })
 
 }
-
-
