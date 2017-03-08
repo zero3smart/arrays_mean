@@ -189,6 +189,7 @@ var _mountRoutes_endPoints = function (app) {
 
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));
+    app.use('/webhooks', require('./webhooks'));
     app.use('/account',require('./account'));
     app.use('/', require('./views'));
 
