@@ -117,10 +117,11 @@ var DatasourceDescription_scheme = Schema({
     //0: no job has started, job has completed
     //all others: related to the jobId in the queue
 
-    state : String
+    state : String,
     //pending
     //approved
     //disapproved, maybe notify the user about this
+    includeEmptyFields: {type: Boolean, default: true}
 
     
 
