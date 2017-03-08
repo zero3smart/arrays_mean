@@ -18,13 +18,14 @@ var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
 baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
 
+var br = '<br>';
+var brbr = br + br;
 var emailFooter =
-    'Arrays Software, LLC<br>' +
-    'info@arrays.co<br><br>' +
+    'Arrays Software, LLC' + br +
+    'info@arrays.co' + brbr +
     '<a href="https://www.facebook.com/arraysapp/">Facebook</a> | ' +
     '<a href="https://www.twitter.com/arraysapp/">Twitter</a> | ' +
-    '<a href="https://www.instagram.com/arraysapp/">Instagram</a>'
-    ;
+    '<a href="https://www.instagram.com/arraysapp/">Instagram</a>';
 
 
 /**
@@ -52,32 +53,23 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
         default_view = dataset.schema_id.fe_views.default_view;
     }
 
-    var datasetLink = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    datasetLink += team.subdomain + '.' + rootDomain + '/' + datasetUID + '-r' + datasetRevision + '/' + default_view;
+    var link = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    link += team.subdomain + '.' + rootDomain + '/' + datasetUID + '-r' + datasetRevision + '/' + default_view;
 
-    var htmlText = 'Hi, ' + user.firstName + '<br> This email is to inform you that the dataset, "' + datasetTitle + '" has finished importing. <br>You can view your dataset here: ' +  datasetLink + '<br><br><br> ArraysTeam';
     var mailOptions = {
         from : 'info@arrays.co',
         to: user.email,
-        subject: 'Dataset Import Finished',
-        html: htmlText
+        subject: 'Visualization Import Finished!',
+        html:
+            user.firstName + ',' + brbr +
+            'Your visualization, "' + datasetTitle + '" has finished importing.' + brbr +
+            'Use the following link to view your visualization:' + brbr +
+            '<a href="' + link + '">' + link + '</a>' + brbr +
+            emailFooter
     };
 
     sendEmail(mailOptions,cb);
 };
-
-function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
-    var sub = '[Dataset Display Status]: ' + state;
-    var htmlText = 'Hi, ' + authorName + '<br>Your dataset (title:' + datasetTitle + ') has been ' + state + ' for listing on arrays.co.';
-    var mailOptions = {
-        from: 'info@arrays.co',
-        to: authorEmail,
-        subject: sub,
-        html: htmlText
-    };
-
-    sendEmail(mailOptions,cb);
-}
 
 module.exports.sendResetPasswordEmail = function(user,cb) {
     var token = jwt.sign({
@@ -85,13 +77,17 @@ module.exports.sendResetPasswordEmail = function(user,cb) {
         email: user.email
     },jwtSecret,{expiresIn: '24h'});
 
-    var resetLink = baseURL + '/account/reset_password?token=' + token;
+    var link = baseURL + '/account/reset_password?token=' + token;
     var mailOptions = {
         from : 'info@arrays.co',
         to: user.email,
         subject: 'Account Password Reset',
-        html: 'Hi ' + user.firstName + ',<br> To reset the password of your Arrays account, please click the link below: <br>'    +
-        resetLink + '<br>'
+        html:
+            user.firstName + ',' + brbr +
+            'Use the following link to reset your Arrays account password:' + brbr +
+            '<a href="' + link + '">' + link + '</a>' + brbr +
+            'This link will expire in twenty-four hours.' + brbr +
+            emailFooter
     };
 
     sendEmail(mailOptions,function(err) {
@@ -106,14 +102,18 @@ module.exports.sendActivationEmail = function(user, cb) {
         email: user.email
     },jwtSecret,{expiresIn:'2h'});
 
-    var activationLink = baseURL + '/account/verify?token=' + token;
+    var link = baseURL + '/account/verify?token=' + token;
     var mailOptions = {
         from: 'info@arrays.co',
         to: user.email,
         subject: 'Welcome To Arrays!',
-        html: 'Hi ' + user.firstName + ', <br> Thank you for signing up with us ! Your account has been created, please' +
-        ' activate your account using the following link: <a href=\'' + activationLink+ '\'>here</a><br> This link will expire in two hours. <br><br><br>The Arrays Team'
-
+        html:
+            user.firstName + ',' + brbr +
+            'Thank you creating an account on Arrays!' + brbr +
+            'Use the following link to activate your account:' + brbr +
+            '<a href="' + link + '">' + link + '</a>' + brbr +
+            'This link will expire in two hours.' + brbr +
+            emailFooter
     };
 
     sendEmail(mailOptions,function(err) {
@@ -131,16 +131,16 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
         host: host._id
     },jwtSecret,{expiresIn:'2h'});
 
-    var invitationLink = baseURL + '/account/invitation?token=' + token;
+    var link = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {
         from: 'info@arrays.co',
         to: invitee.email,
-        subject: 'Invitation to join \'' + team.title + '\' on Arrays',
+        subject: 'Invitation to Join \'' + team.title + '\' on Arrays',
         html:
-            'The admin of <b>' + team.title + '</b> has invited you to join their team on Arrays.<br><br>' +
-            'Use the following link to accept their invitation:<br><br>' +
-            '<a href="' + invitationLink + '">' + invitationLink + '</a><br><br>' +
-            'This link will expire in two hours.<br><br>' +
+            'The admin of <b>' + team.title + '</b> has invited you to join their team on Arrays.' + brbr +
+            'Use the following link to accept their invitation:' + brbr +
+            '<a href="' + link + '">' + link + '</a>' + brbr +
+            'This link will expire in two hours.' + brbr +
             emailFooter
     };
 
@@ -148,6 +148,27 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
         console.log(err);
         cb(err);
     });
+};
+
+/** Update user on visualization display status */
+function sendVizDisplayStatusUpdate(state,authorName,authorEmail,datasetTitle,cb) {
+    var sub = '[Dataset Display Status]: ' + state;
+    var mailOptions = {
+        from: 'info@arrays.co',
+        to: authorEmail,
+        subject: sub,
+        html:
+            authorName + ',' + brbr +
+            'Your visualization "' + datasetTitle +
+            '" has been ' + state + ' for listing on Arrays.'
+    };
+
+    sendEmail(mailOptions,cb);
+}
+
+module.exports.notifyVizApprovalAction = function(viz,cb) {
+    var authorName = viz.author.firstName + ' ' + viz.author.lastName ;
+    sendVizDisplayStatusUpdate(viz.state,authorName, viz.author.email,viz.title,cb);
 };
 
 
@@ -187,11 +208,6 @@ module.exports.newVizWaitingForApproval = function(viz,cb) {
     var userName = viz.author.firstName + ' ' + viz.author.lastName;
     var subject = 'Viz pending approval (id: ' + viz._id + ', title: ' + viz.title + ')';
     sendUserAlertEmail(viz._team.title,viz._team.subdomain,userName, viz.author.email,viz.updatedAt,subject,cb);
-};
-
-module.exports.notifyVizApprovalAction = function(viz,cb) {
-    var authorName = viz.author.firstName + ' ' + viz.author.lastName ;
-    sendVizDisplayStatusUpdate(viz.state,authorName, viz.author.email,viz.title,cb);
 };
 
 module.exports.newUserInvitedEmail = function(admin,team,user,cb) {
