@@ -2,7 +2,7 @@ angular.module('arraysApp')
     .controller('FieldDialogCtrl',['$scope','$mdDialog','$filter','fieldName','firstRecord','dataset',
     	'availableTypeCoercions','custom','customFieldIndex','filterOnly','columnIndex', 
         function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, 
-    		custom, customFieldIndex, filterOnly,columnIndex) {
+    		custom, customFieldIndex, filterOnly, columnIndex) {
 
 		$scope.firstRecord = firstRecord;
         $scope.availableTypeCoercions = availableTypeCoercions;
@@ -170,12 +170,13 @@ angular.module('arraysApp')
 
 
         $scope.save = function () {
-
             // General
 
             var coercion = $scope.coercionScheme[$scope.fieldName];
             $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
-            $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+            if ($scope.columnIndex) {
+                $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+            }
 
 
             if (originalCoercionScheme) {
