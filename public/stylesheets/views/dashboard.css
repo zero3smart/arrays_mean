@@ -58,10 +58,6 @@ body.dashboard {
     padding: 12px 0;
 }
 
-/*to add to variables and global styles*/
-:root {
-	--color-warn: #fb4400;
-}
 .warn {
     color: var(--color-warn);
 }
