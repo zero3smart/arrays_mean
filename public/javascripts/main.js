@@ -396,6 +396,19 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     return filterObj;
 }
 
+/**
+Make space for filter
+*/
+var pageScrolls = $("body").height() > $(window).height();
+var filter = document.querySelector('.filter-tag');
+var arrayView = window.location.pathname.split("/")[2];
+if (filter && !(arrayView == "map" || arrayView == "globe")) {
+    document.querySelector('.site-content').style.paddingBottom = "60px";
+}
+if (!filter) {
+    document.querySelector('.site-content').style.paddingBottom = "0px";
+}
+
 
 function convertQueryStringToObject(inputString) {
     if (inputString == '') return {};
