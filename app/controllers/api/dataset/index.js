@@ -729,8 +729,8 @@ function intuitDataype(name, sample) {
     }
 
     // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-    var numberRE = /([^0-9\.,]|\s)/;
-    var floatRE = /[^0-9,]/;
+    var numberRE = /([^0-9\.,-]|\s)/;
+    var floatRE = /[^0-9,-]/;
     var IdRE = /(Id|ID)/;
     if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
         // if it's definitely not a number, double check to see if it's a valid ISO 8601 date

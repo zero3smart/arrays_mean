@@ -185,7 +185,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
         available_keys.push(humanReadable_key);
     });
 
-    if (field == 'fieldsNotAvailableAsAggregateByColumns' && dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1) {
+    if (field == 'fieldsNotAvailableAsAggregateByColumns' && (dataSourceDescription.fe_views.views[field] == undefined || dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1)) {
         available_keys.push("Number of Items");
     }
 

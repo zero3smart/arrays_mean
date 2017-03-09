@@ -428,7 +428,7 @@
                                 </md-select>
                                 <div ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
                                      ng-if="(currentMenuDisplayName == setting.displayAs) && !setting.settingNestedField"
-                                     ng-init="colsAvailableOfType = (colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType))">
+                                     ng-init="colsAvailableOfType = AppendNumberOfItems(currentMenuDisplayName, colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType))">
                                     <div layout="row" layout-align="space-between center" style="margin-bottom: 15px;">
                                         <p ng-if="!colsAvailableOfType.length">
                                             <span class="warn">
@@ -452,27 +452,12 @@
                                             {{ setting.description }}
                                         </p>
 
-                                        <md-button class="md-dashboard" ng-if="colsAvailableOfType.length && setting.selectExcludeBy" ng-click="includeExcludeColsFromMenu(colsAvailableOfType, data[setting.selectExcludeBy], data[setting.name])">
+                                        <md-button class="md-dashboard" ng-if="colsAvailableOfType.length && setting.selectExcludeBy" ng-click="includeExcludeColsFromMenu(colsAvailableOfType, data[setting.selectExcludeBy], data[setting.name], currentMenuDisplayName)">
                                             {{ excludeAllFromMenu ? 'Exclude' : 'Include' }} All
                                         </md-button>
                                     </div>
                                     <ul class="dashboard-list user-list"
                                         ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">
-                                        <li ng-if="currentMenuDisplayName == 'Aggregate By'" layout="row" layout-align="start center">
-                                            <md-checkbox name="Include/exclude"
-                                                         ng-checked="data[setting.selectExcludeBy].indexOf('Number of Items') == -1"
-                                                         ng-click="includeExcludeCol('Number of Items',data[setting.selectExcludeBy],data[setting.name] == 'Number of Items')"
-                                                         aria-label="Include/exclude"
-                                                         flex="10"></md-checkbox>
-                                            <span flex="10"
-                                                class="dashboard-list-icon view"
-                                                ng-class="{'default-view': data[setting.name] == 'Number of Items'}"
-                                                ng-click="(data[setting.selectExcludeBy].indexOf('Number of Items') == -1) ? (data[setting.name] = 'Number of Items') : angular.noop()"
-                                                >
-                                                <i class="fa fa-lg fa-home" aria-hidden="true"></i>
-                                            </span>
-                                            <span>Number of Items</span>
-                                        </li>
                                         <!-- <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
                                             layout="row" layout-align="start center">
                                             <span

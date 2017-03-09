@@ -45,7 +45,7 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
 
     var datasetTitle = dataset.title;
     var datasetUID = dataset.uid;
-    var datasetRevision = dataset.revision;
+    var datasetRevision = dataset.importRevision;
 
     if (dataset.schema_id && !(datasetTitle || datasetUID || datasetRevision)) {
         datasetTitle = dataset.schema_id.title;
@@ -123,26 +123,32 @@ module.exports.sendActivationEmail = function(user, cb) {
     });
 };
 
-module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,cb) {
-    var token = jwt.sign({
-        _id: invitee._id,
-        email: invitee.email,
-        _editors: editors,
-        _viewers: viewers,
-        host: host._id
-    },jwtSecret,{expiresIn:'2h'});
+module.exports.sendInvitationEmail = function(existingUser,team,host,invitee,editors,viewers,cb) {
 
-    var link = baseURL + '/account/invitation?token=' + token;
+    var text = 'The admin of <b>' + team.title + '</b> has invited you to join their team on Arrays.' + brbr;
+
+    if (existingUser == false) {
+        var token = jwt.sign({
+            _id: invitee._id,
+            email: invitee.email,
+            _editors: editors,
+            _viewers: viewers,
+            host: host._id
+        },jwtSecret,{expiresIn:'2h'});
+
+        var link = baseURL + '/account/invitation?token=' + token;
+        text += 'Use the following link to accept their invitation:' + brbr +
+            '<a href="' + link + '">' + link + '</a>' + brbr +
+            'This link will expire in two hours.' + brbr;
+    } else {
+        text += '<a href="' + baseURL + '/auth/login' + '">Login</a> to view the team and its visualizations.' + brbr;
+    }
+
     var mailOptions = {
         from: 'info@arrays.co',
         to: invitee.email,
         subject: 'Invitation to Join \'' + team.title + '\' on Arrays',
-        html:
-            'The admin of <b>' + team.title + '</b> has invited you to join their team on Arrays.' + brbr +
-            'Use the following link to accept their invitation:' + brbr +
-            '<a href="' + link + '">' + link + '</a>' + brbr +
-            'This link will expire in two hours.' + brbr +
-            emailFooter
+        html: text + emailFooter
     };
 
     sendEmail(mailOptions,function(err) {

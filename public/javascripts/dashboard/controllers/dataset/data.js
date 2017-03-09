@@ -358,6 +358,7 @@ angular.module('arraysApp')
             $scope.saveRequiredFields = function() {
 
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
+                $scope.$parent.$parent.dataset.includeEmptyFields = $scope.dataset.includeEmptyFields;
                 if (!$scope.$parent.$parent.dataset.fe_image || $scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field ||
                     $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
                     if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {

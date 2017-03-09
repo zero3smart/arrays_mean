@@ -92,7 +92,6 @@ angular.module('arraysApp')
 
                 viewResource.get({id:id},function(data) {
 
-
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
@@ -396,10 +395,16 @@ angular.module('arraysApp')
 
                             return false;
                         }
-
                         return true;
 
                     };
+                };
+
+                $scope.AppendNumberOfItems = function(menu, cols) {
+                    if (menu == "Aggregate By") {
+                        cols.push("Number of Items");
+                    }
+                    return cols;
                 };
 
                 $scope.includeExcludeCol = function(col, array, isDefault, forceExclude) {
@@ -415,7 +420,7 @@ angular.module('arraysApp')
 
                 $scope.excludeAllFromMenu = true; // setting this for all menus, for now
 
-                $scope.includeExcludeColsFromMenu = function(colsAvailableOfType, excludeByArray, menuDefault) {
+                $scope.includeExcludeColsFromMenu = function(colsAvailableOfType, excludeByArray, menuDefault, currentMenuDisplayName) {
 
                     for (var i = 0; i < colsAvailableOfType.length; i++) {
                         var col = colsAvailableOfType[i];

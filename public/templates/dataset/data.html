@@ -52,27 +52,22 @@
 
             <span flex="5"></span> -->
 
-            <md-menu>
-                <md-button ng-hide="dataset.connection" class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu()">
+            <md-menu ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('contentMenu') > -1 ) && !dataset.connection">
+                <md-button class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu()">
                     <span class="btn-label">More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></span></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
                 <md-menu-content width="4">
-                    <md-menu-item ng-if="user.role=='superAdmin'">
+                    <md-menu-item>
                         <md-button ng-click="openFieldDialog('', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                             Add a new field
                         </md-button>
                     </md-menu-item>
-                    <md-menu-item>
+                    <md-menu-item ng-if="user.role=='superAdmin'">
                         <md-button ng-click="openNestedDialog()">
                             Group data together
                         </md-button>
                     </md-menu-item>
-                   <!--  <md-menu-item ng-if="user.role=='superAdmin'">
-                        <md-button ng-click="openImageScrapingDialog()">
-                            Image scraping
-                        </md-button>
-                    </md-menu-item> -->
                     <md-menu-item>
                         <md-button ng-click="openJoinDialog()">
                             Join with another dataset
@@ -88,9 +83,15 @@
 
         <div layout="row" layout-align="space-between center" class="no-padding">
             <h4>We found these fields in your data source:</h4>
+        </div>
+        <div layout="row" layout-align="space-between center" class="no-padding">
             <md-button class="md-dashboard" ng-click="toggleExclude(excludeAll)">
                 {{ excludeAll ? 'Exclude' : 'Include' }} all fields
             </md-button>
+            <md-switch ng-model="dataset.includeEmptyFields"
+                aria-label="Include empty field values">
+                Include empty field values
+            </md-switch>
         </div>
 
         <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
