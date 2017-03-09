@@ -3,8 +3,6 @@ var router = express.Router();
 
 var auth = require('http-auth');
 var ipfilter = require('express-ipfilter');
-// var Xml2js = require('xml2js');
-// var parser = new Xml2js.Parser({explicitArray: false});
 
 var bodyParser = require('body-parser');
 require('body-parser-xml')(bodyParser);
@@ -60,10 +58,32 @@ router.use(function(err, req, res, next) {
 router.post('/', function(req, res) {
     console.log(req.body);
 
-    if (req.body.new_subscription_notification || req.body.updated_subscription_notification || req.body.canceled_subscription_notification || req.body.expired_subscription_notification || req.body.renewed_subscription_notification) {
-        console.log('Webhook notification: Subscription updated');
+    var notifications = [
+        'new_subscription_notification',
+        'updated_subscription_notification',
+        'canceled_subscription_notification',
+        'expired_subscription_notification',
+        'renewed_subscription_notification'
+    ];
 
-        
+    var body = req.body;
+
+    var matchFound = false;
+    var notificationsLength = notifications.length;
+    for (var i = 0; i < notificationsLength; i++) {
+
+        if ( body.hasOwnProperty(notifications[i]) ) {
+            console.log('Webhook notification: ' + notifications[i]);
+            matchFound = true;
+            break;
+        }
+    }
+
+    if (matchFound) {
+
+        var teamId = req.body.updated_subscription_notification.account[0].account_code[0];
+
+        console.log(teamId);
 
     } else {
         console.log('Webhook notification ignored because it doesn\'t pertain to subscriptions');
