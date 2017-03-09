@@ -6,6 +6,7 @@ angular.module('arraysApp')
             $scope.currentNavItem = $state.current.url.slice(1,$state.current.url.length);
 
 
+
             $scope.updateProfile = function() {
                 // $('.butterbar').removeClass('hide').addClass('active');
                 // AuthService.updateProfile($scope.userFormData)
