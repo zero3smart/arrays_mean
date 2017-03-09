@@ -43,13 +43,13 @@ var allowedIPs = [
     '50.0.172.150',
     '52.203.102.94',
     '52.203.192.184',
-    '127.0.0.1' // Local IP Address
+    // '127.0.0.1' // Local IP Address
 ];
 
 // Whitelist IPs
 router.use(ipfilter.IpFilter(allowedIPs, {
     mode: 'allow', // Whitelist these IPs
-    allowedHeaders: 'X-Forwarded-For' // Fix for Heroku IP forwarding
+    allowedHeaders: ['x-forwarded-for'] // Fix for Heroku IP forwarding
 }));
 
 
