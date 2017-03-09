@@ -47,7 +47,10 @@ var allowedIPs = [
 ];
 
 // Whitelist IPs
-router.use(ipfilter.IpFilter(allowedIPs, {mode: 'allow'}));
+router.use(ipfilter.IpFilter(allowedIPs, {
+    mode: 'allow', // Whitelist these IPs
+    allowedHeaders: 'X-Forwarded-For' // Fix for Heroku IP forwarding
+}));
 
 
 // Parse XML
@@ -56,7 +59,7 @@ router.use(bodyParser.xml());
 
 // Handle IP Filter errors
 router.use(function(err, req, res, next) {
-    console.log('Webhooks Error:', err.name + ': ' + err.message);
+    // console.log('Webhooks Error:', err.name + ': ' + err.message);
     if (err instanceof IpDeniedError) {
         res.status(401).send('401 Unauthorized');
     } else {
