@@ -130,7 +130,6 @@ var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
 
-
         if (process.env.NODE_ENV !== 'enterprise') {
 
             urlRegexForDataset.lastIndex = 0;
@@ -138,12 +137,13 @@ var _mountRoutes_endPoints = function (app) {
             var isRouteForDataset = urlRegexForDataset.test(req.url);
 
             if (isNotRootDomain(req.subdomains)) {
-
                 if (isRouteForDataset) {
                     return next();
                 } else {
 
                     if (req.url == '/' || req.url == "/" + apiVersion + '/share' || req.url == '/auth/logout') {
+                        return next();
+                    } else if (req.url.indexOf("s") == 1) {
                         return next();
                     } else {
                         return res.redirect(rootDomain + req.url);

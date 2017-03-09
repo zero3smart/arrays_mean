@@ -23,77 +23,9 @@
                             </div><!-- .row -->
                         </header>
 
-                        {% for description in sources %}
-
-                            {{description.uid}}
-
-                            <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
-                                <input type="radio" name="source_key" value="{{ description.key | splitSubdomain }}" class="hidden">
-                                <input type="hidden" name="default_filterJSON" value="{{ description.default_filterJSON }}" class="hidden">
-                                <input type="hidden" name="default_view" value="{{ description.default_view }}" class="hidden">
-                                <input type="hidden" name="subdomainUrl" value="{{description.datasetBaseLink}}" class="hidden">
-                                <div class="panel panel-default panel-source source-{{ description.key }} js-panel-array mobile-max-width"
-                                >
-
-                                {% if description.brandColor %}
-                                    <style scoped>
-                                        .source-{{ description.key }} .explore-tile-header {
-                                            background-color: {{ description.brandColor }};
-                                        }
-
-                                        {% if description.description %}
-                                        .source-{{ description.key }}:hover .explore-tile-description-container {
-                                            max-height: 100%;
-                                            transition: max-height 300ms linear;
-                                        }
-                                        {% endif %}
-                                    </style>
-                                {% endif %}
-
-                                <div class="explore-tile-body">
-                                    <div class="explore-tile-header">
-                                        <h2>{{ description.title }}</h2>
-                                        <div class="explore-tile-meta-wrapper">
-                                            <div class="explore-tile-meta">
-                                                By {{description.teamTitle}}
-                                            </div>
-                                            <div class="explore-tile-meta">
-                                                {% set comma = joiner() %}
-                                          
-                                                <span class="source-updated">Updated {{ description.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% if description.banner %}
-                                <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(description.banner,description.subdomain,description._id,'banner')  }}')">
-                                {% else %}
-                                <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ description.brandColor }}">
-                                {% endif %}
-
-                                    {% if description.description %}
-                                    <div class="explore-tile-description-container">
-                                        <div class="explore-tile-description">
-                                        {% if description.description.length > 200 %}
-                                        {% set space = description.description.indexOf(' ', 190) %}
-                                            {% if space %}
-                                                {{ description.description.slice(0,space) + '...' }}
-                                            {% elif description.description.length > 215 %}
-                                                {{ description.description.slice(0,200) + '...' }}
-                                            {% else %}
-                                                {{ description.description }}
-                                            {% endif %}
-                                        {% else %}
-                                            {{ description.description }}
-                                        {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endif %}
-                                </div>
-
-                            </div><!-- .panel -->
-                        </div><!-- .radio -->
+                        {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
+                        
+                            {% include "../partials/tile.html" %}
 
                         {% endfor %}
                     </form>
