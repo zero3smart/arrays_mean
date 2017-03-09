@@ -65,9 +65,9 @@ angular
 
                              $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('User deleted successfully!')
+                                    .textContent('User deleted.')
                                     .position('top right')
-                                    .hideDelay(5000)
+                                    .hideDelay(3000)
                             );
                         }
 
@@ -76,12 +76,12 @@ angular
                             $mdToast.simple()
                                 .textContent(err)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
                     })
 
                 }, function () {
-                    console.log('You decided to keep this user.');
+                    // console.log('You decided to keep this user.');
                 });
 
             };
@@ -143,7 +143,7 @@ angular
                         if (savedUser) {
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent("User Role saved successfully!")
+                                    .textContent("User role saved!")
                                     .position('top right')
                                     .hideDelay(3000)
                             );
@@ -235,7 +235,7 @@ angular
                                         if (savedUser) {
                                              $mdToast.show(
                                                 $mdToast.simple()
-                                                    .textContent("User Role saved successfully!")
+                                                    .textContent("User role saved!")
                                                     .position('top right')
                                                     .hideDelay(3000)
                                             );
@@ -273,7 +273,7 @@ angular
                                 // $scope.$parent.$parent.user.invited = user.invited; // todo
                                 $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Invitation email sent!')
+                                        .textContent('Invitation sent!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -326,7 +326,7 @@ angular
 
                                             $mdToast.show(
                                                 $mdToast.simple()
-                                                    .textContent("Admin transfer successfully!")
+                                                    .textContent("Admin role transferred!")
                                                     .position('top right')
                                                     .hideDelay(3000)
                                             );
@@ -334,7 +334,7 @@ angular
                                         } else {
                                             $mdToast.show(
                                                 $mdToast.simple()
-                                                    .textContent("Opps! Admin did not get transfer!")
+                                                    .textContent("Error! Admin role not transferred.")
                                                     .position('top right')
                                                     .hideDelay(3000)
                                                 );
@@ -388,7 +388,7 @@ angular
                         if (response.status == 200) {
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent("Invitation resent successfully!")
+                                    .textContent("Invitation resent!")
                                     .position('top right')
                                     .hideDelay(3000)
                             );

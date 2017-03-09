@@ -235,7 +235,7 @@ angular.module('arraysApp')
 
                 $mdToast.show(
                     $mdToast.simple()
-                        .textContent('Dataset imported successfully!')
+                        .textContent('Data imported!')
                         .position('top right')
                         .hideDelay(3000)
                 );
@@ -354,13 +354,13 @@ angular.module('arraysApp')
 
             $scope.additionalDatasources.forEach(function(datasource) {
 
-  
+
 
                 if ($scope.dirty == 0 && datasource.dirty > 0) {
                     $scope.dirty = datasource.dirty;
                 }
 
-                if ( (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) || 
+                if ( (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) ||
                        ($scope.dirty == 0 && datasource.dirty > $scope.dirty) ) {
                     $scope.dirty = datasource.dirty;
                 }

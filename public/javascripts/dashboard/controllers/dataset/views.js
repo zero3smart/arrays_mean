@@ -180,7 +180,7 @@ angular.module('arraysApp')
                                 var id = response.data.id;
                                 $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Dataset updated successfully!')
+                                        .textContent('Visualization updated!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -199,7 +199,7 @@ angular.module('arraysApp')
                                 $mdToast.simple()
                                     .textContent(error)
                                     .position('top right')
-                                    .hideDelay(5000)
+                                    .hideDelay(3000)
                             );
                         });
                 }

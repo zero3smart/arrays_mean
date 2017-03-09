@@ -88,11 +88,11 @@ angular.module('arraysApp')
 
 
                             if (!$filter('isSuperAdmin')(dataset.author)) {
-            
+
                                 $scope.$parent.$parent.dataset = response.data;
                                  $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Dataset updated with approval state setting!')
+                                        .textContent('Listing status updated!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -135,7 +135,7 @@ angular.module('arraysApp')
 
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
+                                    .textContent(dataset._id ? 'Visualization updated!' : 'New visualization created!')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
@@ -154,7 +154,7 @@ angular.module('arraysApp')
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
                         $scope.submitting = false;
                     });
@@ -191,7 +191,7 @@ angular.module('arraysApp')
                         }
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Image upload successfully!')
+                                .textContent('Image uploaded!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -233,7 +233,7 @@ angular.module('arraysApp')
                     $scope.dataset.banner = data.dataset.banner
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('Banner deleted successfully!')
+                            .textContent('Banner deleted.')
                             .position('top right')
                             .hideDelay(3000)
                     );
