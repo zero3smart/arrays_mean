@@ -73,20 +73,23 @@ router.post('/', function(req, res) {
     for (var i = 0; i < notificationsLength; i++) {
 
         if ( body.hasOwnProperty(notifications[i]) ) {
-            console.log('Webhook notification: ' + notifications[i]);
+            console.log('Webhook notification received: ' + notifications[i]);
             matchFound = true;
+
+            var teamId = body[notifications[i]].account[0].account_code[0];
+
+            console.log(teamId);
+
             break;
         }
     }
 
-    if (matchFound) {
+    if (!matchFound) {
+        var notificationNames = Object.getOwnPropertyNames(body);
 
-        var teamId = req.body.updated_subscription_notification.account[0].account_code[0];
-
-        console.log(teamId);
-
-    } else {
-        console.log('Webhook notification ignored because it doesn\'t pertain to subscriptions');
+        if (notificationNames.length) {
+            console.log('Webhook notification ignored: ' + notificationNames[0]);
+        }
     }
 
     res.send('webhooks url');
