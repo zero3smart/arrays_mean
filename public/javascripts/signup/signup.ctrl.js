@@ -109,7 +109,7 @@
 			.$promise
 			.then(function(response) {
 				if (response.data == 'ok') {
-					$state.go('reset.success',{successMsg: ' Success! Please check your email for the reset account password instructions!'});
+					$state.go('reset.success',{successMsg: 'Password reset email sent! Please check your email and follow the instructions to reset your account password.'});
 				}
 			},function(response) {
 				$scope.err = response.data.err;
