@@ -460,14 +460,14 @@ angular.module('arraysApp')
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
                         }, done = function() {
                             $scope.submitting = false;
 
                             $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Dataset updated successfully!')
+                                .textContent('Visualization updated!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );

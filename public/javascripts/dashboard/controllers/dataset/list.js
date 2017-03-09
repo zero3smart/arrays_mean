@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets', 
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets',
         function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets) {
 
             $scope.primaryAction.disabled = false;
@@ -59,7 +59,7 @@ angular.module('arraysApp')
                             });
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('Dataset deleted successfully!')
+                                    .textContent('Visualization deleted.')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
@@ -79,7 +79,7 @@ angular.module('arraysApp')
 
 
             $scope.select = function (id) {
-        
+
 
                 $state.go('dashboard.dataset.upload', {id: id});
             };

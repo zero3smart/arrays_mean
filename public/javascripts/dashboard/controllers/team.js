@@ -48,20 +48,20 @@ angular
 
                     Team.delete({id:teamId}).$promise
                         .then(function(response){
-                          
+
                                if (response.message == 'ok') {
                                     $scope.teams.splice(index,1);
                                     $window.sessionStorage.setItem('teams', JSON.stringify($scope.teams));
 
                                      $mdToast.show(
                                         $mdToast.simple()
-                                            .textContent('Team deleted successfully!')
+                                            .textContent('Team deleted.')
                                             .position('top right')
                                             .hideDelay(3000)
                                     );
                                }
                         })
-                    
+
 
                 },function() {
                     //dialog canceled
@@ -85,7 +85,7 @@ angular
                     } else {
                          $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Sorry! Cannot save team setting!')
+                                .textContent('Error. Cannot save team setting.')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -113,10 +113,10 @@ angular
                     var params = {subdomain: $scope.newTeam.subdomain};
                     if ($scope.newTeam.subdomain == 'app' ) {
                          $scope.vm.teamForm.subdomain.$setValidity('unique', false);
-                         return; 
+                         return;
                     }
                     Team.search(params)
-                    .$promise.then(function(data) { 
+                    .$promise.then(function(data) {
 
                         if (data.length == 0) {
 
@@ -127,7 +127,7 @@ angular
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                                 $scope.vm.teamForm.subdomain.$setValidity('pattern', false);
                             }
-    
+
                         } else {
                             $scope.vm.teamForm.subdomain.$setValidity('unique', false);
                         }
@@ -140,7 +140,7 @@ angular
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('New Team created successfully!')
+                                .textContent('New team created!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -167,7 +167,7 @@ angular
                     $scope.$parent.user = AuthService.currentUser();
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('Switched to ' + changeToTeam.title)
+                            .textContent('Switched to ' + changeToTeam.title + '.')
                             .position('top right')
                             .hideDelay(3000)
                     );
