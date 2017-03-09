@@ -53,7 +53,7 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
 	
 	var datasetTitle = dataset.title;
 	var datasetUID = dataset.uid;
-	var datasetRevision = dataset.revision;
+	var datasetRevision = dataset.importRevision;
 
 	if (dataset.schema_id && !(datasetTitle || datasetUID || datasetRevision)) {
 
@@ -129,7 +129,8 @@ module.exports.sendActivationEmail = function(user, cb) {
 		to: user.email,
 		subject: 'Welcome To Arrays!',
 		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
-		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br>The Arrays Team"
+		" activate your account using the following link:" + activationLink + 
+		"This link will expire in two hours. <br><br><br>The Arrays Team"
 
 	}
 	sendEmail(mailOptions,function(err) {
@@ -196,24 +197,31 @@ module.exports.subscriptionUpdatedEmail = function(admin,team,subscriptionAction
 
 
 
-module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,cb) {
-	var token = jwt.sign({
-		_id: invitee._id,
-		email: invitee.email,
-		_editors: editors,
-		_viewers: viewers,
-		host: host._id
-	},jwtSecret,{expiresIn:'2h'});
+module.exports.sendInvitationEmail = function(existingUser, team,host,invitee,editors,viewers,cb) {
 
+	var text = 'Hi ' + invitee.firstName + ',<br><br> This email is to inform you that you are invited by the admin of the team ' + 
+	team.title + ' to collaborate on their visualizations. <br>';
+	if (existingUser == false) {
+		var token = jwt.sign({
+			_id: invitee._id,
+			email: invitee.email,
+			_editors: editors,
+			_viewers: viewers,
+			host: host._id
+		},jwtSecret,{expiresIn:'2h'});
 
-    var invitationLink = baseURL + '/account/invitation?token=' + token;
+	    var invitationLink = baseURL + '/account/invitation?token=' + token;
+	    text += 'Please use the following link to accept the invitation and register: <br>' + 
+	    		invitationLink;
+	}
+
+	text += '<br><br><br>The ArraysTeam';
+
     var mailOptions = {
     	from: 'info@arrays.co',
     	to: invitee.email,
     	subject: 'Invitation from Team ' + team.title,
-    	html: 'Hi! <br>This is a notice that the admin of the team ' +
-    	team.title + " invited you to join their projects. <br> Please use the" + 
-    	" following link to accept the invitation: <a href='" + invitationLink + "'> here</a><br><br> Sincerely, <br> The Arrays Team"
+    	html: text
     }
     sendEmail(mailOptions,function(err) {
     	console.log(err);

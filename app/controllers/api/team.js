@@ -302,8 +302,6 @@ module.exports.deleteImage = function (req, res) {
 
 module.exports.switchAdmin = function(req,res) {
 
-    return res.status(200).send('ok');
-
     var newAdminId = req.params.id;
     if (req.user) {
         var batch = new Batch();
@@ -327,6 +325,10 @@ module.exports.switchAdmin = function(req,res) {
 
         //pull new Admin's editor and viewer related to the team
         batch.push(function(done) {
+
+            console.log("new admin:::");
+            console.log(newAdminId);
+
             User.findById(newAdminId)
             .populate([{path:'_editors',select:'_team'}, {path:'_viewers',select: '_team'}])
             .exec(function(err,newAdmin) {
@@ -353,6 +355,8 @@ module.exports.switchAdmin = function(req,res) {
             .exec(function(err,oldAdmin) {
                 if (err) done(err);
                 else {
+
+
                     oldAdmin._editors = oldAdmin._editors.filter(function(value) {
                         return value._team == team._id;
                     })
@@ -369,7 +373,11 @@ module.exports.switchAdmin = function(req,res) {
                     }
                     oldAdmin.markModified('_team');
                     oldAdmin.markModified('defaultLoginTeam');
-                    oldAdmin.save(done);
+ 
+
+                    if (oldAdmin._team.length == 0) console.log("error");
+                    else oldAdmin.save(done);
+        
 
                 }
             })

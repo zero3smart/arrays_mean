@@ -77,6 +77,7 @@
                             })
                         } else {
 
+
                             $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
                             cb({success:true})
                         } 
