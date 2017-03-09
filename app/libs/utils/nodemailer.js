@@ -116,12 +116,12 @@ module.exports.sendResetPasswordEmail = function(user,cb) {
 
 
 module.exports.sendActivationEmail = function(user, cb) {
+
+
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
-
-
 
     var activationLink = baseURL + '/account/verify?token=' + token;
 	var mailOptions = {
@@ -129,9 +129,8 @@ module.exports.sendActivationEmail = function(user, cb) {
 		to: user.email,
 		subject: 'Welcome To Arrays!',
 		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
-		" activate your account using the following link:" + activationLink + 
-		"This link will expire in two hours. <br><br><br>The Arrays Team"
-
+		" activate your account using the following link:<br>" + activationLink + 
+		"<br>This link will expire in two hours. <br><br><br>The Arrays Team"
 	}
 	sendEmail(mailOptions,function(err) {
 		console.log(err);
