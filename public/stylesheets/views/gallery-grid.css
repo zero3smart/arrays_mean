@@ -31,6 +31,10 @@
     }
 }
 
+.preview-indicator {
+    font-weight: 500;
+}
+
 .array-meta {
     color: var(--color-text-light);
     font-size: 18px;
