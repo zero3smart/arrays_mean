@@ -18,18 +18,29 @@ angular
                 $scope.currentMenuItem = $scope.$state.current.name.split('.')[1];
             });
 
+            /**
+             * Nag user if dataset is dirty and needs to be processed
+             * Returns promise
+             */
+            $scope.openUnsavedChangesDialog = function() {
+                return $mdDialog.show({
+                    controller: unsavedChangesDialogCtrl,
+                    controllerAs: 'dialog',
+                    templateUrl: 'templates/blocks/dataset.unsaved.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true // Only for -xs, -sm breakpoints.
+                });
+            };
+
             /** If dataset is dirty, remind user to save before navigating away */
             $scope.sidebarNavigate = function(state) {
                 if($scope.currentMenuItem == 'dataset' && $scope.dataset.dirty) {
-                    $mdDialog.show({
-                        controller: unsavedChangesDialogCtrl,
-                        controllerAs: 'dialog',
-                        templateUrl: 'templates/blocks/dataset.unsaved.html',
-                        clickOutsideToClose: true,
-                        fullscreen: true // Only for -xs, -sm breakpoints.
-                    }).then(function() {
-                        console.log('Revert changes!');
+                    var dialogPromise = $scope.openUnsavedChangesDialog();
+                    dialogPromise.then(function() {
+                        // Discard changes
                         $state.go(state);
+                    }, function() {
+                        // Continue editing
                     });
                 } else {
                     $state.go(state);

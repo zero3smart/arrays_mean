@@ -18,10 +18,11 @@ angular.module('arraysApp')
 
             $scope.secondaryAction = {
                 disabled: true
-            }
+            };
 
             /**
              * If dataset is "dirty", show browser dialog to remind user to save changes
+             * These event listeners only check for navigation outside of the dashboard or page refresh.
              */
             function beforeUnloadMessage(e) {
                 // show this message, if browser allows custom text (not any modern browsers)
@@ -60,6 +61,22 @@ angular.module('arraysApp')
 
 
             $scope.navigate = function(step) {
+                // Don't open dialog when navigating to process data
+                if(step !== 'dashboard.dataset.process' && $scope.dataset.dirty) {
+                    var dialogPromise = $scope.openUnsavedChangesDialog();
+                    dialogPromise.then(function() {
+                        // Discard changes
+                        $scope.navigateAndSave(step);
+                    }, function() {
+                        // TODO Labeled "Continue Editing" but should process data
+                        $scope.processData();
+                    });
+                } else {
+                    $scope.navigateAndSave(step);
+                }
+            };
+
+            $scope.navigateAndSave = function(step) {
 
                 var errorHandler = function (error) {
                     $mdToast.show(
@@ -93,13 +110,7 @@ angular.module('arraysApp')
                         }
                         break;
                     case 'dashboard.dataset.process':
-                        /** removing if statement--should not be an issue--
-                         *  this is only called from processData(),
-                         *  which only appears after dataset is imported
-                         */
-                        // if ( ($scope.dataset.fe_listed && $scope.dataset.fe_visible && $scope.dataset.fe_views.default_view )|| (!$scope.dataset.fe_listed && !$scope.dataset.fe_visible) ) {
                         $location.path('/dashboard/dataset/process/' + $scope.dataset._id);
-                        // }
                         break;
                     }
                 };
@@ -113,7 +124,6 @@ angular.module('arraysApp')
                 queue.push(DatasetService.save(finalizedDataset));
 
                 if ($scope.additionalDatasources) {
-
                     $scope.additionalDatasources.forEach(function(datasource) {
                         var finalizedDatasource = angular.copy(datasource);
                         delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
@@ -139,54 +149,18 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
 
-
                         queue.push(DatasetService.save(finalizedDatasource));
                     });
-
                 }
 
                 $q.all(queue)
-                        .then(done)
-                        .catch(errorHandler);
+                    .then(done)
+                    .catch(errorHandler);
             };
 
             $scope.processData = function() {
                 $scope.navigate('dashboard.dataset.process');
             };
-
-            // $scope.revert = function() {
-            //     function getOldData() {
-            //         var deferred = $q.defer();
-            //         DatasetService.get($scope.dataset._id)
-            //         .then(function(data) {
-            //             if (data.jobId !== 0) {
-            //                 deferred.reject({importing: true, datasetId: data._id});
-            //             } else {
-            //                 deferred.resolve(data);
-            //             }
-            //         });
-            //         return deferred.promise;
-            //     }
-            //
-            //     var oldDataPromise = getOldData();
-            //     oldDataPromise.then(function(dataset) {
-            //         $scope.dataset = angular.copy(dataset);
-            //         $scope.dataset.dirty = 0;
-            //
-            //         // apply the same resets as in data.js reset()
-            //         if (!dataset.columns) return;
-            //
-            //         $scope.data = {};
-            //         $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-            //         $scope.data.fe_designatedFields = dataset.fe_designatedFields;
-            //
-            //         // reload so each view's resets are applied
-            //         // $state.reload();
-            //         $scope.navigate($scope.currentStep); // will save dirty = 0
-            //     }, function(err) {
-            //         // console.log(err)
-            //     });
-            // };
 
             $scope.convertToURLSafe = function(input) {
                 return input.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
