@@ -357,7 +357,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableVal;
 
                             if (groupBy_isDate) {
-                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription)
+                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription);
+
                             } else {
                                 displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
