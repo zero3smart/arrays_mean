@@ -365,6 +365,9 @@ body.md-toast-animating {
 .dashboard-list md-checkbox {
 	margin-bottom: 0;
 }
+.obj-detail-toggle {
+    font-size: 0.625em;
+}
 
 .team-list {
     margin-left: -12px;
