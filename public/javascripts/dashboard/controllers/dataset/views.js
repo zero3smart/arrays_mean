@@ -36,10 +36,12 @@ angular.module('arraysApp')
                     $scope.primaryAction.text = "Save";
                     $scope.primaryAction.disabled = false;
                     $scope.secondaryAction.disabled = false;
+                    $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
                 } else {
                     $scope.primaryAction.disabled = true;
                     delete $scope.primaryAction.text;
                     delete $scope.secondaryAction.text;
+                    $scope.tutorial.message = '';
                 }
             })
 
@@ -96,8 +98,6 @@ angular.module('arraysApp')
 
             }
 
-
-            $scope.tutorial.message = 'Here you can configure each view you want to use to visualize your data.\nYou can make edits to each view and preview by clicking the eye icon.\nClick \'Save\' to continue.';
 
             $scope.$parent.$parent.currentNavItem = 'views';
 
