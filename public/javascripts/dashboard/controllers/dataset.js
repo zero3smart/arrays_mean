@@ -66,6 +66,7 @@ angular.module('arraysApp')
                     var dialogPromise = $scope.openUnsavedChangesDialog();
                     dialogPromise.then(function() {
                         // Discard changes
+                        $scope.secondaryAction.do(); // from reset() data.js
                         $scope.navigateAndSave(step);
                     }, function() {
                         // TODO Labeled "Continue Editing" but should process data
