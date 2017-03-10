@@ -196,7 +196,7 @@ angular.module('arraysApp')
                     $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
 
                     getSubscriptions(function() {
-                        $mdDialog.hide();
+                        return callback();
                     });
                 });
             };
@@ -254,6 +254,14 @@ angular.module('arraysApp')
 
                     var subscrId = $scope.subscription.uuid;
                     updateSubscription(subscrId, plan_code, quantity, function() {
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription updated')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
                         $mdDialog.hide();
                     });
                 };
@@ -275,6 +283,14 @@ angular.module('arraysApp')
                         if (plan_code) {
                             $scope.startTrialSubscription(plan_code, quantity);
                         } else {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                .textContent('Payment info updated')
+                                .action('Ok')
+                                .position('top right')
+                                .hideDelay(3000)
+                            );
+
                             $state.go('dashboard.account.billing');
                         }
                         
@@ -366,6 +382,15 @@ angular.module('arraysApp')
                             };
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription started')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -391,6 +416,15 @@ angular.module('arraysApp')
                             };
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription started')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -408,6 +442,15 @@ angular.module('arraysApp')
                         $scope.$parent.team.subscription.state = res.data.subscription.state;
                         $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription cancelled')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -425,6 +468,15 @@ angular.module('arraysApp')
                         $scope.$parent.team.subscription.state = res.data.subscription.state;
                         $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription reactivated')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
                         getSubscriptions();
                     } else {
                         // console.log(res.data);
