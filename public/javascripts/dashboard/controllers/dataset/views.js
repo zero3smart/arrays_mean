@@ -380,24 +380,44 @@ angular.module('arraysApp')
                     }
                 };
 
+                $scope.isArray = function(requireType) {
+                    if (Array.isArray(requireType)) {
+                        return true;
+                    } 
+                    return false;
+                };
+
                 $scope.DataTypeMatch = function(requireType) {
 
-                    return function(col) {
+                    var returnDataTypeMatch = function (requireType) {
 
-                        if (typeof requireType !== 'undefined') {
-                            if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
-                                $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
+                        return function(col) {
 
-                                var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
+                            if (typeof requireType !== 'undefined') {
+                                if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
+                                    $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 
-                                return lowercase.indexOf(requireType.toLowerCase()) >= 0;
+                                    var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
+
+                                    return lowercase.indexOf(requireType.toLowerCase()) >= 0;
+                                }
+
+                                return false;
                             }
+                            return true;
 
-                            return false;
+                        };
+                    }
+                    
+                    if ($scope.isArray(requireType)) {
+
+                        for (var i = 0; i < requireType.length; i++) {
+                            return returnDataTypeMatch(requireType[i]);
                         }
-                        return true;
 
-                    };
+                    } else {
+                        return returnDataTypeMatch(requireType);
+                    }
                 };
 
                 $scope.AppendNumberOfItems = function(menu, cols) {
