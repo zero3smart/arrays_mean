@@ -26,6 +26,14 @@ angular.module('arraysApp')
                 }
             }
 
+            /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
+            if(!dataset.fe_excludeFieldsObjDetail) {
+                dataset.fe_excludeFieldsObjDetail = {};
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
+                }
+            }
+
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -94,11 +102,22 @@ angular.module('arraysApp')
             };
 
 
+            $scope.updateFieldInclusion = function(fieldName) {
+                $scope.setDirty(3);
+
+                /** Match object detail exclusion to field exclusion  */
+                $scope.dataset.fe_excludeFieldsObjDetail[fieldName] = $scope.dataset.fe_excludeFields[fieldName];
+            };
+
             $scope.toggleExclude = function (exclude) {
                 for (var i = 0; i < $scope.originalFields.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
                 }
                 $scope.excludeAll = exclude ? false : true; // toggle
+            };
+
+            $scope.toggleObjectDetailDisplay = function(fieldName) {
+                $scope.dataset.fe_excludeFieldsObjDetail[fieldName] = !$scope.dataset.fe_excludeFieldsObjDetail[fieldName];
             };
 
             $scope.openJoinTablesDialog = function() {

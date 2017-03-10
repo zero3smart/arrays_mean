@@ -37,9 +37,10 @@ var DatasourceDescription_scheme = Schema({
 
     useCustomView: {type: Boolean, default: false},
     fileName: String,
-    
+
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
+    fe_excludeFieldsObjDetail: Object,
 
     fe_displayTitleOverrides: Object,
 
@@ -108,7 +109,7 @@ var DatasourceDescription_scheme = Schema({
     //1: reimport from begining
     //2: starting from import processed
     //3: post import caching
-    //4: only image scraping 
+    //4: only image scraping
 
     skipImageScraping: {type: Boolean, default: false},
 
@@ -123,7 +124,7 @@ var DatasourceDescription_scheme = Schema({
     //disapproved, maybe notify the user about this
     includeEmptyFields: {type: Boolean, default: true}
 
-    
+
 
 
 },{ timestamps: true, minimize: false});
@@ -168,7 +169,7 @@ DatasourceDescription_scheme.pre('remove',function(next) {
 
 
     if (!this.schema_id) {
-        
+
         async.parallel([
             function(callback) {
                 mongoose_client.dropCollection('rawrowobjects-' + thisId, function (err) {
@@ -216,7 +217,7 @@ DatasourceDescription_scheme.pre('remove',function(next) {
     } else {
         next();
     }
-    
+
 })
 
 
@@ -354,7 +355,7 @@ var _checkCollection = function (datasource_description, schemaKey, eachCb) {
 
 // Customize the model
 function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
-    
+
     datasource_description.find(datasetQuery)
         .populate({
             path: '_team',
@@ -387,7 +388,7 @@ var _GetAllDescriptions = function (userId, callback) {
                 var connectedDataset = {connection: {$ne: null}, fe_listed: true, fe_visible: true};
 
                 if(foundUser.isSuperAdmin()) {
-                    // get descriptionsand populate dataset with query/teams 
+                    // get descriptionsand populate dataset with query/teams
                     getDescriptionsAndPopulateTeam({}, {$or: [importedDataset, connectedDataset] }, callback);
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
@@ -396,14 +397,14 @@ var _GetAllDescriptions = function (userId, callback) {
 
                     // get descriptions and populate dataset with query/teams
                     getDescriptionsAndPopulateTeam(
-                        {$or: [{'superTeam': true}, {'subscription.state': 'active'} ] }, 
+                        {$or: [{'superTeam': true}, {'subscription.state': 'active'} ] },
                         {$and: [
-                            {$or: [myTeam, otherTeams]}, 
+                            {$or: [myTeam, otherTeams]},
                             {$or: [importedDataset, connectedDataset]}
-                        ]}, 
+                        ]},
                         callback)
 
-                } else { 
+                } else {
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
 
@@ -416,7 +417,7 @@ var _GetAllDescriptions = function (userId, callback) {
                         {$and: [
                             {$or: [myTeam, otherTeams]},
                             {$or: [importedDataset, connectedDataset]}
-                        ]}, 
+                        ]},
                     callback)
                 }
             });
@@ -467,7 +468,7 @@ var _datasetsNeedToReimport = function (currentSourceId,cb) {
 
                 for (var i = 0; i < src.relationshipFields.length; i++) {
 
-                    if (src.relationshipFields[i].relationship == true && 
+                    if (src.relationshipFields[i].relationship == true &&
                         src.relationshipFields[i].by.joinDataset == currentSourceId) {
                         datasetsNeedToReimport.push(src);
                     }
@@ -553,7 +554,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
     if (subdomain !== null) {
         subdomainQuery["subdomain"] = subdomain;
     }
-   
+
     this.find({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
@@ -585,7 +586,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
 
-    
+
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if ( (!datasourceDescription.fe_visible || !datasourceDescription.imported) && !datasourceDescription.connection ) return fn();
@@ -596,24 +597,24 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .exec(function(err, foundUser) {
 
                         if (err) return fn(err);
-                    
+
 
                         if (!foundUser) {
 
                             if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
-                            
+
                             if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
                         } else {
 
                             if (
-                                foundUser.isSuperAdmin() || 
+                                foundUser.isSuperAdmin() ||
                                 (
 
                                     datasourceDescription.author.equals(foundUser._id) ||
                                     foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
                                     foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
                                     datasourceDescription.isPublic
-                                ) && ( 
+                                ) && (
                                     subscription.state === 'active' || subscription.state === 'canceled' || datasourceDescription._team.superTeam == true
 
                                 )
@@ -624,7 +625,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                             }
                         }
 
-                        
+
                     });
 
             } else {
