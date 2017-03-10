@@ -112,7 +112,7 @@
                              ng-true-value="false"
                              ng-false-value="true"
                              ng-click="$event.stopPropagation();"
-                             ng-change="setDirty(3)"
+                             ng-change="updateFieldInclusion(field.name)"
                              aria-label="Exclude {{field.name}}"
                              ></md-checkbox>
                 </span>

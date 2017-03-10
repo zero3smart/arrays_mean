@@ -102,6 +102,13 @@ angular.module('arraysApp')
             };
 
 
+            $scope.updateFieldInclusion = function(fieldName) {
+                $scope.setDirty(3);
+
+                /** Match object detail exclusion to field exclusion  */
+                $scope.dataset.fe_excludeFieldsObjDetail[fieldName] = $scope.dataset.fe_excludeFields[fieldName];
+            };
+
             $scope.toggleExclude = function (exclude) {
                 for (var i = 0; i < $scope.originalFields.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
