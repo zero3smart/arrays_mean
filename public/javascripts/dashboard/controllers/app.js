@@ -22,20 +22,23 @@ angular
              * Nag user if dataset is dirty and needs to be processed
              * Returns promise
              */
-            $scope.openUnsavedChangesDialog = function() {
+            $scope.openUnsavedChangesDialog = function(cancelText) {
                 return $mdDialog.show({
                     controller: unsavedChangesDialogCtrl,
                     controllerAs: 'dialog',
                     templateUrl: 'templates/blocks/dataset.unsaved.html',
                     clickOutsideToClose: true,
-                    fullscreen: true // Only for -xs, -sm breakpoints.
+                    fullscreen: true, // Only for -xs, -sm breakpoints.
+                    locals: {
+                        cancelText: cancelText
+                    }
                 });
             };
 
             /** If dataset is dirty, remind user to save before navigating away */
             $scope.sidebarNavigate = function(state) {
                 if($scope.currentMenuItem == 'dataset' && $scope.dataset.dirty) {
-                    var dialogPromise = $scope.openUnsavedChangesDialog();
+                    var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes
                         $state.go(state);
@@ -47,7 +50,8 @@ angular
                 }
             };
 
-            function unsavedChangesDialogCtrl($scope, $mdDialog) {
+            function unsavedChangesDialogCtrl($scope, $mdDialog, cancelText) {
+                $scope.cancelText = cancelText;
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
