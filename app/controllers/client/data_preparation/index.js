@@ -8,7 +8,7 @@ var Promise = require('q').Promise;
 
 var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var _ = require("lodash");
+var _ = require('lodash');
 var User = require('../../../models/users');
 
 module.exports.BindData = function (req, callback) {
@@ -35,7 +35,7 @@ module.exports.BindData = function (req, callback) {
                 };
 
                 callback(err, data);
-            })
+            });
         } else {
             var data = {
                 env: process.env,
@@ -63,25 +63,25 @@ module.exports.BindData = function (req, callback) {
 
                 var default_filterJSON;
                 if (description.fe_filters.default) {
-                    default_filterJSON = queryString.stringify(description.fe_filters.default || {})
+                    default_filterJSON = queryString.stringify(description.fe_filters.default || {});
                 }
                 var default_view = 'gallery';
                 if (description.fe_views.default_view) {
                     default_view = description.fe_views.default_view;
                 }
 
-               
 
                 var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
                 var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
-                baseUrl += description._team.subdomain + "." + rootDomain
+                baseUrl += description._team.subdomain + '.' + rootDomain;
 
                 var reformattedDataset = {
                     _id: description._id,
                     key:  description.uid + '-r' + description.importRevision,
                     sourceDoc: doc,
+                    updatedAt: description.updatedAt,
                     title: description.title,
                     brandColor: description.brandColor,
                     description: description.description,
@@ -94,14 +94,13 @@ module.exports.BindData = function (req, callback) {
                     subdomain: description._team.subdomain,
                     admin: description._team.admin,
                 };
-                
+
                 datasetArray.push(reformattedDataset);
 
                 cb(null);
             }
 
-        })
-    })
-
+        });
+    });
 
 };

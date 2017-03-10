@@ -31,7 +31,7 @@
 
                         {% if sources | length %}
                         <div class="row">
-                            {% for source in sources %}
+                            {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
                             <div class="explore-tile col-md-4 col-sm-6 col-xs-12">
                                 <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
                                 <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
@@ -49,7 +49,7 @@
                                             {% if source.description %}
                                             .source-{{ source.key }}:hover .explore-tile-description-container {
                                                 max-height: 100%;
-                                                transition: max-height 250ms linear;
+                                                transition: max-height 300ms ease;
                                             }
                                             {% endif %}
                                         </style>
@@ -70,7 +70,7 @@
                                                 </div>
                                                 <div class="explore-tile-meta">
 
-                                                    <span class="source-updated">Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
+                                                    <span class="source-updated">{{ source.updatedAt | dateFormattedAs_monthDayYear_array }}</span>
                                                 </div>
                                             </div>
                                         </div>

@@ -1,0 +1,114 @@
+<form name="plans_form" novalidate>
+
+    <div layout="row" layout-xs="column" layout-margin>
+
+        <div flex="33" flex-xs="100">
+
+            <md-input-container>
+                <label>Number of Users</label>
+                <input name="quantity" type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" required />
+                <div ng-messages="plans_form.quantity.$error">
+                    <div ng-message="min">Must be greater than 0.</div>
+                </div>
+            </md-input-container>
+
+        </div>
+
+        <div flex="66" flex-xs="100">
+
+            <md-radio-group name="plan_interval_length" ng-model="plan.plan_interval_length._">
+                <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
+                <md-radio-button value="1">Billed Monthly</md-radio-button>
+            </md-radio-group>
+
+        </div>
+
+    </div>
+
+</form>
+
+<div layout-gt-sm="row" layout="column" layout-padding layout-wrap>
+
+    <div flex-gt-sm="33" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: plan.plan_interval_length._ } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
+
+        <span class="md-headline">{{ planItem.name }}</span>
+
+        <div class="md-display-2">{{ planItem.unit_amount_in_cents.USD._ / 100 / planItem.plan_interval_length._ | currency : $ : 0 }}</div>
+        <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per user, per month</strong></div>
+        <div ng-if="planItem.display_quantity._ === 'false'"><strong>Per month</strong></div>
+
+        <div ng-if="plan.plan_interval_length._ === '1'">Billed monthly</div>
+        <div ng-if="plan.plan_interval_length._ === '12'">Billed annually</div>
+
+        <br />
+        <br />
+        <div ng-if="!billing.exists" layout="row" layout-align="center center">
+            <md-button ng-if="planItem.display_quantity._ === 'true'" ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: subscription.quantity._ })" class="md-dashboard">
+                <span class="btn-label">Start Free Trial</span>
+            </md-button>
+            <md-button ng-if="planItem.display_quantity._ === 'false'" ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: '1' })" class="md-dashboard">
+                <span class="btn-label">Start Free Trial</span>
+            </md-button>
+        </div>
+        <div ng-if="billing.exists">
+            <div ng-if="planItem.plan_code != plan.plan_code" layout="row" layout-align="center center">
+                <md-button ng-if="planItem.display_quantity._ === 'true'" class="md-dashboard">
+                    <span class="btn-label">Select This Plan</span>
+                </md-button>
+                <md-button ng-if="planItem.display_quantity._ === 'false'" class="md-dashboard">
+                    <span class="btn-label">Select This Plan</span>
+                </md-button>
+            </div>
+            <div ng-if="planItem.plan_code === plan.plan_code" layout="row" layout-align="center center">
+                <md-button ng-if="planItem.display_quantity._ === 'true'" class="md-dashboard confirm md-button">
+                    <span class="btn-label">My Plan</span>
+                </md-button>
+                <md-button ng-if="planItem.display_quantity._ === 'false'" class="md-dashboard confirm md-button">
+                    <span class="btn-label">My Plan</span>
+                </md-button>
+            </div>
+        </div>
+        <br />
+        <br />
+        <span ng-if="planItem.plan_code === plan.plan_code">My Plan</span>
+
+        <div style="white-space: pre-wrap;">{{ planItem.description }}</div>
+
+    </div>
+
+    <div flex-gt-sm="33" flex>
+
+        <span class="md-headline">Arrays Enterprise</span>
+
+        <div class="md-display-2">&nbsp;</div>
+
+        <div>Contact us for pricing info. Nonprofit rates available.</div>
+
+        <br />
+        <br />
+        <div layout="row" layout-align="center center">
+            <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
+                <span class="btn-label">Contact Us</span>
+            </md-button>
+        </div>
+        <br />
+
+        <div style="white-space: pre-wrap;">
+For organizations and institutions that want maximum customization, security, and support.
+
+• Unlimited users
+• Unlimited visualizations
+• Upload spreadsheets
+• Connect to database or API
+• Private viewing for clients and teams
+• Customize with your logo
+• Support for custom domains
+• Support for custom visualizations
+• Host on your own web server, with free updates
+• Customer support
+• Non-profit and education rates available on request
+        </div>
+
+    </div>
+
+</div>

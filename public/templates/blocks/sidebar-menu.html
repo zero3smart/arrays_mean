@@ -4,11 +4,11 @@
     </li>
 
     <li ng-class="{'active': currentMenuItem === 'account'}">
-        <a ui-sref="dashboard.account.profile" role="button">Account Settings</a>
+        <a ng-click="sidebarNavigate('dashboard.account.profile')" role="button">Account Settings</a>
     </li>
 
     <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) && (user.role=='superAdmin' || team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')" ng-class="{'active': currentMenuItem === 'teams'}">
-        <a ui-sref="dashboard.teams" role="button">Teams</a>
+        <a ng-click="sidebarNavigate('dashboard.teams')" role="button">Teams</a>
     </li>
 
     <hr ng-if="(user.role=='superAdmin' || team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')">
@@ -21,15 +21,15 @@
     </li>
 
     <li ng-if="(user.role=='admin' || user.role=='superAdmin') && (user.role=='superAdmin' ||team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')" ng-class="{'active': currentMenuItem === 'team'}">
-        <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
+        <a ng-click="sidebarNavigate('dashboard.team.settings')" role="button">Team Settings</a>
     </li>
 
     <li ng-if="((user.role=='admin' || user.role=='editor') && ( team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
-        <a ui-sref="dashboard.dataset.list" role="button">Visualizations</a>
+        <a ng-click="sidebarNavigate('dashboard.dataset.list')" role="button">Visualizations</a>
     </li>
 
-    <li ng-if="((user.role=='admin' || user.role=='superAdmin') && (team.superTeam  || team.subscription.state=='active' || team.subscription.state=='canceled')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
-        <a ui-sref="dashboard.user.list" role="button">Users</a>
+    <li ng-if="((user.role=='admin' || user.role=='superAdmin') && (team.superTeam  || team.subscription.state=='active' || team.subscription.state=='canceled')) && team.subscription.quantity > 1 || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
+        <a ng-click="sidebarNavigate('dashboard.user.list')" role="button">Users</a>
     </li>
 
     <li ng-if="team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled' || user.role=='superAdmin'" class="sidebar-link">

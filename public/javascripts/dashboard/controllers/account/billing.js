@@ -1,18 +1,18 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 
-        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService) {
+    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
+        function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
 
-            // Get datasets for quantity limit
-            DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
-                .then(function(res) {
-                    var filteredDatasets = res.filter(function(dataset) {
-                        return dataset.sample === false;
-                    });
+            $scope.users = users;
 
-                    // Don't allow subscription quantity to go to zero if there are no datasets
-                    $scope.datasetsQuantity = filteredDatasets.length === 0 ? 1 : filteredDatasets.length;
-                }, function(err) {});
+            // Set plans data after promise from router resolves
+            plans.$promise.then(function(data) {
+                $scope.plans = data.data.plans.plan;
+                // console.log(data.data.plans.plan);
 
+                if ($stateParams.plan_code) {
+                    $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
+                }
+            });
 
             $scope.loaded = false;
 
@@ -29,7 +29,20 @@ angular.module('arraysApp')
                 month: parseInt(('0' + (d.getMonth() + 1)).slice(-2)), // Set current month and year
                 year: d.getFullYear(),
 
-                country: 'US'
+                country: 'US',
+                account_type: 'checking'
+            };
+
+            $scope.subscription = {
+                quantity: {
+                    _: parseInt($stateParams.quantity) || 1
+                }
+            };
+
+            $scope.plan = {
+                plan_interval_length: {
+                    _: '12'
+                }
             };
 
             // Which cards to validated against in the CC input
@@ -50,37 +63,35 @@ angular.module('arraysApp')
 
                 // If no account, make new one
                 if (res.data.error) {
+                    console.info('Billing account doesn\'t exist yet for this user, creating it.');
                     newAccount();
                 } else if (res.data.account) {
                     getBilling(function() {
                         getSubscriptions(function() {
-                            getPlans(function() {
-                                $scope.loaded = true;
-                            });
+                            $scope.loaded = true;
                         });
                     });
                 }
-            });
+            }, function(err) {});
 
 
             // Create new billing account in Recurly
-            function newAccount() {
+            var newAccount = function(callback) {
                 Account.save()
                 .$promise.then(function(res) {
+                    console.info('New billing account created.');
                     getBilling(function() {
                         getSubscriptions(function() {
-                            getPlans(function() {
-                                $scope.loaded = true;
-                            });
+                            $scope.loaded = true;
                         });
                     });
                     
-                });
-            }
+                }, function(err) {});
+            };
 
 
             // Get billing info from Recurly
-            function getBilling(callback) {
+            var getBilling = function(callback) {
                 var self = this;
 
                 Billing.get()
@@ -88,6 +99,7 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.data.error) {
+                        console.info('Billing info doesn\'t exist yet for this user.');
                         $scope.billing.exists = false;
                         $scope.loaded = true;
                     } else if (res.data.billing_info) {
@@ -116,11 +128,11 @@ angular.module('arraysApp')
 
                     if (callback) return callback();
                 }, function(err) {});
-            }
+            };
 
 
             //Get subscriptions info from Recurly
-            function getSubscriptions(callback) {
+            var getSubscriptions = function(callback) {
                 Subscriptions.get()
                 .$promise.then(function(res) {
                     // console.log(res.data);
@@ -138,6 +150,10 @@ angular.module('arraysApp')
                             $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
                         }
 
+                        // Set current Plan
+                        $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, $scope.plans);
+                        // console.log($scope.subscription);
+
                         // Calculate trial days remaining
                         var now = new Date();
                         var end = new Date($scope.subscription.trial_ends_at._);
@@ -145,50 +161,36 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
+                        // console.log($scope.subscription);
+                        // console.log($scope.plan);
+
                         if (callback) return callback();
                     }
                 }, function(err) {});
-            }
-
-
-            //Get plans info from Recurly
-            function getPlans(callback) {
-                Plans.get()
-                .$promise.then(function(res) {
-                    // console.log(res.data.plans.plan);
-
-                    $scope.plans = res.data.plans.plan;
-
-                    $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
-                    $scope.annualplan = getPlanFromPlans('pro-annual', res.data.plans.plan);
-
-                    // console.log($scope.annualplan);
-
-                    if (callback) return callback();
-                }, function(err) {});
-            }
+            };
 
 
             // Get current plan
-            function getPlanFromPlans(plan_code, plans) {
+            var getPlanFromPlans = function(plan_code, plans) {
                 var currentPlan = plans.filter(function(plan) {
                     return plan.plan_code === plan_code;
                 });
 
                 return currentPlan[0];
-            }
+            };
 
 
             //Update subscription quantity
-            function updateQuantity(subscrId, quantity, callback) {
+            var updateQuantity = function(subscrId, quantity, callback) {
                 Subscriptions.update({ subscrId: subscrId }, { quantity: quantity })
                 .$promise.then(function(res) {
                     // console.log(res.data);
+
                     $scope.$parent.team.subscription.quantity = quantity;
                     $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     return callback();
                 }, function(err) {});
-            }
+            };
 
 
             $scope.$parent.currentNavItem = 'billing';
@@ -198,10 +200,10 @@ angular.module('arraysApp')
             $scope.availableStates = [{"name":"Alabama","abbreviation":"AL"},{"name":"Alaska","abbreviation":"AK"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Arizona","abbreviation":"AZ"},{"name":"Arkansas","abbreviation":"AR"},{"name":"California","abbreviation":"CA"},{"name":"Colorado","abbreviation":"CO"},{"name":"Connecticut","abbreviation":"CT"},{"name":"Delaware","abbreviation":"DE"},{"name":"District Of Columbia","abbreviation":"DC"},{"name":"Federated States Of Micronesia","abbreviation":"FM"},{"name":"Florida","abbreviation":"FL"},{"name":"Georgia","abbreviation":"GA"},{"name":"Guam","abbreviation":"GU"},{"name":"Hawaii","abbreviation":"HI"},{"name":"Idaho","abbreviation":"ID"},{"name":"Illinois","abbreviation":"IL"},{"name":"Indiana","abbreviation":"IN"},{"name":"Iowa","abbreviation":"IA"},{"name":"Kansas","abbreviation":"KS"},{"name":"Kentucky","abbreviation":"KY"},{"name":"Louisiana","abbreviation":"LA"},{"name":"Maine","abbreviation":"ME"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Maryland","abbreviation":"MD"},{"name":"Massachusetts","abbreviation":"MA"},{"name":"Michigan","abbreviation":"MI"},{"name":"Minnesota","abbreviation":"MN"},{"name":"Mississippi","abbreviation":"MS"},{"name":"Missouri","abbreviation":"MO"},{"name":"Montana","abbreviation":"MT"},{"name":"Nebraska","abbreviation":"NE"},{"name":"Nevada","abbreviation":"NV"},{"name":"New Hampshire","abbreviation":"NH"},{"name":"New Jersey","abbreviation":"NJ"},{"name":"New Mexico","abbreviation":"NM"},{"name":"New York","abbreviation":"NY"},{"name":"North Carolina","abbreviation":"NC"},{"name":"North Dakota","abbreviation":"ND"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Ohio","abbreviation":"OH"},{"name":"Oklahoma","abbreviation":"OK"},{"name":"Oregon","abbreviation":"OR"},{"name":"Palau","abbreviation":"PW"},{"name":"Pennsylvania","abbreviation":"PA"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Rhode Island","abbreviation":"RI"},{"name":"South Carolina","abbreviation":"SC"},{"name":"South Dakota","abbreviation":"SD"},{"name":"Tennessee","abbreviation":"TN"},{"name":"Texas","abbreviation":"TX"},{"name":"Utah","abbreviation":"UT"},{"name":"Vermont","abbreviation":"VT"},{"name":"Virgin Islands","abbreviation":"VI"},{"name":"Virginia","abbreviation":"VA"},{"name":"Washington","abbreviation":"WA"},{"name":"West Virginia","abbreviation":"WV"},{"name":"Wisconsin","abbreviation":"WI"},{"name":"Wyoming","abbreviation":"WY"}];
 
 
-            $scope.openBillingDialog = function(ev, template) {
+            $scope.openBillingDialog = function(ev) {
                 $mdDialog.show({
                     controller: BillingDialogController,
-                    templateUrl: 'templates/blocks/account.billing.' + template + '.html',
+                    templateUrl: 'templates/blocks/account.billing.change-plan.html',
                     parent: angular.element(document.body),
                     targetEvent: ev,
                     // clickOutsideToClose: true,
@@ -209,17 +211,15 @@ angular.module('arraysApp')
                     locals: {
                         billing: $scope.billing,
                         plan: $scope.plan,
-                        annualplan: $scope.annualplan,
                         subscription: $scope.subscription,
                         Subscriptions: Subscriptions
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, billing, plan, annualplan, subscription, Subscriptions) {
+            function BillingDialogController($scope, $mdDialog, billing, plan, subscription, Subscriptions) {
                 $scope.billing = billing;
                 $scope.plan = plan;
-                $scope.annualplan = annualplan;
                 $scope.subscription = subscription;
 
                 $scope.hide = function() {
@@ -259,7 +259,7 @@ angular.module('arraysApp')
                 $scope.billing.payment_type = currentTab;
             };
 
-            $scope.updateBillingInfo = function(plan_code) {
+            $scope.updateBillingInfo = function(plan_code, quantity) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
                     // console.log(res);
@@ -268,7 +268,7 @@ angular.module('arraysApp')
 
                         // If adding billing for first time, create subscription
                         if (plan_code) {
-                            $scope.startTrialSubscription(plan_code);
+                            $scope.startTrialSubscription(plan_code, quantity);
                         } else {
                             $state.go('dashboard.account.billing');
                         }
@@ -345,16 +345,20 @@ angular.module('arraysApp')
                 }, function(err) {});
             };
 
-            $scope.startTrialSubscription = function(plan_code) {
-                Subscriptions.save({ 'plan_code': plan_code })
+            $scope.startTrialSubscription = function(plan_code, quantity) {
+                Subscriptions.save({ 'plan_code': plan_code, 'quantity': quantity })
                 .$promise.then(function(res) {
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
-                            $scope.$parent.team.subscription.state = 'active';
+                            $scope.$parent.team.subscription.state = res.data.subscription.state;
+                            $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
                         } else {
-                            $scope.$parent.team.subscription = { state: 'active'};
+                            $scope.$parent.team.subscription = {
+                                state: res.data.subscription.state,
+                                quantity: res.data.subscription.quantity._
+                            };
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
@@ -372,7 +376,15 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        $scope.$parent.team.subscription.state = 'active';
+                        if ($scope.$parent.team.subscription) {
+                            $scope.$parent.team.subscription.state = res.data.subscription.state;
+                            $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        } else {
+                            $scope.$parent.team.subscription = {
+                                state: res.data.subscription.state,
+                                quantity: res.data.subscription.quantity._
+                            };
+                        }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
@@ -386,9 +398,15 @@ angular.module('arraysApp')
                 Subscriptions.cancel({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
-                    $scope.$parent.team.subscription.state = 'canceled';
-                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-                    $state.go('dashboard.account.billing');
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // console.log(res.data);
+                    }
                 });
             };
 
@@ -397,9 +415,15 @@ angular.module('arraysApp')
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
-                    $scope.$parent.team.subscription.state = 'active';
-                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-                    getSubscriptions();
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                        getSubscriptions();
+                    } else {
+                        // console.log(res.data);
+                    }
                 });
             };
 
