@@ -1,13 +1,13 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
-        function($scope, $stateParams, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
+    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$log', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
+        function($scope, $stateParams, $mdDialog, $state, $http, $window, $log, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
 
             $scope.users = users;
 
             // Set plans data after promise from router resolves
             plans.$promise.then(function(data) {
                 $scope.plans = data.data.plans.plan;
-                // console.log(data.data.plans.plan);
+                // $log.log(data.data.plans.plan);
 
                 if ($stateParams.plan_code) {
                     $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
@@ -58,11 +58,11 @@ angular.module('arraysApp')
             // Get account info from Recurly
             Account.get()
             .$promise.then(function(res) {
-                // console.log(res.data);
+                // $log.log(res.data);
 
                 // If no account, make new one
                 if (res.data.error) {
-                    console.info('Billing account doesn\'t exist yet for this user, creating it.');
+                    $log.info('Billing account doesn\'t exist yet for this user, creating it.');
                     newAccount();
                 } else if (res.data.account) {
                     getBilling(function() {
@@ -78,7 +78,7 @@ angular.module('arraysApp')
             var newAccount = function(callback) {
                 Account.save()
                 .$promise.then(function(res) {
-                    console.info('New billing account created.');
+                    $log.info('New billing account created.');
                     getBilling(function() {
                         getSubscriptions(function() {
                             $scope.loaded = true;
@@ -95,10 +95,10 @@ angular.module('arraysApp')
 
                 Billing.get()
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.data.error) {
-                        console.info('Billing info doesn\'t exist yet for this user.');
+                        $log.info('Billing info doesn\'t exist yet for this user.');
                         $scope.billing.exists = false;
                         $scope.loaded = true;
                     } else if (res.data.billing_info) {
@@ -134,7 +134,7 @@ angular.module('arraysApp')
             var getSubscriptions = function(callback) {
                 Subscriptions.get()
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.data.error) {
                         $scope.loaded = true;
@@ -153,7 +153,7 @@ angular.module('arraysApp')
                         $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, $scope.plans);
                         $scope.newPlan.plan_interval_length = $scope.plan.plan_interval_length._;
                         $scope.newPlan.quantity = $scope.subscription.quantity._;
-                        // console.log($scope.subscription);
+                        // $log.log($scope.subscription);
 
                         // Calculate trial days remaining
                         var now = new Date();
@@ -162,8 +162,8 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        // console.log($scope.subscription);
-                        // console.log($scope.plan);
+                        // $log.log($scope.subscription);
+                        // $log.log($scope.plan);
 
                         if (callback) return callback();
                     }
@@ -189,7 +189,7 @@ angular.module('arraysApp')
                     plan_code: plan_code
                 })
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     $scope.$parent.team.subscription.state = res.data.subscription.state;
                     $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
@@ -249,8 +249,8 @@ angular.module('arraysApp')
                 };
 
                 $scope.updateSubscription = function(plan_code, quantity) {
-                    // console.log(plan_code);
-                    // console.log(quantity);
+                    // $log.log(plan_code);
+                    // $log.log(quantity);
 
                     var subscrId = $scope.subscription.uuid;
                     updateSubscription(subscrId, plan_code, quantity, function() {
@@ -275,7 +275,7 @@ angular.module('arraysApp')
             $scope.updateBillingInfo = function(plan_code, quantity) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
-                    // console.log(res);
+                    // $log.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
 
@@ -295,7 +295,7 @@ angular.module('arraysApp')
                         }
                         
                     } else {
-                        // console.log(res.data);
+                        // $log.log(res.data);
                         if (res.data.errors.error.length) {
                             $scope.errors = res.data.errors.error;
                         } else {
@@ -305,14 +305,14 @@ angular.module('arraysApp')
                         // Set validation errors on fields returned in Recurly errors array
                         angular.forEach($scope.errors, function(error, key) {
 
-                            // console.log($scope.billing_info);
+                            // $log.log($scope.billing_info);
 
                             // Get error field name from returned errors
                             var field = error.$.field;
                             var fieldSplit = field.split('.');
                             var fieldName = fieldSplit[fieldSplit.length - 1];
 
-                            // console.log(fieldName);
+                            // $log.log(fieldName);
 
                             var form;
 
@@ -369,7 +369,7 @@ angular.module('arraysApp')
             $scope.startTrialSubscription = function(plan_code, quantity) {
                 Subscriptions.save({ 'plan_code': plan_code, 'quantity': quantity })
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
@@ -393,7 +393,7 @@ angular.module('arraysApp')
 
                         $state.go('dashboard.account.billing');
                     } else {
-                        // console.log(res.data);
+                        // $log.log(res.data);
                     }
                 });
             };
@@ -403,7 +403,7 @@ angular.module('arraysApp')
                 var isoNow = now.toISOString();
                 Subscriptions.save({ 'plan_code': plan_code, 'trial_ends_at': isoNow })
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
@@ -427,7 +427,7 @@ angular.module('arraysApp')
 
                         $state.go('dashboard.account.billing');
                     } else {
-                        // console.log(res.data);
+                        // $log.log(res.data);
                     }
                 });
             };
@@ -436,7 +436,7 @@ angular.module('arraysApp')
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.cancel({ subscrId: subscrId })
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $scope.$parent.team.subscription.state = res.data.subscription.state;
@@ -453,7 +453,7 @@ angular.module('arraysApp')
 
                         $state.go('dashboard.account.billing');
                     } else {
-                        // console.log(res.data);
+                        // $log.log(res.data);
                     }
                 });
             };
@@ -462,7 +462,7 @@ angular.module('arraysApp')
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    // $log.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $scope.$parent.team.subscription.state = res.data.subscription.state;
@@ -479,7 +479,7 @@ angular.module('arraysApp')
 
                         getSubscriptions();
                     } else {
-                        // console.log(res.data);
+                        // $log.log(res.data);
                     }
                 });
             };
