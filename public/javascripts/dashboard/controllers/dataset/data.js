@@ -18,7 +18,7 @@ angular.module('arraysApp')
                 $scope.excludeAll = true; // set toggle to "Exclude All"
             } else {
                 $scope.excludeAll = false; // check if any fields are included, if not, set button to "Include All"
-                for (var i = 0; i < dataset.columns.length; i++) {
+                for (i = 0; i < dataset.columns.length; i++) {
                     if(!dataset.fe_excludeFields[dataset.columns[i].name]){
                         $scope.excludeAll = true; // at least one included, set toggle to "Exclude All"
                         break;
@@ -27,19 +27,15 @@ angular.module('arraysApp')
             }
 
 
-
-
-            // $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
+            $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
 
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
-
             };
 
             $scope.secondaryAction.do = function() {
                 $scope.reset();
-            }
-
+            };
 
 
             $scope.$watch('vm.dataForm.$valid', function(validity) {
@@ -55,24 +51,16 @@ angular.module('arraysApp')
                 }
             });
 
-            $scope.$watch('dataset.dirty',function(dirty) {
-                if (dirty) { 
-                    $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
-                } else $scope.primaryAction.text = null;
-
-            })
-
-
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             });
 
             $scope.$watch('vm.dataForm.$dirty',function(dirty) {
+                $scope.primaryAction.disabled = !dirty;
                 $scope.secondaryAction.disabled = !dirty;
-                if (dirty && dataset.imported) $scope.secondaryAction.text = "Revert";
+                if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
-            })
-
+            });
 
 
             $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
@@ -101,13 +89,13 @@ angular.module('arraysApp')
                 && $scope.$parent.$parent.dataset.connection.join.tableName) {
 
                 DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
-                .then(function(response) {
+                    .then(function(response) {
 
-                    if (response.status == 200 && response.data) {
-                        joinDataCols = response.data;
-                        $scope.loadJoinCols();
-                    }
-                });
+                        if (response.status == 200 && response.data) {
+                            joinDataCols = response.data;
+                            $scope.loadJoinCols();
+                        }
+                    });
             }
 
 
@@ -136,12 +124,12 @@ angular.module('arraysApp')
 
                 modalService.openDialog('joinTable',data)
 
-                .then(function(savedDataset) {
-                    joinDataCols = savedDataset.joinCols;
-                    delete savedDataset.joinCols;
-                    $scope.$parent.$parent.dataset = savedDataset;
-                    $scope.loadJoinCols();
-                });
+                    .then(function(savedDataset) {
+                        joinDataCols = savedDataset.joinCols;
+                        delete savedDataset.joinCols;
+                        $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.loadJoinCols();
+                    });
 
             };
 
@@ -162,20 +150,20 @@ angular.module('arraysApp')
 
 
                 modalService.openDialog('field',data)
-                .then(function(savedDataset) {
-                    $scope.$parent.$parent.dataset = savedDataset;
-                    $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
-                    sortColumnsByDisplayOrder();
-                    $scope.vm.dataForm.$setDirty();
-                    if(filterOnly) {
-                        $scope.openFabricatedFilterDialog();
-                    }
-                },function() {
+                    .then(function(savedDataset) {
+                        $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
+                        sortColumnsByDisplayOrder();
+                        $scope.vm.dataForm.$setDirty();
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
+                    },function() {
 
-                    if(filterOnly) {
-                        $scope.openFabricatedFilterDialog();
-                    }
-                });
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
+                    });
 
             };
 
@@ -187,20 +175,20 @@ angular.module('arraysApp')
                 };
 
                 modalService.openDialog('nested',data)
-                .then(function(result) {
+                    .then(function(result) {
 
 
-                    $scope.$parent.$parent.dataset = result.dataset;
-                    $scope.$parent.$parent.additionalDatasources = result.additionalDatasources;
+                        $scope.$parent.$parent.dataset = result.dataset;
+                        $scope.$parent.$parent.additionalDatasources = result.additionalDatasources;
 
-                    $scope.coercionScheme = angular.copy(result.dataset.raw_rowObjects_coercionScheme);
-                    sortColumnsByDisplayOrder();
+                        $scope.coercionScheme = angular.copy(result.dataset.raw_rowObjects_coercionScheme);
+                        sortColumnsByDisplayOrder();
 
-                    $scope.vm.dataForm.$setDirty();
+                        $scope.vm.dataForm.$setDirty();
 
-                },function() {
+                    },function() {
                     // console.log('You cancelled the nested dialog.');
-                });
+                    });
 
             };
 
@@ -472,7 +460,7 @@ angular.module('arraysApp')
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
-            
+
                 // console.log($scope.$parent.$parent.dataset)
 
                 if (isValid) {
@@ -498,7 +486,6 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                         );
 
-                        
 
                         var nextState = ($scope.$parent.$parent.dataset.dirty )? 'dashboard.dataset.process' : 'dashboard.dataset.views';
                         $state.transitionTo(nextState, {id: dataset._id}, {
