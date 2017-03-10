@@ -207,7 +207,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 //
                 var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
                 var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters.fieldsNotAvailable;
-                var fe_excludeFieldsObjDetail = dataSourceDescription.fe_excludeFieldsObjDetail;
+                var fe_excludeFieldsObjDetail = dataSourceDescription.fe_excludeFieldsObjDetail || {};
                 if (typeof fe_filters_fieldsNotAvailable !== 'undefined') {
                     var fe_filters_fieldsNotAvailable_length = fe_filters_fieldsNotAvailable.length;
                     for (var i = 0; i < fe_filters_fieldsNotAvailable_length; i++) {
@@ -227,7 +227,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 }
 
                 // filter out fields excluded from object detail by user
-                var colNames_sansObjectTitle = colNames_sansObjectTitle.filter(function(field) {
+                colNames_sansObjectTitle = colNames_sansObjectTitle.filter(function(field) {
                     return !fe_excludeFieldsObjDetail[field]; // !exclude = include
                 });
 
