@@ -2,7 +2,7 @@ angular.module('arraysApp')
     .controller('DatasetViewsCtrl', ['$scope', 'dataset','previewCopy','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService', 'user', '$window', 'viewUrlService',
         function($scope, dataset,previewCopy,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user,$window,viewUrlService) {
             $scope.$parent.$parent.dataset = dataset;
-            
+
             $scope.$parent.$parent.views = views;
 
             $scope.previewCopy = previewCopy;
@@ -11,7 +11,7 @@ angular.module('arraysApp')
                 $scope.$parent.$parent.dataset.fe_views = {};
             }
 
-            if ($scope.previewCopy) { 
+            if ($scope.previewCopy) {
                 $scope.$parent.$parent.dataset.fe_views = $scope.previewCopy.fe_views;
                 $scope.primaryAction.text = ''
             }
@@ -55,7 +55,7 @@ angular.module('arraysApp')
 
             });
 
-            $scope.secondaryAction.do = function() { // revert changes 
+            $scope.secondaryAction.do = function() { // revert changes
                 $scope.submitting = true;
                  DatasetService.draftAction($scope.$parent.$parent.dataset._id,'revert')
                     .then(function(response) {
@@ -97,7 +97,7 @@ angular.module('arraysApp')
             }
 
 
-            $scope.tutorial.message = 'Here you can configure each view you want to use to visualize your data.\nClick \'Next\' to continue.';
+            $scope.tutorial.message = 'Here you can configure each view you want to use to visualize your data.\nYou can make edits to each view and preview by clicking the eye icon.\nClick \'Save\' to continue.';
 
             $scope.$parent.$parent.currentNavItem = 'views';
 
@@ -130,7 +130,7 @@ angular.module('arraysApp')
             };
 
             $scope.makeViewVisible = function() {
-             
+
                 if (!$scope.$parent.$parent.dataset.fe_views.views) {
                     $scope.$parent.$parent.dataset.fe_views.views = {};
                 }
@@ -163,7 +163,7 @@ angular.module('arraysApp')
                             $scope.previewCopy = preview;
                             $scope.data.default_view = preview.fe_views.default_view;
                             $scope.$parent.$parent.dataset.fe_views.view = $scope.previewCopy.fe_views;
-                            
+
                         }
 
                     }
@@ -230,7 +230,7 @@ angular.module('arraysApp')
                         }
                     })
                         .then(function (savedDataset) {
-                   
+
 
                             $scope.$parent.$parent.dataset = savedDataset;
 
@@ -261,7 +261,7 @@ angular.module('arraysApp')
             };
 
 
-        
+
 
 
 
@@ -276,7 +276,7 @@ angular.module('arraysApp')
             // $scope.openViewDialog(null, "5851e8fa9daaffbe4871bd04"); // map
             // $scope.openViewDialog(null, "5851e8eb9daaffbe4871bd03"); // pieChart
 
-    
+
 
 
             $scope.submitForm = function () {

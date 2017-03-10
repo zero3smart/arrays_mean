@@ -40,9 +40,8 @@
 
                 <!-- TODO also check if !jobId || jobId == 0 && imported  -->
 
-
                 <span class="dashboard-list-icon"
-                    aa-tooltip="{{ dataset.dirty ? 'You must process data before previewing' : 'Open preview in new tab' }}"
+                    aa-tooltip="{{ previewCopy.fe_views.views[view.name] ? 'Open preview in new tab' : 'No changes to preview' }}"
                     ng-class="{'disabled': !previewCopy.fe_views.views[view.name]}"
                     ng-click="openViewPreview(view.name)" flex="5">
                     <i class="fa {{ (dataset.dirty || !previewCopy.fe_views.views[view.name])? 'fa-eye-slash' : 'fa-eye' }}" aria-hidden="true"></i>
