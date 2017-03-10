@@ -740,12 +740,12 @@ function intuitDataype(name, sample) {
         }
     } else if(floatRE.test(sample)) {
         var numberWithoutComma = sample.replace(",", "");
-        if (Number(numberWithoutComma) !== NaN) {
+        if (!isNaN(Number(numberWithoutComma))) {
             return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
         }
     } else {
         var numberWithoutComma = sample.replace(",", "");
-        if (Number(numberWithoutComma) !== NaN) {
+        if (!isNaN(Number(numberWithoutComma))) {
             return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
         }
     }
