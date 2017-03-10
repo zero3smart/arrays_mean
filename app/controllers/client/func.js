@@ -208,7 +208,6 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                     return singleValue.override == filterVal;
                 });
                 if (typeof valueByOverride === 'undefined') {
-                    console.log("valueByOverride is undefined")
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 } else {
