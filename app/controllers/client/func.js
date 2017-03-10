@@ -832,7 +832,8 @@ module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColum
 //
 function _filterObjFromQueryParams(queryParams) {
     var filterObj = {};
-    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed', 'groupSize'];
+    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed', 'groupSize',
+    'preview'];
     for (var key in queryParams) {
         if (reservedKeys.indexOf(key) !== -1) continue;
 

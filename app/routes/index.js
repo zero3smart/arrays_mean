@@ -136,6 +136,7 @@ var _mountRoutes_endPoints = function (app) {
 
             var isRouteForDataset = urlRegexForDataset.test(req.url);
 
+
             if (isNotRootDomain(req.subdomains)) {
 
                 if (isRouteForDataset) {

@@ -38,8 +38,11 @@
 
 
 
-{% set galleryURL = "/" +array_source_key + "/gallery" + ("?" + default_filterJSON if default_filterJSON else "") %}
-{% set mainViewURL = "/" + array_source_key+ "/" + main_view + ("?" + ("embed=true&" if embedded else "") + default_filterJSON if default_filterJSON else "") %}
+{% set galleryURL = "/" +array_source_key + "/gallery" + ("?" +  ("preview=true" if isPreview else "") + ( "&" + default_filterJSON if default_filterJSON else "")) %}
+{% set mainViewURL = "/" + array_source_key+ "/" + main_view + ("?" + ("preview=true" if isPreview else "") + ("&embed=true" if embedded else "") + default_filterJSON if default_filterJSON else "") %}
+
+
+
 
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
@@ -54,6 +57,7 @@
                     {# {% if not referer %}
                     {% set onclickClassOrEmpty = " browser-back-on-click" if not embedded %}
                     {% endif %} #}
+
                     <a href="{{ referer if referer else mainViewURL }}" class="navbar-back"><span class="icon-back" aria-hidden="true"></span>
                         <span class="navbar-back-label hidden-xs">Back</span></a>
                 </li>

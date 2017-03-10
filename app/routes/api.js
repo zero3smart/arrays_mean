@@ -54,6 +54,7 @@ router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSources
 router.post('/dataset/save', ctrlDataset.save);
 router.put('/dataset/update/:id',ctrlDataset.update);
 router.put('/dataset/approve/:id',ctrlDataset.approvalRequest);
+router.put('/dataset/draft/:id',ctrlDataset.draftAction);
 
 
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);

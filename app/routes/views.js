@@ -32,6 +32,28 @@ View.getAllBuiltInViews(function(err,defaultViews) {
                     res.render('array/' + view.name,bindData);
                 })
             })
+
+
+            router.get('/:source_key/' + view.name + '/preview',ensureAuthorized,function(req,res,next) {
+                var source_key = req.params.source_key;
+                if (source_key == null || typeof source_key == 'undefined' || source_key == "") {
+                    return res.status(403).send("Bad Request - source_key missing");
+                }
+
+                var query = queryString.parse(req.url.replace(/^.*\?/,''));
+                query.source_key = source_key;
+                var camelCaseViewType = view.name.replace('-','_');
+
+            
+                require('../controllers/client/data_preparation/' + camelCaseViewType).BindData(req,query,function(err,bindData) {
+                    if (err) {
+                        winston.error("❌  Error getting bind data for built in view %s , err: %s" , view.name,err);
+                        return res.status(500).send(err.response || 'Internal Server Error');
+                    }
+                    bindData.embedded = req.query.embed;
+                    res.render('array/' + view.name,bindData);
+                })
+            })
         })
     }
 })
@@ -61,25 +83,6 @@ View.getAllCustomViews(function(err,customViews) {
             })
 
 
-            router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
-
-            
-
-                var team = req.subdomains[0];
-                if (!team) {
-                    team = view.name;
-                }
-                var controller = require('../../user/' + team + '/src/' + view.name);
-
-                controller.BindData(req,function(err,bindData) {
-                    if (err) {
-                         winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);
-                        return res.status(500).send(err.response || 'Internal Server Error');
-                    }
-                    winston.info("💬   getting data for custom view: %s", view.name);
-                    res.json(bindData);
-                })
-            })
         })
     }
 
@@ -87,6 +90,8 @@ View.getAllCustomViews(function(err,customViews) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
+
+//object detail page
 router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
 
 
@@ -101,8 +106,11 @@ router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (r
         return res.status(403).send("Bad Request - object_id missing");
     }
 
+    var askForPreview = false;
+    if (req.query.preview && req.query.preview == 'true') askForPreview = true;
 
-    object_details_controller.BindData(req, source_key, object_id, function (err, bindData) {
+
+    object_details_controller.BindData(req, source_key, object_id, askForPreview,function (err, bindData) {
 
         if (err) {
             winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);

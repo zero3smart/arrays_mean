@@ -26,8 +26,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // filters
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -74,6 +76,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -569,7 +572,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy: aggregateBy,
                     // graphData contains all the data rows; used by the template to create the linechart
                     graphData: graphData,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
                 callback(err, data);

@@ -16,6 +16,11 @@ angular.module('arraysApp')
             };
 
 
+            $scope.secondaryAction = {
+                disabled: true
+            }
+
+
 
             /**
              *  Tutorial banner messages

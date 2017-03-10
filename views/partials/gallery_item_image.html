@@ -1,5 +1,5 @@
 <li class="gallery-item gallery-item-image">
-	<a href="/{{ array_source_key  }}/{{ doc._id }}{{ '?embed=true' if embedded }}">
+	<a href="/{{ array_source_key  }}/{{ doc._id }}{{ '?embed=true' if embedded }} {{'?preview=true' if isPreview}} ">
    
    
       	{% if scrapedImages %}

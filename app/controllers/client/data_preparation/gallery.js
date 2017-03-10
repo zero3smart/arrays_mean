@@ -21,16 +21,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // searchCol
     // embed
     // Other filters
+    
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+
+
+
     var source_pKey = urlQuery.source_key;
+
+    
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
 
-
-
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
-
-
 
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -150,6 +155,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var routePath_base = "/" + source_pKey + "/gallery";
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (askForPreview) routePath_base += '?preview=true';
+
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -406,7 +413,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
 

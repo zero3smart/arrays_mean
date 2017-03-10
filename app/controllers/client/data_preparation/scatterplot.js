@@ -21,8 +21,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var sourceKey = urlQuery.source_key;
      var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
+     var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
  
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + sourceKey), null);
@@ -117,6 +120,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          }*/
                         var routePath_base = '/' + sourceKey + '/scatterplot';
                         if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+                        if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
 
                         if (req.user) {
                             User.findById(req.user, function(err, user) {
@@ -192,7 +196,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 searchQ: searchQ || '',
                                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                                 // multiselectable filter fields
-                                multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                                multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                                isPreview: askForPreview
                             });
                         }
 

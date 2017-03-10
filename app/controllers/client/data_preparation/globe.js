@@ -20,7 +20,8 @@ for (var i = 0; i < numCountries; i++) {
     var countryFeature = __countries_geo_json.features[i];
     var countryName = countryFeature.properties.name;
     var geometry = countryFeature.geometry;
-    cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
+    cache_countr
+    yGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
 }
 // winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
 
@@ -40,7 +41,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
     var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
+
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -60,6 +65,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/globe";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -226,7 +232,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
 
                 };
                 callback(err, data);

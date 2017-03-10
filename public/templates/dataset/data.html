@@ -14,10 +14,9 @@
             </md-select>
         </md-input-container>
 
-
         <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
             <label>Select the field you'd like to use as an image for each item</label>
-            <md-select name="image field" aria-label="Item title"
+        <md-select name="image field" aria-label="Item title"
                        ng-model="data.fe_image.field" ng-change="updateOverwrite()">
                 <md-option value=""></md-option>
                 <md-option ng-repeat="column in dataset.columns | filter: {data_type: 'Text'} track by column.name " value="{{column.name}}">
@@ -29,7 +28,7 @@
 
            <md-checkbox ng-model="data.fe_image.overwrite"
                 ng-if="dataset.fe_image && data.fe_image.field && dataset.fe_image.scraped && overwriteDisabled==false &&
-                    dataset.dirty == 0"
+                    dataset.dirty !== 1 && dataset.dirty !== 2"
                 aria-label="overwrite image scraping">
                 overwrite existing images
             </md-checkbox>

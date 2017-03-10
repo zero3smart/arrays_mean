@@ -26,10 +26,21 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.primaryAction.text = 'Next';
+
+
+
+            // $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
+
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
+
             };
+
+            $scope.secondaryAction.do = function() {
+                $scope.reset();
+            }
+
+
 
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -44,10 +55,25 @@ angular.module('arraysApp')
                 }
             });
 
+            $scope.$watch('dataset.dirty',function(dirty) {
+                if (dirty) { 
+                    $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
+                } else $scope.primaryAction.text = null;
+
+            })
+
 
             $scope.$watch('submitting',function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             });
+
+            $scope.$watch('vm.dataForm.$dirty',function(dirty) {
+                $scope.secondaryAction.disabled = !dirty;
+                if (dirty && dataset.imported) $scope.secondaryAction.text = "Revert";
+                else $scope.secondaryAction.text = null;
+            })
+
+
 
             $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
 
@@ -360,8 +386,11 @@ angular.module('arraysApp')
             $scope.saveRequiredFields = function() {
 
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
+
                 if (!$scope.$parent.$parent.dataset.fe_image || $scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field ||
                     $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
+
+
                     if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {
                         $scope.data.fe_image.scraped = false;
                     }
@@ -378,7 +407,6 @@ angular.module('arraysApp')
                 }
 
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
-
             };
 
             $scope.reset = function () {
@@ -389,12 +417,8 @@ angular.module('arraysApp')
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
                 $scope.data.objectTitle = dataset.objectTitle;
-                if (!dataset.fe_image) {
-                    dataset.fe_image = {
-                        overwrite : false
-                    };
-                }
-                $scope.data.fe_image = dataset.fe_image || {};
+                $scope.data.fe_image = dataset.fe_image;
+
                 sortColumnsByDisplayOrder();
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
@@ -448,7 +472,7 @@ angular.module('arraysApp')
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
-
+            
                 // console.log($scope.$parent.$parent.dataset)
 
                 if (isValid) {
@@ -476,8 +500,7 @@ angular.module('arraysApp')
 
                         
 
-                        var nextState = $scope.$parent.$parent.dataset.dirty && 
-                        !$scope.$parent.$parent.dataset.imported ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                        var nextState = ($scope.$parent.$parent.dataset.dirty )? 'dashboard.dataset.process' : 'dashboard.dataset.views';
                         $state.transitionTo(nextState, {id: dataset._id}, {
                             reload: true,
                             inherit: false,

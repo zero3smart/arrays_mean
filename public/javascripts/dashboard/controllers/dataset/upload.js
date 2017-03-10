@@ -35,7 +35,7 @@ angular.module('arraysApp')
 
             $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
 
-            $scope.primaryAction.text = 'Next';
+            $scope.primaryAction.text = (dataset.imported) ? null: 'Next';
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });

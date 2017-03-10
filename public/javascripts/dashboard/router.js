@@ -223,6 +223,11 @@ angular.module('arraysApp')
 
                                 return DatasetService.get($stateParams.id);
                             }],
+                            previewCopy : ['DatasetService', 'dataset', function(DatasetService,dataset) {
+                                var masterId = dataset._id;
+
+                                return DatasetService.getDatasetsWithQuery({master_id: masterId});
+                            }],
                             viewResource: 'View',
                             views: ['View', function (View) {
                                 return View.query().$promise;

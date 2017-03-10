@@ -16,14 +16,13 @@ angular
             return result;
         }
 
-        this.getViewUrl = function(subdomain, dataset, viewName) {
-            // console.log(subdomain, dataset, viewName);
-            // return 'Hello wurld';
+        this.getViewUrl = function(subdomain, dataset, viewName,previewId) {
+
             return subdomain + '/' +
                 dataset.uid +
                 '-r' + dataset.importRevision + '/' +
-                viewName.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                makeFieldValuePairs(dataset.fe_filters.default);
+                viewName.split(/(?=[A-Z])/).join('-').toLowerCase() + 
+                makeFieldValuePairs(dataset.fe_filters.default) + '?preview=true';
         };
 
 }]);

@@ -31,19 +31,31 @@ var kue = require('kue');
 
 function getAllDatasetsWithQuery(query, res) {
 
-    datasource_description.find({$and: [{master_id: {$exists:false},schema_id: {$exists: false}}, query]}, {
-        _id: 1,
-        uid: 1,
-        title: 1,
-        importRevision: 1,
-        sample: 1
-    }, function (err, datasets) {
+    if (query.master_id) { //getting the preview copy
+        datasource_description.findOne(query,function(err,dataset) {
+            if (err) {
+                 return res.status(500).send(err);
+            }
+            return res.status(200).json({datasets: dataset});
+        })
+    } else {
+        datasource_description.find({$and: [{master_id: {$exists:false},schema_id: {$exists: false}}, query]}, {
+            _id: 1,
+            uid: 1,
+            title: 1,
+            importRevision: 1,
+            sample: 1
+        }, function (err, datasets) {
 
-        if (err) {
-             return res.status(500).send(err);
-        }
-        return res.status(200).json({datasets: datasets});
-    })
+            if (err) {
+                 return res.status(500).send(err);
+            }
+            return res.status(200).json({datasets: datasets});
+        })
+
+    }
+
+    
 }
 
 
@@ -497,7 +509,48 @@ module.exports.update = function(req,res) {
     })
 }
 
+module.exports.draftAction = function(req,res) {
+    var datasetId = req.params.id;
+    var action = req.query.action;
 
+    async.waterfall([
+        function(callback) {
+            datasource_description.findOne({master_id: datasetId},function(err,draft) {
+                if (err) return callback(err);
+                else {
+                    if (action == 'apply') {
+                        return callback(null,draft,draft.fe_views);
+                    }
+                    callback(null,draft,null);
+                }
+            })
+        }, function(draft,draftView,callback) {
+            if (draftView) { //apply the changes
+                datasource_description.findByIdAndUpdate(req.params.id,{$set: {fe_views:draftView}}, {new:true},function(err,updateQuery) {
+                    if (err) callback(err);
+                    else callback(null,draft,updateQuery.fe_views);
+                })
+            } else callback(null, draft,null); //revert the changes, return null, no need update original dataset
+
+        }, function(draft,finalView,callback) {
+            //delete draft
+            draft.remove(function(err) {
+                callback(err,finalView);
+            })
+        }
+    ],function(err,finalView) {
+
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        else return res.json({finalView: finalView});
+
+    })
+
+
+
+}
 
 module.exports.save = function (req, res) {   
 
@@ -532,15 +585,7 @@ module.exports.save = function (req, res) {
     } else {
 
         function twoAreEqual(a,b) {
-            if (a == undefined || b == undefined) return false;
-            if (_.isEqual(a,b)) {
-                return true;
-            } else if (a.toString() == b.toString()) {
-                return true;
-            } else if (JSON.stringify(a) == JSON.stringify(b)) {
-                return true;
-            }
-            return false;
+            return _.isEqual(a,b) || JSON.stringify(a) == JSON.stringify(b);
         }
 
         // Update of Existing Dataset
@@ -564,7 +609,8 @@ module.exports.save = function (req, res) {
                     winston.info("🔁  Updating the dataset " + description_title + "...");
                 }
                 var update = {$set:{}};
-                var draftType = "data";
+                var makeCopy = false;
+
                 _.forOwn(req.body,function(value,key) {
         
                     if (key !='author' && key !== '_team' 
@@ -574,13 +620,11 @@ module.exports.save = function (req, res) {
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
                         
                         update.$set[key] = value;
-                        if (key == "fe_views") {
-                            draftType = "view";
-                        }
-
+            
                         if (key == 'title') {
                             update.$set["uid"] = value.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                         }
+                        if (key == 'fe_views') makeCopy = true;
                         
                         if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
                             console.log('cleared join session columns stored');
@@ -591,16 +635,16 @@ module.exports.save = function (req, res) {
                 })
 
                 if (Object.keys(update.$set).length == 0) { //nothing to update
-                    callback(null,doc,false,null,null);
+                    callback(null,doc,false,null);
                 } else {
                     if (!doc.imported || doc.imported == false || doc.imported == null) {
-                        callback(null,doc,false,draftType, update);
-                    } else callback(null,doc,true,draftType,update); 
+                        callback(null,doc,false,update);
+                    } else callback(null,doc,makeCopy,update); 
                 }
             }, 
-            function(doc,makeCopy,draftType,updateStatement,callback) {
+            function(doc,makeCopy,updateStatement,callback) {
 
-                if (updateStatement !== null) {
+                if (updateStatement !== null && makeCopy == false) {
                     var datasetId = mongoose.Types.ObjectId(doc._id);
 
                     datasource_description.findOneAndUpdate({_id: datasetId},updateStatement,function(err) {
@@ -624,41 +668,39 @@ module.exports.save = function (req, res) {
                                     function(err,updated_doc) {
                                         if (err) callback(err);
                                         else if (!updated_doc) callback (new Error('No Updated Dataset Found'));
-                                        else callback(null,doc,makeCopy,draftType);
+                                        else callback(null,doc,makeCopy,updateStatement);
                                     })
-                            }  else callback(null,doc,makeCopy,draftType)
+                            }  else callback(null,doc,makeCopy,updateStatement)
                         }
 
                     })
-                } else callback(null,doc,false,null)// no update to make
+                } else if (makeCopy == true && updateStatement) callback(null,doc,makeCopy,updateStatement) 
+                else callback(null,doc,false,updateStatement);
 
-            }, function(doc,makeCopy,draftType,callback) {
+            }, function(doc,makeCopy,updateStatement,callback) {
                 var datasetId = mongoose.Types.ObjectId(doc._id);
                 if (makeCopy == true) {
                     var findQuery = {master_id:  datasetId};
                     var copy = {};
-                    copy._id = mongoose.Types.ObjectId();
                     copy.master_id = datasetId;
-                    copy.draftType = draftType;
-
-                    if (draftType == 'view') {
-                        copy.fe_views = doc.fe_views;
-                    } else if (draftType == 'data') {
-                        copy = doc;
-                        delete copy.fe_views;
-                    }
+                   
+                    copy.fe_views = updateStatement.$set.fe_views;
+                   
                     //find the copy, if not create one
-                    datasource_description.findOneAndUpdate(findQuery,copy,{upsert:true},
-                        function(err) {
+                    datasource_description.findOneAndUpdate(findQuery,copy,{upsert:true,new:true},
+                        function(err,previewDataset) {
                             if (err) callback(err);
-                            else callback(null,datasetId);
+                            else callback(null,datasetId,previewDataset);
                     })
                 } else callback(null,datasetId);
 
             }
-        ],function(err,datasetId) {
-            if (err) return res.status(500).send(err);
-            else return res.json({id: datasetId});
+        ],function(err,datasetId,previewDataset) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+            else return res.json({id: datasetId,preview: previewDataset});
 
         })
 

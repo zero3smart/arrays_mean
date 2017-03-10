@@ -27,8 +27,6 @@ var DatasourceDescription_scheme = Schema({
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
 
     master_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
-    draftType : String,
-    //view,data
 
     banner: String,
     format: String, //csv, tsv, json
@@ -548,14 +546,16 @@ var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
-var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdomain,uid, revision, fn) {
 
     var subdomainQuery = {};
     if (subdomain !== null) {
         subdomainQuery["subdomain"] = subdomain;
     }
-   
-    this.find({uid: uid, importRevision: revision, fe_visible: true})
+
+
+   var self = this;
+    self.find({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
             match: subdomainQuery
@@ -568,12 +568,31 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
                 }
             });
             descriptions  = descriptions[0];
-            if (err) {
-                winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
-                fn(err, null);
-            } else {
 
-                fn(err, descriptions);
+            if (preview) {
+                self.find({master_id: descriptions._id},function(err,previewCopy) {
+
+
+                    if (err) {
+                        winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+                        fn(err, null);
+                    } else {
+                        if (previewCopy.length > 0) {
+                            descriptions.fe_views = previewCopy[0].fe_views;
+                        }
+
+
+                        fn(err, descriptions);
+                    }
+                })
+
+            }  else {
+                if (err) {
+                    winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+                    fn(err, null);
+                } else {
+                    fn(err, descriptions);
+                }
             }
         })
 };
@@ -582,8 +601,8 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
-    imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
-        .then(function(datasourceDescription) {
+    imported_data_preparation.DataSourceDescriptionWithPKey(false,sourceKey)
+       .then(function(datasourceDescription) {
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
