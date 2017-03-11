@@ -34,6 +34,9 @@
 .preview-indicator {
     font-weight: 500;
 }
+.array-title .preview-indicator {
+    font-size: 85%;
+}
 
 .array-meta {
     color: var(--color-text-light);
