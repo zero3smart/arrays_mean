@@ -158,8 +158,15 @@ angular.module('arraysApp')
                         // Calculate trial days remaining
                         var now = new Date();
                         var end = new Date($scope.subscription.trial_ends_at._);
-                        var timeDiff = Math.abs(end.getTime() - now.getTime());
-                        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        var timeDiff = end.getTime() - now.getTime();
+
+                        var diffDays;
+                        if (timeDiff > 0) {
+                            diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        } else {
+                            diffDays = 0;
+                        }
+                        
                         $scope.subscription.trial_days_left = diffDays;
 
                         // console.log($scope.subscription);
