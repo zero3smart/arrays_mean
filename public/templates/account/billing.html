@@ -20,13 +20,22 @@
                 <span class="btn-label">Reactivate Subscription</span>
             </md-button>
         </div>
+
+        <div ng-if="subscription.state === 'expired'">
+            <h3>Renew Subscription</h3>
+            <p>Your subscription has expired</p>
+
+            <md-button class="md-dashboard" ng-click="renewSubscription()">
+                <span class="btn-label">Renew Subscription</span>
+            </md-button>
+        </div>
         
         <div ng-if="subscription.state === 'active'">
             <a ui-sref="dashboard.account.cancel" class="warn">Cancel Subscription</a>
             <hr>
         </div>
 
-        <div ng-if="subscription.state !== 'canceled'">
+        <div ng-if="subscription.state !== 'canceled' && subscription.state !== 'expired'">
             <ng-include src="'templates/blocks/account.billing.plans.html'"></ng-include>
         </div>
 

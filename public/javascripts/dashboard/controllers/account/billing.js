@@ -439,4 +439,30 @@ angular.module('arraysApp')
                 });
             };
 
+            $scope.renewSubscription = function() {
+                var subscrId = $scope.subscription.uuid;
+                Subscriptions.reactivate({ subscrId: subscrId })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription renewed')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
+                        getSubscriptions();
+                    } else {
+                        // console.log(res.data);
+                    }
+                });
+            };
+
     }]);
