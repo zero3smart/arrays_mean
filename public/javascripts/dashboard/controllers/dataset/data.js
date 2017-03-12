@@ -37,6 +37,16 @@ angular.module('arraysApp')
                 $scope.reset();
             };
 
+            /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
+            if(!dataset.fe_excludeFieldsObjDetail) {
+                dataset.fe_excludeFieldsObjDetail = {};
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
+                }
+            }
+
+
+
 
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -108,12 +118,22 @@ angular.module('arraysApp')
                 }
             };
 
+            $scope.updateFieldInclusion = function(fieldName) {
+                $scope.setDirty(3);
+
+                /** Match object detail exclusion to field exclusion  */
+                $scope.dataset.fe_excludeFieldsObjDetail[fieldName] = $scope.dataset.fe_excludeFields[fieldName];
+            };
 
             $scope.toggleExclude = function (exclude) {
                 for (var i = 0; i < $scope.originalFields.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
                 }
                 $scope.excludeAll = exclude ? false : true; // toggle
+            };
+
+            $scope.toggleObjectDetailDisplay = function(fieldName) {
+                $scope.dataset.fe_excludeFieldsObjDetail[fieldName] = !$scope.dataset.fe_excludeFieldsObjDetail[fieldName];
             };
 
             $scope.openJoinTablesDialog = function() {
@@ -123,7 +143,6 @@ angular.module('arraysApp')
                 };
 
                 modalService.openDialog('joinTable',data)
-
                     .then(function(savedDataset) {
                         joinDataCols = savedDataset.joinCols;
                         delete savedDataset.joinCols;
@@ -176,7 +195,6 @@ angular.module('arraysApp')
 
                 modalService.openDialog('nested',data)
                     .then(function(result) {
-
 
                         $scope.$parent.$parent.dataset = result.dataset;
                         $scope.$parent.$parent.additionalDatasources = result.additionalDatasources;
@@ -251,8 +269,7 @@ angular.module('arraysApp')
                     fields: $scope.originalFields
                 };
 
-
-                modalService.openDialog('field',data)
+                modalService.openDialog('join', data)
 
                     .then(function (savedDataset) {
 
@@ -375,6 +392,8 @@ angular.module('arraysApp')
 
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
 
+                $scope.$parent.$parent.dataset.includeEmptyFields = $scope.dataset.includeEmptyFields;
+
                 if (!$scope.$parent.$parent.dataset.fe_image || $scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field ||
                     $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
 
@@ -467,23 +486,21 @@ angular.module('arraysApp')
                     $scope.submitting = true;
 
                     var errorHandler = function (error) {
-                        $scope.submitting = false;
-                        $mdToast.show(
-                        $mdToast.simple()
-                            .textContent(error)
-                            .position('top right')
-                            .hideDelay(5000)
-                        );
-                    };
+                            $scope.submitting = false;
+                            $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(error)
+                                .position('top right')
+                                .hideDelay(3000)
+                            );
+                        }, done = function() {
+                            $scope.submitting = false;
 
-                    var done = function() {
-                        $scope.submitting = false;
-
-                        $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Visualization updated!')
-                            .position('top right')
-                            .hideDelay(3000)
+                            $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Visualization updated!')
+                                .position('top right')
+                                .hideDelay(3000)
                         );
 
 

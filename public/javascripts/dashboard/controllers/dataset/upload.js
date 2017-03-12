@@ -85,7 +85,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Database connection successful!')
+                                .textContent('Connected to database!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -94,7 +94,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Error connecting to the database.')
+                                .textContent('Error connecting to database.')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -299,7 +299,7 @@ angular.module('arraysApp')
                                 $mdToast.simple()
                                     .textContent(toastFileName + ' removed.')
                                     .position('top right')
-                                    .hideDelay(5000)
+                                    .hideDelay(3000)
                             );
                         }
                     }
@@ -318,7 +318,7 @@ angular.module('arraysApp')
                                     $mdToast.simple()
                                         .textContent(additionalDatasource.fileName + ' removed.')
                                         .position('top right')
-                                        .hideDelay(5000)
+                                        .hideDelay(3000)
                                 );
                         }
                         $scope.additionalDatasources.splice(length - 1, 1);
@@ -328,7 +328,7 @@ angular.module('arraysApp')
                                 $mdToast.simple()
                                     .textContent(error)
                                     .position('top right')
-                                    .hideDelay(5000)
+                                    .hideDelay(3000)
                             );
                     });
                 }

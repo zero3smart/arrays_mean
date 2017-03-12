@@ -56,6 +56,23 @@
                                 }}
                             </nav>
 
+                            <nav class="sort-bar-left pull-left" role="navigation">
+                                {{
+                                dropdown.sortbar(
+                                    'Aggregate By',
+                                    aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                    colNames_orderedForAggregateByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        chartBy: chartBy,
+                                        groupBy: groupBy,
+                                        aggregateBy: ''
+                                    })
+                                )
+                                }}
+                            </nav>
+
                             <div class="sort-bar-right pull-right">
                                 {{
                                 search.default(

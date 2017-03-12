@@ -80,8 +80,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
         if (dataSourceDescription.useCustomView) {
 
-            filterKeys = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').filterKeys();
-
+            filterKeys = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').filterKeys()
         } else {
 
             

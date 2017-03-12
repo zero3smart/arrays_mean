@@ -119,7 +119,7 @@ angular.module('arraysApp')
                                 $scope.$parent.$parent.dataset = response.data;
                                 $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Approval state updated!')
+                                        .textContent('Listing status updated!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -171,11 +171,11 @@ angular.module('arraysApp')
                     // NOTE attempting to open _blank here will fire pop up blocker
 
                 }, function (error) {
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent(error)
-                            .position('top right')
-                            .hideDelay(5000)
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(error)
+                                .position('top right')
+                                .hideDelay(3000)
                         );
 
                     $scope.submitting = false;

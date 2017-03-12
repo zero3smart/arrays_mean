@@ -10,6 +10,8 @@ angular.module('arraysApp')
 
             $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
                 event.preventDefault();
+
+     
                 if (error.importing == true) {
                     $state.go('dashboard.dataset.process', {id: error.datasetId});
                 }
@@ -187,7 +189,6 @@ angular.module('arraysApp')
                                 DatasetService.get($stateParams.id)
                                 .then(function(data) {
 
-
                                     if (data.jobId !== 0) {
                                         deferred.reject({importing: true, datasetId: data._id});
                                     } else {
@@ -204,8 +205,11 @@ angular.module('arraysApp')
                                 .then(function(additionalDatasets) {
                                     if (additionalDatasets.length > 0) {
                                         additionalDatasets.map(function(dataset) {
+
                                             if (dataset.jobId !== 0) {
-                                                deferred.reject({importing: true, datasetId: dataset.schema_id});
+                        
+
+                                                deferred.reject({importing: true, datasetId: dataset.schemaId});
                                                 return false;
 
                                             }

@@ -61,6 +61,7 @@ angular
             }
 
             $scope.user = AuthService.currentUser();
+
             $scope.teams = AuthService.allTeams();
 
             $scope.explore_url = $location.protocol() +  '://';

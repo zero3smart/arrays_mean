@@ -54,21 +54,19 @@
                                         )
                                     }}
 
-                                    {% if aggregateBy_humanReadable_available %}
-                                        {{
-                                        dropdown.sortbar(
-                                            'Aggregate By',
-                                            aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
-                                            aggregateBy_humanReadable_available,
-                                            routePath_base | constructedRoutePath(filterObj, {
-                                                searchCol: searchCol,
-                                                searchQ: searchQ,
-                                                groupBy: groupBy,
-                                                aggregateBy: ''
-                                            })
-                                        )
-                                        }}
-                                    {% endif %}
+                                    {{
+                                    dropdown.sortbar(
+                                        'Aggregate By',
+                                        aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                        colNames_orderedForAggregateByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            groupBy: groupBy,
+                                            aggregateBy: ''
+                                        })
+                                    )
+                                    }}
                                 </nav>
 
                                 <div class="sort-bar-right pull-right">

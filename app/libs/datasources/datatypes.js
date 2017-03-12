@@ -269,3 +269,18 @@ var _isISODateOrString = function(sample) {
 };
 module.exports.isISODateOrString = _isISODateOrString;
 
+var _isValidFormat = function(format) {
+    var separatorRE = /(\s|-|\/)/;
+        if (!separatorRE.test(format) && format.length > 4) {
+            return false;
+        }
+        return true;
+};
+module.exports.isValidFormat = _isValidFormat;
+
+var _makeFormatValid = function(format) {
+    var formatRE = /(Y+)(M+)(D+)/;
+    return format.split(formatRE).filter(Boolean).join('-');
+
+}
+module.exports.makeFormatValid = _makeFormatValid;

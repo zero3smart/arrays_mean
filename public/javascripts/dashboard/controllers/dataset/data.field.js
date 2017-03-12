@@ -1,8 +1,8 @@
 angular.module('arraysApp')
     .controller('FieldDialogCtrl',['$scope','$mdDialog','$filter','fieldName','firstRecord','dataset',
-    	'availableTypeCoercions','custom','customFieldIndex','filterOnly','columnIndex', 
-        function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, 
-    		custom, customFieldIndex, filterOnly,columnIndex) {
+    	'availableTypeCoercions','custom','customFieldIndex','filterOnly','columnIndex',
+        function($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions,
+    		custom, customFieldIndex, filterOnly, columnIndex) {
 
 		$scope.firstRecord = firstRecord;
         $scope.availableTypeCoercions = availableTypeCoercions;
@@ -170,9 +170,7 @@ angular.module('arraysApp')
 
 
         $scope.save = function () {
-
             // General
-
 
             if ($scope.customFieldIndex == undefined) {
                 var coercion = $scope.coercionScheme[$scope.fieldName];
@@ -181,7 +179,7 @@ angular.module('arraysApp')
             }
 
             if (originalCoercionScheme) {
-                if (originalCoercionScheme.operation == 'ToDate' && 
+                if (originalCoercionScheme.operation == 'ToDate' &&
                     originalCoercionScheme.format !== $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName].format) {
                     $scope.dataset.dirty = 1;
                 } else if (originalCoercionScheme.operation !== $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName].operation) {
@@ -200,7 +198,7 @@ angular.module('arraysApp')
                 }
             }
 
-         
+
             if (!filterOnly) {
                 var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
@@ -272,10 +270,8 @@ angular.module('arraysApp')
                 }
                 $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
             }
- 
+
             $mdDialog.hide($scope.dataset);
         };
 
 }])
-
-

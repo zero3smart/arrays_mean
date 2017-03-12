@@ -6,7 +6,6 @@ var mailer = require('../../libs/utils/nodemailer');
 
 
 
-
 module.exports.invite = function(req,res) {
 
     User.findById(req.user._id)
@@ -49,13 +48,13 @@ module.exports.invite = function(req,res) {
                                         console.log(err);
                                         res.status(500).send(err);
                                     } else {
-                                        mailer.sendInvitationEmail(team,foundUser,createdUser,req.body._editors,req.body._viewers,
+                                        mailer.sendInvitationEmail(false,team,foundUser,createdUser,req.body._editors,req.body._viewers,
                                             function(err) {
                                                 if (err) res.status(500).send(err);
                                                 mailer.newUserInvitedEmail(foundUser,foundUser.defaultLoginTeam,createdUser,function(err) {
                                                     if (err) res.status(500).send(err);
                                                 })
-                                                return res.status(200).send({user: foundUser});
+                                                return res.status(200).send({user: foundUser, invitedUser:createdUser});
                                             })
                                     }
                                 })
@@ -64,7 +63,26 @@ module.exports.invite = function(req,res) {
                         
                     }
                 })
-            } 
+            } else {
+
+
+                User.findOneAndUpdate({_id: req.body._id},{$set:{_editors: req.body._editors, _viewers: req.body._viewers,_team: req.body._team,
+                    defaultLoginTeam: req.body.defaultLoginTeam}},
+                    {new: true},
+                    function(err,user_updated) {
+                        if (err) return res.status(500).send(err);
+
+                        var t = req.body._team[req.body._team.length-1];
+                        Team.findById(t,function(err,team) {
+                            if (err) return res.status(500).send(err);
+                             mailer.sendInvitationEmail(true,team,foundUser,user_updated,null,null,
+                                function(err) {
+                                      if (err) res.status(500).send(err);
+                                      return res.status(200).send();
+                                })
+                        })
+                    })
+            }
         } else {
             return res.status(401).send('unauthorized');
         }

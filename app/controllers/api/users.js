@@ -35,7 +35,7 @@ module.exports.search = function (req, res) {
 
 module.exports.checkPw = function(req,res) {
 
- 
+
 
     var userId = req.params.id;
     User.findById(userId,function(err,user) {
@@ -70,7 +70,7 @@ module.exports.get = function (req, res) {
     var id = req.params.id;
 
     console.log(req.user);
-    
+
     if (id == 'currentUser') {
         if (!req.user) {
 
@@ -90,7 +90,7 @@ module.exports.get = function (req, res) {
 
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
-            
+
 
                     if (!user.defaultLoginTeam || user._team.length == 0) {
                         return res.status(401).json({error: 'unauthorized'});
@@ -109,7 +109,9 @@ module.exports.get = function (req, res) {
                             role = 'viewer';
                         }
                     }
-                    
+
+
+
                     var userInfo = {
                         _id: user._id,
                         provider: user.provider,
@@ -125,13 +127,14 @@ module.exports.get = function (req, res) {
                         defaultLoginTeam: user.defaultLoginTeam
                     }
 
+
                     return res.status(200).json(userInfo);
-                    
+
                 })
         }
 
     } else {
-        
+
         User.findById(id)
             .populate('_team')
             .lean()
@@ -144,7 +147,7 @@ module.exports.get = function (req, res) {
                 }
             })
 
-       
+
     }
 
 }
@@ -293,7 +296,7 @@ module.exports.update = function (req, res) {
         team.admin = req.body._id;
         if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise' || req.body.email.indexOf('@schemadesign.com') >= 0 ||
             req.body.email.indexOf('@arrays.co') >= 0) {
-    
+
             team.superTeam = true;
         }
 
@@ -344,7 +347,7 @@ module.exports.update = function (req, res) {
                                         }
                                     })
                                 }
-                                
+
                             }
                         })
                     }
@@ -415,7 +418,7 @@ module.exports.defaultLoginTeam = function(req,res) {
     var teamId = req.params.teamId;
     if (!teamId) {
         return res.status(500).send(new Error("No teamId given"));
-    } 
+    }
     if (!req.user) {
         return res.status(401).send("unauthorized");
     } else {
@@ -431,52 +434,108 @@ module.exports.delete = function(req, res) {
 
 
 
-
     if (!req.user) {
         return res.status(401).send({error: 'unauthorized'});
     }
 
     var batch = new Batch();
     batch.concurrency(1);
+
     var u;
-    var a;
+    var teamToRemoveFrom;
+
+
+
+    batch.push(function(done) {
+
+        User.findById(req.user,function(err,userMadeRequest) {
+            if (err) return done(err);
+            teamToRemoveFrom = userMadeRequest.defaultLoginTeam;
+            done();
+        })
+
+    })
+
 
     batch.push(function(done) {
 
 
+
         User.findById(req.params.id)
-        .populate('defaultLoginTeam')
+        .populate('_editors')
+        .populate('_viewers')
         .exec(function(err,user) {
 
             if (err) return done(err);
             if (!user) return done(new Error('No User Exists'));
             u = user;
-            a = user.defaultLoginTeam.admin;
+            a = user.defaultLoginTeam.admin; // not used?
             done();
 
         })
 
     })
 
+
+
     batch.push(function(done) {
 
 
-        datasource_descriptions.update({author:u._id},{$set:{author:a}},done);
+        datasource_descriptions.find({author:u._id,_team: teamToRemoveFrom})
+        .populate('_team')
+        .exec(function(err,datasets) {
+
+            if (err) return done(err);
+
+            datasets.forEach(function(dataset) {
+                dataset.author = dataset._team.admin;
+                dataset.save();
+            })
+
+            done();
+        })
+
     })
 
     batch.push(function(done) {
-      
-        datasource_descriptions.update({updatedBy:u._id},{$set:{updatedBy: a}},done);
+        datasource_descriptions.find({updatedBy: u._id, _team: teamToRemoveFrom})
+        .populate('_team')
+        .exec(function(err,datasets) {
+            if (err) return done(err);
+            datasets.forEach(function(dataset) {
+                dataset.updatedBy = dataset._team.admin;
+                dataset.save();
+            })
+            done();
+        })
+
     })
 
     batch.push(function(done) {
-        user.remove(done);
+        var idx = u._team.indexOf(teamToRemoveFrom);
+        if (idx >= 0) {
+            u._team.splice(idx,1);
+        }
+        if (u.defaultLoginTeam.equals(teamToRemoveFrom)) {
+            if (u._team.length == 0) {
+                u.defaultLoginTeam = undefined;
+            } else u.defaultLoginTeam = u._team[0];
+        }
+        u._editors = u._editors.filter(function(ds) {
+
+            return !ds._team.equals(teamToRemoveFrom);
+
+        })
+        u._viewers = u._viewers.filter(function(ds) {
+            return !ds._team.equals(teamToRemoveFrom);
+        })
+        u.save(done);
     })
 
     batch.end(function(err) {
         if (err) return res.send(err);
         else {
-             winston.info("✅  Removed user : " + user._id);
+            winston.info("✅  Removed user  : " + u._id + 'from Team: ' + teamToRemoveFrom );
             res.json({success:'ok'});
         }
 

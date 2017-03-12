@@ -876,7 +876,7 @@ function verifyDataType(name, sample, rowObjects, index) {
 function intuitDataype(name, sample) {
     var format = datatypes.isDate(sample)[1];
     if (format !== null) {
-        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'}
+        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
     }
 
     var dateRE = /(year|DATE)/i;
@@ -885,15 +885,22 @@ function intuitDataype(name, sample) {
         if (format === 'ISO_8601') {
             return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
         } else if (format !== null) {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+
+            if (datatypes.isValidFormat(format)) {
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+            } else {
+                var valid_format = datatypes.makeFormatValid(format);
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: valid_format, operation: 'ToDate'};
+            }
+
         } else {
             return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
         }
     }
 
     // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-    var numberRE = /([^0-9\.,]|\s)/;
-    var floatRE = /[^0-9,]/;
+    var numberRE = /([^0-9\.,-]|\s)/;
+    var floatRE = /[^0-9,-]/;
     var IdRE = /(Id|ID)/;
     if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
         // if it's definitely not a number, double check to see if it's a valid ISO 8601 date

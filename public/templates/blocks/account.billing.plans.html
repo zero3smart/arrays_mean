@@ -1,3 +1,5 @@
+<h2 ng-if="plan">Change Plans</h2>
+
 <form name="plans_form" novalidate>
 
     <div layout="row" layout-xs="column" layout-margin>
@@ -6,9 +8,12 @@
 
             <md-input-container>
                 <label>Number of Users</label>
-                <input name="quantity" type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" required />
-                <div ng-messages="plans_form.quantity.$error">
+                <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
+                <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
                     <div ng-message="min">Must be greater than 0.</div>
+                </div>
+                <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
+                    <div ng-message="min">Cannot be less than the number of users on your team.</div>
                 </div>
             </md-input-container>
 
@@ -16,7 +21,7 @@
 
         <div flex="66" flex-xs="100">
 
-            <md-radio-group name="plan_interval_length" ng-model="plan.plan_interval_length._">
+            <md-radio-group name="plan_interval_length" ng-model="newPlan.plan_interval_length">
                 <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
                 <md-radio-button value="1">Billed Monthly</md-radio-button>
             </md-radio-group>
@@ -29,7 +34,7 @@
 
 <div layout-gt-sm="row" layout="column" layout-padding layout-wrap>
 
-    <div flex-gt-sm="33" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: plan.plan_interval_length._ } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
+    <div flex-gt-sm="33" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: newPlan.plan_interval_length } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
 
         <span class="md-headline">{{ planItem.name }}</span>
 
@@ -37,40 +42,34 @@
         <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per user, per month</strong></div>
         <div ng-if="planItem.display_quantity._ === 'false'"><strong>Per month</strong></div>
 
-        <div ng-if="plan.plan_interval_length._ === '1'">Billed monthly</div>
-        <div ng-if="plan.plan_interval_length._ === '12'">Billed annually</div>
+        <div ng-if="planItem.plan_interval_length._ === '1'">Billed monthly</div>
+        <div ng-if="planItem.plan_interval_length._ === '12'">Billed annually</div>
 
         <br />
         <br />
-        <div ng-if="!billing.exists" layout="row" layout-align="center center">
-            <md-button ng-if="planItem.display_quantity._ === 'true'" ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: subscription.quantity._ })" class="md-dashboard">
-                <span class="btn-label">Start Free Trial</span>
-            </md-button>
-            <md-button ng-if="planItem.display_quantity._ === 'false'" ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: '1' })" class="md-dashboard">
+        <div ng-if="!plan" layout="row" layout-align="center center">
+            <md-button ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: newPlan.quantity })" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                 <span class="btn-label">Start Free Trial</span>
             </md-button>
         </div>
-        <div ng-if="billing.exists">
+        <div ng-if="plan">
             <div ng-if="planItem.plan_code != plan.plan_code" layout="row" layout-align="center center">
-                <md-button ng-if="planItem.display_quantity._ === 'true'" class="md-dashboard">
-                    <span class="btn-label">Select This Plan</span>
-                </md-button>
-                <md-button ng-if="planItem.display_quantity._ === 'false'" class="md-dashboard">
+                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                     <span class="btn-label">Select This Plan</span>
                 </md-button>
             </div>
             <div ng-if="planItem.plan_code === plan.plan_code" layout="row" layout-align="center center">
-                <md-button ng-if="planItem.display_quantity._ === 'true'" class="md-dashboard confirm md-button">
-                    <span class="btn-label">My Plan</span>
-                </md-button>
-                <md-button ng-if="planItem.display_quantity._ === 'false'" class="md-dashboard confirm md-button">
-                    <span class="btn-label">My Plan</span>
+                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid">
+                    <span ng-if="!plans_form.quantity.$dirty" class="btn-label">My Plan</span>
+                    <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
                 </md-button>
             </div>
         </div>
+        <div ng-if="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 ">
+            <span class="md-caption">Reduce Users to 1 to select this plan</span>
+        </div>
         <br />
         <br />
-        <span ng-if="planItem.plan_code === plan.plan_code">My Plan</span>
 
         <div style="white-space: pre-wrap;">{{ planItem.description }}</div>
 

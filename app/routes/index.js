@@ -138,12 +138,13 @@ var _mountRoutes_endPoints = function (app) {
 
 
             if (isNotRootDomain(req.subdomains)) {
-
                 if (isRouteForDataset) {
                     return next();
                 } else {
 
                     if (req.url == '/' || req.url == "/" + apiVersion + '/share' || req.url == '/auth/logout') {
+                        return next();
+                    } else if (req.url.indexOf("s") == 1) {
                         return next();
                     } else {
                         return res.redirect(rootDomain + req.url);
@@ -186,6 +187,7 @@ var _mountRoutes_endPoints = function (app) {
 
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));
+    app.use('/webhooks', require('./webhooks'));
     app.use('/account',require('./account'));
     app.use('/', require('./views'));
 

@@ -63,10 +63,6 @@ body.dashboard {
     padding: 12px 0;
 }
 
-/*to add to variables and global styles*/
-:root {
-	--color-warn: #fb4400;
-}
 .warn {
     color: var(--color-warn);
 }
@@ -373,6 +369,9 @@ body.md-toast-animating {
 }
 .dashboard-list md-checkbox {
 	margin-bottom: 0;
+}
+.obj-detail-toggle {
+    font-size: 0.625em;
 }
 
 .team-list {
@@ -746,6 +745,9 @@ ul.aa-color-picker {
 	text-overflow: ellipsis;
 	white-space: nowrap;
     overflow: hidden;
+}
+.dataset .field-data-type {
+	color: var(--color-text-light);
 }
 .dataset .field:after {
     content: "";

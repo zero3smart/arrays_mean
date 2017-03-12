@@ -201,7 +201,6 @@ angular.module('arraysApp')
 
                 viewResource.get({id:id},function(data) {
 
-
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
@@ -326,6 +325,17 @@ angular.module('arraysApp')
 
                     // var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     // delete finalizedDataset.columns;
+                    // DatasetService.save(finalizedDataset)
+                    //     .then(function (response) {
+                    //         $scope.submitting = false;
+                    //         if (response.status == 200) {
+                    //             var id = response.data.id;
+                    //             $mdToast.show(
+                    //                 $mdToast.simple()
+                    //                     .textContent('Visualization updated!')
+                    //                     .position('top right')
+                    //                     .hideDelay(3000)
+                    //             );
 
                     // var useCustomView = false;
 
@@ -564,21 +574,39 @@ angular.module('arraysApp')
 
                             return false;
                         }
-
                         return true;
 
                     };
                 };
 
-                $scope.includeExcludeCol = function(col, array, isDefault) {
+                $scope.AppendNumberOfItems = function(menu, cols) {
+                    if (menu == "Aggregate By") {
+                        cols.push("Number of Items");
+                    }
+                    return cols;
+                };
+
+                $scope.includeExcludeCol = function(col, array, isDefault, forceExclude) {
                     if(!isDefault) {
                         var ndex = array.indexOf(col);
                         if (ndex == -1) {
                             array.push(col);
-                        } else {
+                        } else if (!forceExclude) {
                             array.splice(ndex, 1);
                         }
                     }
+                };
+
+                $scope.excludeAllFromMenu = true; // setting this for all menus, for now
+
+                $scope.includeExcludeColsFromMenu = function(colsAvailableOfType, excludeByArray, menuDefault, currentMenuDisplayName) {
+
+                    for (var i = 0; i < colsAvailableOfType.length; i++) {
+                        var col = colsAvailableOfType[i];
+                        $scope.includeExcludeCol(col, excludeByArray, menuDefault == col, $scope.excludeAllFromMenu);
+                    }
+
+                    $scope.excludeAllFromMenu = !$scope.excludeAllFromMenu;
                 };
 
                 $scope.excludeBy = function(excludeValueArray) {

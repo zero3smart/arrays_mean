@@ -139,37 +139,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
-            // Aggregate By Available
-            var aggregateBy_humanReadable_available = undefined;
-            _.forOwn(raw_rowObjects_coercionSchema, function (colValue, colName) {
-                if (colValue.operation == "ToInteger") {
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!aggregateBy_humanReadable_available) {
-                            aggregateBy_humanReadable_available = [];
-                            if (!numberOfRecords_notAvailable)
-                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
-                    }
-                }
-            });
-
-            if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length == 1)
-                    aggregateBy_humanReadable_available = undefined;
-            }
-
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
-
 
 
             //
@@ -387,7 +360,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableVal;
 
                             if (groupBy_isDate) {
-                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription)
+                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription);
+
                             } else {
                                 displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
@@ -567,7 +541,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     // Aggregate By
-                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'lineGraph', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     // graphData contains all the data rows; used by the template to create the linechart

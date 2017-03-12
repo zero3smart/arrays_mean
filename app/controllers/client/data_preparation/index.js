@@ -51,6 +51,8 @@ module.exports.BindData = function (req, callback) {
 
 
         var err = null;
+        if (!description._team) return cb(null);
+        
         subdomain = description._team.subdomain;
 
         raw_source_documents.Model.findOne({
@@ -88,11 +90,12 @@ module.exports.BindData = function (req, callback) {
                     urls: description.urls,
                     default_view: default_view,
                     default_filterJSON: default_filterJSON,
-                    datasetBaseLink: baseUrl,
+                    baseUrl: baseUrl,
                     banner: description.banner,
                     teamTitle: description._team.title,
                     subdomain: description._team.subdomain,
                     admin: description._team.admin,
+                    author: description._team.title
                 };
 
                 datasetArray.push(reformattedDataset);

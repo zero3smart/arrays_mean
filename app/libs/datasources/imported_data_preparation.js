@@ -6,7 +6,7 @@ module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_obj
 
 
 var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
-  
+
     var split = source_pKey.split("-");
     if (split.length != 3 && process.env.NODE_ENV !== 'enterprise') {
         return new Promise(function (resolve, reject) {
@@ -24,7 +24,7 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
 
         dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(preview,subdomain,uid, revision, function (err, data) {
             if (err) reject(err);
-    
+
             resolve(data);
         })
     })
@@ -184,10 +184,14 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
         available_keys.push(humanReadable_key);
     });
 
+    if (field == 'fieldsNotAvailableAsAggregateByColumns' && (dataSourceDescription.fe_views.views[field] == undefined || dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1)) {
+        available_keys.push("Number of Items");
+    }
+
     return available_keys;
 }
-
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;
+
 
 function _dataSourceUIDFromTitle(title) {
     if (!title) return new Error('Title is not provided!');
