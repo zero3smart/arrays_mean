@@ -114,15 +114,6 @@
                              ></md-checkbox>
                 </span>
 
-                <span class="dashboard-list-icon obj-detail-toggle" flex="10"
-                    aa-tooltip="{{ dataset.fe_excludeFieldsObjDetail[field.name] ? 'Include field in' : 'Exclude field from' }} object detail"
-                    ng-click="toggleObjectDetailDisplay(field.name)">
-                    <span class="fa-stack">
-                        <i class="fa fa-sticky-note-o fa-stack-2x"></i>
-                        <i class="fa fa-check fa-stack-1x" ng-if="!dataset.fe_excludeFieldsObjDetail[field.name]"></i>
-                    </span>
-                </span>
-
                 <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex, null, $index)">
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
@@ -143,6 +134,15 @@
                 </span>
 
                 <span flex="10"></span>
+
+                <span class="dashboard-list-icon obj-detail-toggle" flex="10"
+                    aa-tooltip="{{ dataset.fe_excludeFieldsObjDetail[field.name] ? 'Include field in' : 'Exclude field from' }} object detail"
+                    ng-click="toggleObjectDetailDisplay(field.name)">
+                    <span class="fa-stack">
+                        <i class="fa fa-sticky-note-o fa-stack-2x"></i>
+                        <i class="fa fa-check fa-stack-1x" ng-if="!dataset.fe_excludeFieldsObjDetail[field.name]"></i>
+                    </span>
+                </span>
 
                 <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
 
