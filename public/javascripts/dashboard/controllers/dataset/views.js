@@ -230,6 +230,8 @@ angular.module('arraysApp')
                     })
                         .then(function (savedDataset) {
 
+                            /** If user saves changes to a view, make it visible */
+                            savedDataset.fe_views.views[data.name].visible = true;
 
                             $scope.$parent.$parent.dataset = savedDataset;
 
