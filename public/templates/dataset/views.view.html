@@ -433,9 +433,14 @@
                                         <p ng-if="!colsAvailableOfType.length">
                                             <span class="warn">
                                                 No fields
+                                                <span ng-if="isArray(setting.restrictColumnDataType)">
+                                                    {{ 'of ' + setting.restrictColumnDataType[0] + ' or ' + setting.restrictColumnDataType[1] + ' type available for this menu.' }}
+                                                </span>
+                                                <span ng-if="!isArray(setting.restrictColumnDataType)">
                                                 {{ setting.restrictColumnDataType ? 'of ' + setting.restrictColumnDataType + ' type' : '' }}
                                                 available for this menu.
                                                 <br /><br />
+                                                </span>
                                             </span>
                                             <!-- <md-button class="md-dashboard" ng-click="goToData()">
                                                 Include a field
