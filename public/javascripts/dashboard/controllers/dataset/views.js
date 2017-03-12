@@ -384,7 +384,10 @@ angular.module('arraysApp')
 
                     return function(col) {
 
+
+
                         if (typeof requireType !== 'undefined') {
+                            console.log(requireType)
                             if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
                                 $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 

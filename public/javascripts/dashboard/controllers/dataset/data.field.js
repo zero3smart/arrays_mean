@@ -172,10 +172,14 @@ angular.module('arraysApp')
         $scope.save = function () {
             // General
 
-            var coercion = $scope.coercionScheme[$scope.fieldName];
-            $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
-            if ($scope.columnIndex) {
-                $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+            if ($scope.customFieldIndex == undefined) {
+
+                var coercion = $scope.coercionScheme[$scope.fieldName];
+
+                $scope.dataset.raw_rowObjects_coercionScheme[$scope.fieldName] = coercion;
+                if ($scope.columnIndex) {
+                    $scope.dataset.columns[$scope.columnIndex].data_type = coercion.operation.slice(2);
+                }
             }
 
 

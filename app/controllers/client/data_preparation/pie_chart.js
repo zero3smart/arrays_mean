@@ -124,7 +124,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Grouped ResultSet
             batch.push(function (done) {
+
                 var aggregationOperators = [];
+
                 if (isSearchActive) {
                     var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
                     if (_orErrDesc.err) return done(_orErrDesc.err);
@@ -138,6 +140,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
 
+
+
+
+
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
                     aggregationOperators = aggregationOperators.concat(
                         [
@@ -145,14 +151,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             { // unique/grouping and summing stage
                                 $group: {
                                     _id: "$" + "rowParams." + groupBy_realColumnName,
-                                    value: {$sum: "$" + "rowParams." + aggregateBy_realColumnName} // the count
+                                    value: {$addToSet: {object: "$_id", totalSum: "$" + "rowParams." + aggregateBy_realColumnName}}
+
                                 }
                             },
                             { // reformat
                                 $project: {
                                     _id: 0,
                                     label: "$_id",
-                                    value: 1
+                                    value: {$sum: "$value.totalSum"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -169,14 +176,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             { // unique/grouping and summing stage
                                 $group: {
                                     _id: "$" + "rowParams." + groupBy_realColumnName,
-                                    value: {$sum: 1} // the count
+                                    value: {$addToSet: "$_id"} // the count
                                 }
                             },
                             { // reformat
                                 $project: {
                                     _id: 0,
                                     label: "$_id",
-                                    value: 1
+                                    value: {$size: "$value"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -269,12 +276,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         groupedResults.push(result);
                     });
 
-
-
-
-
                     done();
                 };
+
+                //console.log(JSON.stringify(aggregationOperators));
 
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });

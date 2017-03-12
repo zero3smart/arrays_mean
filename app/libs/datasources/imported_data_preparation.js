@@ -6,8 +6,6 @@ module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_obj
 
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
-    console.log(source_pKey)
-
     var split = source_pKey.split("-");
     if (split.length != 3 && process.env.NODE_ENV !== 'enterprise') {
         return new Promise(function (resolve, reject) {
