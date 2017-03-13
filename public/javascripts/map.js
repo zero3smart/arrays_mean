@@ -38,7 +38,6 @@ function logScale(currentBreak, numBreaks, maxValue, minValue) {
         maxv,
         logMax = maxValue + logOffset,
         logMin = isCoordMap ? minValue + logOffset : 1;
-    console.log('logMin', logMin);
     // The result should be between 1 an topValue
     minv = Math.log(logMin); 
     maxv = Math.log(logMax);
@@ -61,7 +60,7 @@ function linearScale(currentBreak, numBreaks, maxValue, minValue) {
  */
 for (i = 0; i < numBreaks; i++) {
     if (isCoordMap && applyCoordRadius) {
-        breaks[i] = linearScale(i, numBreaks, coordMinMax.max, coordMinMax.min); 
+        breaks[i] = linearScale(i, numBreaks, coordMinMax.max, coordMinMax.min);
         radii[i] = (i / numBreaks) * maxRadius + (maxRadius / numBreaks);
     } else {
         breaks[i] = logScale(i, numBreaks, topValue);
@@ -176,18 +175,29 @@ map.on('load', function () {
                     filter: filteruse,
                     paint: {
                         'circle-radius': {
-                            stops: [
+                            "stops": [
                                 [0, radii[i]],
                                 [4, radii[i] * 3],
                                 [8, radii[i] * 6],
                                 [12, radii[i] * 9],
                                 [16, radii[i] * 12],
                                 [20, radii[i] * 15]
-                            ]
+                            ],
+                            // "property": "total"
+                        },
+                        'circle-opacity': {
+                            "stops": [
+                                [0, 0.1],
+                                [4, 0.2],
+                                [8, 0.3],
+                                [12, 0.4],
+                                [16, 0.5],
+                                [20, 0.6]
+                            ],
                         },
                         // 'circle-radius': radii[i],
                         'circle-color': coordColor,
-                        'circle-opacity': 0.5
+                        // 'circle-opacity': 0.5
                     }
                 });
             } else {            

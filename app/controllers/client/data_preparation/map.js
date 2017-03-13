@@ -92,7 +92,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
            
-            var aggregateBy = urlQuery.aggregateBy;
+            var aggregateBy = urlQuery.aggregateBy? urlQuery.aggregateBy : dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName ;
 
@@ -160,7 +160,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var doneFn = function(err, _coordDocs) {
                         if (err) return done(err);
 
-                        coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
+                        // coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
+                        coordRadiusValue = aggregateBy;
                         var coordValue;
 
                         coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
