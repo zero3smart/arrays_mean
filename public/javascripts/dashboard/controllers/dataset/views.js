@@ -389,6 +389,15 @@ angular.module('arraysApp')
 
                 $scope.DataTypeMatch = function(requireType) {
 
+                    var requireTypeArray = function(lowercase, requireTypes) {
+                        for (var i = 0; i < requireType.length; i++) {
+                            if (lowercase.indexOf(requireType[i].toLowerCase()) >= 0) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+
                     var returnDataTypeMatch = function (requireType) {
 
                         return function(col) {
@@ -398,7 +407,9 @@ angular.module('arraysApp')
                                     $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 
                                     var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
-
+                                    if ($scope.isArray(requireType)) {
+                                       return requireTypeArray(lowercase, requireType) 
+                                    }
                                     return lowercase.indexOf(requireType.toLowerCase()) >= 0;
                                 }
 
@@ -408,16 +419,9 @@ angular.module('arraysApp')
 
                         };
                     }
-                    
-                    if ($scope.isArray(requireType)) {
 
-                        for (var i = 0; i < requireType.length; i++) {
-                            return returnDataTypeMatch(requireType[i]);
-                        }
 
-                    } else {
-                        return returnDataTypeMatch(requireType);
-                    }
+                    return returnDataTypeMatch(requireType);
                 };
 
                 $scope.AppendNumberOfItems = function(menu, cols) {
