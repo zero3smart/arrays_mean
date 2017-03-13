@@ -695,7 +695,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 function verifyDataType(name, sample, rowObjects, index) {
-    var numberRE = /([^0-9\.,]|\s)/;
+    var numberRE = /([^0-9\.,-]|\s)/;
     var rowObject = rowObjects[index]
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
         var secondRowObject = intuitDataype(name, sample);
@@ -745,12 +745,18 @@ function intuitDataype(name, sample) {
         if(format !== null) {
             return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
         }
-        return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
     } else if(floatRE.test(sample)) {
-       return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
+        }
     } else {
-        return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+        }
     }
+    return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
 };
     
 
