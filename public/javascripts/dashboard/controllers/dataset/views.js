@@ -581,6 +581,7 @@ angular.module('arraysApp')
 
                     var returnDataTypeMatch = function (requireType) {
 
+
                         return function(col) {
 
                             if (typeof requireType !== 'undefined') {

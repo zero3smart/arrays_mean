@@ -300,6 +300,8 @@ module.exports = function (nunjucks_env,env) {
                 }
             }
         if (routePath == '') return routePath_base;
+  
+
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);
     });

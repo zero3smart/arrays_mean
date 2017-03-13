@@ -294,7 +294,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 {
@@ -302,7 +302,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         label: "$_id.groupBy",
                                         stack: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -318,14 +318,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         label: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -475,6 +475,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
+
+                console.log(JSON.stringify(aggregationOperators))
 
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });

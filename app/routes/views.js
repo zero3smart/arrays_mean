@@ -23,6 +23,7 @@ View.getAllBuiltInViews(function(err,defaultViews) {
                 var camelCaseViewType = view.name.replace('-','_');
 
 
+
                 require('../controllers/client/data_preparation/' + camelCaseViewType).BindData(req,query,function(err,bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for built in view %s , err: %s" , view.name,err);
