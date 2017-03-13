@@ -76,7 +76,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
