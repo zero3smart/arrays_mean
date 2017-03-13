@@ -9,6 +9,9 @@
         {% include "../partials/login.modal.html" %}
 
         <div id="page" class="site">
+
+            {% set hasPreview = routePath_base | extractPreviewFromBasePath %}
+
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 

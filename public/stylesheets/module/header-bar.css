@@ -706,7 +706,6 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .mono-link {
 	padding-right: 15px;
 }
-
 .array-controls-pinned li.mono-link .pill-link,
 .mono-link .pill-link {
 	color: #000;

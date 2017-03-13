@@ -4,15 +4,15 @@ angular.module('arraysApp')
     .run(
     ['$rootScope', '$state', '$stateParams',
         function ($rootScope, $state, $stateParams) {
+
             $rootScope.$state = $state;
             $rootScope.$stateParams = $stateParams;
 
             $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
                 event.preventDefault();
 
-     
                 if (error.importing == true) {
-                    $state.go('dashboard.dataset.done', {id: error.datasetId});
+                    $state.go('dashboard.dataset.process', {id: error.datasetId});
                 }
             });
         }
@@ -23,7 +23,7 @@ angular.module('arraysApp')
         function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
             $urlRouterProvider
-              .otherwise('/dashboard/account/profile');
+                .otherwise('/dashboard/account/profile');
 
             $stateProvider
                     .state('dashboard', {
@@ -125,8 +125,9 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset.html',
                         controller: 'DatasetCtrl',
                         resolve: {
-                            restrict: function(AuthService) {
+                            restrict: function(auth,AuthService) {
                                 return AuthService.ensureActiveSubscription();
+
                             }
                         }
                     })
@@ -135,13 +136,10 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/list.html',
                         controller: 'DatasetListCtrl',
                         resolve: {
-                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                            datasets: ['restrict','DatasetService', 'AuthService', function (restrict,DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
-
-                               
-
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    
+
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
 
                                 } else if (user.role == 'editor') {
@@ -152,7 +150,7 @@ angular.module('arraysApp')
                                 } else {
                                     return [];
                                 }
-        
+
                             }]
                         }
                     })
@@ -161,7 +159,8 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {                        
+
+                            dataset: ['restrict','DatasetService', '$stateParams','$q', function (restrict,DatasetService, $stateParams,$q) {                        
                                 return DatasetService.get($stateParams.id);
                             }]
                         }
@@ -181,7 +180,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/upload.html',
                         controller: 'DatasetUploadCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+                            dataset: ['restrict','DatasetService', '$stateParams','$q', function (restrict,DatasetService, $stateParams,$q) {
 
                                 var deferred = $q.defer();
                                 DatasetService.get($stateParams.id)
@@ -192,11 +191,11 @@ angular.module('arraysApp')
                                     } else {
                                         deferred.resolve(data);
                                     }
-                                })
+                                });
                                 return deferred.promise;
 
                             }],
-                            additionalDatasources: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams
+                            additionalDatasources: ['dataset','DatasetService', '$stateParams','$q', function (dataset,DatasetService, $stateParams
                                 ,$q) {
                                 var deferred = $q.defer();
                                 DatasetService.getAdditionalSources($stateParams.id)
@@ -205,18 +204,18 @@ angular.module('arraysApp')
                                         additionalDatasets.map(function(dataset) {
 
                                             if (dataset.jobId !== 0) {
-                        
+                    
 
                                                 deferred.reject({importing: true, datasetId: dataset.schemaId});
                                                 return false;
 
                                             }
-                                        })
+                                        });
 
                                     }
                                     deferred.resolve(additionalDatasets);
 
-                                })
+                                });
                                 return deferred.promise;
                             }]
                         }
@@ -226,13 +225,13 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/data.html',
                         controller: 'DatasetDataCtrl as vm',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            dataset: ['restrict','DatasetService', '$stateParams', function (restrict,DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }],
-                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            additionalDatasources: ['restrict','DatasetService', '$stateParams', function (restrict,DatasetService, $stateParams) {
                                 return DatasetService.getAdditionalSources($stateParams.id);
                             }],
-                            availableTypeCoercions: ['DatasetService', function (DatasetService) {
+                            availableTypeCoercions: ['restrict','DatasetService', function (restrict,DatasetService) {
                                 return DatasetService.getAvailableTypeCoercions();
                             }]
                         }
@@ -242,28 +241,35 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/views.html',
                         controller: 'DatasetViewsCtrl as vm',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+
+                            dataset: ['restrict','DatasetService', '$stateParams', function (restrict,DatasetService, $stateParams) {
 
                                 return DatasetService.get($stateParams.id);
+                            }],
+                            previewCopy : ['DatasetService', 'dataset', function(DatasetService,dataset) {
+                                var masterId = dataset._id;
+
+                                return DatasetService.getDatasetsWithQuery({master_id: masterId});
                             }],
                             viewResource: 'View',
                             views: ['View', function (View) {
                                 return View.query().$promise;
                             }],
-                            user: ['AuthService', function (AuthService) {
+
+                            user: ['restrict','AuthService', function (restrict,AuthService) {
                                 return AuthService.currentUser();
                             }]
                         }
                     })
-                    .state('dashboard.dataset.done', {
-                        url: '/done/:id',
-                        templateUrl: 'templates/dataset/done.html',
-                        controller: 'DatasetDoneCtrl',
+                    .state('dashboard.dataset.process', {
+                        url: '/process/:id',
+                        templateUrl: 'templates/dataset/process.html',
+                        controller: 'DatasetProcessCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            dataset: ['restrict','DatasetService', '$stateParams', function (restrict,DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }],
-                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            additionalDatasources: ['restrict','DatasetService', '$stateParams', function (restrict,DatasetService, $stateParams) {
                                 return DatasetService.getAdditionalSources($stateParams.id);
                             }]
                         }
@@ -273,7 +279,7 @@ angular.module('arraysApp')
                         controller: 'WebsiteCtrl as vm',
                         templateUrl: 'templates/team.html',
                         resolve: {
-                            restrict: function(AuthService) {
+                            restrict: function(auth,AuthService) {
                                 return AuthService.ensureIsAdmin() && AuthService.ensureActiveSubscription();
                             }
                         }
@@ -297,7 +303,7 @@ angular.module('arraysApp')
                         controller: 'UserCtrl as vm',
                         templateUrl: 'templates/user.html',
                         resolve: {
-                            restrict: function(AuthService) {
+                            restrict: function(auth,AuthService) {
                                 return AuthService.ensureActiveSubscription();
                             }
                         }
@@ -307,11 +313,11 @@ angular.module('arraysApp')
                         controller: 'UserListCtrl as vm',
                         templateUrl: 'templates/user/list.html',
                         resolve: {
-                            users: ['User', 'AuthService', function (User, AuthService) { //all users in this team, except myself
+                            users: ['restrict','User', 'AuthService', function (restrict,User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
                                 return User.getAll({teamId: currentTeam._id});
                             }],
-                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                            datasets: ['restrict','DatasetService', 'AuthService', function (restrict,DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
@@ -326,7 +332,7 @@ angular.module('arraysApp')
                         controller: 'TeamCtrl as vm',
                         templateUrl: 'templates/teams.html',
                         resolve: {
-                            restrict: function(AuthService) {
+                            restrict: function(auth,AuthService) {
                                 return AuthService.ensureActiveSubscription();
                             }
                         }
