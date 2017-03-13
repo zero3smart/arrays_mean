@@ -42,6 +42,8 @@
 
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
+
+
                                     {% if embedded %}
                        
                                     {% set mainViewURL = "/" + array_source_key + "/" + main_view + "?embed=true" + ("&" + default_filterJSON if default_filterJSON else "") %}
@@ -95,7 +97,7 @@
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
                                                             {% set arrayMemberText = arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/' +array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }} 
+                                                                <li class="object-list-item"><a href="{{ ('/' +array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded,preview: isPreview}) }}" class="color-brand">{{ arrayMemberText }} 
                                                                 </a></li>
                                                             {% else %}
                                                                 <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
@@ -116,9 +118,9 @@
 
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, trueValue , false) %}
                                                     {% if default_filterJSON %}
-                                                        <a href="{{ ('/' + array_source_key + '/gallery/?' + default_filterJSON) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                        <a href="{{ ('/' + array_source_key + '/gallery' + default_filterJSON) | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                     {% else %}
-                                                        <a href="{{ ('/' + array_source_key + '/gallery/') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                        <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded,preview:isPreview}) }}" class="color-brand">
                                                     {% endif %}
                                                 {% endif %}
 

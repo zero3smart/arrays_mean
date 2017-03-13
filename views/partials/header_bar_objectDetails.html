@@ -36,10 +36,8 @@
 </style>
 {% endif %}
 
-
-
-{% set galleryURL = "/" +array_source_key + "/gallery" + ("?" + default_filterJSON if default_filterJSON else "") %}
-{% set mainViewURL = "/" + array_source_key+ "/" + main_view + ("?" + ("embed=true&" if embedded else "") + default_filterJSON if default_filterJSON else "") %}
+{% set galleryURL = "/" +array_source_key + "/gallery" + ("?" +  ("preview=true" if isPreview else "") + ( "&" + default_filterJSON if default_filterJSON else "")) %}
+{% set mainViewURL = "/" + array_source_key+ "/" + main_view + ("?" + ("preview=true" if isPreview else "") + ("&embed=true" if embedded else "") + default_filterJSON if default_filterJSON else "") %}
 
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
@@ -47,22 +45,25 @@
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg">
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
-                <a class="navbar-brand" href="{{ galleryURL }}">{{ arrayTitle }}</a>
+                <a class="navbar-brand" href="{{ galleryURL }}">{{ arrayTitle }}{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</a>
             </div>
             <ul class="nav navbar-nav">
                 <li>
                     {# {% if not referer %}
                     {% set onclickClassOrEmpty = " browser-back-on-click" if not embedded %}
                     {% endif %} #}
+
                     <a href="{{ referer if referer else mainViewURL }}" class="navbar-back"><span class="icon-back" aria-hidden="true"></span>
                         <span class="navbar-back-label hidden-xs">Back</span></a>
                 </li>
             </ul>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right hide-mobile">
+                  {% if not isPreview %}
                   <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
                     <a href="#" class="share-link pill-link pill-filled">Share</a>
                   </li>
+                  {% endif %}
                   <li class="dropdown">
                     {% if user %}
                       <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -114,7 +115,9 @@
                     <a class="w-mobile-link" href="https://www.arrays.co/news">News</a>
                     <a class="w-mobile-link" href="https://www.arrays.co/pricing">Pricing</a>
                     <a class="w-mobile-link" href="{{ galleryURL }}">{{ arrayTitle }}</a>
+                    {% if not isPreview %}
                     <a class="share-link w-mobile-link" href="#">Share</a>
+                    {% endif %}
                     {% if user %}
                     <a class="w-mobile-link" href="/dashboard">Account Settings</a>
                     <a class="w-mobile-link pointer" id="logout">Log Out</a>
@@ -156,5 +159,5 @@
     </div>
 
     {% endif %}
-    
+
 </header>

@@ -18,10 +18,12 @@
             return $http.put('api/dataset/update/'+ id, update);
         }
 
+        var draftAction = function(id,action) {
+            return $http.put('api/dataset/draft/' + id + '?action=' + action);
+        }
+
         var get = function(id) {
             // New Dataset
-
-    
 
             if (!id) return {
                 urls: []
@@ -121,7 +123,7 @@
             return $http.post('api/dataset/getDatasetsWithQuery',query)
             .then(function(response) {
                 var data = response.data;
-                 return data.datasets;
+                return data.datasets
             }).catch(function(err) {
                 console.log(err);
                 return [];
@@ -168,6 +170,7 @@
             deleteSource: deleteSource,
             remove: remove,
             get: get,
+            draftAction: draftAction,
             connectToRemoteDatasource: connectToRemoteDatasource,
             killJob: killJob,
             search: search,

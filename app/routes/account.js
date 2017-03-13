@@ -38,8 +38,6 @@ router.get('/verify', function(req, res) {
         }
 
     })
-
-
 });
 
 

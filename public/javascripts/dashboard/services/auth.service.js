@@ -73,6 +73,8 @@
         
         var getToken = function () {
             var user = currentUser();
+
+            console.log()
             if (user) {
                 return user.authToken;
             }
@@ -101,14 +103,18 @@
             $http.get('/api/user/currentUser')
                 .then(function (result) {
 
+
                     var userData = result.data;
               
                     if (userData) {
 
                         isLoggedIn = true;  
+
+
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
+
                         $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
-            
+
                         if (userData.role == "superAdmin") {
                             Team.query()
                             .$promise.then(function(allTeams) {
@@ -136,7 +142,6 @@
 
 
         var ensureLogin = function () {
-
             var deferred = $q.defer();
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
@@ -172,6 +177,7 @@
         };
 
         var ensureActiveSubscription = function () {
+
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
@@ -180,9 +186,8 @@
             team.subscription = team.subscription || {};
             team.subscription.state = team.subscription.state || {};
 
+
             if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'active' || team.subscription.state === 'canceled')) {
-
-
                 deferred.resolve();
 
             } else {
