@@ -81,7 +81,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             var brandColor = dataSourceDescription.brandColor;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
