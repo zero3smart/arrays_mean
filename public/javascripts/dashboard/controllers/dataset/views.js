@@ -250,7 +250,7 @@ angular.module('arraysApp')
 
             $scope.openViewPreview = function(viewName) {
                 if (!dataset.dirty && $scope.previewCopy && $scope.previewCopy.fe_views.views[viewName]) {
-                    var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName);
+                    var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName, true);
                     $window.open(url, '_blank');
                 }
             };

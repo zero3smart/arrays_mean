@@ -16,13 +16,13 @@ angular
             return result;
         }
 
-        this.getViewUrl = function(subdomain, dataset, viewName,previewId) {
+        this.getViewUrl = function(subdomain, dataset, viewName, showPreview) {
 
             return subdomain + '/' +
                 dataset.uid +
                 '-r' + dataset.importRevision + '/' +
-                viewName.split(/(?=[A-Z])/).join('-').toLowerCase() + 
-                makeFieldValuePairs(dataset.fe_filters.default) + '?preview=true';
+                viewName.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                makeFieldValuePairs(dataset.fe_filters.default) + (showPreview ? '?preview=true' : '');
         };
 
 }]);

@@ -12,7 +12,7 @@ angular.module('arraysApp')
             };
 
             var _viewViz = function() {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view);
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 // var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
                 //     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
                 //     makeFieldValuePairs(dataset.fe_filters.default);
