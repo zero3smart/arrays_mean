@@ -8,6 +8,8 @@
     </a>
     <ul class="dropdown-menu" aria-labelledby="{{ label|replace(' ','') }}">
         {% for colName in columnNames %}
+
+
         <li class="background-color-brand-hover"><a href="{{ basePath }}{{ colName }}">{{ colName }}</a></li>
         {% endfor %}
     </ul>

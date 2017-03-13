@@ -11,15 +11,14 @@ var func = require('../func');
 var datatypes = require('../../../libs/datasources/datatypes');
 var User = require('../../../models/users');
 
-module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
+module.exports.BindData = function (req, source_pKey, rowObject_id,askForPreview, callback) {
     var self = this;
 
+  askForPreview = true;
 
-
-  
-
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,source_pKey)
         .then(function (dataSourceDescription) {
+
 
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -33,7 +32,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             batch.concurrency(1);
 
             batch.push(function (done) {
-       
+
 
                 processedRowObjects_mongooseModel.findById(rowObject_id, function (err, _rowObject) {
                     if (err) return done(err);
@@ -69,7 +68,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 // hard coded color-gender , as it is the only default icon category for now
                                 return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
                             }
-                           
+
                         }
                     }
                     return null;
@@ -85,7 +84,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
 
                     if (Array.isArray(fieldValue) === true) {
-
 
                         for (var i = 0; i < fieldValue.length; i++) {
                             htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
@@ -113,8 +111,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
 
                                 var by = afterImportingAllSources_generate_description.by;
-                    
-                            
+
+
                                 var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(by.joinDataset);
                                 var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                                 var field = afterImportingAllSources_generate_description.field;
@@ -136,8 +134,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 var needObjectTitle = true;
 
                                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined'
-                                    && dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field] && 
-                                    dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField && 
+                                    && dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field] &&
+                                    dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField &&
                                     dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField.length > 0) {
 
                                     needObjectTitle = false;
@@ -147,18 +145,18 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                     for(var i=0; i<wantedfield.length; i++) {
                                         fieldToAcquire["rowParams." + wantedfield[i]] = 1;
                                     }
-                                } 
+                                }
 
                                 datasource_description.findById(by.joinDataset,function(err,joinDS) {
                                     if (err) return done(err);
-                           
+
 
                                    relationshipSource_uid = joinDS.uid;
                                    relationshipSource_importRevision = joinDS.importRevision;
                                    if (needObjectTitle) {
                                         var objectTitle = joinDS.objectTitle;
                                         fieldToAcquire["rowParams." + objectTitle] = 1;
-                                    
+
 
                                    }
                                    rowObjectsOfRelationship_mongooseModel.find(findQuery)
@@ -168,12 +166,12 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                             var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
 
                                             rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
-                        
+
                                             done();
                                         });
 
                                 })
-                            
+
                             } else {
                                 done(); // nothing to hydrate
                             }
@@ -207,6 +205,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 //
                 var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
                 var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters.fieldsNotAvailable;
+                var fe_excludeFieldsObjDetail = dataSourceDescription.fe_excludeFieldsObjDetail || {};
                 if (typeof fe_filters_fieldsNotAvailable !== 'undefined') {
                     var fe_filters_fieldsNotAvailable_length = fe_filters_fieldsNotAvailable.length;
                     for (var i = 0; i < fe_filters_fieldsNotAvailable_length; i++) {
@@ -225,10 +224,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
                 }
 
-                
+                // filter out fields excluded from object detail by user
+                colNames_sansObjectTitle = colNames_sansObjectTitle.filter(function(field) {
+                    return !fe_excludeFieldsObjDetail[field]; // !exclude = include
+                });
+
                 //
                 var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
-    
+
                 //
                 // Move the data structures to the human-readable keys so they are accessible by the template
                 var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -265,8 +268,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                 var buildObjectLink = function(columnName, value, id) {
 
-                
-                    
+
+
                     return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + id;
                 }
 
@@ -283,8 +286,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                 if (process.env.NODE_ENV == 'enterprise') {
                     splitSubdomain = source_pKey;
-                }          
-              
+                }
+
                 //
                 var data =
                 {
@@ -294,7 +297,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                     dataTypesConversion: dataSourceDescription.raw_rowObjects_coercionScheme,
                     datasetId: dataSourceDescription._id,
-               
+
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: splitSubdomain,
@@ -310,7 +313,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     //
                     hasOriginalImage:  (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? true: false,
-                    fieldKey_originalImageURL: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? 
+                    fieldKey_originalImageURL: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ?
                     dataSourceDescription.fe_image.field: null,
                     scrapedImages: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? dataSourceDescription.fe_image.scraped : null,
 
@@ -320,13 +323,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
-    
+
 
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
                     uid: dataSourceDescription.uid,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
                 callback(null, data);
             });

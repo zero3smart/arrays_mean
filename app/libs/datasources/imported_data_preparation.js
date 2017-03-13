@@ -5,7 +5,10 @@ var humanReadableColumnName_objectTitle = "Object Title";
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
 
-var _dataSourceDescriptionWithPKey = function (source_pKey) {
+
+var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
+
+
     var split = source_pKey.split("-");
     if (split.length != 3 && process.env.NODE_ENV !== 'enterprise') {
         return new Promise(function (resolve, reject) {
@@ -21,9 +24,9 @@ var _dataSourceDescriptionWithPKey = function (source_pKey) {
     return new Promise(function (resolve, reject) {
         var dataSourceDescriptions = require('../../models/descriptions');
 
-        dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(subdomain,uid, revision, function (err, data) {
+        dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(preview,subdomain,uid, revision, function (err, data) {
             if (err) reject(err);
-    
+
             resolve(data);
         })
     })

@@ -1,33 +1,60 @@
 angular.module('arraysApp')
-
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService','$filter',
-        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService,$filter) {
-
-            $scope.primaryAction.text = 'Publish';
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window', 'viewUrlService',
+        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window, viewUrlService) {
 
             // scroll to listing request, if hash
             $timeout(function() {
                 $anchorScroll();
             });
 
-            $scope.$watch('vm.settingsForm.$valid', function(validity) {
+            var _submitForm = function() {
+                $scope.submitForm($scope.formValidity);
+            };
 
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                // var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                //     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                //     makeFieldValuePairs(dataset.fe_filters.default);
+                $window.open(url, '_blank');
+            };
+
+            // function makeFieldValuePairs(obj) {
+            //     var fieldValuePairs  = [], result;
+            //     for (var p in obj) {
+            //         if( obj.hasOwnProperty(p) ) {
+            //             fieldValuePairs.push(p + '=' + obj[p]);
+            //         }
+            //     }
+            //     result = fieldValuePairs.join('&');
+            //     if (result !== '') {
+            //         result = '?' + result;
+            //     }
+            //     return result;
+            // }
+
+            $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
                     $scope.primaryAction.disabled = !validity;
                 }
-
             });
-            $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.formValidity);
-            };
+
+            $scope.$watch('vm.settingsForm.$dirty', function(dirty) {
+                if (dirty) {
+                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.do = _submitForm;
+                } else { // false or undefined
+                    $scope.primaryAction.text = 'View';
+                    $scope.primaryAction.do = _viewViz;
+                }
+            }, true);
 
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            if (!dataset.fe_visible) {dataset.fe_visible = true;}
             if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
             // if (!dataset.url) {
@@ -36,7 +63,7 @@ angular.module('arraysApp')
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             if ($filter('isSuperAdmin')(dataset.author) ) {
-                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false
+                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false;
             }
 
             $scope.$parent.$parent.dataset = dataset;
@@ -52,7 +79,7 @@ angular.module('arraysApp')
                     if(dataset.imported) {
 
                         DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
-                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
+                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed});
 
                     }
                 }
@@ -64,7 +91,7 @@ angular.module('arraysApp')
                 .then(function(response) {
                     if (response.status == 200 && response.data) {
                         $scope.$parent.$parent.dataset = response.data;
-                         $mdToast.show(
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Request submitted!')
                                 .position('top right')
@@ -72,9 +99,9 @@ angular.module('arraysApp')
                         );
                     }
 
-                })
+                });
 
-            }
+            };
 
             $scope.updateListingOnArrays = function(approved) {
 
@@ -90,7 +117,7 @@ angular.module('arraysApp')
                             if (!$filter('isSuperAdmin')(dataset.author)) {
 
                                 $scope.$parent.$parent.dataset = response.data;
-                                 $mdToast.show(
+                                $mdToast.show(
                                     $mdToast.simple()
                                         .textContent('Listing status updated!')
                                         .position('top right')
@@ -100,7 +127,7 @@ angular.module('arraysApp')
                             }
 
                         }
-                    })
+                    });
 
                 } else {
 
@@ -109,56 +136,50 @@ angular.module('arraysApp')
                         dataset.state = 'approved';
                     }
                 }
-            }
+            };
 
 
             $scope.submitForm = function(isValid) {
-                // debugger;
 
-                // if (isValid) {
-                    $scope.submitting = true;
-                    if (!dataset.author) {
-                        dataset.author = $scope.user._id;
-                        dataset._team = $scope.team._id;
-                        dataset.fe_displayTitleOverrides = {};
-                    }
-                    dataset.updatedBy = $scope.user._id;
+                $scope.submitting = true;
 
-                    var finalizedDataset = angular.copy(dataset);
-                    delete finalizedDataset.columns;
+                if (!dataset.author) {
+                    dataset.author = $scope.user._id;
+                    dataset._team = $scope.team._id;
+                    dataset.fe_displayTitleOverrides = {};
+                }
 
+                dataset.updatedBy = $scope.user._id;
 
+                var finalizedDataset = angular.copy(dataset);
+                delete finalizedDataset.columns;
 
-                    DatasetService.save(finalizedDataset).then(function (response) {
+                DatasetService.save(finalizedDataset).then(function (response) {
 
-                        if (response.status == 200) {
-
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(dataset._id ? 'Visualization updated!' : 'New visualization created!')
-                                    .position('top right')
-                                    .hideDelay(3000)
+                    if (response.status == 200) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Visualization updated!')
+                                .position('top right')
+                                .hideDelay(3000)
                             );
+                    }
 
-                            $state.transitionTo('dashboard.dataset.done', {id: response.data.id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
-                        }
-                        $scope.submitting = false;
-                    }, function (error) {
+                    $scope.submitting = false;
+                    $scope.vm.settingsForm.$setPristine();
 
+                    // NOTE attempting to open _blank here will fire pop up blocker
 
+                }, function (error) {
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                        $scope.submitting = false;
-                    });
-                // }
+
+                    $scope.submitting = false;
+                });
             };
 
             // banner upload
@@ -208,7 +229,7 @@ angular.module('arraysApp')
                     '/datasets/' + $scope.dataset._id + '/assets/banner/' + bannerFileName;
                     return url;
                 }
-            }
+            };
 
             $scope.imageUploader.onBeforeUploadItem = function (item) {
                 item.headers['Content-Type'] = item.file.type;
@@ -230,7 +251,7 @@ angular.module('arraysApp')
 
             $scope.deleteBanner = function() {
                 AssetService.deleteBanner($scope.dataset._id).then(function (data) {
-                    $scope.dataset.banner = data.dataset.banner
+                    $scope.dataset.banner = data.dataset.banner;
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent('Banner deleted.')

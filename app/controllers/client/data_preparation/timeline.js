@@ -25,7 +25,11 @@ module.exports.BindData = function(req, urlQuery, callback) {
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function(dataSourceDescription) {
             // var collectionPKey = dataSourceDescription._id
 
@@ -87,6 +91,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
             var routePath_base = '/' + source_pKey + '/timeline';
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -543,7 +548,8 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
                     tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
 
                 };
 

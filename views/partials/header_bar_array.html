@@ -73,9 +73,9 @@
 </style>
 {% endif %}
 
+
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
-
     <nav class="navbar navbar-default navbar-fixed-top background-color-brand {{ 'light-text' if brandWhiteText }}">
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
@@ -110,7 +110,7 @@
                 <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ defaultView | constructedRoutePath(filterObj, {
                     searchQ: searchQ,
                     searchCol: searchCol
-                }) }}"><span class="truncate">{{ arrayTitle }}</span></a>
+                }) }}"><span class="truncate">{{ arrayTitle }}</span>{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</a>
                 {% endif %}
 
 
@@ -122,10 +122,8 @@
                             isFilterActive %}<span class="sidebar-filter-active"></span>{% endif
                             %}</a>
                     </li>
+                    {% if not isPreview %}
                     <li class="dropdown">
-
-
-
 
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
@@ -212,11 +210,14 @@
                             {% endif %}
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right hide-mobile">
+                    {% if not isPreview %}
                     <li class="mono-link vert-center {{ 'light-text' if brandWhiteText }}">
                         <a href="#" class="share-link pill-link pill-filled">Share</a>
                     </li>
+                    {% endif %}
                     <li class="dropdown">
                         {% if user %}
                         <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -263,7 +264,9 @@
                     <a class="w-mobile-link" href="{{explore_url}}">Explore</a>
                     <a class="w-mobile-link" href="https://www.arrays.co/news">News</a>
                     <a class="w-mobile-link" href="https://www.arrays.co/pricing">Pricing</a>
+                    {% if not isPreview %}
                     <a class="share-link w-mobile-link" href="#">Share</a>
+                    {% endif %}
                     {% if user %}
                     <a class="w-mobile-link" href="/dashboard">Account Settings</a>
                     <a class="w-mobile-link pointer" id="logout">Log Out</a>

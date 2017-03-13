@@ -11,7 +11,7 @@ var recurly = new Recurly(recurlyConfig);
 
 module.exports.create = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
 
     User.findById(userId)
         .populate('_team')
@@ -57,7 +57,7 @@ module.exports.create = function(req, res) {
 
 module.exports.getAll = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
 
     User.findById(userId)
         .populate('_team')
@@ -88,7 +88,7 @@ module.exports.getAll = function(req, res) {
 
 module.exports.update = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
     var options = {};
 
@@ -121,7 +121,7 @@ module.exports.update = function(req, res) {
 
 module.exports.cancel = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
 
     recurly.subscriptions.cancel(subscrId, function(err, response) {
@@ -141,7 +141,7 @@ module.exports.cancel = function(req, res) {
 
 module.exports.reactivate = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
 
     recurly.subscriptions.reactivate(subscrId, function(err, response) {
