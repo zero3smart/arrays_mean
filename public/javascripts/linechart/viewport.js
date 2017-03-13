@@ -8,16 +8,19 @@ linechart.viewport = function (data, options) {
      * @private
      * @member {Object[][]}
      */
-
-
+    if (options.groupBy_isDate == "false") {
+        options.groupBy_isDate = false;
+    } else {
+        options.groupBy_isDate = true;
+    }
     this._data = data.data.map(function (lineData) {
-
         return lineData.map(function (d) {
-            d.date = new Date(d.date);
+            if (options.groupBy_isDate !== false) {
+                d.date = new Date(d.date);
+            }
             return d;
         });
     });
-
     /**
      * Series names.
      * @private
@@ -34,7 +37,7 @@ linechart.viewport = function (data, options) {
      * @private
      * @member {Integer[]}
      */
-    this._datesDomain = this._getDatesDomain(this._data);
+    this._dataDomain = this._getDomain(this._data);
     /**
      * Chart container.
      * @private
@@ -78,11 +81,53 @@ linechart.viewport = function (data, options) {
      */
     this._canvas = undefined;
     /**
-     * Chart x scale function.
-     * @private
-     * @member {Function}
+     * Custom date format in X axis
      */
-    this._xScale = d3.time.scale();
+    if (this._options.groupBy_isDate) {
+        /**
+        * Chart x scale function.
+        * @private
+        * @member {Function}
+        */
+        this._xScale = d3.time.scale();   
+        /**
+        * Custom date format in X axis
+        */ 
+        this._formattedData = d3.time.format.multi([
+            [".%L", function (d) {
+                return d.getMilliseconds();
+            }],
+            [":%S", function (d) {
+                return d.getSeconds();
+            }],
+            ["%I:%M", function (d) {
+                return d.getMinutes();
+            }],
+            ["%I %p", function (d) {
+                return d.getHours();
+            }],
+            ["%a %d", function (d) {
+                return d.getDay() && d.getDate() != 1;
+            }],
+            ["%b %d", function (d) {
+                return d.getDate() != 1;
+            }],
+            ["%B", function (d) {
+                return d.getMonth();
+            }],
+            ["'%y", function () {
+                return true;
+            }]
+        ]);
+    } else {
+        /**
+        * Chart x scale function.
+        * @private
+        * @member {Function}
+        */
+        this._xScale = d3.scale.linear();
+        this._formattedData = d3.format(".2");
+    }
     /**
      * Chart y scale function.
      * @private
@@ -96,7 +141,9 @@ linechart.viewport = function (data, options) {
      */
     this._xAxis = d3.svg.axis()
         .scale(this._xScale)
-        .orient('bottom');
+        .orient('bottom')
+
+        .tickFormat(this._formattedData);
     /**
      * Chart y axis.
      * @private
@@ -119,11 +166,11 @@ linechart.viewport = function (data, options) {
      */
     this._yAxisContainer = undefined;
     /**
-     * Date bisector.
+     * bisector.
      * @private
      * @member {Function}
      */
-    this._bisectDate = function (a, x) {
+    this._bisect = function (a, x) {
         lo = 0;
         hi = a.length;
         while (lo < hi) {
@@ -287,15 +334,17 @@ linechart.viewport.prototype.render = function (container) {
                 /*
                  * Get date value under mouse pointer.
                  */
-                var date = self._xScale.invert(x);
+                var invertedData = self._xScale.invert(x);
                 /*
                  * Get nearest to x date's index.
                  */
-                var index = self._bisectDate(self._datesDomain, date.getTime());
-                date = new Date(self._datesDomain[index]);
-
+                if (self._options.groupBy_isDate) {
+                    invertedData = invertedData.getTime();  
+                }
+                var index = self._bisect(self._dataDomain, invertedData);
                 window.location.href = self._options.redirectBaseUrl +
-                    moment(date, moment.ISO_8601).format(self._options.outputInFormat);
+                        moment(invertedData, moment.ISO_8601).format(self._options.outputInFormat);
+
             }
         });
     /*
@@ -380,12 +429,20 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
     /*
      * Get date value under mouse pointer.
      */
-    var date = this._xScale.invert(x);
+    var invertedData = this._xScale.invert(x);
     /*
-     * Get nearest to x date's index.
+     * Get nearest to x index.
      */
-    var index = self._bisectDate(this._datesDomain, date.getTime());
-    date = new Date(this._datesDomain[index]);
+    if (self._options.groupBy_isDate) {
+        invertedData = invertedData.getTime();
+    }
+    var index = self._bisect(this._dataDomain, invertedData);
+
+    if (self._options.groupBy_isDate) {
+        bisectedData = new Date(this._dataDomain[index]);
+    } else {
+        bisectedData = this._dataDomain[index];
+    }
     /*
      * Create series current values list.
      */
@@ -393,7 +450,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
         /*
          * Push value into summary array, if any or zero otherwise.
          */
-        var dataPoint = _.find(dataSet, ['date', date]);
+        var dataPoint = _.find(dataSet, ['date', bisectedData]);
         if (dataPoint) {
             values.push(dataPoint);
         } else {
@@ -422,14 +479,14 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
      * Move line pointer.
      */
     this._linePointer.attr('y2', this._innerHeight)
-        .attr('x1', this._xScale(date))
-        .attr('x2', this._xScale(date));
+        .attr('x1', this._xScale(bisectedData))
+        .attr('x2', this._xScale(bisectedData));
     /*
      * Move x-axis highlight
      */
     this._xAxisHighlight.setPosition('left')
         .setOffset({
-            right: this._xScale(date) + this._margin.left + 30,
+            right: this._xScale(bisectedData) + this._margin.left + 30,
             left: 0
         });
     /*
@@ -481,23 +538,30 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
     /*
      * Update tooltip content.
      */
-    this._xAxisHighlight.setContent(
-            '<div class="default-tooltip-content" id="default-tooltip-content-date" style="font-weight: bold;">' +
-            moment(date, moment.ISO_8601).format(this._options.outputInFormat) +
-            '</div>')
-        .show();
+    if (this._options.groupBy_isDate) {    
+        this._xAxisHighlight.setContent(
+                '<div class="default-tooltip-content" id="default-tooltip-content-date" style="font-weight: bold;">' +
+                moment(bisectedData, moment.ISO_8601).format(this._options.outputInFormat) +
+                '</div>')
+            .show();
+    } else {
+        this._xAxisHighlight.setContent(
+                '<div class="default-tooltip-content" id="default-tooltip-content-date" style="font-weight: bold;">' + bisectedData + '</div>')
+            .show();
+    }
 
     var element = document.getElementById('default-tooltip-content-date');
 
     clickFunction = function() {
-        if (self._options.redirectBaseUrl) {
+        if (self._options.redirectBaseUrl && self._options.groupBy_isDate) {
 
-            var index = self._bisectDate(self._datesDomain, date.getTime());
-            date = new Date(self._datesDomain[index]);
+            var index = self._bisect(self._dataDomain, date.getTime());
+            date = new Date(self._dataDomain[index]);
 
             window.location.href = self._options.redirectBaseUrl +
                 moment(date, moment.ISO_8601).format(self._options.outputInFormat);
         }
+        // TODO: add redirect mapping for non date group by
     };
     element.onclick = clickFunction;
 
@@ -557,13 +621,17 @@ linechart.viewport.prototype.resize = function () {
 };
 
 
-linechart.viewport.prototype._getDatesDomain = function (data) {
+linechart.viewport.prototype._getDomain = function (data) {
+    var options = this._options
     return _.uniq(data.reduce(function (dates, dataSet) {
         return dates.concat(dataSet.map(function (d) {
             //because d.date is a string, it needs to be converted into a new date object
-            var newDate = new Date(d.date);
-            // return d.date.getTime();
-            return newDate.getTime();
+            if (options.groupBy_isDate) {            
+                var newDate = new Date(d.date);
+                return newDate.getTime();
+            } else {
+                return d.date;
+            }
         }));
     }, [])).sort(function (a, b) {
         return a - b;
@@ -589,7 +657,7 @@ linechart.viewport.prototype.update = function (data) {
     /*
      * Get all possible date values and sort them for future bisect function.
      */
-    this._datesDomain = this._getDatesDomain(data);
+    this._dataDomain = this._getDomain(data);
     /*
      * Stash reference to this object.
      */
@@ -610,7 +678,7 @@ linechart.viewport.prototype.update = function (data) {
     /*
      * Evaluate amount of required ticks to display only years.
      */
-    var datesDomainLength = this._datesDomain.length;
+    var datesDomainLength = this._dataDomain.length;
     var xScaleTicksAmount = Math.max(this._innerWidth / 80, 2); // this._xScale.ticks().length;
     var ticksAmount = Math.min(datesDomainLength, xScaleTicksAmount);
     /*

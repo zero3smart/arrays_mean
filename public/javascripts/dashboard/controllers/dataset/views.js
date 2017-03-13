@@ -561,24 +561,48 @@ angular.module('arraysApp')
                     }
                 };
 
+                $scope.isArray = function(requireType) {
+                    if (Array.isArray(requireType)) {
+                        return true;
+                    } 
+                    return false;
+                };
+
                 $scope.DataTypeMatch = function(requireType) {
 
-                    return function(col) {
-
-                        if (typeof requireType !== 'undefined') {
-                            if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
-                                $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
-
-                                var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
-
-                                return lowercase.indexOf(requireType.toLowerCase()) >= 0;
+                    var requireTypeArray = function(lowercase, requireTypes) {
+                        for (var i = 0; i < requireType.length; i++) {
+                            if (lowercase.indexOf(requireType[i].toLowerCase()) >= 0) {
+                                return true;
                             }
-
-                            return false;
                         }
-                        return true;
+                        return false;
+                    }
 
-                    };
+                    var returnDataTypeMatch = function (requireType) {
+
+                        return function(col) {
+
+                            if (typeof requireType !== 'undefined') {
+                                if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
+                                    $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
+
+                                    var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
+                                    if ($scope.isArray(requireType)) {
+                                       return requireTypeArray(lowercase, requireType) 
+                                    }
+                                    return lowercase.indexOf(requireType.toLowerCase()) >= 0;
+                                }
+
+                                return false;
+                            }
+                            return true;
+
+                        };
+                    }
+
+
+                    return returnDataTypeMatch(requireType);
                 };
 
                 $scope.AppendNumberOfItems = function(menu, cols) {
