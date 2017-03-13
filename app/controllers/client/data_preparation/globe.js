@@ -20,8 +20,7 @@ for (var i = 0; i < numCountries; i++) {
     var countryFeature = __countries_geo_json.features[i];
     var countryName = countryFeature.properties.name;
     var geometry = countryFeature.geometry;
-    cache_countr
-    yGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
+    cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
 }
 // winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
 
@@ -65,7 +64,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/globe";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
