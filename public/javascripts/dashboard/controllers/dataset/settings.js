@@ -2,10 +2,10 @@ angular.module('arraysApp')
     .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window', 'viewUrlService',
         function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window, viewUrlService) {
 
+            // primary actions
             var _submitForm = function() {
                 $scope.submitForm($scope.formValidity);
             };
-
             var _viewViz = function() {
                 var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
@@ -22,9 +22,17 @@ angular.module('arraysApp')
                 if (dirty) {
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = _submitForm;
+
+                    // $scope.secondaryAction.text = 'Revert';
+                    // $scope.secondaryAction.disabled = false;
+                    // $scope.secondaryAction.do = function() {
+                    //     console.log('This is where we revert.');
+                    // };
                 } else { // false or undefined
                     $scope.primaryAction.text = 'View';
                     $scope.primaryAction.do = _viewViz;
+
+                    // $scope.secondaryAction.text = '';
                 }
             }, true);
 
@@ -35,9 +43,6 @@ angular.module('arraysApp')
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
-            // if (!dataset.url) {
-            //     dataset.url = $scope.convertToURLSafe(dataset.title);
-            // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             if ($filter('isSuperAdmin')(dataset.author) ) {
@@ -61,21 +66,18 @@ angular.module('arraysApp')
             };
 
             $scope.listOnArraysRequest = function() {
-
                 DatasetService.approvalRequest($scope.$parent.$parent.dataset._id, {state: 'pending'})
                     .then(function(response) {
                         if (response.status == 200 && response.data) {
                             $scope.$parent.$parent.dataset = response.data;
                             $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Request submitted!')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
+                                $mdToast.simple()
+                                    .textContent('Request submitted!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                                );
                         }
-
                     });
-
             };
 
             $scope.updateListingOnArrays = function(approved) {
@@ -138,7 +140,8 @@ angular.module('arraysApp')
                     $scope.submitting = false;
                     $scope.vm.settingsForm.$setPristine();
 
-                    // NOTE attempting to open _blank here will fire pop up blocker
+                    // NOTE attempting to open _blank here will fire pop up blocker,
+                    // which is one the reasons the primary action button becomes "View"
 
                 }, function (error) {
                     $mdToast.show(

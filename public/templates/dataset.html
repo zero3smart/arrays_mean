@@ -13,13 +13,15 @@ Changes will not be published until saved.
 
 
     <div>
-        <md-button ng-show="secondaryAction.text && ($state.is('dashboard.dataset.data') || $state.is('dashboard.dataset.views')) " class="md-dashboard md-dashboard-header" md-no-ink
+        <md-button ng-show="secondaryAction.text && ($state.is('dashboard.dataset.data') || $state.is('dashboard.dataset.views') || $state.is('dashboard.dataset.settings'))"
+            class="md-dashboard md-dashboard-header" md-no-ink
             ng-disabled="secondaryAction.disabled"
             ng-click="secondaryAction.do()">
             <span class="btn-label">{{ secondaryAction.text }}</span>
         </md-button>
 
-        <md-button ng-hide="!primaryAction.text" class="md-dashboard md-dashboard-header" md-no-ink
+        <md-button ng-hide="!primaryAction.text"
+            class="md-dashboard md-dashboard-header" md-no-ink
             ng-class="{ 'confirm': !$state.is('dashboard.dataset.list') }"
             ng-disabled="primaryAction.disabled"
             ng-click="primaryAction.do()">
