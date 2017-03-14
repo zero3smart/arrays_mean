@@ -21,14 +21,12 @@
             <label style="margin-bottom: 15px">Privacy settings</label>
 
             <md-switch ng-model="dataset.isPublic"
-                ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || dataset.sample"
                 aria-label="Make dataset public">
                 Allow anyone to view visualization (not only registered users)
             </md-switch>
 
             <md-switch ng-model="dataset.fe_listed"
-                ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
                 List visualization on your team page

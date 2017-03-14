@@ -32,16 +32,16 @@ angular.module('arraysApp')
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = _submitForm;
 
-                    // $scope.secondaryAction.text = 'Revert';
-                    // $scope.secondaryAction.disabled = false;
-                    // $scope.secondaryAction.do = function() {
-                    //     console.log('This is where we revert.');
-                    // };
+                    $scope.secondaryAction.text = 'Revert';
+                    $scope.secondaryAction.disabled = false;
+                    $scope.secondaryAction.do = function() {
+                        $state.reload(); // lazy revert solution
+                    };
                 } else { // false or undefined
                     $scope.primaryAction.text = 'View';
                     $scope.primaryAction.do = _viewViz;
 
-                    // $scope.secondaryAction.text = '';
+                    $scope.secondaryAction.text = '';
                 }
             }, true);
 
@@ -54,24 +54,29 @@ angular.module('arraysApp')
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             if ($filter('isSuperAdmin')(dataset.author) ) {
-                $scope.showOnArraysCo = (dataset.state == 'approved') ? true : false; // TODO can do without ternary logic
+                $scope.showOnArraysCo = (dataset.state == 'approved');
             }
 
             $scope.$parent.$parent.dataset = dataset;
+
             $scope.$parent.$parent.currentNavItem = 'settings';
 
-            $scope.updatePublishSettings = function() {
-                if(!dataset.fe_visible) {
-                    dataset.isPublic = false;
-                    dataset.fe_listed = false;
-                } else {
-                    if(dataset.imported) {
-                        DatasetService.update($scope.$parent.$parent.dataset._id,
-                            {isPublic: dataset.isPublic, fe_visible: dataset.fe_visible, fe_listed: dataset.fe_listed}
-                        );
-                    }
-                }
-            };
+            /**
+             * Commenting out for now as we are no longer auto-updating these settings
+             * and give the user the option to revert changes.
+             */
+            // $scope.updatePublishSettings = function() {
+            //     if(!dataset.fe_visible) {
+            //         dataset.isPublic = false;
+            //         dataset.fe_listed = false;
+            //     } else {
+            //         if(dataset.imported) {
+            //             DatasetService.update($scope.$parent.$parent.dataset._id,
+            //                 {isPublic: dataset.isPublic, fe_visible: dataset.fe_visible, fe_listed: dataset.fe_listed}
+            //             );
+            //         }
+            //     }
+            // };
 
             $scope.listOnArraysRequest = function() {
                 DatasetService.approvalRequest($scope.$parent.$parent.dataset._id, {state: 'pending'})
