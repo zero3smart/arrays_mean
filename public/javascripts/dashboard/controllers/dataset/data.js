@@ -1,8 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources',
-        'availableTypeCoercions', 'modalService',
-        function ($scope, $state, $q, DatasetService, AuthService, $mdToast,  $filter, dataset, additionalDatasources, availableTypeCoercions,
-            modalService) {
+    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'modalService', '$window', 'viewUrlService',
+        function ($scope, $state, $q, DatasetService, AuthService, $mdToast,  $filter, dataset, additionalDatasources, availableTypeCoercions, modalService, $window, viewUrlService) {
             $scope.$parent.$parent.currentNavItem = 'data';
 
             $scope.availableTypeCoercions = availableTypeCoercions;
@@ -26,11 +24,20 @@ angular.module('arraysApp')
                 }
             }
 
-
-            $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
-
-            $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.formValidity);
+            // primary actions
+            // NOTE dashboard.dataset.process also contains logic
+            // to progress or not based on firstImport
+            var _nextTab = function() {
+                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                $state.transitionTo(nextState, {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
             };
 
             $scope.secondaryAction.do = function() {
@@ -50,6 +57,7 @@ angular.module('arraysApp')
                 if (validity !== undefined) {
 
                     $scope.formValidity = validity;
+                    // TODO check this connection logic
                     if (dataset.connection) {
                         $scope.primaryAction.disabled = false;
                     } else {
@@ -64,7 +72,17 @@ angular.module('arraysApp')
             });
 
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
-                $scope.primaryAction.disabled = !dirty;
+                if (dirty) {
+                    // $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.do = function() {
+                        $scope.submitForm($scope.formValidity);
+                    };
+                } else {
+                    // $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
+                }
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
@@ -502,13 +520,8 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
 
+                        _nextTab();
 
-                            var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
-                            $state.transitionTo(nextState, {id: dataset._id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
                         };
 
                     var queue = [];
