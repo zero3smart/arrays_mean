@@ -215,7 +215,9 @@ angular.module('arraysApp')
                         .hideDelay(3000)
                 );
 
-                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                // only progress if first import, otherwise return to Content tab
+                var nextState = ($scope.$parent.$parent.dataset.firstImport ) ? 'dashboard.dataset.views' : 'dashboard.dataset.data';
+                $state.transitionTo(nextState, {id: dataset._id}, {
                     reload: true,
                     inherit: false,
                     notify: true
