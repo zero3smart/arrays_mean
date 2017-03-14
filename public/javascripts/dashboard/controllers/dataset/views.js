@@ -16,7 +16,7 @@ angular.module('arraysApp')
                 $scope.primaryAction.text = '';
             }
 
-            if (previewCopy) $scope.secondaryAction.disabled = false;
+            if (previewCopy && !dataset.firstImport) $scope.secondaryAction.disabled = false;
 
             // primary actions
             var _nextTab = function() {
@@ -46,8 +46,11 @@ angular.module('arraysApp')
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = $scope.submitForm;
 
-                    $scope.secondaryAction.disabled = false;
-                    $scope.secondaryAction.text = 'Revert';
+                    /**
+                     * Do not show if firstImport.
+                     * Consistent with Content tab--also prevents endless Revert cycle on first import.
+                     */
+                    $scope.secondaryAction.text = !dataset.firstImport ? 'Revert' : '';
 
                     $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
 
@@ -57,7 +60,7 @@ angular.module('arraysApp')
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
                     $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
 
-                    delete $scope.secondaryAction.text;
+                    $scope.secondaryAction.text = '';
                     $scope.tutorial.message = '';
                 }
             });
