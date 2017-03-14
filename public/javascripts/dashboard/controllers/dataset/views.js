@@ -122,10 +122,18 @@ angular.module('arraysApp')
             $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
 
 
-            $scope.makeDefaultView = function(viewName) {
+            // Use this to INITIALIZE the default view
+            $scope.initDefaultView = function(viewName) {
                 $scope.data.default_view = viewName;
 
                 $scope.setViewVisibility(viewName, true);
+            };
+
+            // Use this to SET the default view, if view is visible
+            $scope.setDefaultView = function(viewName) {
+                if (dataset.fe_views.views[viewName] && dataset.fe_views.views[viewName].visible) {
+                    $scope.data.default_view = viewName;
+                }
             };
 
             $scope.setViewVisibility = function(viewName, visibility) {
@@ -142,8 +150,6 @@ angular.module('arraysApp')
                 }
 
                 $scope.saveViewSettingToDraft();
-
-
             };
 
             $scope.saveViewSettingToDraft = function() {
@@ -172,24 +178,22 @@ angular.module('arraysApp')
 
             };
 
-
+            // for custom views, this will simply make the last custom view default?
             $scope.customViews = [];
 
             for (var i = 0; i < views.length; i++) {
-
                 if (views[i]._team) {
-
                     $scope.customViews.push(views[i].name);
 
                     if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
-                        $scope.makeDefaultView(views[i].name);
+                        $scope.initDefaultView(views[i].name);
                     }
                 }
             }
 
-            if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
-                $scope.makeDefaultView('gallery');
 
+            if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
+                $scope.initDefaultView('gallery');
             }
 
 
