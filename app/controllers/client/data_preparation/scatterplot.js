@@ -1,6 +1,7 @@
 var winston = require('winston');
 var queryString = require('querystring');
 var _ = require('lodash');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
@@ -46,19 +47,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
              */
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
-            var filterObj = func.filterObjFromQueryParams(urlQuery);
-            var isFilterActive = Object.keys(filterObj).length != 0;
 
             var urlQuery_forSwitchingViews = "";
             var appendQuery = "";
+
+            var routePath_base = '/' + sourceKey + '/scatterplot';
+            if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
+
+            
             /*
              * Check filter active and update composed URL params.
              */
+            var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+            var filterObj = func.filterObjFromQueryParams(urlQuery);
+            var isFilterActive = Object.keys(filterObj).length != 0;
             if (isFilterActive) {
                 appendQuery = queryString.stringify(filterObj);
                 urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
             }
 
+            /*
+             * Search column and query for header_bar_array/constructed  * route path
+             */
             var searchCol = urlQuery.searchCol;
             var searchQ = urlQuery.searchQ;
             var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
@@ -71,48 +82,55 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
             }
             /*
-             * Process filterObj and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
-             * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
-             * we just will create empty $match statement which acceptable for all documents from data source.
+             * Aggregate for radius size
              */
-            // var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            // if (_orErrDesc.err) {
-            //     _orErrDesc.matchOps = [];
-            // }
-            var aggregationOperators = [];
-            if (isSearchActive) {
-                var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-                if (_orErrDesc.err) _orErrDesc.matchOps = [];
-            }
-            if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-                if (_orErrDesc.err) _orErrDesc.matchOps = [];
+            var aggregateBy = urlQuery.aggregateBy;
+            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
 
-                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
-            }
-            /*
-             * Run chain of function to collect necessary data.
-             */
-            raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, sourceDoc) {
-                /*
-                 * Run query to mongo to obtain all rows which satisfy to specified filters set.
-                 */
-                if (aggregationOperators.length > 0) {
-                    processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(function (err, documents) {
-                        // do a bunch of stuff
-                    })
-                }
-                processedRowObjects_mongooseModel.find({}).exec(function (err, documents) {
+            var documents;
+            var numericFields;
 
-                // processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
-                    /*
-                     * Get single/sample document.
-                     */
-                    console.log(documents)
+            var batch = new Batch();
+            batch.concurrency(1);
+
+            // Obtain source document
+            batch.push(function (done) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
+                    if (err) return done(err);
+
+                    sourceDoc = _sourceDoc;
+                    done();
+                });
+            });
+
+            // Obtain sample document
+            batch.push(function (done) {
+                processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
+                    if (err) return done(err);
+
+                    sampleDoc = _sampleDoc;
+                    done();
+                });
+            });
+
+            // Obtain top unique field values for filtering
+            batch.push(function (done) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                    if (err) return done(err);
+
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+                    done();
+                });
+            });
+
+            // Obtain grouped results
+            batch.push(function (done) {
+
+                var doneFn = function(err, groupedDocuments) {
+                    if (err) return done(err);
+                    documents = groupedDocuments;
                     var sampleDoc = documents[0];
-                    /*
-                     * Go deeper - collect data for filter's sidebar.
-                     */
                     func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
                         var uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
@@ -120,116 +138,83 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          * Define numeric fields list which may be used as plot axes.
                          * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                          */
-                        var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
+                        numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
                             if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
                                 return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
                             } else {
                                 return true;
                             }
                         });
-
-                        /*
-                         * Then loop through document's fields and get numeric.
-                         * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
-                         */
-                        /*for (i in sampleDoc.rowParams) {
-                         if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
-                         continue;
-                         } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
-                         continue;
-                         } else {
-                         numericFields.push(i);
-                         }
-                         }*/
-                        var routePath_base = '/' + sourceKey + '/scatterplot';
-                        if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-                        if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
-
-                        if (req.user) {
-                            User.findById(req.user, function(err, user) {
-                                if (err) return done(err);
-
-                                /*
-                                 * Run callback function to finish action.
-                                 */
-                                callback(err, {
-                                    env: process.env,
-
-                                    user: user,
-
-                                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
-
-                                    documents: documents,
-                                    metaData: dataSourceDescription,
-                                    renderableFields: numericFields,
-                                    array_source_key: sourceKey,
-                                    team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                                    brandColor: dataSourceDescription.brandColor,
-                                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
-                                    uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
-                                    sourceDoc: sourceDoc,
-                                    view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                                    view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
-                                    //
-                                    routePath_base: routePath_base,
-                                    filterObj: filterObj,
-                                    isFilterActive: isFilterActive,
-                                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                                    searchCol: searchCol || '',
-                                    searchQ: searchQ || '',
-                                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                                    // multiselectable filter fields
-                                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
-                                });
-                            })
-                        } else {
-                            /*
-                             * Run callback function to finish action.
-
-
-
-                             */
-
-
-                            callback(err, {
-                                env: process.env,
-
-                                user: null,
-
-                                displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
-
-                                documents: documents,
-                                metaData: dataSourceDescription,
-                                renderableFields: numericFields,
-                                array_source_key: sourceKey,
-                                team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                                brandColor: dataSourceDescription.brandColor,
-                                brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
-                                brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
-                                uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
-                                sourceDoc: sourceDoc,
-                                view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                                view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
-                                //
-                                routePath_base: routePath_base,
-                                filterObj: filterObj,
-                                isFilterActive: isFilterActive,
-                                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                                searchCol: searchCol || '',
-                                searchQ: searchQ || '',
-                                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                                // multiselectable filter fields
-                                multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                                isPreview: askForPreview
-                            });
-                        }
-
-
-
                     });
-                });
+                    done();
+                }
+
+                var aggregationOperators = [];
+                if (isSearchActive) {
+                    var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                    if (_orErrDesc.err) _orErrDesc.matchOps = [];
+                }
+                if (isFilterActive) { // rules out undefined filterCol
+                    var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                    if (_orErrDesc.err) _orErrDesc.matchOps = [];
+
+                    aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+                }
+                if (aggregationOperators.length > 0) {
+                    processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+                } else {
+                    processedRowObjects_mongooseModel.find({}).exec(doneFn);
+                }
+            })
+            
+            var user = null;
+            batch.push(function (done) {
+                if (req.user) {
+                    User.findById(req.user, function (err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
             });
 
+            batch.end(function (err) {
+                if (err) return callback(err);
+                console.log(dataSourceDescription)
+                var data = {
+                    env: process.env,
+
+                    user: user,
+
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
+
+                    documents: documents,
+                    metaData: dataSourceDescription,
+                    renderableFields: numericFields,
+                    array_source_key: sourceKey,
+                    team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                    brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
+                    uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                    sourceDoc: sourceDoc,
+                    view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                    view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
+                    //
+                    routePath_base: routePath_base,
+                    filterObj: filterObj,
+                    isFilterActive: isFilterActive,
+                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                    searchCol: searchCol || '',
+                    searchQ: searchQ || '',
+                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                    // multiselectable filter fields
+                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+
+                };
+                callback(err, data);
+            })
 
         })
 

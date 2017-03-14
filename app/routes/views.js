@@ -28,7 +28,6 @@ View.getAllBuiltInViews(function(err,defaultViews) {
                         winston.error("❌  Error getting bind data for built in view %s , err: %s" , view.name,err);
                         return res.status(500).send(err.response || 'Internal Server Error');
                     }
-                    console.log(bindData)
                     bindData.embedded = req.query.embed;
                     res.render('array/' + view.name,bindData);
                 })
