@@ -433,7 +433,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     for (var i = 0; i < cond.conditions.length; i++) {
                         if (Array.isArray(fieldValue) === true) {
                             for (var j = 0; j < fieldValue.length; j++) {
-                                if (cond.conditions[i] === fieldValue[j]) {
+                                if (cond.conditions[i].value === fieldValue[j]) {
                                     return true;
                                 }
                             }

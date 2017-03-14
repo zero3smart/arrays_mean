@@ -52,7 +52,7 @@ var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescripti
                 dataSourceDescription.fe_views.views.wordCloud.keywords.forEach(function (keyword) {
                     var existence = false;
                     fieldValues.forEach(function (fieldValue) {
-                        if (fieldValue.toLowerCase().indexOf(keyword) != -1) {
+                        if (fieldValue.toLowerCase().indexOf(keyword.toLowerCase()) != -1) {
                             existence = true;
                         }
                     });
