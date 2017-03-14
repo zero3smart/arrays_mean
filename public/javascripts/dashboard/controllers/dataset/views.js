@@ -512,6 +512,9 @@ angular.module('arraysApp')
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+                    if (!$scope.dataset.fe_views.default_view) {
+                        $scope.dataset.fe_views.default_view = dataset.fe_views.view.default_view;
+                    }
 
                     if (!$scope.dataset.fe_views.views[viewName]) {
                         $scope.dataset.fe_views.views[viewName] = {};
