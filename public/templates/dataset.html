@@ -2,7 +2,7 @@
 You have unsaved changes. <a class="pointer" ng-click="processData()">Process data</a> to save and publish changes.
 </div> -->
 <div class="process-data" ng-class="{ 'show': $state.is('dashboard.dataset.views') && !dataset.sample && tutorial.message == 'DRAFT' }"><!--
--->You are working with drafts of your views that can be previewed by clicking &thinsp;<i class="fa fa-eye }}" aria-hidden="true"></i>.
+-->Preview your views by clicking &thinsp;<i class="fa fa-eye }}" aria-hidden="true"></i>.
 Changes will not be published until saved.
 </div>
 <div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }">{{ tutorial.message }}</div>
