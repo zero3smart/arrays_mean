@@ -402,13 +402,13 @@ module.exports.BindData = function(req, urlQuery, callback) {
             if (dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage;
 
+
                 var checkConditionAndApplyClasses = function(conditions, value, multiple) {
 
                     if (typeof value == 'undefined' || value == '' || value == null) {
                         return '<span class="icon-tile-null"></span>';
                     }
                     for (var i = 0; i < conditions.length; i++) {
-
 
                         if (value == conditions[i].value) {
 
@@ -428,12 +428,32 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     return null;
                 };
 
+                hasMissingImageIcon = function(rowObject) {
+                    var fieldName = cond.field;
+                    var fieldValue = rowObject['rowParams'][fieldName];
+                    if (Object.keys(cond.conditions[0]).length === 0 && cond.conditions[0].constructor === Object) {
+                        return false;
+                    }
+
+                    for (var i = 0; i < cond.conditions.length; i++) {
+                        if (Array.isArray(fieldValue) === true) {
+                            for (var j = 0; j < fieldValue.length; j++) {
+                                if (cond.conditions[i].value === fieldValue[j]) {
+                                    return true;
+                                }
+                            }
+                        }
+                        if (cond.conditions[i].value === fieldValue) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
 
                 galleryItem_htmlWhenMissingImage = function(rowObject) {
                     var fieldName = cond.field;
                     var conditions = cond.conditions;
                     var htmlElem = '';
-
                     var fieldValue = rowObject['rowParams'][fieldName];
 
                     if (Array.isArray(fieldValue) === true) {
@@ -444,10 +464,6 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     } else if (typeof fieldValue == 'string') {
                         htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
 
-                    }
-                    // after checking all the conditions
-                    if (htmlElem !== '') {
-                        hasMissingImageIcon = true;
                     }
                     return htmlElem;
                 };
