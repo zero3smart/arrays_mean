@@ -26,8 +26,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // filters
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -74,6 +76,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -291,7 +294,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 {
@@ -299,7 +302,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         label: "$_id.groupBy",
                                         stack: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -315,14 +318,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         label: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -473,6 +476,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
+
+                console.log(JSON.stringify(aggregationOperators))
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -543,7 +549,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy: aggregateBy,
                     // graphData contains all the data rows; used by the template to create the linechart
                     graphData: graphData,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
                 callback(err, data);

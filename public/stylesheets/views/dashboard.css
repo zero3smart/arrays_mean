@@ -24,6 +24,11 @@ body.dashboard {
     font-weight: 600;
 }
 
+/* compensate for ng-click links without href attribute */
+.dashboard a.pointer {
+    cursor: pointer;
+}
+
 /*container*/
 .dashboard-container {
     /*padding: 1em;*/

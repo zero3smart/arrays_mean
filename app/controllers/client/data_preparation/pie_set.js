@@ -25,9 +25,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
-     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+     var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -74,6 +77,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/pie-set";
             var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -167,7 +171,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         chartBy: "$" + "rowParams." + chartBy_realColumnName
                                     },
                                     value: {
-                                        $sum: "$" + "rowParams." + aggregateBy_realColumnName
+                                        $addToSet: {object: "$_id", totalSum: "$" + "rowParams." + aggregateBy_realColumnName}
+
                                     } // the count
                                 }
                             },
@@ -176,7 +181,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     _id: 0,
                                     groupBy: "$_id.groupBy",
                                     chartBy: "$_id.chartBy",
-                                    value: 1
+                                    value: {$sum: "$value.totalSum"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -187,6 +192,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                              } */
                         ]);
                 } else {
+
+
                     aggregationOperators = aggregationOperators.concat(
                         [
                             {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -197,7 +204,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                         chartBy: "$" + "rowParams." + chartBy_realColumnName
                                     },
-                                    value: {$sum: 1} // the count
+                                    value: {$addToSet: "$_id"} // the count
                                 }
                             },
                             { // reformat
@@ -205,7 +212,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     _id: 0,
                                     groupBy: "$_id.groupBy",
                                     chartBy: "$_id.chartBy",
-                                    value: 1
+                                    value: {$size: "$value"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -399,7 +406,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
                 callback(err, data);
             })

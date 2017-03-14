@@ -4,17 +4,62 @@
         .service('AuthService', AuthService);
 
     AuthService.$inject = ['$window', '$q', '$http','Team'];
+
     function AuthService($window, $q, $http,Team) {
+
+        var isLoggedIn = false;
+
+        var reload = function(cb) {
+
+            $http.get('/api/user/currentUser')
+                .then(function (result) {
+
+                    var userData = result.data;
+              
+                    if (userData) {
+
+                        isLoggedIn = true;  
+                        $window.sessionStorage.setItem('user', JSON.stringify(userData));
+                        $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
+            
+                        if (userData.role == "superAdmin") {
+                            Team.query()
+                            .$promise.then(function(allTeams) {
+
+                                $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
+                                 if (cb) cb({success:true})
+                            })
+                        } else {
+
+
+                            $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
+                            if (cb) cb({success:true})
+                        } 
+                        
+                    } else {
+                        if (cb) cb({success:false})
+                        $window.location.href = '/auth/login';
+                    }
+                }, function (err) {
+                    if (cb) cb({success:false})
+
+                    deferred.reject();
+                })
+        }
+
+
+
 
         var currentUser = function () {
             var user;
-            if ($window.sessionStorage.user) {
-                user = JSON.parse($window.sessionStorage.user);
-                if (user.error && user.error == 'unauthorized') $window.location.href = '/auth/login';
-                else return user;
-            } else {
-                return null;
-            }
+            if (isLoggedIn == false) {
+                reload(function(res) {
+                    if (res.success) {
+                        return JSON.parse($window.sessionStorage.user);
+                    }
+                })
+            } else if (isLoggedIn && $window.sessionStorage.user) return JSON.parse($window.sessionStorage.user);
+            else return null;
         };
 
         var currentTeam = function () {
@@ -25,12 +70,11 @@
             }
         };
 
-        var isLoggedIn = (currentUser() !== null)? true: false;
-
-        
         
         var getToken = function () {
             var user = currentUser();
+
+            console.log()
             if (user) {
                 return user.authToken;
             }
@@ -59,14 +103,18 @@
             $http.get('/api/user/currentUser')
                 .then(function (result) {
 
+
                     var userData = result.data;
               
                     if (userData) {
 
                         isLoggedIn = true;  
+
+
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
+
                         $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
-            
+
                         if (userData.role == "superAdmin") {
                             Team.query()
                             .$promise.then(function(allTeams) {
@@ -94,7 +142,6 @@
 
 
         var ensureLogin = function () {
-
             var deferred = $q.defer();
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
@@ -118,6 +165,7 @@
 
             var deferred = $q.defer();
             var user = currentUser();
+
             if (isLoggedIn && (user.role === 'admin' || user.role === 'superAdmin') ) {
                 deferred.resolve();
             } else {
@@ -129,16 +177,17 @@
         };
 
         var ensureActiveSubscription = function () {
+
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
 
+
             team.subscription = team.subscription || {};
             team.subscription.state = team.subscription.state || {};
 
+
             if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'active' || team.subscription.state === 'canceled')) {
-
-
                 deferred.resolve();
 
             } else {

@@ -27,9 +27,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // filters
     var source_pKey = urlQuery.source_key;
-     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -86,6 +91,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/bar-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
 
@@ -103,9 +109,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
 
+
+
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.barChart_aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
+
+
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
+
+
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
@@ -237,7 +252,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"} 
                                     }
                                 },
                                 {
@@ -245,7 +260,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         category: "$_id.groupBy",
                                         label: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -262,14 +277,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         category: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 { // priotize by incidence, since we're $limit-ing below
@@ -406,6 +421,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
+                //console.log(JSON.stringify(aggregationOperators));
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -476,7 +493,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // graphData contains all the data rows; used by the template to create the barchart
                     graphData: graphData,
                     padding: dataSourceDescription.fe_views.views.barChart.padding,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
                 callback(err, data);

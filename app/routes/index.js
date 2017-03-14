@@ -1,4 +1,4 @@
- var winston = require('winston');
+var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');
@@ -136,6 +136,7 @@ var _mountRoutes_endPoints = function (app) {
 
             var isRouteForDataset = urlRegexForDataset.test(req.url);
 
+
             if (isNotRootDomain(req.subdomains)) {
                 if (isRouteForDataset) {
                     return next();
@@ -168,7 +169,8 @@ var _mountRoutes_endPoints = function (app) {
       
     });
 
-    // View endpoints
+    
+
     app.use('/', require('./homepage'));  
     app.use('/s', require('./shared_pages'));
     app.use('/' + apiVersion, require('./jsonAPI_share'));
@@ -177,9 +179,6 @@ var _mountRoutes_endPoints = function (app) {
         res.redirect('/auth/login');
     });
     app.use('/signup',require('./signup'));
-
-
-
     app.use('/reset', function(req, res) {
         res.render('auth/password',{
             env: process.env

@@ -42,7 +42,7 @@ function sendEmail (mailOptions,callback) {
 
 module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
     var default_view = dataset.fe_views.default_view;
-
+    var protocol = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
     var datasetTitle = dataset.title;
     var datasetUID = dataset.uid;
     var datasetRevision = dataset.importRevision;
@@ -54,8 +54,18 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
         default_view = dataset.schema_id.fe_views.default_view;
     }
 
-    var link = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    link += team.subdomain + '.' + rootDomain + '/' + datasetUID + '-r' + datasetRevision + '/' + default_view;
+    // var link = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    // link += team.subdomain + '.' + rootDomain + '/' + datasetUID + '-r' + datasetRevision + '/' + default_view;
+    var link;
+    var linkMsg;
+
+    if (default_view !== undefined) {
+        link = protocol + team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
+        linkMsg = 'Use the following link to view your visualization:';
+    } else {
+        link = protocol + 'app.' + rootDomain +  '/dashboard/dataset/views/' + dataset._id;
+        linkMsg = 'Use the following link to continue editing your visualization:';
+    }
 
     var mailOptions = {
         from : 'info@arrays.co',
@@ -64,7 +74,7 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
         html:
             user.firstName + ',' + brbr +
             'Your visualization, "' + datasetTitle + '" has finished importing.' + brbr +
-            'Use the following link to view your visualization:' + brbr +
+            linkMsg + brbr +
             '<a href="' + link + '">' + link + '</a>' + brbr +
             emailFooter
     };

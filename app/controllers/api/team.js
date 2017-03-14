@@ -326,8 +326,7 @@ module.exports.switchAdmin = function(req,res) {
         //pull new Admin's editor and viewer related to the team
         batch.push(function(done) {
 
-            console.log("new admin:::");
-            console.log(newAdminId);
+      
 
             User.findById(newAdminId)
             .populate([{path:'_editors',select:'_team'}, {path:'_viewers',select: '_team'}])
@@ -373,11 +372,9 @@ module.exports.switchAdmin = function(req,res) {
                     }
                     oldAdmin.markModified('_team');
                     oldAdmin.markModified('defaultLoginTeam');
- 
 
-                    if (oldAdmin._team.length == 0) console.log("error");
-                    else oldAdmin.save(done);
-        
+                    oldAdmin.save(done);
+
 
                 }
             })

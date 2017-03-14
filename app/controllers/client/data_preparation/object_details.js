@@ -11,15 +11,14 @@ var func = require('../func');
 var datatypes = require('../../../libs/datasources/datatypes');
 var User = require('../../../models/users');
 
-module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
+module.exports.BindData = function (req, source_pKey, rowObject_id,askForPreview, callback) {
     var self = this;
 
+  askForPreview = true;
 
-
-
-
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,source_pKey)
         .then(function (dataSourceDescription) {
+
 
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -85,7 +84,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
 
                     if (Array.isArray(fieldValue) === true) {
-
 
                         for (var i = 0; i < fieldValue.length; i++) {
                             htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
@@ -331,7 +329,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
                     uid: dataSourceDescription.uid,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
                 callback(null, data);
             });
