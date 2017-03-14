@@ -273,7 +273,6 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('constructedRoutePath', function (routePath_base, filterObj, queryObj) {
         // Merge filterObj to queryObj
 
-
         var _queryObj = {};
         if (filterObj)
             for (var key in filterObj)
@@ -287,7 +286,7 @@ module.exports = function (nunjucks_env,env) {
 
         var routePath = '';
         for (key in _queryObj)
-            if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
+            if (_queryObj.hasOwnProperty(key) && (_queryObj[key] !== undefined && _queryObj[key] !== '')) {
                 if (Array.isArray(_queryObj[key])) {
                     var subArray = _queryObj[key];
                     for (var i = 0; i < subArray.length; i++)

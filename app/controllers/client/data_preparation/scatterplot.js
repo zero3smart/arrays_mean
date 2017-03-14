@@ -19,9 +19,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
-     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + sourceKey : sourceKey;
 
-     var askForPreview = false;
+    var askForPreview = false;
     if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
  
@@ -40,7 +40,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             /* Get somewhat mongoose context.
              */
             var processedRowObjects_mongooseContext = processed_row_objects
-                .Lazy_Shared_ProcessedRowObject_MongooseContext(collectionPKey);
+                .Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             /*
              * Stash somewhat model reference.
              */
@@ -75,26 +75,45 @@ module.exports.BindData = function (req, urlQuery, callback) {
              * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
              * we just will create empty $match statement which acceptable for all documents from data source.
              */
-            var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (_orErrDesc.err) {
-                _orErrDesc.matchOps = [{$match: {}}];
+            // var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            // if (_orErrDesc.err) {
+            //     _orErrDesc.matchOps = [];
+            // }
+            var aggregationOperators = [];
+            if (isSearchActive) {
+                var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                if (_orErrDesc.err) _orErrDesc.matchOps = [];
+            }
+            if (isFilterActive) { // rules out undefined filterCol
+                var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                if (_orErrDesc.err) _orErrDesc.matchOps = [];
+
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             /*
              * Run chain of function to collect necessary data.
              */
-            raw_source_documents.Model.findOne({primaryKey: collectionPKey}, function (err, sourceDoc) {
+            raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, sourceDoc) {
                 /*
                  * Run query to mongo to obtain all rows which satisfy to specified filters set.
                  */
-                processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
+                if (aggregationOperators.length > 0) {
+                    processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(function (err, documents) {
+                        // do a bunch of stuff
+                    })
+                }
+                processedRowObjects_mongooseModel.find({}).exec(function (err, documents) {
+
+                // processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
                     /*
                      * Get single/sample document.
                      */
+                    console.log(documents)
                     var sampleDoc = documents[0];
                     /*
                      * Go deeper - collect data for filter's sidebar.
                      */
-                    func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                    func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
                         var uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                         /*
@@ -102,7 +121,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                          */
                         var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
-                            return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
+                            if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
+                                return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
+                            } else {
+                                return true;
+                            }
                         });
 
                         /*
