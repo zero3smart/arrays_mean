@@ -52,9 +52,10 @@ angular.module('arraysApp')
                     $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
 
                 } else {
+
                     $scope.primaryAction.disabled = false;
-                    $scope.primaryAction.text = dataset.imported ? 'View' : 'Next';
-                    $scope.primaryAction.do = dataset.imported ? _viewViz : _nextTab;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
 
                     delete $scope.secondaryAction.text;
                     $scope.tutorial.message = '';

@@ -4,12 +4,21 @@ angular.module('arraysApp')
 
             // primary actions
             var _submitForm = function() {
-                $scope.submitForm($scope.formValidity);
+                unsetAsFirstImport();
+                $scope.submitForm();
             };
             var _viewViz = function() {
+                unsetAsFirstImport();
                 var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
             };
+            /**
+             * Set this either way--if the user clicks View without making changes,
+             * they have finished the first import.
+             */
+            function unsetAsFirstImport() {
+                dataset.firstImport = false;
+            }
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -39,7 +48,6 @@ angular.module('arraysApp')
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
-
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
