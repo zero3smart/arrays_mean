@@ -13,7 +13,7 @@ angular.module('arraysApp')
             if (!dataset.fe_excludeFields) {
                 dataset.fe_excludeFields = {};
                 for (var i = 0; i < dataset.columns.length; i++) {
-                    dataset.fe_excludeFields[dataset.columns[i].name.replace('.','')] = false;
+                    dataset.fe_excludeFields[dataset.columns[i].name.replace('.', '')] = false;
                 }
                 $scope.excludeAll = true; // set toggle to "Exclude All"
             } else {
@@ -40,12 +40,10 @@ angular.module('arraysApp')
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
             if(!dataset.fe_excludeFieldsObjDetail) {
                 dataset.fe_excludeFieldsObjDetail = {};
-                for (var i = 0; i < dataset.columns.length; i++) {
+                for (i = 0; i < dataset.columns.length; i++) {
                     dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
                 }
             }
-
-
 
 
             $scope.$watch('vm.dataForm.$valid', function(validity) {
@@ -61,11 +59,11 @@ angular.module('arraysApp')
                 }
             });
 
-            $scope.$watch('submitting',function(sub) {
+            $scope.$watch('submitting', function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             });
 
-            $scope.$watch('vm.dataForm.$dirty',function(dirty) {
+            $scope.$watch('vm.dataForm.$dirty', function(dirty) {
                 $scope.primaryAction.disabled = !dirty;
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
@@ -95,10 +93,11 @@ angular.module('arraysApp')
             var joinDataCols = [];
 
 
-            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join
-                && $scope.$parent.$parent.dataset.connection.join.tableName) {
+            if ($scope.$parent.$parent.dataset.connection &&
+                $scope.$parent.$parent.dataset.connection.join &&
+                $scope.$parent.$parent.dataset.connection.join.tableName) {
 
-                DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
+                DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id, $scope.$parent.$parent.dataset.connection)
                     .then(function(response) {
 
                         if (response.status == 200 && response.data) {
@@ -129,7 +128,7 @@ angular.module('arraysApp')
                 for (var i = 0; i < $scope.originalFields.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
                 }
-                $scope.excludeAll = exclude ? false : true; // toggle
+                $scope.excludeAll = !exclude; // toggle
             };
 
             $scope.toggleObjectDetailDisplay = function(fieldName) {
@@ -142,7 +141,7 @@ angular.module('arraysApp')
                     DatasetService: DatasetService
                 };
 
-                modalService.openDialog('joinTable',data)
+                modalService.openDialog('joinTable', data)
                     .then(function(savedDataset) {
                         joinDataCols = savedDataset.joinCols;
                         delete savedDataset.joinCols;
@@ -153,7 +152,7 @@ angular.module('arraysApp')
             };
 
 
-            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly,columnIndex) {
+            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly, columnIndex) {
 
 
                 var data = {
@@ -168,7 +167,7 @@ angular.module('arraysApp')
                 };
 
 
-                modalService.openDialog('field',data)
+                modalService.openDialog('field', data)
                     .then(function(savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
@@ -177,7 +176,7 @@ angular.module('arraysApp')
                         if(filterOnly) {
                             $scope.openFabricatedFilterDialog();
                         }
-                    },function() {
+                    }, function() {
 
                         if(filterOnly) {
                             $scope.openFabricatedFilterDialog();
@@ -193,7 +192,7 @@ angular.module('arraysApp')
                     additionalDatasources: $scope.$parent.$parent.additionalDatasources
                 };
 
-                modalService.openDialog('nested',data)
+                modalService.openDialog('nested', data)
                     .then(function(result) {
 
                         $scope.$parent.$parent.dataset = result.dataset;
@@ -204,7 +203,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                    },function() {
+                    }, function() {
                     // console.log('You cancelled the nested dialog.');
                     });
 
@@ -237,7 +236,7 @@ angular.module('arraysApp')
 
                 };
 
-                modalService.openDialog('fabricated',data)
+                modalService.openDialog('fabricated', data)
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.vm.dataForm.$setDirty();
@@ -249,10 +248,10 @@ angular.module('arraysApp')
             $scope.openImageScrapingDialog = function () {
 
                 var data = {
-                    dataset : $scope.$parent.$parent.dataset
+                    dataset: $scope.$parent.$parent.dataset
                 };
 
-                modalService.openDialog('imageScraping',data)
+                modalService.openDialog('imageScraping', data)
                     .then(function (savedDataset){
                         $scope.$parent.$parent.dataset = savedDataset;
                         sortColumnsByDisplayOrder();
@@ -504,13 +503,13 @@ angular.module('arraysApp')
                         );
 
 
-                        var nextState = ($scope.$parent.$parent.dataset.dirty )? 'dashboard.dataset.process' : 'dashboard.dataset.views';
-                        $state.transitionTo(nextState, {id: dataset._id}, {
-                            reload: true,
-                            inherit: false,
-                            notify: true
-                        });
-                    };
+                            var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                            $state.transitionTo(nextState, {id: dataset._id}, {
+                                reload: true,
+                                inherit: false,
+                                notify: true
+                            });
+                        };
 
                     var queue = [];
 
