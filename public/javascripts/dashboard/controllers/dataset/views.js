@@ -51,10 +51,7 @@ angular.module('arraysApp')
             };
 
             $scope.$watch('submitting',function(sub) {
-
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
-
-
             });
 
             $scope.secondaryAction.do = function() { // revert changes
@@ -70,17 +67,14 @@ angular.module('arraysApp')
 
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('Visualization updated!')
+                                    .textContent('Changes reverted.')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
 
-                            // $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
-                            //     reload: true,
-                            //     inherit: false,
-                            //     notify: true
-                            // });
-
+                            // simplest way to refresh page content, although causes flash
+                            // TODO reset view visibiliy checkboxes and default view indicators
+                            $state.reload();
                         }
                     },function(err) {
                         $scope.submitting = false;
@@ -134,6 +128,7 @@ angular.module('arraysApp')
                 if (dataset.fe_views.views[viewName] && dataset.fe_views.views[viewName].visible) {
                     $scope.data.default_view = viewName;
                 }
+                $scope.saveViewSettingToDraft();
             };
 
             $scope.setViewVisibility = function(viewName, visibility) {
@@ -275,7 +270,6 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function () {
-
 
                 // $scope.$parent.$parent.dataset.fe_views.default_view = $scope.data.default_view;
 

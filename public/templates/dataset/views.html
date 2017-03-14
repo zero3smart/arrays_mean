@@ -11,6 +11,7 @@
                 <span flex="10"
                     aa-tooltip="{{ data.default_view == view.name ? 'Default view must be visible' : (dataset.fe_views.views[view.name].visible ? 'Set view as not visible' : 'Set view as visible') }}">
                 <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
+                    ng-change="saveViewSettingToDraft()"
                     ng-disabled="data.default_view == view.name"
                     class="view-visible"
                     aria-label="{{view.name}} Visibility" md-no-ink></md-checkbox>
