@@ -108,6 +108,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
                 lngField = dataSourceDescription.fe_views.views.map.longitudeField;
+            var noiseLevel;
+
 
             var batch = new Batch();
             batch.concurrency(1);
@@ -167,6 +169,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         // coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
                         coordRadiusValue = aggregateBy;
                         var coordValue;
+                        var clustering = require('density-clustering');
+                        var dbscan = new clustering.DBSCAN();
+                        var dataset = [];
+
+                
 
                         coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
@@ -198,6 +205,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         id: el._id
                                     }
                                 });
+                                dataset.push([el.rowParams[lngField], el.rowParams[latField]]);
 
                             } else {
 
@@ -213,9 +221,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     }
                                 });
 
+                                dataset.push([el.rowParams[lngField], el.rowParams[latField]]);
                             }
 
                         });
+                        winston.info("💬  Running density-clustering algorithm to calculate this dataset's noise");
+                        // parameters: 5 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
+                        var clusters = dbscan.run(dataset, 5, 2);
+                        winston.info("📡  Noise level:" + dbscan.noise.length);
+                        noiseLevel = dbscan.noise.length;
+        
                         done();
                     }
                     // Potentially change to cursor function to optimize
@@ -385,7 +400,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
-                    isPreview: askForPreview
+                    isPreview: askForPreview,
+                    noiseLevel: noiseLevel
 
                 };
                 callback(err, data);

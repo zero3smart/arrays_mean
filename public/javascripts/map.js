@@ -18,13 +18,17 @@ var layer = 'contour',
     mapStyle,
     breaks = [],
     defaultRadius = 2,
-    maxRadius = 40, // At 0 zoom
+    maxRadius = 40,
     radii = [],
     opacities = [],
     names = [],
     logOffset;
 
 logOffset = coordMinMax.min < 0 ? Math.abs(coordMinMax.min - 1) : 0;
+
+if (noiseLevel < 10) {
+    maxRadius = 10;
+}
 
 /**
  * Logarithmic scale
@@ -59,9 +63,13 @@ function linearScale(currentBreak, numBreaks, maxValue, minValue) {
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
+
     if (isCoordMap && applyCoordRadius) {
+
         breaks[i] = linearScale(i, numBreaks, coordMinMax.max, coordMinMax.min);
+
         radii[i] = (i / numBreaks) * maxRadius + (maxRadius / numBreaks);
+
     } else {
         breaks[i] = logScale(i, numBreaks, topValue);
         opacities[i] = (i / numBreaks);
@@ -133,6 +141,8 @@ map.on('load', function () {
     /**
      * Loop through layers, filter countries, and apply opacity
      */
+
+
     if (isCoordMap && !applyCoordRadius) {
 
         names.push('points-of-interest');
@@ -161,6 +171,8 @@ map.on('load', function () {
     } else {
 
         for (i = 0; i < numBreaks; i++) {
+           
+
             if (i < numBreaks - 1) {
                 filteruse = ['all', ['>=', metric, breaks[i] - logOffset], ['<', metric, breaks[i + 1] - logOffset]];
             } else {
@@ -174,6 +186,9 @@ map.on('load', function () {
                     source: 'points',
                     filter: filteruse,
                     paint: {
+
+                    
+
                         'circle-radius': {
                             "stops": [
                                 [0, radii[i]],
@@ -185,19 +200,19 @@ map.on('load', function () {
                             ],
                             // "property": "total"
                         },
-                        'circle-opacity': {
-                            "stops": [
-                                [0, 0.1],
-                                [4, 0.2],
-                                [8, 0.3],
-                                [12, 0.4],
-                                [16, 0.5],
-                                [20, 0.6]
-                            ],
-                        },
+                        // 'circle-opacity': {
+                        //     "stops": [
+                        //         [0, 0.3],
+                        //         [4, 0.4 ],
+                        //         [8, 0.5 ],
+                        //         [12, 0.6 ],
+                        //         [16, 0.7 ],
+                        //         [20, 0.8 ]
+                        //     ],
+                        // },
                         // 'circle-radius': radii[i],
                         'circle-color': coordColor,
-                        // 'circle-opacity': 0.5
+                        'circle-opacity': 0.5
                     }
                 });
             } else {            
@@ -214,6 +229,8 @@ map.on('load', function () {
               }, 'water');
             }
         }
+
+
 
     }
 

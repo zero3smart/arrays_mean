@@ -123,6 +123,8 @@
                 var geoData = {{ featureCollection | dump | safe }};
                 var coordData = {{ coordCollection | dump | safe }};
                 var filterObj = {{ filterObj | dump | safe }};
+                var noiseLevel = {{noiseLevel}};
+    
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,
