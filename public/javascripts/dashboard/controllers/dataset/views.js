@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','previewCopy','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService', 'user', '$window', 'viewUrlService',
-        function($scope, dataset,previewCopy,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user,$window,viewUrlService) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset', 'previewCopy', 'views', 'viewResource', '$mdDialog', 'DatasetService', '$mdToast', '$state', '$filter', 'AssetService', 'user', '$window', 'viewUrlService',
+        function($scope, dataset, previewCopy, views, viewResource, $mdDialog, DatasetService, $mdToast, $state, $filter, AssetService, user, $window, viewUrlService) {
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -16,11 +16,21 @@ angular.module('arraysApp')
                 $scope.primaryAction.text = '';
             }
 
-
-            // $scope.primaryAction.text = (dataset.imported && dataset.fe_views) ? 'Save' : 'Next';
-
-
             if (previewCopy) $scope.secondaryAction.disabled = false;
+
+            // primary actions
+            var _nextTab = function() {
+                $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
+            };
+
 
             // $scope.$watch('vm.viewsForm.$valid', function(validity) {
             //     if (validity !== undefined) {
@@ -29,34 +39,35 @@ angular.module('arraysApp')
             //     }
             // });
 
-            $scope.$watch('previewCopy',function(previewExist) {
+            $scope.$watch('previewCopy', function(previewExist) {
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
-                    $scope.secondaryAction.text = 'Revert';
-                    $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.do = $scope.submitForm;
+
                     $scope.secondaryAction.disabled = false;
+                    $scope.secondaryAction.text = 'Revert';
+
                     $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
+
                 } else {
-                    $scope.primaryAction.disabled = true;
-                    delete $scope.primaryAction.text;
+                    $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.imported ? 'View' : 'Next';
+                    $scope.primaryAction.do = dataset.imported ? _viewViz : _nextTab;
+
                     delete $scope.secondaryAction.text;
                     $scope.tutorial.message = '';
                 }
             });
 
-
-            $scope.primaryAction.do = function() {
-                $scope.submitForm();
-            };
-
-            $scope.$watch('submitting',function(sub) {
+            $scope.$watch('submitting', function(sub) {
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
             });
 
             $scope.secondaryAction.do = function() { // revert changes
                 $scope.submitting = true;
-                DatasetService.draftAction($scope.$parent.$parent.dataset._id,'revert')
+                DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
                         $scope.submitting = false;
                         if (response.status == 200 && response.data) {
@@ -76,7 +87,7 @@ angular.module('arraysApp')
                             // TODO reset view visibiliy checkboxes and default view indicators
                             $state.reload();
                         }
-                    },function(err) {
+                    }, function(err) {
                         $scope.submitting = false;
                         //console.log(error);
                         $mdToast.show(
@@ -194,7 +205,7 @@ angular.module('arraysApp')
 
             $scope.openViewDialog = function (evt, id) {
 
-                viewResource.get({id:id},function(data) {
+                viewResource.get({id: id}, function(data) {
 
                     $mdDialog.show({
                         controller: ViewDialogController,
@@ -205,7 +216,7 @@ angular.module('arraysApp')
                         fullscreen: true, // Only for -xs, -sm breakpoints.
                         locals: {
                             viewName: data.name,
-                            belongsToTeam : data._team,
+                            belongsToTeam: data._team,
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
@@ -277,7 +288,7 @@ angular.module('arraysApp')
 
                     $scope.submitting = true;
 
-                    DatasetService.draftAction($scope.$parent.$parent.dataset._id,'apply')
+                    DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'apply')
                         .then(function(response) {
                             $scope.submitting = false;
                             if (response.status == 200 && response.data.finalView) {
@@ -290,17 +301,10 @@ angular.module('arraysApp')
                                     .textContent('Visualization updated!')
                                     .position('top right')
                                     .hideDelay(3000)
-                            );
-
-                                $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
-                                    reload: true,
-                                    inherit: false,
-                                    notify: true
-                                });
-
+                                );
 
                             }
-                        },function(err) {
+                        }, function(err) {
                             $scope.submitting = false;
                         //console.log(error);
                             $mdToast.show(
@@ -374,8 +378,8 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,AssetService,
-                DatasetService,team,default_view,reimportStep) {
+            function ViewDialogController($scope, $mdDialog, $filter, viewName, belongsToTeam, viewDisplayName, dataset, viewSetting, viewTabs, colsAvailable, AssetService,
+                DatasetService, team, default_view, reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -386,7 +390,7 @@ angular.module('arraysApp')
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
-                $scope.isCustomView = belongsToTeam? true: false;
+                $scope.isCustomView = !!belongsToTeam;
                 $scope.reimportStep = reimportStep;
 
 
@@ -409,7 +413,7 @@ angular.module('arraysApp')
 
                 $scope.loadDatasetsForMapping = function() {
 
-                    if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
+                    if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded == false) {
 
                         DatasetService.getDatasetsWithQuery({_team: team._id})
                             .then(function (all) {
@@ -517,7 +521,7 @@ angular.module('arraysApp')
                         var setting_name = viewSetting[i].name;
                         $scope.data[setting_name] =  $scope.dataset.fe_views.views[viewName][setting_name];
 
-                        if (typeof $scope.data[setting_name] == 'undefined' && viewSetting[i].inputType =='keyValue') {
+                        if (typeof $scope.data[setting_name] == 'undefined' && viewSetting[i].inputType == 'keyValue') {
                             $scope.data[setting_name] = [];
                         }
                     }
@@ -544,7 +548,7 @@ angular.module('arraysApp')
                 //     });
                 // };
 
-                $scope.addMore = function (field,pushType) {
+                $scope.addMore = function (field, pushType) {
                     if (pushType == 'object') {
                         field.push({});
                     } else {
@@ -637,13 +641,13 @@ angular.module('arraysApp')
                     };
                 };
 
-                $scope.remove = function(setting,index) {
-                    $scope.data[setting].splice(index,1);
+                $scope.remove = function(setting, index) {
+                    $scope.data[setting].splice(index, 1);
                 };
 
 
-                $scope.notChosen= function(arrayOfObject,target,index) {
-                    for (var i = 0; i <arrayOfObject.length ;i++) {
+                $scope.notChosen = function(arrayOfObject, target, index) {
+                    for (var i = 0; i < arrayOfObject.length ;i++) {
                         if (index !== i) {
                             if (arrayOfObject[i].key == target) {
                                 return false;
@@ -654,10 +658,10 @@ angular.module('arraysApp')
                 };
 
 
-                $scope.checkDuplicateKey = function(list,$index) {
+                $scope.checkDuplicateKey = function(list, $index) {
                     return function(col) {
 
-                        return $scope.notChosen(list,col,$index);
+                        return $scope.notChosen(list, col, $index);
                     };
                 };
 
@@ -708,7 +712,7 @@ angular.module('arraysApp')
                 $scope.save = function () {
 
                     if (typeof $scope.reimportStep !== 'undefined') {
-                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1: $scope.reimportStep;
+                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1 : $scope.reimportStep;
                     }
 
                     if ($scope.isDefault == true) {
