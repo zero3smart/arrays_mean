@@ -9,6 +9,8 @@ var recurlyConfig = {
 };
 var recurly = new Recurly(recurlyConfig);
 
+var moment = require('moment');
+
 module.exports.create = function(req, res) {
 
     var userId = req.user;
@@ -29,13 +31,16 @@ module.exports.create = function(req, res) {
                     return res.status(401).send({error: 'unauthorized'});
                 }
 
+                var trial_ends_at = moment().toISOString();
+
                 recurly.subscriptions.create({
                     plan_code: req.body.plan_code, // *required
                     account: {
                         account_code: user.defaultLoginTeam._id.toString()  // *required
                     },
                     quantity: req.body.quantity,
-                    currency: 'USD'                // *required
+                    currency: 'USD',                // *required
+                    trial_ends_at: req.body.skipTrial ? trial_ends_at : undefined
 
                 }, function(err, response) {
                     if (err) {
