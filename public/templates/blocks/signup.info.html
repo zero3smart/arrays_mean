@@ -1,19 +1,12 @@
 <form class="col-xs-12 signup" name="infoForm" ng-submit="registerUser()" novalidate>
     <div class="form-group">
         <label>Email</label>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-            <input ng-model="user.email" type="text" class="form-control" disabled>
-        </div>
+        <input ng-model="user.email" type="text" class="form-control" disabled>
     </div>
 
     <div class="form-group" ng-class="{ 'has-error': infoForm.firstname.$touched && infoForm.firstname.$invalid}">
         <label>First Name</label>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-            <input name="firstname" ng-model="user.firstName" type="text" class="form-control" required autofocus="true">
-        </div>
-
+        <input name="firstname" ng-model="user.firstName" type="text" class="form-control" required autofocus="true">
         <div class="help-block" ng-messages="infoForm.firstname.$error" ng-if="infoForm.firstname.$touched">
             <p ng-message="required">First Name is required.</p>
         </div>
@@ -21,10 +14,7 @@
 
     <div class="form-group" ng-class="{ 'has-error': infoForm.lastname.$touched && infoForm.lastname.$invalid}">
         <label>Last Name</label>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-            <input name="lastname" ng-model="user.lastName" type="text" class="form-control" required>
-        </div>
+        <input name="lastname" ng-model="user.lastName" type="text" class="form-control" required>
 
         <div class="help-block" ng-messages="infoForm.lastname.$error" ng-if="infoForm.lastname.$touched">
             <p ng-message="required">Last Name is required.</p>
@@ -41,11 +31,9 @@
             </md-tooltip>
         </a> -->
 
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-            <input type="password" name="password" autocomplete="off" ng-model="user.password" class="form-control" ng-minlength="8"
+
+        <input type="password" name="password" autocomplete="off" ng-model="user.password" class="form-control" ng-minlength="8"
                 ng-maxlength="20" ng-pattern="/(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z])/">
-        </div>
 
         <div class="help-block" ng-messages="infoForm.password.$error" ng-if="infoForm.password.$touched">
             <p ng-message="minlength || maxlength">Password must be between 8&ndash;20 characters.</p>
@@ -58,10 +46,7 @@
 
     <div ng-if="user.provider=='local' && (!user.hash || !user.salt) " class="form-group" ng-class="{ 'has-error': infoForm.verifyPassword.$touched && infoForm.verifyPassword.$invalid}">
         <label>Verify Password</label>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-            <input type="password" name="verifyPassword" autocomplete="off" ng-model="user.verifyPassword" password-checker match-target="user.password" class="form-control" required>
-        </div>
+        <input type="password" name="verifyPassword" autocomplete="off" ng-model="user.verifyPassword" password-checker match-target="user.password" class="form-control" required>
 
         <div class="help-block" ng-messages="infoForm.verifyPassword.$error" ng-if="infoForm.verifyPassword.$touched">
             <p ng-message="required">Please confirm your password.</p>
@@ -72,10 +57,7 @@
     <div class="form-group" ng-class="{ 'has-error': infoForm.teamTitle.$touched && infoForm.teamTitle.$invalid}">
         <label>Team Title</label>
         <small ng-hide="invitedUser">(you can change this later)</small>
-        <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-group"></i></span>
-            <input required ng-model='user._team.title' name="teamTitle" ng-disabled="invitedUser" type="text" class="form-control">
-        </div>
+        <input required ng-model='user._team.title' name="teamTitle" ng-disabled="invitedUser" type="text" class="form-control">
 
         <div class="help-block" ng-messages="infoForm.teamTitle.$error" ng-if="infoForm.teamTitle.$touched">
             <p ng-message="required">This field is required.</p>
@@ -87,7 +69,6 @@
         <label>{{ env.node_env !== 'enterprise'? 'Team subdomain' : 'Unique Team Identifier' }} </label>
 
         <div class="input-group">
-            <span ng-hide="env.node_env == 'enterprise'" class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
             <input ng-disabled="invitedUser" name="subdomain" ng-model="user._team.subdomain" unique-subdomain
                 type="text" class="form-control" ng-pattern="/^[a-z0-9]*$/" required>
             <span ng-hide="env.node_env=='enterprise'" class="input-group-addon">{{"." + env.host}}</span>
