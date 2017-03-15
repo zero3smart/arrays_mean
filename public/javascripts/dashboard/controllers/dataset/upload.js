@@ -3,7 +3,6 @@ angular.module('arraysApp')
     .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService',
         function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService) {
 
-
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
@@ -35,7 +34,8 @@ angular.module('arraysApp')
 
             $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
 
-            $scope.primaryAction.text = (dataset.imported) ? null: 'Next';
+            $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
@@ -52,11 +52,11 @@ angular.module('arraysApp')
             });
 
             $scope.primaryAction.do = function() {
+                if (dataset.firstImport == 1) dataset.firstImport = 2;
+                
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
                 delete finalizedDataset.__v;
-
-
 
                 DatasetService.save(finalizedDataset)
                 .then(function() {

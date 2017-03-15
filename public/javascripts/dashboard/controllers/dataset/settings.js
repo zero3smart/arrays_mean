@@ -4,21 +4,16 @@ angular.module('arraysApp')
 
             // primary actions
             var _submitForm = function() {
-                unsetAsFirstImport();
                 $scope.submitForm();
             };
             var _viewViz = function() {
-                unsetAsFirstImport();
                 var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
             };
             /**
-             * Set this either way--if the user clicks View without making changes,
-             * they have finished the first import.
+             * If you've made is to the Display tab, everything should be set and the firstImport is completed.
              */
-            function unsetAsFirstImport() {
-                dataset.firstImport = false;
-            }
+            dataset.firstImport = 0;
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {

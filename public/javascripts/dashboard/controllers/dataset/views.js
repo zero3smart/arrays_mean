@@ -307,7 +307,8 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                                 );
 
-                                if (dataset.firstImport) {
+                                if (dataset.firstImport == 3) {
+                                    dataset.firstImport = 0; // not 4--you've made it
                                     $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
                                         reload: true,
                                         inherit: false,

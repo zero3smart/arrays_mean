@@ -431,6 +431,10 @@ angular.module('arraysApp')
                 }
 
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
+
+                // TODO do this in process.js, not here?
+                // although both dataset and $parent.$parent.dataset are lost between states
+                if (dataset.firstImport == 2) $scope.$parent.$parent.dataset.firstImport = 3;
             };
 
             $scope.reset = function () {
@@ -497,6 +501,7 @@ angular.module('arraysApp')
             };
 
             $scope.submitForm = function (isValid) {
+
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
@@ -532,7 +537,6 @@ angular.module('arraysApp')
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
-
 
                     queue.push(DatasetService.save(finalizedDataset));
 
