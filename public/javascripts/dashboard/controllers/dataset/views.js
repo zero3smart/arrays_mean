@@ -183,13 +183,13 @@ angular.module('arraysApp')
 
                     $scope.customViews.push(views[i].name);
 
-                    if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
+                    if (!$scope.data.default_view) {
                         $scope.makeDefaultView(views[i].name);
                     }
                 }
             }
 
-            if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
+            if (!$scope.data.default_view) {
                 $scope.makeDefaultView('gallery');
 
             }

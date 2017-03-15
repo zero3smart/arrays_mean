@@ -22,7 +22,14 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
 
             
             if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
+
+                var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
+                if (typeof controller.ParseAndImportRaw !== 'undefined') {
+                    controller.ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
+                } else {
+                    import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription,job, eachCb);
+                }
+                
             } else {
                  import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription,job, eachCb);
             }
@@ -134,58 +141,66 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
             }
 
             if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
-                
-            } else {
-                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, function(err) {
 
-                     if (err) {
-                        winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+                 var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
+
+                if (typeof controller.afterGeneratingProcessedDataSet_performEachRowOperations !== 'undefined') {
+
+                    return controller.afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
+                    
+                } 
+
+
+            } 
+             _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, function(err) {
+
+                 if (err) {
+                    winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+                    return callback(err);
+                }
+   
+
+
+                job.log("🔁  Now generating fields by joining datasets ");
+
+                async.eachSeries(
+                    dataSourceDescription.relationshipFields,
+                    function (description, cb) {
+                        var by = description.by;
+                        var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
+                        switch (by.operation) {
+                            case "Join":
+                            {
+                                processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
+                                    job,
+                                    datasetId,
+                                    description.field,
+                                    description.singular,
+                                    by.findingMatchOnField,
+                                    by.joinDataset,
+                                    by.withLocalField,
+                                    by.obtainingValueFromField,
+                                    formingRelationship,
+                                    cb
+                                );
+                                break;
+                            }
+
+                            default:
+                            {
+                                winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                                break;
+                            }
+                        }
+                    },
+                    function (err) {
+                        if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
                         return callback(err);
                     }
-       
+                );
 
-
-                    job.log("🔁  Now generating fields by joining datasets ");
-
-                    async.eachSeries(
-                        dataSourceDescription.relationshipFields,
-                        function (description, cb) {
-                            var by = description.by;
-                            var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-                            switch (by.operation) {
-                                case "Join":
-                                {
-                                    processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
-                                        job,
-                                        datasetId,
-                                        description.field,
-                                        description.singular,
-                                        by.findingMatchOnField,
-                                        by.joinDataset,
-                                        by.withLocalField,
-                                        by.obtainingValueFromField,
-                                        formingRelationship,
-                                        cb
-                                    );
-                                    break;
-                                }
-
-                                default:
-                                {
-                                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                                    break;
-                                }
-                            }
-                        },
-                        function (err) {
-                            if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                            return callback(err);
-                        }
-                    );
-
-                 });
-            }
+             });
+            
         });
 };
 

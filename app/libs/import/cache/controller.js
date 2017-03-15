@@ -78,12 +78,10 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
-        if (dataSourceDescription.useCustomView) {
 
-            filterKeys = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').filterKeys()
-        } else {
 
-            
+        function _filtering() {
+
             if (!dataSourceDescription.fe_excludeFields) {
                 dataSourceDescription.fe_excludeFields = {};
             }
@@ -96,6 +94,27 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1;
 
             })
+
+        }
+
+      
+
+
+        if (dataSourceDescription.useCustomView) {
+
+            var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
+
+            if (typeof controller.filterKeys !== 'undefined') {
+                filterKeys = controller.filterKeys();
+
+            } else {
+                _filtering();
+            }
+
+
+        } else {
+             _filtering();
+
         }
 
         
