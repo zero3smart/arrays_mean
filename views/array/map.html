@@ -122,7 +122,6 @@
                 var isCoordMap = {{ isCoordMap if isCoordMap else false }};
                 var geoData = {{ featureCollection | dump | safe }};
                 var coordData = {{ coordCollection | dump | safe }};
-                console.log(coordData.features[0]);
                 var filterObj = {{ filterObj | dump | safe }};
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,

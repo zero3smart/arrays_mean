@@ -126,9 +126,28 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain grouped results
             batch.push(function (done) {
+                var aggregateValue;
 
                 var doneFn = function(err, groupedDocuments) {
                     if (err) return done(err);
+                    // ---------
+                    // if (aggregateBy_realColumnName) {
+                    //     var aggregateMinMax = {};
+                    //     aggregateMinMax.max = parseInt(groupedDocuments[0].rowParams[aggregateBy_realColumnName])
+                    //     aggregateMinMax.min = parseInt(groupedDocuments[0].rowParams[aggregateBy_realColumnName])
+
+                    //     groupedDocuments.forEach(function (el, i, arr) {
+                    //         aggregateValue = parseInt(el.rowParams[aggregateBy_realColumnName]);
+                    //         if (aggregateValue > aggregateMinMax.max) {
+                    //             aggregateMinMax.max = aggregateValue;
+                    //         } else if (aggregateValue < aggregateMinMax.min) {
+                    //             aggregateMinMax.min = aggregateValue;
+                    //         }
+                    //         groupedDocuments[i].rowParams["aggregateRadius"] = aggregateValue
+
+                    //     })
+                    // }
+                    // ----------
                     documents = groupedDocuments;
                     var sampleDoc = documents[0];
                     func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
@@ -182,7 +201,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
-                console.log(dataSourceDescription)
+                console.log(aggregateBy)
                 var data = {
                     env: process.env,
 
@@ -210,7 +229,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     searchQ: searchQ || '',
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     // multiselectable filter fields
-                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                    aggregateBy_realColumnName: aggregateBy_realColumnName
 
                 };
                 callback(err, data);

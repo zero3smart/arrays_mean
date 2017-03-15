@@ -333,8 +333,8 @@ scatterplot.chart.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._xAxis.tickSize(- this._innerHeight, 0);
-    this._yAxis.tickSize(- this._innerWidth, 0);
+    // this._xAxis.tickSize(- this._innerHeight, 0);
+    // this._yAxis.tickSize(- this._innerWidth, 0);
     /*
      * Move x axis corresponding with chart height.
      */

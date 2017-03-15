@@ -20,7 +20,7 @@ scatterplot.view.standard.prototype = Object.create(scatterplot.view.main.protot
  */
 scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
     /*
-     * Definde reference to the chart.
+     * Define reference to the chart.
      */
     var chart = this._chart;
 
@@ -72,7 +72,7 @@ scatterplot.view.standard.prototype.render = function (data) {
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
         .data(chartData.map(function (d) {
-            d.radius = chart._radius;
+            d.radius = Math.sqrt(d.radiusBy *4/Math.PI);
             return d;
         }), function (d) {
             return d.id;
@@ -86,7 +86,9 @@ scatterplot.view.standard.prototype.render = function (data) {
             return chart._xScale(chart._xAccessor(d));
         }).attr('cy', function (d) {
         return chart._yScale(chart._yAccessor(d));
-    }).attr('r', chart._radius);
+    }).attr('r', function (d) {
+        return d.radius;
+    });
     /*
      * Render new bubbles.
      */
@@ -150,7 +152,9 @@ scatterplot.view.standard.prototype.render = function (data) {
         chart._bubbleMouseOutEventHandler(this);
     }).transition()
         .duration(1000)
-        .attr('r', chart._radius);
+        .attr('r', function (d) {
+            return d.radius;
+        });
     /*
      * Remove absent bubbles.
      */
@@ -177,7 +181,8 @@ scatterplot.view.standard.prototype.showTooltip = function (bubble, data) {
     /*
      * Append image if there is only one character.
      */
-    if (data.density === 1) {
+    var hasImage = chart._metaData.fe_image && (chart._metaData.fe_image.field ? true : false)
+    if (data.density === 1 && hasImage) {
         content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_image.field] + ')"></div>' +
             '<div class="scatterplot-tooltip-title">' + data[chart._metaData.objectTitle] + '</div>';
     }

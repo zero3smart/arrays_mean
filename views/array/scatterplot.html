@@ -128,6 +128,7 @@
         // Render scatterplot.
         var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
             d.rowParams.id = d._id;
+            d.rowParams.radiusBy = d.rowParams['{{aggregateBy_realColumnName}}']
             return d.rowParams;
         }), metaData).setXAccessor(function(d) {
                     return d['{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}']
