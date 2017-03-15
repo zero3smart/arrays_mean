@@ -116,4 +116,15 @@ angular
                 };
             }
 
+
+            /**
+             * Start Intercom support widget
+             */
+            window.Intercom('boot', {
+                app_id: 'z0ulomtz',
+                name: $scope.user.firstName + ' ' + $scope.user.lastName, // Full name
+                email: $scope.user.email, // Email address
+                created_at: new Date($scope.user.createdAt).getTime() / 1000 // Signup date as a Unix timestamp
+            });
+
         }]);
