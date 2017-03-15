@@ -111,6 +111,9 @@
 
             <script type="text/javascript">
                 var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
+                console.log(templateOutput_topValue)
+                console.log({{highestValue}})
+                console.log("{{highestValue}}")
                 var templateOutput_coordMinMax = {
                     min: {{ coordMinMax.min if coordMinMax else 0 }},
                     max: {{ coordMinMax.max if coordMinMax else 0 }}

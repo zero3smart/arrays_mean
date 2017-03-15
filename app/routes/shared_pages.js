@@ -65,7 +65,7 @@ router.get('/:shared_page_id', function (req, res) {
                 var camelCaseViewType = viewType.replace(/-([a-z])/ig, function (all, letter) {
                     return letter.toUpperCase();
                 });
-
+                console.log(query)
                 controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for Array gallery: ", err);
