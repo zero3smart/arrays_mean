@@ -211,7 +211,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             ]);
 
                     } else {
-                        console.log("count by summing numeric field")
 
                         // Count by summing numeric field in group if option in datasource description is set
                         aggregationOperators = aggregationOperators.concat(
@@ -239,11 +238,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     }
                 } else {
-                    console.log("counting by number of records")
                     // Count by number of records
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
-                        console.log("here")
 
                         aggregationOperators = aggregationOperators.concat(
                             [
@@ -305,7 +302,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     var _multigroupedResults_object = {};
-                    console.log(_multigroupedResults)
 
                     _.each(_multigroupedResults, function (el) {
                         var category = el.category;
@@ -425,8 +421,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
-
-                //console.log(JSON.stringify(aggregationOperators));
 
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });

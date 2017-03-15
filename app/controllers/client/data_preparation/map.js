@@ -105,8 +105,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
-            console.log(aggregateBy_realColumnName)
-
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
                 lngField = dataSourceDescription.fe_views.views.map.longitudeField;
@@ -420,8 +418,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (err) return callback(err);
 
                 //
-                console.log(noiseLevel)
-
                 var data =
                 {
                     env: process.env,
