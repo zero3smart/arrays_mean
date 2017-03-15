@@ -29,5 +29,8 @@
             return $resource('api/billing/plans/:plan_code', null, {
                 'update': { method: 'PUT' }
             });
+        })
+        .factory('Invoices', function($resource) {
+            return $resource('api/billing/invoices/:invoiceId', null, {});
         });
 })();

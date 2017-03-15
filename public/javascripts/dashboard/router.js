@@ -81,7 +81,10 @@ angular.module('arraysApp')
                         resolve: {
                             restrict: function(AuthService) {
                                 return AuthService.ensureIsAdmin();
-                            }
+                            },
+                            invoices: ['Invoices', function(Invoices) {
+                                return Invoices.get();
+                            }]
                         }
                     })
                     .state('dashboard.account.payment', {

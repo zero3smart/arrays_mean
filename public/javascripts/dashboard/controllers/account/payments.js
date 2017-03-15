@@ -1,8 +1,13 @@
 angular.module('arraysApp')
-    .controller('PaymentsCtrl', ['$scope', 
-        function($scope) {
+    .controller('PaymentsCtrl', ['$scope', '$log', 'invoices', 
+        function($scope, $log, invoices) {
 
-            $scope.title = 'payments';
+            invoices.$promise.then(function(data) {
+                $log.log(data.data.invoices.invoice);
+
+                $scope.invoices = invoices.data.invoices.invoice;
+                
+            });
 
 
         }]);
