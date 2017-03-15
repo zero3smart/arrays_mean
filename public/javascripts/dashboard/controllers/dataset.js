@@ -63,14 +63,16 @@ angular.module('arraysApp')
             $scope.navigate = function(step) {
                 // Don't open dialog when navigating to process data
                 if(step !== 'dashboard.dataset.process' && $scope.dataset.dirty) {
-                    var dialogPromise = $scope.openUnsavedChangesDialog('Save changes');
+                    var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes
                         $scope.secondaryAction.do(); // from reset() data.js
                         $scope.navigateAndSave(step);
                     }, function() {
                         // TODO Labeled "Continue Editing" but should process data
-                        $scope.processData();
+                        // Disabled for now as it doesn't check if objectTitle exists.
+                        // Once objectTitle has a default, we can safely do this
+                        // $scope.processData();
                     });
                 } else {
                     $scope.navigateAndSave(step);
