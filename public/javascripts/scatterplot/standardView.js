@@ -57,6 +57,19 @@ scatterplot.view.standard.prototype.render = function (data) {
      * Definde reference to the chart.
      */
     var chart = this._chart;
+    var viewportArea = chart._innerHeight * chart._innerWidth;
+
+    var totalBubbleArea = 0;
+    for (var i = 0; i < data.length; i++) {
+        var bubbleArea = Math.pow(data[i].radiusBy, 2) * Math.PI;
+        totalBubbleArea += bubbleArea;
+    }
+    var bubbleDividerOrMultiplier = (viewportArea/totalBubbleArea)/data.length;
+    // var bubbleDividerOrMultiplier = totalBubbleArea/viewportArea;
+    console.log(totalBubbleArea * bubbleDividerOrMultiplier)
+    console.log(viewportArea/totalBubbleArea)
+    console.log(totalBubbleArea)
+    console.log(viewportArea)
 
     var chartData = [];
     var densityMatrix = this.getDensityMatrix(data);
@@ -72,7 +85,8 @@ scatterplot.view.standard.prototype.render = function (data) {
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
         .data(chartData.map(function (d) {
-            d.radius = Math.sqrt(d.radiusBy *4/Math.PI);
+            d.radius = Math.sqrt((Math.pow(d.radiusBy, 2) * Math.PI) * bubbleDividerOrMultiplier);
+            console.log(d.radius)
             return d;
         }), function (d) {
             return d.id;
