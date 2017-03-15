@@ -43,7 +43,7 @@ angular.module('arraysApp')
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
                     $scope.primaryAction.disabled = false;
-                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
                     $scope.primaryAction.do = $scope.submitForm;
 
                     /**
@@ -306,6 +306,14 @@ angular.module('arraysApp')
                                     .position('top right')
                                     .hideDelay(3000)
                                 );
+
+                                if (dataset.firstImport) {
+                                    $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
+                                        reload: true,
+                                        inherit: false,
+                                        notify: true
+                                    });
+                                }
 
                             }
                         }, function(err) {

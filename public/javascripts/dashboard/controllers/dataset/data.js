@@ -74,7 +74,7 @@ angular.module('arraysApp')
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
                 if (dirty) {
                     // $scope.primaryAction.disabled = false;
-                    $scope.primaryAction.text = 'Save';
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
                     $scope.primaryAction.do = function() {
                         $scope.submitForm($scope.formValidity);
                     };
@@ -506,17 +506,18 @@ angular.module('arraysApp')
                     $scope.submitting = true;
 
                     var errorHandler = function (error) {
-                            $scope.submitting = false;
-                            $mdToast.show(
+                        $scope.submitting = false;
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(3000)
-                            );
-                        }, done = function() {
-                            $scope.submitting = false;
+                        );
+                    };
+                    var done = function() {
+                        $scope.submitting = false;
 
-                            $mdToast.show(
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Visualization updated!')
                                 .position('top right')
@@ -525,7 +526,7 @@ angular.module('arraysApp')
 
                         _nextTab();
 
-                        };
+                    };
 
                     var queue = [];
 
