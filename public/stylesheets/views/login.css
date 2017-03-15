@@ -110,6 +110,10 @@ div.signup-link {
     display: block;
 }
 
+#login-submit + span {
+    padding-left: 4px;
+}
+
 /* Dedicated Login Page */
 .login-page #login-modal {
     display: block !important;
