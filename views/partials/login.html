@@ -42,29 +42,26 @@
 
 
             <form id="loginForm" autocomplete="off" method="POST">
-                  <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                    <input type="text" class="form-control" name="email" placeholder="Email address">
-                 </div>
-                 <span class="help-block"></span>
-                 <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                    <input id="passwordInput" type="password" class="form-control" name="password" placeholder="Password">
-                 </div>
-                  <span class="help-block"></span>
 
-                  <div>
+                <input type="text" class="form-control" name="email" placeholder="Email address">
+                <span class="help-block"></span>
+
+                <input id="passwordInput" type="password" class="form-control" name="password" placeholder="Password">
+
+                <span class="help-block"></span>
+
+                <div>
                     <a href="/reset" class="block-pull-right">  Forgot Password?  </a>
-                 </div>
+                </div>
 
-                  <div>
+                <div>
                     <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
 
                     {% if env.NODE_ENV !== 'production' %}
                     <span>or</span>
                      <a href="/signup/email" class="signup-link"> create an account </a>
                     {% endif %}
-                  </div>
+                </div>
             </form>
 
             {% if env.NODE_ENV !== 'enterprise' %}
