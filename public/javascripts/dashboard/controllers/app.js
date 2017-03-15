@@ -16,6 +16,9 @@ angular
             function(event, toState, toParams, fromState, fromParams){
                 // workaround for ui-sref-active bug
                 $scope.currentMenuItem = $scope.$state.current.name.split('.')[1];
+
+                // Update Intercom state
+                window.Intercom('update');
             });
 
             /**
@@ -93,6 +96,9 @@ angular
             $scope.updateSubdomain();
 
             $scope.logout = function() {
+                // Shut down Intercom when loggin out
+                window.Intercom('shutdown');
+
                 AuthService.logout();
             };
 
