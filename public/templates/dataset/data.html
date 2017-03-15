@@ -3,8 +3,8 @@
 
         <h2>Format Your Content</h2>
 
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
-            <label>Select the field you'd like to use as a title for each item</label>
+        <label>Select the field you'd like to use as a title for each item&thinsp;*</label>
+        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk>
             <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
                        ng-model="data.objectTitle"
                        >

@@ -440,6 +440,9 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+                // TODO Put object title <label> back in <md-input-container>
+                // and set objectTitle default as first field (below).
+                // In initial attempts, $scope.data.objectTitle was not being properly saved.
                 $scope.data.objectTitle = dataset.objectTitle;
                 $scope.data.fe_image = dataset.fe_image;
 
