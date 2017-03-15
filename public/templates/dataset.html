@@ -1,16 +1,9 @@
-<!-- <div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.done') && dataset.imported }">
-You have unsaved changes. <a class="pointer" ng-click="processData()">Process data</a> to save and publish changes.
-</div> -->
 <div class="process-data" ng-class="{ 'show': $state.is('dashboard.dataset.views') && !dataset.sample && tutorial.message == 'DRAFT' }"><!--
--->Preview your views by clicking &thinsp;<i class="fa fa-eye }}" aria-hidden="true"></i>.
-Changes will not be published until saved.
-</div>
+-->Preview changes by clicking&ensp;<i class="fa fa-eye }}" aria-hidden="true"></i></div>
 <div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }">{{ tutorial.message }}</div>
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start" ng-if="!$state.is('dashboard.dataset.new')">
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Visualization Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Visualization' }}</h1>
-
-
 
     <div>
         <md-button ng-show="secondaryAction.text && ($state.is('dashboard.dataset.data') || $state.is('dashboard.dataset.views') || $state.is('dashboard.dataset.settings'))"
