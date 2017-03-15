@@ -1,7 +1,7 @@
 
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService',
-        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', '$window', 'viewUrlService',
+        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, $window, viewUrlService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
@@ -36,6 +36,7 @@ angular.module('arraysApp')
 
             $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
 
+
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
@@ -43,17 +44,14 @@ angular.module('arraysApp')
             $scope.tutorial.message = 'Here you can add one or more data sources.\nIn this example, a spreadsheet has already been uploaded. Click \'Next\' to continue.';
 
             $scope.$watch('dataset.connection.tableName', function(hasTable) {
-
                 if (!dataset.fileName) {
-
-
                     $scope.primaryAction.disabled = !(hasTable && hasTable !== null && $scope.isConnecting !== true);
                 }
             });
 
-            $scope.primaryAction.do = function() {
+            var _save = function() {
                 if (dataset.firstImport == 1) dataset.firstImport = 2;
-                
+
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
                 delete finalizedDataset.__v;
@@ -67,6 +65,13 @@ angular.module('arraysApp')
                     });
                 });
             };
+
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
+            };
+
+            $scope.primaryAction.do = dataset.firstImport ? _save : _viewViz;
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);

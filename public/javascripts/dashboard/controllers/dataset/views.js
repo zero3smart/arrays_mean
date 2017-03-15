@@ -16,7 +16,8 @@ angular.module('arraysApp')
                 $scope.primaryAction.text = '';
             }
 
-            if (previewCopy && !dataset.firstImport) $scope.secondaryAction.disabled = false;
+            // never needs to be disabled--if it is not needed, it is hidden
+            $scope.secondaryAction.disabled = false;
 
             // primary actions
             var _nextTab = function() {
