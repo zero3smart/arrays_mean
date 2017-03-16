@@ -7,6 +7,9 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
+            $scope.discardChangesThisView = angular.noop;
+            $scope.setRemindUserUnsavedChanges(false);
+
             /** if not enterprise, skip option links (only one choice of CSV)
              *  and go straight to CSV upload
              *  until database is a public option and JSON is supported

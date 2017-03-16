@@ -8,7 +8,6 @@ angular.module('arraysApp')
             $rootScope.$on('$stateChangeStart',
                 function(event, toState){
                     $scope.currentStep = toState.name;
-                    window.removeEventListener('beforeunload', beforeUnloadMessage, false);
                 }
             );
 
@@ -19,25 +18,6 @@ angular.module('arraysApp')
             $scope.secondaryAction = {
                 disabled: true
             };
-
-            /**
-             * If dataset is "dirty", show browser dialog to remind user to save changes
-             * These event listeners only check for navigation outside of the dashboard or page refresh.
-             */
-            function beforeUnloadMessage(e) {
-                // show this message, if browser allows custom text (not any modern browsers)
-                var dialogText = 'You have unsaved changes. Are you sure you want to leave this page?';
-                e.returnValue = dialogText;
-                return dialogText;
-            }
-            $scope.$watch('dataset.dirty', function(dirty) {
-                if(dirty) {
-                    window.addEventListener('beforeunload', beforeUnloadMessage, false);
-                }
-                else {
-                    window.removeEventListener('beforeunload', beforeUnloadMessage, false);
-                }
-            });
 
 
             /**
@@ -62,16 +42,15 @@ angular.module('arraysApp')
 
             $scope.navigate = function(step) {
                 // Don't open dialog when navigating to process data
-                if(step !== 'dashboard.dataset.process' && $scope.dataset.dirty) {
+                if($scope.remindUserUnsavedChanges) {
                     var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes
-                        $scope.secondaryAction.do(); // from reset() data.js
+                        $scope.discardChangesThisView();
+                        $scope.setRemindUserUnsavedChanges(false);
                         $scope.navigateAndSave(step);
                     }, function() {
                         // TODO Labeled "Continue Editing" but should process data
-                        // Disabled for now as it doesn't check if objectTitle exists.
-                        // Once objectTitle has a default, we can safely do this
                         // $scope.processData();
                     });
                 } else {
@@ -81,16 +60,16 @@ angular.module('arraysApp')
 
             $scope.navigateAndSave = function(step) {
 
-                var errorHandler = function (error) {
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent(error)
-                            .position('top right')
-                            .hideDelay(3000)
-                    );
-                };
-
-                var done = function() {
+                // var errorHandler = function (error) {
+                //     $mdToast.show(
+                //         $mdToast.simple()
+                //             .textContent(error)
+                //             .position('top right')
+                //             .hideDelay(3000)
+                //     );
+                // };
+                //
+                // var done = function() {
 
                     $scope.currentStep = step;
                     switch (step) {
@@ -116,49 +95,49 @@ angular.module('arraysApp')
                         $location.path('/dashboard/dataset/process/' + $scope.dataset._id);
                         break;
                     }
-                };
+                // };
 
-                var queue = [];
+                // var queue = [];
+                //
+                // var finalizedDataset = angular.copy($scope.dataset);
+                // delete finalizedDataset.columns;
+                // delete finalizedDataset.__v;
+                //
+                // queue.push(DatasetService.save(finalizedDataset));
+                //
+                // if ($scope.additionalDatasources) {
+                //     $scope.additionalDatasources.forEach(function(datasource) {
+                //         var finalizedDatasource = angular.copy(datasource);
+                //         delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
+                //         delete finalizedDatasource.raw_rowObjects_coercionScheme;
+                //         delete finalizedDatasource._otherSources;
+                //         delete finalizedDatasource._team;
+                //         delete finalizedDatasource.title;
+                //         delete finalizedDatasource.__v;
+                //         delete finalizedDatasource.importRevision;
+                //         delete finalizedDatasource.author;
+                //         delete finalizedDatasource.updatedBy;
+                //         delete finalizedDatasource.brandColor;
+                //         delete finalizedDatasource.customFieldsToProcess;
+                //         delete finalizedDatasource.urls;
+                //         delete finalizedDatasource.description;
+                //         delete finalizedDatasource.objectTitle;
+                //         delete finalizedDatasource.fe_excludeFields;
+                //         delete finalizedDatasource.fe_displayTitleOverrides;
+                //         delete finalizedDatasource.fe_fieldDisplayOrder;
+                //         delete finalizedDatasource.imageScraping;
+                //         delete finalizedDatasource.isPublic;
+                //         delete finalizedDatasource.fe_views;
+                //         delete finalizedDatasource.fe_filters;
+                //         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
+                //
+                //         queue.push(DatasetService.save(finalizedDatasource));
+                //     });
+                // }
 
-                var finalizedDataset = angular.copy($scope.dataset);
-                delete finalizedDataset.columns;
-                delete finalizedDataset.__v;
-
-                queue.push(DatasetService.save(finalizedDataset));
-
-                if ($scope.additionalDatasources) {
-                    $scope.additionalDatasources.forEach(function(datasource) {
-                        var finalizedDatasource = angular.copy(datasource);
-                        delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
-                        delete finalizedDatasource.raw_rowObjects_coercionScheme;
-                        delete finalizedDatasource._otherSources;
-                        delete finalizedDatasource._team;
-                        delete finalizedDatasource.title;
-                        delete finalizedDatasource.__v;
-                        delete finalizedDatasource.importRevision;
-                        delete finalizedDatasource.author;
-                        delete finalizedDatasource.updatedBy;
-                        delete finalizedDatasource.brandColor;
-                        delete finalizedDatasource.customFieldsToProcess;
-                        delete finalizedDatasource.urls;
-                        delete finalizedDatasource.description;
-                        delete finalizedDatasource.objectTitle;
-                        delete finalizedDatasource.fe_excludeFields;
-                        delete finalizedDatasource.fe_displayTitleOverrides;
-                        delete finalizedDatasource.fe_fieldDisplayOrder;
-                        delete finalizedDatasource.imageScraping;
-                        delete finalizedDatasource.isPublic;
-                        delete finalizedDatasource.fe_views;
-                        delete finalizedDatasource.fe_filters;
-                        delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
-
-                        queue.push(DatasetService.save(finalizedDatasource));
-                    });
-                }
-
-                $q.all(queue)
-                    .then(done)
-                    .catch(errorHandler);
+                // $q.all(queue)
+                //     .then(done)
+                //     .catch(errorHandler);
             };
 
             $scope.processData = function() {

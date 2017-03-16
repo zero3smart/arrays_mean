@@ -20,8 +20,14 @@ angular
 
             /**
              * Nag user if dataset is dirty and needs to be processed
-             * Returns promise
              */
+            $scope.remindUserUnsavedChanges = false;
+
+            /**
+             * Set this per view to discard changes, i.e. reset()
+             */
+            $scope.discardChangesThisView = angular.noop;
+
             $scope.openUnsavedChangesDialog = function(cancelText) {
                 return $mdDialog.show({
                     controller: unsavedChangesDialogCtrl,
@@ -37,10 +43,12 @@ angular
 
             /** If dataset is dirty, remind user to save before navigating away */
             $scope.sidebarNavigate = function(state) {
-                if($scope.currentMenuItem == 'dataset' && $scope.dataset.dirty) {
+                if($scope.remindUserUnsavedChanges) {
                     var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes
+                        $scope.discardChangesThisView();
+                        $scope.setRemindUserUnsavedChanges(false);
                         $state.go(state);
                     }, function() {
                         // Continue editing
@@ -59,6 +67,31 @@ angular
                     $mdDialog.cancel();
                 };
             }
+
+            $scope.setRemindUserUnsavedChanges = function(bool) {
+                $scope.remindUserUnsavedChanges = bool;
+                // also set event listeners here
+            };
+
+            /**
+             * If dataset is "dirty", show browser dialog to remind user to save changes
+             * These event listeners only check for navigation outside of the dashboard or page refresh.
+             */
+            // function beforeUnloadMessage(e) {
+            //     // show this message, if browser allows custom text (not any modern browsers)
+            //     var dialogText = 'You have unsaved changes. Are you sure you want to leave this page?';
+            //     e.returnValue = dialogText;
+            //     return dialogText;
+            // }
+            // $scope.$watch('dataset.dirty', function(dirty) {
+            //     if(dirty) {
+            //         window.addEventListener('beforeunload', beforeUnloadMessage, false);
+            //     }
+            //     else {
+            //         window.removeEventListener('beforeunload', beforeUnloadMessage, false);
+            //     }
+            // });
+
 
             $scope.user = AuthService.currentUser();
 
@@ -82,7 +115,7 @@ angular
                     $scope.subdomain = $scope.explore_url;
                 } else {
 
-                    $scope.subdomain = $location.protocol() +  '://' + $scope.team.subdomain + '.'+  env.host;
+                    $scope.subdomain = $location.protocol() +  '://' + $scope.team.subdomain + '.' +  env.host;
 
 
                 }
@@ -105,9 +138,9 @@ angular
             function buildCloser(navID) {
                 return function() {
                     $mdSidenav(navID).close()
-                    .then(function() {
-                        document.getElementById('leftNav').blur();
-                    });
+                        .then(function() {
+                            document.getElementById('leftNav').blur();
+                        });
                 };
             }
             function buildToggler(navID) {

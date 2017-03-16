@@ -23,6 +23,8 @@ angular.module('arraysApp')
             });
 
             $scope.$watch('vm.settingsForm.$dirty', function(dirty) {
+                $scope.setRemindUserUnsavedChanges(dirty);
+
                 if (dirty) {
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = _submitForm;
@@ -40,11 +42,20 @@ angular.module('arraysApp')
                 }
             }, true);
 
-            $scope.$watch('dataset.brandColor', function(color) {
-                if(dataset.imported) {
-                    DatasetService.update($scope.$parent.$parent.dataset._id,{brandColor: dataset.brandColor});
+            $scope.discardChangesThisView = angular.noop; // $state.reload doesn't make sense if you're navigating away
+
+            /**
+             * Commenting out for now as we are no longer auto-updating these settings
+             * and give the user the option to revert changes.
+             */
+            $scope.$watch('dataset.brandColor', function (newValue, oldValue) {
+                if(newValue !== oldValue) {
+                    $scope.vm.settingsForm.$setDirty();
                 }
-            }, true)
+                // if(dataset.imported) {
+                //     DatasetService.update($scope.$parent.$parent.dataset._id, {brandColor: dataset.brandColor});
+                // }
+            }, true);
 
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 

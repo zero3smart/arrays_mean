@@ -228,7 +228,7 @@ angular.module('arraysApp')
                             // hide 'Advanced' tabs from all but superAdmin
                             viewTabs: data.tabs.filter(function (tabName){
                                 if(data.name == 'wordCloud') {
-                                    return tabName !== 'Menus'
+                                    return tabName !== 'Menus';
                                 }
                                 if(user.role !== 'superAdmin') {
                                     return tabName !== 'Advanced';
