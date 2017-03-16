@@ -727,29 +727,6 @@ angular.module('arraysApp')
                         $scope.dataset.fe_views.default_view = viewName;
                     }
 
-                    if ($scope.isDefault) {
-                        if ($scope.isCustomView) {
-                            $scope.dataset.useCustomView = true;
-                        }
-
-                    } else {
-                        if ($scope.isCustomView && $scope.data.visible) {
-                            $scope.dataset.useCustomView = true;
-                        }
-
-                    }
-
-                    if ($scope.isCustomView) {
-                        if ($scope.dataset.useCustomView) {
-                            if (!$scope.data.visible) {
-                                $scope.dataset.useCustomView = false;
-                            }
-                        } else {
-                            if ($scope.data.visible || $scope.isDefault) {
-                                $scope.dataset.useCustomView = true;
-                            }
-                        }
-                    }
 
                     $scope.dataset.fe_views.views[viewName] = $scope.data;
 

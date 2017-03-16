@@ -3,9 +3,9 @@
 
         <h2>Format Your Content</h2>
 
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
+        <md-input-container ng-hide="dataset.connection || team.isEnterprise" class="md-block" md-no-asterisk style="margin-top: 48px">
             <label>Select the field you'd like to use as a title for each item</label>
-            <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
+            <md-select ng-required="!dataset.connection && !team.isEnterprise" name="ObjectTitle" aria-label="Item title"
                        ng-model="data.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
@@ -14,7 +14,7 @@
             </md-select>
         </md-input-container>
 
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
+        <md-input-container ng-hide="dataset.connection || team.isEnterprise" class="md-block" md-no-asterisk style="margin-top: 48px">
             <label>Select the field you'd like to use as an image for each item (optional)</label>
             <md-select name="image field" aria-label="Item title"
                        ng-model="data.fe_image.field" ng-change="updateOverwrite()">
@@ -39,7 +39,7 @@
         <!-- <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3> -->
 
         <div layout="row" layout-align="start center" style="margin-bottom: 16px">
-            <md-button ng-hide="dataset.connection" class="md-dashboard" ng-click="openFabricatedFilterDialog()">
+            <md-button ng-hide="dataset.connection || team.isEnterprise" class="md-dashboard" ng-click="openFabricatedFilterDialog()">
                 <span class="btn-label">Edit Filters</span>
             </md-button>
 
@@ -51,7 +51,8 @@
 
             <span flex="5"></span> -->
 
-            <md-menu ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('contentMenu') > -1 ) && !dataset.connection">
+            <md-menu ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('contentMenu') > -1 ) && !dataset.connection &&
+                !team.isEnterprise">
                 <md-button class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu()">
                     <span class="btn-label">More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></span></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
@@ -83,7 +84,7 @@
         <div layout="row" layout-align="space-between center" class="no-padding">
             <h4>We found these fields in your data source:</h4>
         </div>
-        <div layout="row" layout-align="space-between center" class="no-padding">
+        <div layout="row" ng-hide="dataset.connection || team.isEnterprise " layout-align="space-between center" class="no-padding">
             <md-button class="md-dashboard" ng-click="toggleExclude(excludeAll)">
                 {{ excludeAll ? 'Exclude' : 'Include' }} all fields
             </md-button>
@@ -98,12 +99,13 @@
             <li ng-repeat="field in data.fields" ng-class="{'custom': field.custom}"
                 layout="row" layout-align="space-between center">
 
-                <span class="order dashboard-list-icon" ng-hide="dataset.connection" aa-tooltip="Drag to re-order" flex="10">
+                <span class="order dashboard-list-icon" ng-hide="dataset.connection || 
+                team.isEnterprise" aa-tooltip="Drag to re-order" flex="10">
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
 
                 <span flex="10" aa-tooltip="{{ dataset.fe_excludeFields[field.name] ? 'Include field' : 'Exclude field' }}">
-                    <md-checkbox ng-hide="dataset.connection" name="fe_excludeFields_{{$index}}"
+                    <md-checkbox ng-hide="dataset.connection || team.isEnterprise " name="fe_excludeFields_{{$index}}"
                              ng-model="dataset.fe_excludeFields[field.name]"
                              ng-true-value="false"
                              ng-false-value="true"
@@ -128,13 +130,13 @@
                     </span>
                 </span>
 
-                <span ng-hide="dataset.connection" flex="5" class="field-data-type">
+                <span ng-hide="dataset.connection || team.isEnterprise " flex="5" class="field-data-type">
                     {{ coercionScheme[field.name] | typeCoercionToString: field.data_type }}
                 </span>
 
                 <span flex="10"></span>
 
-                <span class="dashboard-list-icon obj-detail-toggle" flex="10"
+                <span ng-hide="dataset.connection || team.isEnterprise " class="dashboard-list-icon obj-detail-toggle" flex="10"
                     aa-tooltip="{{ dataset.fe_excludeFieldsObjDetail[field.name] ? 'Include field in' : 'Exclude field from' }} object detail"
                     ng-click="toggleObjectDetailDisplay(field.name)">
                     <span class="fa-stack">
@@ -143,7 +145,7 @@
                     </span>
                 </span>
 
-                <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
+                <span ng-hide="dataset.connection || team.isEnterprise " class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
 
                     ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex,
                     null,$index)">

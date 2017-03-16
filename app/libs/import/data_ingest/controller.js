@@ -21,7 +21,7 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
         function (dataSourceDescription, eachCb) {
 
             
-            if (dataSourceDescription.useCustomView) {
+            if (dataSourceDescription._team.isEnterprise) {
 
                 var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
                 if (typeof controller.ParseAndImportRaw !== 'undefined') {
@@ -140,7 +140,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                 return callback(err);
             }
 
-            if (dataSourceDescription.useCustomView) {
+            if (dataSourceDescription._team.isEnterprise) {
 
                  var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
 

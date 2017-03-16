@@ -62,6 +62,8 @@ angular.module('arraysApp')
 
             $scope.navigate = function(step) {
                 // Don't open dialog when navigating to process data
+
+
                 if(step !== 'dashboard.dataset.process' && $scope.dataset.dirty) {
                     var dialogPromise = $scope.openUnsavedChangesDialog('Save changes');
                     dialogPromise.then(function() {

@@ -17,7 +17,8 @@ var team_scheme = Schema({
     superTeam: Boolean,
     admin: { type: Schema.Types.ObjectId, ref: 'User' },
     datasourceDescriptions: [{ type: Schema.Types.ObjectId, ref: 'DatasourceDescription' }],
-    subscription: Object
+    subscription: Object,
+    isEnterprise: Boolean //if true, means it has custom view
 }, { timestamps: true });
 
 

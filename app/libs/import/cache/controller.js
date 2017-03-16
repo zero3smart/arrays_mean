@@ -100,7 +100,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
       
 
 
-        if (dataSourceDescription.useCustomView) {
+        if ( dataSourceDescription._team.isEnterprise) {
 
             var controller = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import');
 

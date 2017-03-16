@@ -12,8 +12,8 @@
             </button>
         </li>
 
-<md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="dataset.objectTitle ||
-    dataset.connection">
+<md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show=" ( (dataset.objectTitle ||
+    team.isEnterprise) && dataset.imported ) || dataset.connection">
         Views</md-nav-item>
     <li role="option" aria-selected="false" aria-hidden="false">
         <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="

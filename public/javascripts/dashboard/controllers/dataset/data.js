@@ -52,7 +52,8 @@ angular.module('arraysApp')
                 if (validity !== undefined) {
 
                     $scope.formValidity = validity;
-                    if (dataset.connection) {
+        
+                    if (dataset.connection || $scope.team.isEnterprise == true) {
                         $scope.primaryAction.disabled = false;
                     } else {
                         $scope.primaryAction.disabled = !validity;
@@ -66,10 +67,13 @@ angular.module('arraysApp')
             });
 
             $scope.$watch('vm.dataForm.$dirty',function(dirty) {
-                $scope.primaryAction.disabled = !dirty;
+
+
+                if (!dataset.connection && $scope.team.isEnterprise == false) $scope.primaryAction.disabled = !dirty;
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
+
             });
 
 

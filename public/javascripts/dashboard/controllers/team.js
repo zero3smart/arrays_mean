@@ -135,6 +135,7 @@ angular
                 }
 
                 $scope.createTeam = function() {
+                    if ($scope.newTeam.isEnterprise == true) $scope.newTeam.superTeam = true;
                     var team = new Team($scope.newTeam);
                     team.$save(function(team) {
 
