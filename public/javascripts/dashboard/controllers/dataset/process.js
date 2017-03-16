@@ -19,31 +19,31 @@ angular.module('arraysApp')
                 }
 
 
-                if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active' ||
-                    $scope.jobs[$scope.jobs.length-1].state == 'inactive') {
+                if (!$scope.jobs[$scope.jobs.length - 1].state || $scope.jobs[$scope.jobs.length - 1].state == 'active' ||
+                    $scope.jobs[$scope.jobs.length - 1].state == 'inactive') {
 
-                    Job.get({id:$scope.currentJobId}).$promise.then(function(job) {
+                    Job.get({id: $scope.currentJobId}).$promise.then(function(job) {
 
 
-                        job.log = $scope.jobs[$scope.jobs.length -1].log;
+                        job.log = $scope.jobs[$scope.jobs.length - 1].log;
 
-                        $scope.jobs[$scope.jobs.length -1] = job;
+                        $scope.jobs[$scope.jobs.length - 1] = job;
 
-                        Job.getLog({id:$scope.currentJobId}).$promise
-                        .then(function(logs) {
-                            $scope.jobs[$scope.jobs.length -1].log = logs[logs.length-1];
+                        Job.getLog({id: $scope.currentJobId}).$promise
+                            .then(function(logs) {
+                                $scope.jobs[$scope.jobs.length - 1].log = logs[logs.length - 1];
 
-                            $timeout(function() {
-                                getJobAndLog(datasetId);
-                            },2000);
-                        });
+                                $timeout(function() {
+                                    getJobAndLog(datasetId);
+                                }, 2000);
+                            });
                     });
 
-                } else if ($scope.jobs[$scope.jobs.length-1].state == 'complete'){
+                } else if ($scope.jobs[$scope.jobs.length - 1].state == 'complete'){
 
                     getJobStatus(datasetId);
 
-                } else if ($scope.jobs[$scope.jobs.length-1].state == 'failed') {
+                } else if ($scope.jobs[$scope.jobs.length - 1].state == 'failed') {
                     $scope.inProgress = false;
                 }
 
@@ -77,23 +77,23 @@ angular.module('arraysApp')
 
 
                 DatasetService.getJobStatus(datasetId)
-                .then(function(job) {
+                    .then(function(job) {
 
 
-                    if (job.id == 0) {
+                        if (job.id == 0) {
 
-                        lastStep();
+                            lastStep();
 
-                    } else {
+                        } else {
 
-                        if (typeof $scope.currentJobId == 'undefined' || $scope.currentJobId !== job.id) {
-                            $scope.currentJobId = job.id;
-                            $scope.jobs.push({});
+                            if (typeof $scope.currentJobId == 'undefined' || $scope.currentJobId !== job.id) {
+                                $scope.currentJobId = job.id;
+                                $scope.jobs.push({});
+                            }
+
+                            getJobAndLog(datasetId);
                         }
-
-                        getJobAndLog(datasetId);
-                    }
-                });
+                    });
 
 
             }
@@ -154,20 +154,20 @@ angular.module('arraysApp')
             function scrapeImages(id) {
 
                 DatasetService.scrapeImages(id)
-                .then(function (response) {
-                    if (response.status == 200 && !response.data.error) {
+                    .then(function (response) {
+                        if (response.status == 200 && !response.data.error) {
 
-                        $timeout(function() {
-                            getJobStatus(id);
-                        }, 1000);
+                            $timeout(function() {
+                                getJobStatus(id);
+                            }, 1000);
 
 
-                    } else {
+                        } else {
 
-                        errorHandler(response);
+                            errorHandler(response);
 
-                    }
-                }, errorHandler);
+                        }
+                    }, errorHandler);
 
             }
 
@@ -215,7 +215,18 @@ angular.module('arraysApp')
                         .hideDelay(3000)
                 );
 
-                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                // only progress if first import, otherwise return to Content tab
+                var nextState;
+
+                if ( $scope.$parent.$parent.dataset.firstImport ) {
+                // if ( $scope.$parent.$parent.dataset.firstImport == 2 ) {
+                    // $scope.$parent.$parent.dataset.firstImport = 3;
+                    nextState = 'dashboard.dataset.views';
+                } else {
+                    nextState = 'dashboard.dataset.data';
+                }
+
+                $state.transitionTo(nextState, {id: dataset._id}, {
                     reload: true,
                     inherit: false,
                     notify: true
@@ -301,26 +312,24 @@ angular.module('arraysApp')
             $scope.currentJobId = undefined;
 
             DatasetService.getReimportDatasets(dataset._id)
-            .then(function(datasets) {
+                .then(function(datasets) {
 
-                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
+                    $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
 
-                $scope.additionalDatasources.map(function(ds) {
+                    $scope.additionalDatasources.map(function(ds) {
 
 
-                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName};
+                        $scope.datasetsToProcess[ds._id] = {uid: ds.fileName};
+                    });
                 });
-            });
 
 
-            $scope.dirty = dataset.connection? 0: $scope.$parent.$parent.dataset.dirty;
+            $scope.dirty = dataset.connection ? 0 : $scope.$parent.$parent.dataset.dirty;
 
-            $scope.imported =  dataset.connection? true: $scope.$parent.$parent.dataset.imported;
-
+            $scope.imported =  dataset.connection ? true : $scope.$parent.$parent.dataset.imported;
 
 
             $scope.additionalDatasources.forEach(function(datasource) {
-
 
 
                 if ($scope.dirty == 0 && datasource.dirty > 0) {
