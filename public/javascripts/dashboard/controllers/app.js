@@ -41,7 +41,6 @@ angular
                 });
             };
 
-            /** If dataset is dirty, remind user to save before navigating away */
             $scope.sidebarNavigate = function(state) {
                 if($scope.remindUserUnsavedChanges) {
                     var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
@@ -68,29 +67,25 @@ angular
                 };
             }
 
-            $scope.setRemindUserUnsavedChanges = function(bool) {
-                $scope.remindUserUnsavedChanges = bool;
-                // also set event listeners here
-            };
-
             /**
-             * If dataset is "dirty", show browser dialog to remind user to save changes
+             * If remindUserUnsavedChanges, show browser dialog to remind user to save changes.
              * These event listeners only check for navigation outside of the dashboard or page refresh.
              */
-            // function beforeUnloadMessage(e) {
-            //     // show this message, if browser allows custom text (not any modern browsers)
-            //     var dialogText = 'You have unsaved changes. Are you sure you want to leave this page?';
-            //     e.returnValue = dialogText;
-            //     return dialogText;
-            // }
-            // $scope.$watch('dataset.dirty', function(dirty) {
-            //     if(dirty) {
-            //         window.addEventListener('beforeunload', beforeUnloadMessage, false);
-            //     }
-            //     else {
-            //         window.removeEventListener('beforeunload', beforeUnloadMessage, false);
-            //     }
-            // });
+            function beforeUnloadMessage(e) {
+                // show this message, if browser allows custom text (not any modern browsers)
+                var dialogText = 'You have unsaved changes. Are you sure you want to leave this page?';
+                e.returnValue = dialogText;
+                return dialogText;
+            }
+
+            $scope.setRemindUserUnsavedChanges = function(bool) {
+                $scope.remindUserUnsavedChanges = bool;
+                if (bool) {
+                    window.addEventListener('beforeunload', beforeUnloadMessage, false);
+                } else {
+                    window.removeEventListener('beforeunload', beforeUnloadMessage, false);
+                }
+            };
 
 
             $scope.user = AuthService.currentUser();
