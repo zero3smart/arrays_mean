@@ -30,6 +30,8 @@ if (noiseLevel < 10) {
     maxRadius = 10;
 }
 
+if(coordMinMax.max - coordMinMax.min == 0) applyCoordRadius = false;
+
 /**
  * Logarithmic scale
  */

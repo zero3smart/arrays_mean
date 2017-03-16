@@ -1,10 +1,9 @@
-<form name="vm.settingsForm" ng-submit="submitForm(vm.settingsForm.$valid)" novalidate ng-if="dataset.uid">
+<form name="vm.settingsForm" ng-submit="submitForm()" novalidate ng-if="dataset.uid">
     <md-content layout-padding md-no-ink>
 
         <h2>Display Settings</h2>
 
         <h4 class="no-padding">Change your display and publishing settings below.</h4>
-
 
         <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Title</label>
@@ -21,29 +20,18 @@
         <md-input-container class="md-block publish-settings">
             <label style="margin-bottom: 15px">Privacy settings</label>
 
-
-            <!-- <md-switch ng-model="dataset.fe_visible"
-                ng-change="updatePublishSettings()"
-                aria-label="Publish dataset">
-                Make dataset public
-            </md-switch> -->
-
             <md-switch ng-model="dataset.isPublic"
-                ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || dataset.sample"
                 aria-label="Make dataset public">
                 Allow anyone to view visualization (not only registered users)
             </md-switch>
 
             <md-switch ng-model="dataset.fe_listed"
-                ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic || dataset.sample"
                 aria-label="List dataset">
                 List visualization on your team page
             </md-switch>
         </md-input-container>
-
-
 
         <md-input-container ng-if="(dataset.author | isSuperAdmin)" class="md-block publish-settings">
             <label style="margin-bottom: 15px" id="request-listing">List on arrays.co</label>
@@ -67,10 +55,6 @@
             <p ng-if="!(dataset.author | isSuperAdmin) && !dataset.state">Visualization must be imported and listed on team page before making a request to list on array.co.</p>
         </div>
 
-        <!-- <div ng-if="dataset.state && user.role !== 'superAdmin'">
-            <h3>Request State: {{dataset.state}}</h3>
-        </div> -->
-
         <div ng-if="user.role=='superAdmin' && dataset.state && !(dataset.author | isSuperAdmin) " >
             <h3>Request {{dataset.state}}</h3>
             <md-button class="md-dashboard" aria-label="Approve Listing On Arrays.co" ng-disabled="dataset.state == 'approved'"
@@ -82,29 +66,6 @@
                 Disapprove
             </md-button>
         </div>
-
-        <!-- <md-input-container class="md-block md-input-has-placeholder">
-            <label>URL</label>
-            <div layout="row" layout-align="start center">
-                <span class="input-prepend">{{team.subdomain}}.arrays.co/</span>
-                <input required name="url" ng-model="dataset.url" ng-pattern="/^[a-z0-9\-\_]*$/" />
-            </div>
-            <div ng-messages="settingsForm.url.$error">
-                <p ng-message="required">This field is required.</p>
-			    <p ng-message="pattern">Must be lowercase and contain no whitespace.</p>
-            </div>
-        </md-input-container> -->
-
-        <!-- <md-input-container class="md-block">
-            <label>Import Revision (Only Available at the first import)</label>
-            <input type="number" min="1" required name="importRevision"
-                   ng-model="dataset.importRevision" ng-readonly="dataset.imported"/>
-            <div ng-messages="settingsForm.importRevision.$error">
-                <div ng-message="required">This is required.</div>
-                <div ng-message="min">You should input at least 1.</div>
-            </div>
-
-        </md-input-container> -->
 
         <div>
             <label style="margin-bottom: 15px">Select a color for your visualization page</label>

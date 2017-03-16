@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js" ng-app="signupModule">
+    <head>
+
+        {% block headSuffix %}
+            <title>Arrays - Login</title>
+        {% endblock %}
+
+    </head>
+
+    <body>
+        <div class="container-fluid" style="margin-top: 30px">
+            <div class="row">
+                <img src="/images/arrays-logo-color-shapes.svg" alt="Arrays logo"
+                    class="img-responsive col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4" />
+                <h1 class="text-center col-xs-12 signup">Welcome To Arrays</h1>
+                <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+
+                    <div class="tab-content modal-body">
+
+            {% if flash.error %}
+
+             {% set error = flash.error | first %}
+             <div class="alert alert-danger">
+                {% if error.message== "activation pending"%}
+                    Your account has not been activated.
+                    <a class="alert-link pointer" href="{{error.link}}">Resend the activaton email</a>.
+                {% else %}
+                    {{error.message}}
+                {%endif%}
+            </div>
+            {% endif %}
+
+
+             {% if flash.success %}
+              {% set success = flash.success | first %}
+             <div class="alert alert-success">
+              <strong><i class="fa fa-check"></i> </strong> {{success.message}}
+            </div>
+            {% endif %}
+
+
+
+            <form id="loginForm" autocomplete="off" method="POST">
+
+                <input type="text" class="form-control" name="email" placeholder="Email address">
+                <span class="help-block"></span>
+
+                <input id="passwordInput" type="password" class="form-control" name="password" placeholder="Password">
+
+                <span class="help-block"></span>
+
+                <div>
+                    <a href="/reset" class="block-pull-right">  Forgot Password?  </a>
+                </div>
+
+                <div>
+                    <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
+
+                    {% if env.NODE_ENV !== 'production' %}
+                    <span>or</span>
+                     <a href="/signup/email" class="signup-link"> create an account </a>
+                    {% endif %}
+                </div>
+            </form>
+
+            {% if env.NODE_ENV !== 'enterprise' %}
+
+
+
+
+            <div class="row loginOr">
+              <div class="col-xs-12">
+                <hr class="hrOr">
+                <span class="spanOr">or</span>
+             </div>
+            </div>
+
+            <div class="row socialButtons">
+               <!-- <div class="col-xs-4">
+                  <a href="#" class="btn btn-block btn-facebook">
+                  <i class="fa fa-facebook"></i>
+                  </a>
+               </div>
+               <div class="col-xs-4">
+                  <a href="#" class="btn btn-block btn-twitter">
+                  <i class="fa fa-twitter"></i>
+                  </a>
+               </div> -->
+               <div class="col-xs-6 col-xs-offset-3">
+                  <a href="/auth/google" class="btn btn-block btn-google">
+                  <i class="fa fa-google-plus"></i> Google
+                  </a>
+               </div>
+            </div>
+
+            {% endif %}
+
+
+
+
+         </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    {% if env.FE_LIVERELOAD == "true" %}
+    <script src="//localhost:35729/livereload.js"></script>
+    {% endif %}
