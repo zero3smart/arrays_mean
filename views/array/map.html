@@ -116,14 +116,15 @@
                     max: {{ coordMinMax.max if coordMinMax else 0 }}
                 };
                 var galleryViewEnabled = {{ galleryViewEnabled }};
-                var applyCoordRadius = {{ applyCoordRadius }};
+                var applyCoordRadius = '{{ aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable}}';
                 var coordColor = '{{ coordColor }}';
                 var coordCol = '{{ coordCol }}'
                 var isCoordMap = {{ isCoordMap if isCoordMap else false }};
                 var geoData = {{ featureCollection | dump | safe }};
                 var coordData = {{ coordCollection | dump | safe }};
-                console.log(coordData.features[0]);
                 var filterObj = {{ filterObj | dump | safe }};
+                var noiseLevel = {{noiseLevel}};
+    
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,

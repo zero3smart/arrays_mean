@@ -226,7 +226,10 @@ angular.module('arraysApp')
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
                             // hide 'Advanced' tabs from all but superAdmin
-                            viewTabs: data.tabs.filter(function(tabName){
+                            viewTabs: data.tabs.filter(function (tabName){
+                                if(data.name == 'wordCloud') {
+                                    return tabName !== 'Menus'
+                                }
                                 if(user.role !== 'superAdmin') {
                                     return tabName !== 'Advanced';
                                 } else {

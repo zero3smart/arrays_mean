@@ -2,7 +2,9 @@
 
     <div ng-if="loaded">
 
-        <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+        <div ng-if="subscription.state !== 'expired'">
+            <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+        </div>
 
         <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left }} {{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
 

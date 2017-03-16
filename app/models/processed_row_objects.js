@@ -50,7 +50,6 @@ module.exports.New_templateForPersistableObject = function (rowObject_primaryKey
 
 var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (objectId) {
 
-
     var mongooseContext = MongooseContextsBySrcDocPKey[objectId];
     if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
         return mongooseContext;
@@ -255,7 +254,6 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
                         // console.log("Hasn't reached end of cursor")
                     }
                 }
-
                 //
                 //
                 var bulkOperationQueryFragment =
@@ -274,23 +272,12 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
     });
 }
 
-module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,datasetId,
-                                                                        generateFieldNamed,
-                                                                        isSingular,
-                                                                        findingMatchOnField,
-                                                                        joinDatasetId,
-                                                                        withLocalField,
-                                                                        obtainingValueFromField_orUndefined,
-                                                                        or_formingRelationship,
-                                                                        /*doesFieldMatch_fn, */
-                                                                        callback) {
+module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,datasetId, generateFieldNamed, isSingular, findingMatchOnField, joinDatasetId, withLocalField, obtainingValueFromField_orUndefined, or_formingRelationship, callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating field \"" + generateFieldNamed
             + "\" of \"" + datasetId
             + "\" by joining on \"" + findingMatchOnField
             + "\" of data source \"" + joinDatasetId + "\".");
-
-        
     
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
@@ -298,15 +285,12 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
         // var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
 
-
         var unwindQuery =  {
           $unwind: '$' + "rowParams." + withLocalField
         };
 
-
         var groupQuery = {$group:{}};
         groupQuery.$group["_id"] = "$rowParams." + withLocalField
-
 
         var select = {};
         select["_id"] = 1;

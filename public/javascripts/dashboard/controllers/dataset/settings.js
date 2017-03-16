@@ -40,6 +40,12 @@ angular.module('arraysApp')
                 }
             }, true);
 
+            $scope.$watch('dataset.brandColor', function(color) {
+                if(dataset.imported) {
+                    DatasetService.update($scope.$parent.$parent.dataset._id,{brandColor: dataset.brandColor});
+                }
+            }, true)
+
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
