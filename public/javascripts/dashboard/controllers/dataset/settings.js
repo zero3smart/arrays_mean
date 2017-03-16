@@ -38,7 +38,7 @@ angular.module('arraysApp')
                 }
             }, true);
 
-            $scope.discardChangesThisView = angular.noop; // $state.reload doesn't make sense if you're navigating away
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
 
             /**
              * Commenting out for now as we are no longer auto-updating these settings

@@ -3,6 +3,7 @@ angular
     .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav', 'env', '$mdDialog',
         function ($scope, $state, AuthService, $window, $location, $mdSidenav, env, $mdDialog) {
 
+console.log('load');
             $scope.env = env;
 
             $scope.currentMenuItem = '';

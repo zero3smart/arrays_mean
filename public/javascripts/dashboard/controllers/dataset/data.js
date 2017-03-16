@@ -46,7 +46,7 @@ angular.module('arraysApp')
                 $scope.reset();
             };
 
-            $scope.discardChangesThisView = $scope.reset;
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
 
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
             if(!dataset.fe_excludeFieldsObjDetail) {

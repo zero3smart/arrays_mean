@@ -58,6 +58,8 @@ angular.module('arraysApp')
                 if($scope.remindUserUnsavedChanges) {
                     var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
+                        console.log("here");
+                        console.log($scope.discardChangesThisView);
                         // Discard changes
                         $scope.discardChangesThisView();
                         $scope.setRemindUserUnsavedChanges(false);

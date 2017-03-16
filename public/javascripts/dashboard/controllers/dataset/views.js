@@ -73,10 +73,12 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
             });
 
-            function revertChanges() { // revert changes
+            $scope.revertChanges = function(onPage) { // revert changes
+                console.log('reverrt');
                 $scope.submitting = true;
                 DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
+                        console.log(response);
                         $scope.submitting = false;
                         if (response.status == 200 && response.data) {
 
@@ -91,9 +93,12 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            // simplest way to refresh page content, although causes flash
-                            // TODO reset view visibiliy checkboxes and default view indicators
-                            $state.reload();
+                            if(onPage) {
+                                // simplest way to refresh page content, although causes flash
+                                // TODO reset view visibiliy checkboxes and default view indicators
+                                $state.reload();
+                            }
+
                         }
                     }, function(err) {
                         $scope.submitting = false;
@@ -105,10 +110,12 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
                     });
-            }
+            };
 
-            $scope.secondaryAction.do = revertChanges;
-            $scope.discardChangesThisView = revertChanges;
+            $scope.secondaryAction.do = function() {
+                $scope.revertChanges(true);
+            }
+            $scope.$parent.$parent.discardChangesThisView = $scope.revertChanges;
 
             $scope.$parent.$parent.currentNavItem = 'views';
 

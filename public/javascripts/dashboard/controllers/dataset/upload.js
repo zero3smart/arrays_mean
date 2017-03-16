@@ -7,7 +7,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
-            $scope.discardChangesThisView = angular.noop;
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
             $scope.setRemindUserUnsavedChanges(false);
 
             /** if not enterprise, skip option links (only one choice of CSV)
