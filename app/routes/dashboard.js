@@ -13,17 +13,17 @@ router.get('/login', function(req, res) {
     }
 });
 
-router.get('/logout', function (req, res) {
+router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
 
 
-router.get('/*',  function (req, res) {    
+router.get('/*', function(req, res) {
     res.render('dashboard/index', {
         env: process.env,
         user: req.user
     });
 });
 
-module.exports = router; 
+module.exports = router;
