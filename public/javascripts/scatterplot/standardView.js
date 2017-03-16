@@ -53,6 +53,22 @@ scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
  * @override
  */
 scatterplot.view.standard.prototype.render = function (data) {
+
+    var relativeBubbleSize = function(radius, ratio) {
+        if (ratio == undefined) {
+            var ratio = 1;
+        }
+        var count = 0;
+        while(radius > 100) {
+            // first time is fine, then add to the ratio
+            radius = radius / ratio;
+            count++;
+            if (count > 0) {
+                ratio += (radius/100);
+            }
+        } 
+        return [ratio, radius]
+    }
     /*
      * Definde reference to the chart.
      */
@@ -64,12 +80,8 @@ scatterplot.view.standard.prototype.render = function (data) {
         var bubbleArea = Math.pow(data[i].radiusBy, 2) * Math.PI;
         totalBubbleArea += bubbleArea;
     }
-    var bubbleDividerOrMultiplier = (viewportArea/totalBubbleArea)/data.length;
-    // var bubbleDividerOrMultiplier = totalBubbleArea/viewportArea;
-    console.log(totalBubbleArea * bubbleDividerOrMultiplier)
-    console.log(viewportArea/totalBubbleArea)
-    console.log(totalBubbleArea)
-    console.log(viewportArea)
+    var bubbleDividerOrMultiplier = (viewportArea/totalBubbleArea)/(data.length/5);
+    // 5 is an arbitrary number but it works for making bubble size small enough without being too small
 
     var chartData = [];
     var densityMatrix = this.getDensityMatrix(data);
@@ -83,10 +95,16 @@ scatterplot.view.standard.prototype.render = function (data) {
     /*
      * Select bubbles.
      */
+    var ratio;
     var bubbles = chart._canvas.selectAll('circle.bubble')
         .data(chartData.map(function (d) {
             d.radius = Math.sqrt((Math.pow(d.radiusBy, 2) * Math.PI) * bubbleDividerOrMultiplier);
-            console.log(d.radius)
+            var relativeSizeRatio = relativeBubbleSize(d.radius, ratio)
+            ratio = relativeSizeRatio[0]
+            d.radius = relativeSizeRatio[1]
+            if (d.radius < 3) {
+                d.radius = 3
+            };
             return d;
         }), function (d) {
             return d.id;

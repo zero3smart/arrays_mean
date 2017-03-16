@@ -286,7 +286,7 @@ module.exports = function (nunjucks_env,env) {
 
         var routePath = '';
         for (key in _queryObj)
-            if (_queryObj.hasOwnProperty(key) && (_queryObj[key] !== undefined && _queryObj[key] !== '')) {
+            if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
                 if (Array.isArray(_queryObj[key])) {
                     var subArray = _queryObj[key];
                     for (var i = 0; i < subArray.length; i++)
@@ -299,6 +299,7 @@ module.exports = function (nunjucks_env,env) {
                 }
             }
         if (routePath == '') return routePath_base;
+
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);
     });

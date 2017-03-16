@@ -170,7 +170,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
 
-
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {

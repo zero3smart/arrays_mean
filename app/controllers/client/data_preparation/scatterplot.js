@@ -54,8 +54,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = '/' + sourceKey + '/scatterplot';
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
-
-            
             /*
              * Check filter active and update composed URL params.
              */
@@ -87,6 +85,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
             var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
+
+            // yAxis
+            var yAxis = urlQuery.yAxis;
+            var yAxis_humanReadable = dataSourceDescription.fe_displayTitleOverrides[yAxis] || dataSourceDescription.fe_views.views.scatterplot.defaults.yAxisField;
+            var yAxis_realName = yAxis ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(yAxis, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaults.yAxisField == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(yAxis_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaults.yAxisField;
+
+            // xAxis
+            var xAxis = urlQuery.xAxis;
+            var xAxis_humanReadable = dataSourceDescription.fe_displayTitleOverrides[xAxis] || dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField;
+            var xAxis_realName = xAxis ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(xAxis, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(xAxis_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField;
 
             var documents;
             var numericFields;
@@ -201,7 +209,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
-                console.log(aggregateBy)
                 var data = {
                     env: process.env,
 
@@ -225,12 +232,24 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
                     urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                    searchCol: searchCol || '',
-                    searchQ: searchQ || '',
+                    searchCol: searchCol,
+                    searchQ: searchQ,
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                    // multiselectable filter fields
+                    // multiselectable filter fields,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'AggregateBy', 'ToInteger'),
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    aggregateBy_realColumnName: aggregateBy_realColumnName
+                    aggregateBy_realColumnName: aggregateBy_realColumnName,
+                    defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    xAxis_humanReadable: xAxis_humanReadable,
+                    yAxis_humanReadable: yAxis_humanReadable,
+                    colNames_orderedForXAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.xAxisField', 'ToInteger'),
+                    colNames_orderedForYAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.yAxisField', 'ToInteger'),
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+
+
+
 
                 };
                 callback(err, data);

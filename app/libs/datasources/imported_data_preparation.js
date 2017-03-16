@@ -187,7 +187,6 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
     if (field == 'fieldsNotAvailableAsAggregateByColumns' && (dataSourceDescription.fe_views.views[field] == undefined || dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1)) {
         available_keys.push("Number of Items");
     }
-
     return available_keys;
 }
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;
