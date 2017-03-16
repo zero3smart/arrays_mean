@@ -43,6 +43,7 @@ angular.module('arraysApp')
             // });
 
             $scope.$watch('previewCopy', function(previewExist) {
+                $scope.setRemindUserUnsavedChanges(previewExist);
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
                     $scope.primaryAction.disabled = false;
@@ -72,7 +73,7 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
             });
 
-            $scope.secondaryAction.do = function() { // revert changes
+            $scope.revertChanges = function(onPage) { // revert changes
                 $scope.submitting = true;
                 DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
@@ -90,9 +91,12 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            // simplest way to refresh page content, although causes flash
-                            // TODO reset view visibiliy checkboxes and default view indicators
-                            $state.reload();
+                            if(onPage) {
+                                // simplest way to refresh page content, although causes flash
+                                // TODO reset view visibiliy checkboxes and default view indicators
+                                $state.reload();
+                            }
+
                         }
                     }, function(err) {
                         $scope.submitting = false;
@@ -101,14 +105,15 @@ angular.module('arraysApp')
                             $mdToast.simple()
                                 .textContent(err)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
-
                     });
-
-
             };
 
+            $scope.secondaryAction.do = function() {
+                $scope.revertChanges(true);
+            };
+            $scope.$parent.$parent.discardChangesThisView = $scope.revertChanges;
 
             $scope.$parent.$parent.currentNavItem = 'views';
 
@@ -230,7 +235,7 @@ angular.module('arraysApp')
                             // hide 'Advanced' tabs from all but superAdmin
                             viewTabs: data.tabs.filter(function (tabName){
                                 if(data.name == 'wordCloud') {
-                                    return tabName !== 'Menus'
+                                    return tabName !== 'Menus';
                                 }
                                 if(user.role !== 'superAdmin') {
                                     return tabName !== 'Advanced';

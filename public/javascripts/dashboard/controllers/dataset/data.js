@@ -46,6 +46,8 @@ angular.module('arraysApp')
                 $scope.reset();
             };
 
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
+
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
             if(!dataset.fe_excludeFieldsObjDetail) {
                 dataset.fe_excludeFieldsObjDetail = {};
@@ -73,7 +75,10 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = (sub == true);
             });
 
+
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
+                $scope.setRemindUserUnsavedChanges(dirty);
+
                 if (dirty) {
                     // $scope.primaryAction.disabled = false;
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
@@ -85,11 +90,11 @@ angular.module('arraysApp')
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
                     $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
                 }
+
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
             });
-
 
             $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
 
@@ -523,6 +528,7 @@ angular.module('arraysApp')
                     };
                     var done = function() {
                         $scope.submitting = false;
+                        $scope.setRemindUserUnsavedChanges(false);
 
                         $mdToast.show(
                             $mdToast.simple()
