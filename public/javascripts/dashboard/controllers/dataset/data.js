@@ -96,7 +96,7 @@ angular.module('arraysApp')
                 else $scope.secondaryAction.text = null;
             });
 
-            $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.\nClick \'Next\' to continue.';
+            $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.';
 
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
             if (!dataset.fe_visible) {dataset.fe_visible = true;}

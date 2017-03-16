@@ -42,6 +42,8 @@ angular.module('arraysApp')
             //     }
             // });
 
+            $scope.tutorial.message = 'Here you can make changes to your views.\n';
+
             $scope.$watch('previewCopy', function(previewExist) {
                 $scope.setRemindUserUnsavedChanges(previewExist);
 
@@ -56,7 +58,7 @@ angular.module('arraysApp')
                      */
                     $scope.secondaryAction.text = !dataset.firstImport ? 'Revert' : '';
 
-                    $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
+                    if (!dataset.sample) $scope.tutorial.message = 'DRAFT';
 
                 } else {
 
@@ -65,7 +67,7 @@ angular.module('arraysApp')
                     $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
 
                     $scope.secondaryAction.text = '';
-                    $scope.tutorial.message = '';
+                    if (!dataset.sample) $scope.tutorial.message = '';
                 }
             });
 
