@@ -4,7 +4,7 @@
             <label>Email</label>
             <input ng-readonly="selectedUser._id" aria-label="email" required name="email" ng-model="selectedUser.email">
             <div ng-messages="vm.userForm.email.$error">
-                <div ng-message="unique">This user is an existing user.</div>
+                <div ng-message="unique">This user already exists.</div>
             </div>
         </md-input-container>
     </div>
@@ -37,10 +37,7 @@
                             </md-option>
                         </md-select>
                         <p ng-if="team.admin==selectedUser._id">Admin</p>
-
-
                     </td>
-
                 </tr>
                 </tbody>
             </table>

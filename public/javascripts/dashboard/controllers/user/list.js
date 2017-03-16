@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team',
-        function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team) {
+    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team', '$window',
+        function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team, $window) {
 
             $scope.primaryAction.disabled = true;
             $scope.primaryAction.text = 'Invite User';
@@ -12,6 +12,69 @@ angular
             users.$promise.then(function(users) {
                 $scope.updatePrimaryActionAbility();
             });
+
+            $scope.userRoles = {};
+
+
+            $scope.updateUserRoles = function(user) {
+
+                if (user && !user._editors) {
+                    user._editors = [];
+                }
+                if (user&& !user._viewers) {
+                    user._viewers = [];
+                }
+
+                for (var i  = 0; i < datasets.length ; i++) {
+                    var Id = datasets[i]._id;
+
+                    if (user && user._editors.indexOf(Id) >= 0) {
+                        $scope.userRoles[Id] = 'editor';
+                    } else if (user && user._viewers.indexOf(Id) >= 0 ) {
+                        $scope.userRoles[Id] = 'viewer';
+                    } else {
+                        $scope.userRoles[Id] = '';
+                    }
+                }
+
+            };
+
+
+            $scope.bindUserRolesToSelectedUser = function(user) {
+
+                var TeamIdExist = function() {
+                    for (var i = 0; i < user._team.length; i++) {
+                        if (typeof user._team[i] == 'string') {
+                            if (user._team[i] == $scope.team._id) {
+                                return true;
+                            }
+                        } else if (typeof user._team[i] == 'object') {
+                            if (user._team[i]._id == $scope.team._id) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+
+
+                if (TeamIdExist()) {
+                    user._editors = [];
+                    user._viewers = [];
+                } else {
+                    user._team.push($scope.team._id);
+                }
+                for (var datasetId in $scope.userRoles) {
+                    var role = $scope.userRoles[datasetId];
+                    if (role == 'editor') {
+                        user._editors.push(datasetId);
+                    } else if (role == 'viewer') {
+                        user._viewers.push(datasetId);
+
+                    }
+                }
+            };
+
 
             $scope.updatePrimaryActionAbility = function() {
                 if ($scope.$parent.team && $scope.$parent.team.subscription && $scope.$parent.team.subscription.quantity) {
@@ -54,215 +117,260 @@ angular
                         };
                     }
                 })
-                .then(function () {
-                    console.log("here");
+                    .then(function () {
 
-                    person.$remove(function(res) {
-                        console.log(res);
-                        if (res.success == 'ok') {
-                            $scope.users.splice($scope.users.indexOf(person), 1);
-                            $scope.updatePrimaryActionAbility();
+                        person.$remove(function(res) {
+                            if (res.success == 'ok') {
+                                $scope.users.splice($scope.users.indexOf(person), 1);
+                                $scope.updatePrimaryActionAbility();
 
-                             $mdToast.show(
+                                $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('User deleted successfully!')
+                                    .textContent('User deleted.')
                                     .position('top right')
-                                    .hideDelay(5000)
+                                    .hideDelay(3000)
                             );
-                        }
+                            }
 
-                    },function(err) {
-                        $mdToast.show(
+                        },function(err) {
+                            $mdToast.show(
                             $mdToast.simple()
                                 .textContent(err)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
-                    })
+                        });
 
-                }, function () {
-                    console.log('You decided to keep this user.');
-                });
+                    }, function () {
+                        // console.log('You decided to keep this user.');
+                    });
 
             };
 
             $scope.openUserDialog = function(ev, selectedUser, user) {
+
                 // if (selectedUser._id != user._id) {
-                    $mdDialog.show({
-                        controller: UserDialogController,
-                        templateUrl: 'templates/blocks/user.edit.html',
-                        parent: angular.element(document.body),
-                        targetEvent: ev,
-                        clickOutsideToClose: true,
-                        fullscreen: true,
-                        locals: {
-                            selectedUser: selectedUser,
-                            team: $scope.team,
-                            datasets: $scope.datasets
-                        }
-                    })
+                $mdDialog.show({
+                    controller: UserDialogController,
+                    templateUrl: 'templates/blocks/user.edit.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    scope:  $scope.$new(),
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        selectedUser: selectedUser
+                    }
+                }).then(function(object) {
+                    if (object && object.invitedUser) $scope.users.push(object.invitedUser);
+                    if (object && object.user && object.user.invited) {
+                        $scope.$parent.user.invited = object.user.invited;
+                        $window.sessionStorage.setItem('user', JSON.stringify($scope.$parent.user));
+                    }
+                },function(data) {
+                    if (data && data.modalType =='admin' && data.person) {
+                        $scope.openAdminDialog(ev,data.person);
+                    } else if (data && data.modalType == 'permission' && data.selectedUser) {
+                        $scope.openPermissionDialog(ev,data.selectedUser);
+                    }
+                });
                 // }
             };
-            function UserDialogController($scope, $mdDialog, selectedUser, team, datasets) {
-                $scope.selectedUser = selectedUser;
-                $scope.team = team;
-                $scope.datasets = datasets;
 
-                $scope.userRoles = {};
+            $scope.openPermissionDialog = function(ev,selected) {
 
-                if (!$scope.selectedUser._editors) {
-                    $scope.selectedUser._editors = [];
-                }
-                if (!$scope.selectedUser._viewers) {
-                    $scope.selectedUser._viewers = [];
-                }
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/user.permissions.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        email: selected.email,
+                        team: $scope.team
+                    },
+                    controller: function($scope, $mdDialog, email, team) {
+                        $scope.email = email;
+                        $scope.team = team;
 
-                for (var i  = 0; i < datasets.length ; i++) {
-                    var Id = datasets[i]._id;
-
-                    if ($scope.selectedUser._editors.indexOf(Id) >= 0) {
-                        $scope.userRoles[Id] = "editor"
-                    } else if ($scope.selectedUser._viewers.indexOf(Id) >= 0 ) {
-                        $scope.userRoles[Id] = "viewer";
-                    } else {
-                        $scope.userRoles[Id] = "";
+                        $scope.hide = function(data) {
+                            $mdDialog.hide(data);
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
                     }
-                }
+                })
+                    .then(function () {
+                        $scope.bindUserRolesToSelectedUser(selected);
+                        $scope.updateUserRoles(selected);
 
-                $scope.availableUserRoles = [
-                    {name: "Editor", value: 'editor'},
-                    {name: "Viewer", value: 'viewer'},
-                    {name: "None", value: ''}
+                        if (!selected.defaultLoginTeam) {
+                            selected.defaultLoginTeam = $scope.team._id;
+                        }
 
-                ];
 
-                $scope.saveUser = function() {
-                    bindUserRolesToSelectedUser();
-
-                    $scope.selectedUser.$save(function(savedUser) {
-                        if (savedUser) {
-                            $mdToast.show(
+                        AuthService.inviteUser(selected)
+                            .then(function(response) {
+                                if (response.status == 200) {
+                                    $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('User role saved!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
+                                    $scope.users.push(selected);
+                                }
+                            },function(err) {
+                                $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent("User Role saved successfully!")
+                                    .textContent(err)
                                     .position('top right')
                                     .hideDelay(3000)
                             );
-                            $scope.hide();
-                        }
-                    },function(err) {
+                            });
 
+                    }, function () {
+                    // console.log('You decided to not to give permission this user to your datasets');
                     });
+            };
+
+            $scope.openAdminDialog = function(ev,person) {
+
+
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/user.admin.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        person: person,
+                        team: $scope.team
+                    },
+                    controller: function($scope,$mdDialog,person,team) {
+                        $scope.person = person;
+
+                        $scope.team = team;
+
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                }).then(function() {
+                    Team.switchAdmin({_id: person._id})
+                        .$promise.then(function(res) {
+                            if (!res.error) {
+                                AuthService.reload(function(data) {
+
+                                    if (data.success) {
+
+                                        $scope.$parent.team  = $scope.$parent.$parent.team = AuthService.currentTeam();
+                                        $scope.$parent.$parent.user = AuthService.currentUser();
+                                        $scope.$parent.$parent.teams = AuthService.allTeams();
+
+                                        console.log($scope);
+
+                                        $scope.users = User.getAll({teamId: $scope.$parent.team._id});
+                                        $mdToast.show(
+                                        $mdToast.simple()
+                                            .textContent('Admin role transferred!')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                    );
+                                    } else {
+                                        $mdToast.show(
+                                        $mdToast.simple()
+                                            .textContent('Error! Admin role not transferred.')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                        );
+                                    }
+                                });
+                            }
+                        });
+
+                },function() {
+                    // console.log('user decided not to transfer admin');
+                });
+            };
+
+
+            function UserDialogController($scope, $mdDialog, selectedUser) {
+
+
+                $scope.selectedUser = selectedUser;
+
+                $scope.updateUserRoles(selectedUser);
+
+                $scope.availableUserRoles = [
+                    {name: 'Editor', value: 'editor'},
+                    {name: 'Viewer', value: 'viewer'},
+                    {name: 'None', value: ''}
+
+                ];
+
+                $scope.hide = function(data) {
+                    $mdDialog.hide(data);
+                };
+                $scope.cancel = function(data) {
+                    $mdDialog.cancel(data);
                 };
 
-                var bindUserRolesToSelectedUser = function() {
-                    if (TeamIdExist()) {
-                        $scope.selectedUser._editors = [];
-                        $scope.selectedUser._viewers = [];
-                    } else {
-                         $scope.selectedUser._team.push($scope.team._id);
-                    }
-                    for (var datasetId in $scope.userRoles) {
-                        var role = $scope.userRoles[datasetId];
-                        if (role == 'editor') {
-                            $scope.selectedUser._editors.push(datasetId);
-                        } else if (role == 'viewer') {
-                            $scope.selectedUser._viewers.push(datasetId);
+                $scope.saveUser = function() {
+                    $scope.bindUserRolesToSelectedUser(selectedUser);
+                    $scope.updateUserRoles(selectedUser);
+
+                    selectedUser.$save(function(savedUser) {
+                        if (savedUser) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('User Role saved successfully!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
 
                         }
-                    }
-                }
+                        $scope.hide();
+                    },function(err) {
 
-                var TeamIdExist = function() {
-                    for (var i = 0; i < $scope.selectedUser._team.length; i++) {
-                        if (typeof $scope.selectedUser._team[i] == 'string') {
-                            if ($scope.selectedUser._team[i] == $scope.team._id) {
-                                return true;
-                            }
-                        } else if (typeof $scope.selectedUser._team[i] == 'object') {
-                            if ($scope.selectedUser._team[i]._id == $scope.team._id) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(err)
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    });
+                };
 
 
                 $scope.inviteUser = function(ev) {
 
-                    var userEmail = $scope.selectedUser.email,
+                    var userEmail = selectedUser.email,
                         queryParams = {email: userEmail};
 
                     User.search(queryParams)
                         .$promise.then(function(data) {
 
-                        if (data.length) { // if user exists
+                            if (data.length) { // if user exists
 
-                            if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
-                                $scope.vm.userForm["email"].$setValidity("unique",false)
+                                if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
+                                    $scope.vm.userForm['email'].$setValidity('unique',false);
+                                } else {
+                                    $scope.cancel({modalType: 'permission', selectedUser: data[0]});
+                                }
+
                             } else {
+                                selectedUser._team = [$scope.team._id];
+                                selectedUser.defaultLoginTeam = $scope.team._id;
 
-                                $mdDialog.show({
-                                    templateUrl: 'templates/blocks/user.permissions.html',
-                                    parent: angular.element(document.body),
-                                    targetEvent: ev,
-                                    clickOutsideToClose: true,
-                                    fullscreen: true,
-                                    locals: {
-                                        email: userEmail,
-                                        team: $scope.team
-                                    },
-                                    controller: function($scope, $mdDialog, email, team) {
-                                        $scope.email = email;
-                                        $scope.team = team;
-                                        $scope.hide = function() {
-                                            $mdDialog.hide();
-                                        };
-                                        $scope.cancel = function() {
-                                            $mdDialog.cancel();
-                                        };
-                                    }
-                                })
-                                .then(function () {
-                                    $scope.selectedUser = data[0];
-                                    bindUserRolesToSelectedUser();
-
-                                    if (!$scope.selectedUser.defaultLoginTeam) {
-                                        $scope.selectedUser.defaultLoginTeam = $scope.team._id;
-                                    }
-
-                                    $scope.selectedUser.$save(function(savedUser) {
-                                        if (savedUser) {
-                                             $mdToast.show(
-                                                $mdToast.simple()
-                                                    .textContent("User Role saved successfully!")
-                                                    .position('top right')
-                                                    .hideDelay(3000)
-                                            );
-                                         }
-                                    },function(err) {
-                                        $mdToast.show(
-                                            $mdToast.simple()
-                                                .textContent(err)
-                                                .position('top right')
-                                                .hideDelay(3000)
-                                        );
-                                    })
-
-                                }, function () {
-                                    // console.log('You decided to not to give permission this user to your datasets');
-                                });
-
+                                $scope.bindUserRolesToSelectedUser(selectedUser);
+                                inviteAndSentEmail();
                             }
-
-                        } else {
-                            $scope.selectedUser._team = [$scope.team._id];
-                            $scope.selectedUser.defaultLoginTeam = $scope.team._id;
-
-                            bindUserRolesToSelectedUser();
-                            inviteAndSentEmail();
-                        }
-                    })
+                        });
                 };
 
                 var inviteAndSentEmail = function () {
@@ -270,16 +378,20 @@ angular
                         .then(function(response) {
                             if (response.status == 200) {
                                 var user = response.data.user;
-                                // $scope.$parent.$parent.user.invited = user.invited; // todo
+                                var invitedUser = response.data.invitedUser;
+
+
                                 $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent('Invitation email sent!')
+                                        .textContent('Invitation sent!')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
 
                                 $scope.selectedUser = null;
-                                $scope.hide();
+                                $scope.userRoles = {};
+
+                                $scope.hide({user:user, invitedUser: invitedUser});
                             }
                         },function(err) {
                             $mdToast.show(
@@ -288,76 +400,16 @@ angular
                                     .position('top right')
                                     .hideDelay(3000)
                             );
-                        })
-                }
+                        });
+                };
+
 
                 $scope.makeTeamAdmin = function(ev, person) {
-
-                        $mdDialog.show({
-                            templateUrl: 'templates/blocks/user.admin.html',
-                            parent: angular.element(document.body),
-                            targetEvent: ev,
-                            clickOutsideToClose: true,
-                            fullscreen: true,
-                            locals: {
-                                person: person,
-                                team: $scope.team
-                            },
-                            controller: function($scope, $mdDialog, person, team) {
-                                $scope.person = person;
-                                $scope.team = team;
-                                $scope.hide = function() {
-                                    $mdDialog.hide();
-                                };
-                                $scope.cancel = function() {
-                                    $mdDialog.cancel();
-                                };
-                            }
-                        })
-                        .then(function () {
-
-                            Team.switchAdmin({_id:$scope.selectedUser._id})
-                            .$promise.then(function(res) {
-                                if (!res.error) {
-                                    AuthService.reload(function(data) {
-                                        if (data.success) {
-                                            $scope.$parent.team = AuthService.currentTeam();
-                                            $scope.$parent.users = User.getAll({teamId: $scope.$parent.team._id});
-
-                                            $mdToast.show(
-                                                $mdToast.simple()
-                                                    .textContent("Admin transfer successfully!")
-                                                    .position('top right')
-                                                    .hideDelay(3000)
-                                            );
-
-                                        } else {
-                                            $mdToast.show(
-                                                $mdToast.simple()
-                                                    .textContent("Opps! Admin did not get transfer!")
-                                                    .position('top right')
-                                                    .hideDelay(3000)
-                                                );
-                                        }
-                                    })
-                                }
-                            },function(err) {
-                                console.log("err");
-                                console.log(err);
-                            })
-                        }, function () {
-                            console.log("User decided not to transfer admin");
-                        });
-                }
-
-                $scope.hide = function() {
-                    $mdDialog.hide();
+                    $scope.cancel({person: person,modalType: 'admin'}); // return to the scope to show modal, so that $parent scope can be set
                 };
-                $scope.cancel = function() {
-                    $mdDialog.cancel();
-                };
+
+
             }
-
 
 
             $scope.resendInvite = function(invitedUser, ev) {
@@ -381,30 +433,30 @@ angular
                         };
                     }
                 })
-                .then(function () {
+                    .then(function () {
 
-                    AuthService.resendInvite(invitedUser._id)
-                    .then(function(response) {
-                        if (response.status == 200) {
-                            $mdToast.show(
+                        AuthService.resendInvite(invitedUser._id)
+                            .then(function(response) {
+                                if (response.status == 200) {
+                                    $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent("Invitation resent successfully!")
+                                    .textContent('Invitation resent!')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
-                        }
-                    },function(err) {
-                        console.log(err);
-                        $mdToast.show(
+                                }
+                            },function(err) {
+                                console.log(err);
+                                $mdToast.show(
                             $mdToast.simple()
                                 .textContent(err)
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                    })
+                            });
 
-                });
+                    });
 
-            }
+            };
 
-    }]);
+        }]);

@@ -205,6 +205,7 @@ module.exports = function (nunjucks_env,env) {
         }
         //
 
+
         return filterObj;
     });
     // Array views - Filter value to display
@@ -271,6 +272,8 @@ module.exports = function (nunjucks_env,env) {
     // Array views - Filter route path
     nunjucks_env.addFilter('constructedRoutePath', function (routePath_base, filterObj, queryObj) {
         // Merge filterObj to queryObj
+
+
         var _queryObj = {};
         if (filterObj)
             for (var key in filterObj)
@@ -297,6 +300,8 @@ module.exports = function (nunjucks_env,env) {
                 }
             }
         if (routePath == '') return routePath_base;
+  
+
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);
     });
@@ -339,6 +344,16 @@ module.exports = function (nunjucks_env,env) {
         return field;
 
     });
+
+
+    nunjucks_env.addFilter('extractPreviewFromBasePath',function(url) {
+        var field = 'preview';
+        var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+        var string = reg.exec(url);
+
+        if (string && string.length > 0) return string[1];
+        return;
+    })
 
     var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
     var host = env.HOST? env.HOST: 'localhost:9080';

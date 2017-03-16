@@ -12,7 +12,9 @@ linechart.navigation = function (data, viewport) {
     this._data = data.data.map(function (lineData) {
 
         return lineData.map(function (d) {
-            d.date = new Date(d.date);
+            if (viewport._options.groupBy_isDate) {
+                d.date = new Date(d.date);
+            }
             return d;
         })
     });
@@ -72,12 +74,6 @@ linechart.navigation = function (data, viewport) {
      */
     this._canvas = undefined;
     /**
-     * Chart x scale function.
-     * @private
-     * @member {Function}
-     */
-    this._xScale = d3.time.scale()
-    /**
      * Chart y scale function.
      * @private
      * @member {Function}
@@ -86,33 +82,52 @@ linechart.navigation = function (data, viewport) {
     /**
      * Custom date format in X axis
      */
-    this._customTimeFormat = d3.time.format.multi([
-        [".%L", function (d) {
-            return d.getMilliseconds();
-        }],
-        [":%S", function (d) {
-            return d.getSeconds();
-        }],
-        ["%I:%M", function (d) {
-            return d.getMinutes();
-        }],
-        ["%I %p", function (d) {
-            return d.getHours();
-        }],
-        ["%a %d", function (d) {
-            return d.getDay() && d.getDate() != 1;
-        }],
-        ["%b %d", function (d) {
-            return d.getDate() != 1;
-        }],
-        ["%B", function (d) {
-            return d.getMonth();
-        }],
-        ["'%y", function () {
-            return true;
-        }]
-    ]);
-    /**
+    if (viewport._options.groupBy_isDate) {
+        /**
+        * Chart x scale function.
+        * @private
+        * @member {Function}
+        */
+        this._xScale = d3.time.scale();   
+        /**
+        * Custom date format in X axis
+        */ 
+        this._formattedData = d3.time.format.multi([
+            [".%L", function (d) {
+                return d.getMilliseconds();
+            }],
+            [":%S", function (d) {
+                return d.getSeconds();
+            }],
+            ["%I:%M", function (d) {
+                return d.getMinutes();
+            }],
+            ["%I %p", function (d) {
+                return d.getHours();
+            }],
+            ["%a %d", function (d) {
+                return d.getDay() && d.getDate() != 1;
+            }],
+            ["%b %d", function (d) {
+                return d.getDate() != 1;
+            }],
+            ["%B", function (d) {
+                return d.getMonth();
+            }],
+            ["'%y", function () {
+                return true;
+            }]
+        ]);
+    } else {
+        /**
+        * Chart x scale function.
+        * @private
+        * @member {Function}
+        */
+        this._xScale = d3.scale.linear();
+        this._formattedData = d3.format(".2");
+    }
+     /**
      * Chart x axis.
      * @private
      * @member {Function}
@@ -121,7 +136,7 @@ linechart.navigation = function (data, viewport) {
         .scale(this._xScale)
         .orient('bottom')
 
-        .tickFormat(this._customTimeFormat);
+        .tickFormat(this._formattedData);
     /**
      * Chart x axis container.
      * @private

@@ -1,9 +1,11 @@
 var winston = require('winston');
 var datasource_description = require('../../../models/descriptions');
 var mongoose_client = require('../../../models/mongoose_client');
+var mongoose = require('mongoose');
 var Team = require('../../../models/teams');
 var User = require('../../../models/users');
 var _ = require('lodash');
+var async = require('async');
 var Batch = require('batch');
 var aws = require('aws-sdk');
 var fs = require('fs');
@@ -29,19 +31,31 @@ var kue = require('kue');
 
 function getAllDatasetsWithQuery(query, res) {
 
-    datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
-        _id: 1,
-        uid: 1,
-        title: 1,
-        importRevision: 1,
-        sample: 1
-    }, function (err, datasets) {
+    if (query.master_id) { //getting the preview copy
+        datasource_description.findOne(query,function(err,dataset) {
+            if (err) {
+                 return res.status(500).send(err);
+            }
+            return res.status(200).json({datasets: dataset});
+        })
+    } else {
+        datasource_description.find({$and: [{master_id: {$exists:false},schema_id: {$exists: false}}, query]}, {
+            _id: 1,
+            uid: 1,
+            title: 1,
+            importRevision: 1,
+            sample: 1
+        }, function (err, datasets) {
 
-        if (err) {
-             return res.status(500).send(err);
-        }
-        return res.status(200).json({datasets: datasets});
-    })
+            if (err) {
+                 return res.status(500).send(err);
+            }
+            return res.status(200).json({datasets: datasets});
+        })
+
+    }
+
+    
 }
 
 
@@ -251,21 +265,17 @@ module.exports.remove = function (req, res) {
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
+    
      
-     
-        datasource_description.find({schema_id: description._id})
+        datasource_description.find({$or:[{schema_id:description._id}, {master_id:description._id}]})
         .populate('_team')
         .exec(function (err, results) {
             if (err) return done(err);
 
-    
-
-            results.forEach(function (element) {
-               
+            results.forEach(function (element) {     
                 element.remove();
-                
             });
-            winston.info("✅  Removed all the schema descriptions inherited to the datasource description : " + description._id);
+            winston.info("✅  Removed all the schema descriptions and working draft inherited to the datasource description : " + description._id);
             done();
 
         });
@@ -499,125 +509,278 @@ module.exports.update = function(req,res) {
     })
 }
 
+module.exports.draftAction = function(req,res) {
+    var datasetId = req.params.id;
+    var action = req.query.action;
 
+    async.waterfall([
+        function(callback) {
+            datasource_description.findOne({master_id: datasetId},function(err,draft) {
+                if (err) return callback(err);
+                else {
+                    if (action == 'apply') {
+                        return callback(null,draft,draft.fe_views);
+                    }
+                    callback(null,draft,null);
+                }
+            })
+        }, function(draft,draftView,callback) {
+            if (draftView) { //apply the changes
+                datasource_description.findByIdAndUpdate(req.params.id,{$set: {fe_views:draftView}}, {new:true},function(err,updateQuery) {
+                    if (err) callback(err);
+                    else callback(null,draft,updateQuery.fe_views);
+                })
+            } else callback(null, draft,null); //revert the changes, return null, no need update original dataset
+
+        }, function(draft,finalView,callback) {
+            //delete draft
+            draft.remove(function(err) {
+                callback(err,finalView);
+            })
+        }
+    ],function(err,finalView) {
+
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        else return res.json({finalView: finalView});
+
+    })
+
+
+
+}
 
 module.exports.save = function (req, res) {   
 
     if (!req.body._id) {
 
         // Creating of New Dataset
-        datasource_description.create(req.body, function (err, doc) {
-            if (err) {
-                return res.status(500).send(err);
-            } else {
 
-                Team.findById(req.body._team, function (err, team) {
-                    if (err) {
-                        return res.status(500).send(err);
-                    } else {
-                        team.datasourceDescriptions.push(doc.id);
-
-                        team.save(function (err, saved) {
-                            if (err) {
-                                return res.status(500).send(err);
-                            } else {
-                                return res.json({id: doc.id});
-                                //update the user as an editor of the dataset
-                                // User.findById(req.user, function(err, user) {
-                                //     if(err) {
-                                //         return res.status(500).send(err);
-                                //     } else {
-                                //         user._editors.push(doc.id);
-                                //         user.save(function (err, saved) {
-                                //             if (err) return res.status(500).send(err);
-                                //             return res.json({id: doc.id}) 
-                                //         })
-                                //     }
-                                // })
-                            }
-                        });
+        async.waterfall([
+            function(callback){
+                datasource_description.create(req.body,function(err,doc) {
+                    if (err) callback(err);
+                    else callback(null,doc._id);
+                })
+            },
+            function(mainDatasetId,callback) {
+                Team.findById(req.body._team,function(err,team) {
+                    if (err) callback(err);
+                    else {
+                        team.datasourceDescriptions.push(mainDatasetId);
+                        team.save(function(err,saved) {
+                            callback(err,mainDatasetId);
+                        })
                     }
                 })
 
             }
-        });
+        ],function(err,docId) {
+            if (err) return res.status(500).send(err);
+            return res.json({id:docId});
+        })
 
     } else {
 
+        function twoAreEqual(a,b) {
+            return _.isEqual(a,b) || JSON.stringify(a) == JSON.stringify(b);
+        }
+
         // Update of Existing Dataset
-        delete req.body.__v;
-        datasource_description.findById(req.body._id)
-            .populate('schema_id')
-            .populate('author')
-            .exec(function (err, doc) {
-
-                var auth = doc.author;          
-
-                if (err) return res.status(500).send(err);
-                if (!doc) return res.status(500).send('Invalid Operation');
+        async.waterfall([
+            function(callback) {
+                datasource_description.findById(req.body._id)
+                .lean()
+                .populate('schema_id')
+                .populate('author')
+                .exec(function(err,doc) {
+                    if (err) callback(err);
+                    else if (!doc) callback(new Error('No Dataset Found for Update'));
+                    else callback(null,doc);
+                })
+            }, 
+            function(doc,callback) {
                 var description = doc, description_title = doc.title;
                 if (doc.schema_id) {
                     description = datasource_description.Consolidate_descriptions_hasSchema(doc);
-                    description_title = description.title + ' (' + doc.dataset_uid + ')';
+                    description_title = description.title + ' (' + doc.dataset_uid + ') ';
+                    winston.info("🔁  Updating the dataset " + description_title + "...");
                 }
-                winston.info("🔁  Updating the dataset " + description_title + "...");
-                
-                _.forOwn(req.body, function (value, key) {
-    
-                    if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc[key]))
-                        || (doc.schema_id && !_.isEqual(value, description[key])))) {
+                var update = {$set:{}};
+                var makeCopy = false;
+
+                _.forOwn(req.body,function(value,key) {
+        
+                    if (key !='author' && key !== '_team' 
+                        && key!='createdAt' && key != '_id' && ( (!doc.schema_id && !twoAreEqual(value, doc[key]))
+                        || (doc.schema_id && !twoAreEqual(value, description[key])))) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
                         
-                        doc[key] = value;
+                        update.$set[key] = value;
+            
+                        if (key == 'title') {
+                            update.$set["uid"] = value.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                        }
+                        if (key == 'fe_views') makeCopy = true;
                         
                         if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
                             console.log('cleared join session columns stored');
                             req.session.columns[req.body._id + "_join"];
                         }
-                        if (typeof value === 'object')
-                            doc.markModified(key);
-
-
                     }
-                });
-    
-                if (!doc.schema_id) {
-                    doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+
+                })
+
+                if (Object.keys(update.$set).length == 0) { //nothing to update
+                    callback(null,doc,false,null);
+                } else {
+                    if (!doc.imported || doc.imported == false || doc.imported == null) {
+                        callback(null,doc,false,update);
+                    } else callback(null,doc,makeCopy,update); 
                 }
+            }, 
+            function(doc,makeCopy,updateStatement,callback) {
 
-                // console.log(doc);
-                doc.save(function (err, updatedDoc) {
-                    if (err) return res.status(500).send(err);
-                    if (!updatedDoc) return res.status(500).send('Invalid Operation');
+                if (updateStatement !== null && makeCopy == false) {
+                    var datasetId = mongoose.Types.ObjectId(doc._id);
 
-                    if (!doc.schema_id) {
-                        return res.json({id: updatedDoc.id});
-                    } else {
-                        var findQuery = {_id: doc.id};
-                        // Inherited fields from the schema should be undefined
-                        // TODO: Is there anyway to update the selected fields only?
-                        var updateQuery = { $unset: {
-                            imageScraping: 1,
-                            isPublic: 1,
-                            customFieldsToProcess: 1,
-                            _otherSources: 1,
-                            fe_filters: 1,
-                            fe_fieldDisplayOrder: 1,
-                            urls: 1,
+                    datasource_description.findOneAndUpdate({_id: datasetId},updateStatement,function(err) {
+                        if (err) callback(err);
+                        else {
+                            if (doc.schema_id) {
+                                var findQuery = {_id: doc._id};
+                                var updateQuery = {
+                                    $unset :{
+                                        isPublic: 1,
+                                        customFieldsToProcess : 1,
+                                        _otherSources: 1,
+                                        fe_image: 1,
+                                        fe_filters: 1,
+                                        fe_fieldDisplayOrder: 1,
+                                        urls: 1,
+                                        importRevision: 1
+                                    }
+                                }
+                                 datasource_description.findOneAndUpdate(findQuery,updateStatement, {upsert: true,new: true},
+                                    function(err,updated_doc) {
+                                        if (err) callback(err);
+                                        else if (!updated_doc) callback (new Error('No Updated Dataset Found'));
+                                        else callback(null,doc,makeCopy,updateStatement);
+                                    })
+                            }  else callback(null,doc,makeCopy,updateStatement)
+                        }
 
-                            importRevision: 1
-                        } };
-                        datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
-                            function(err, updatedDoc) {
-                                if (err) return res.status(500).send(err);
-                                if (!updatedDoc) return res.status(500).send('Invalid Operation');
+                    })
+                } else if (makeCopy == true && updateStatement) callback(null,doc,makeCopy,updateStatement) 
+                else callback(null,doc,false,updateStatement);
 
-                                return res.json({id: updatedDoc.id});
-                            });
-                    }
-                });
-            });
+            }, function(doc,makeCopy,updateStatement,callback) {
+                var datasetId = mongoose.Types.ObjectId(doc._id);
+                if (makeCopy == true) {
+                    var findQuery = {master_id:  datasetId};
+                    var copy = {};
+                    copy.master_id = datasetId;
+                   
+                    copy.fe_views = updateStatement.$set.fe_views;
+                   
+                    //find the copy, if not create one
+                    datasource_description.findOneAndUpdate(findQuery,copy,{upsert:true,new:true},
+                        function(err,previewDataset) {
+                            if (err) callback(err);
+                            else callback(null,datasetId,previewDataset);
+                    })
+                } else callback(null,datasetId);
+
+            }
+        ],function(err,datasetId,previewDataset) {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+            else return res.json({id: datasetId,preview: previewDataset});
+
+        })
+
+
+
+
+
+        // datasource_description.findById(req.body._id)
+        //     .populate('schema_id')
+        //     .populate('author')
+        //     .exec(function (err, doc) {
+
+        //         var auth = doc.author;        
+
+        //         if (err) return res.status(500).send(err);
+        //         if (!doc) return res.status(500).send('Invalid Operation');
+
+        //         var description = doc, description_title = doc.title;
+        //         if (doc.schema_id) {
+        //             description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+        //             description_title = description.title + ' (' + doc.dataset_uid + ')';
+        //         }
+        //         winston.info("🔁  Updating the dataset " + description_title + "...");
+                
+        //         _.forOwn(req.body, function (value, key) {
+    
+        //             if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc[key]))
+        //                 || (doc.schema_id && !_.isEqual(value, description[key])))) {
+
+        //                 winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
+                        
+        //                 doc[key] = value;
+                        
+        //                 if (key == 'connection' && !value.join && req.session.columns[req.body._id + "_join"]) {
+        //                     console.log('cleared join session columns stored');
+        //                     req.session.columns[req.body._id + "_join"];
+        //                 }
+        //                 if (typeof value === 'object')
+        //                     doc.markModified(key);
+
+
+        //             }
+        //         });
+    
+        //         if (!doc.schema_id) {
+        //             doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+        //         }
+
+        //         // console.log(doc);
+        //         doc.save(function (err, updatedDoc) {
+        //             if (err) return res.status(500).send(err);
+        //             if (!updatedDoc) return res.status(500).send('Invalid Operation');
+
+        //             if (!doc.schema_id) {
+        //                 return res.json({id: updatedDoc.id});
+        //             } else {
+        //                 var findQuery = {_id: doc.id};
+        //                 // Inherited fields from the schema should be undefined
+        //                 // TODO: Is there anyway to update the selected fields only?
+        //                 var updateQuery = { $unset: {
+        //                     imageScraping: 1,
+        //                     isPublic: 1,
+        //                     customFieldsToProcess: 1,
+        //                     _otherSources: 1,
+        //                     fe_filters: 1,
+        //                     fe_fieldDisplayOrder: 1,
+        //                     urls: 1,
+
+        //                     importRevision: 1
+        //                 } };
+        //                 datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
+        //                     function(err, updatedDoc) {
+        //                         if (err) return res.status(500).send(err);
+        //                         if (!updatedDoc) return res.status(500).send('Invalid Operation');
+
+        //                         return res.json({id: updatedDoc.id});
+        //                     });
+        //             }
+        //         });
+        //     });
 
     }
 };
@@ -695,7 +858,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 function verifyDataType(name, sample, rowObjects, index) {
-    var numberRE = /([^0-9\.,]|\s)/;
+    var numberRE = /([^0-9\.,-]|\s)/;
     var rowObject = rowObjects[index]
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
         var secondRowObject = intuitDataype(name, sample);
@@ -713,7 +876,7 @@ function verifyDataType(name, sample, rowObjects, index) {
 function intuitDataype(name, sample) {
     var format = datatypes.isDate(sample)[1];
     if (format !== null) {
-        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'}
+        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
     }
 
     var dateRE = /(year|DATE)/i;
@@ -722,15 +885,22 @@ function intuitDataype(name, sample) {
         if (format === 'ISO_8601') {
             return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
         } else if (format !== null) {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+
+            if (datatypes.isValidFormat(format)) {
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+            } else {
+                var valid_format = datatypes.makeFormatValid(format);
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: valid_format, operation: 'ToDate'};
+            }
+
         } else {
             return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
         }
     }
 
     // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-    var numberRE = /([^0-9\.,]|\s)/;
-    var floatRE = /[^0-9,]/;
+    var numberRE = /([^0-9\.,-]|\s)/;
+    var floatRE = /[^0-9,-]/;
     var IdRE = /(Id|ID)/;
     if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
         // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
@@ -738,12 +908,18 @@ function intuitDataype(name, sample) {
         if(format !== null) {
             return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
         }
-        return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
     } else if(floatRE.test(sample)) {
-       return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
+        }
     } else {
-        return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+        }
     }
+    return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
 };
     
 
@@ -986,7 +1162,10 @@ module.exports.download = function (req, res) {
 
 
 module.exports.preImport = function (req, res) {
-    var importedBy = req.user;
+    var importedBy = req.user._id;
+
+    console.log(importedBy);
+
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {
         if (err) return res.status(500).send(err);
@@ -1011,7 +1190,7 @@ module.exports.getJobStatus = function(req,res) {
 
 
 module.exports.importProcessed = function(req, res) {
-    var importedBy = req.user;
+    var importedBy = req.user._id;
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {
         if (err) return res.status(500).send(err);
@@ -1027,7 +1206,7 @@ module.exports.importProcessed = function(req, res) {
 
 module.exports.scrapeImages = function(req, res) {
 
-    var importedBy = req.user;
+    var importedBy = req.user._id;
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {
         if (err) return res.status(500).send(err);
@@ -1041,7 +1220,7 @@ module.exports.scrapeImages = function(req, res) {
 
 module.exports.postImport = function (req, res) {
 
-    var importedBy = req.user;
+    var importedBy = req.user._id;
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {
         if (err) return res.status(500).send(err);

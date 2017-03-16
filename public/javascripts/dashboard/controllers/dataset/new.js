@@ -40,7 +40,7 @@ angular.module('arraysApp')
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
                         $scope.submitting = false;
                     });

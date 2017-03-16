@@ -545,7 +545,6 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
         }
         var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
-            // console.log("uniqueFieldValuesByFieldName equals null")
             callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
@@ -645,8 +644,6 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
  
             columnValue.forEach(function(rowValue,index) {
 
- 
-
                 if (rowValue == null || typeof rowValue == 'undefined' || rowValue == "") {
                     return;
                 }
@@ -657,6 +654,7 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
  
                     if (revertType) {
                         row.push(datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                        index = row.length - 1;
                     }
 
                     if (overwriteValue) {
@@ -664,10 +662,10 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
                             return item.value == rowValue;
                         });
 
-                  
-                        if (valueByOverride) row[index] = valueByOverride.override;
+                        if (valueByOverride) {
+                            row[index] = valueByOverride.override;
+                        }
                     }
-
                }
                 else {
                     if (!revertType)  {
@@ -832,7 +830,8 @@ module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColum
 //
 function _filterObjFromQueryParams(queryParams) {
     var filterObj = {};
-    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed', 'groupSize'];
+    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed', 'groupSize',
+    'preview'];
     for (var key in queryParams) {
         if (reservedKeys.indexOf(key) !== -1) continue;
 
@@ -870,9 +869,9 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
     }
     //
     var displayableVal = originalVal;
-    if (originalVal == null) {
+    if (originalVal == null && dataSourceDescription.includeEmptyFields) {
         displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-    } else if (originalVal === "") {
+    } else if (originalVal === "" && dataSourceDescription.includeEmptyFields) {
         displayableVal = "(not specified)"; // we want to show a category for it rather than it appearing broken by lacking a category
     }
 

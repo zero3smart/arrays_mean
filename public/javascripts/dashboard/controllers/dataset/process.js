@@ -1,33 +1,16 @@
 angular.module('arraysApp')
-    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
-        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
+    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout',
+        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout) {
 
 
             //-- helper functions ---//
 
-            function makeFieldValuePairs(obj) {
-                var fieldValuePairs  = [], result;
-                for (var p in obj) {
-                    if( obj.hasOwnProperty(p) ) {
-                        fieldValuePairs.push(p + '=' + obj[p]);
-                    }
-                }
-                result = fieldValuePairs.join('&');
-                if (result !== '') {
-                    result = '?' + result;
-                }
-                return result;
-            }
-
-
             function errorHandler(response) {
-
                 var error = response.data.error;
                 $scope.importLogger.push('❌ Import failed due to ' + error);
 
                 $scope.inProgress = false;
             }
-
 
             function getJobAndLog (datasetId) {
 
@@ -58,7 +41,6 @@ angular.module('arraysApp')
 
                 } else if ($scope.jobs[$scope.jobs.length-1].state == 'complete'){
 
-
                     getJobStatus(datasetId);
 
                 } else if ($scope.jobs[$scope.jobs.length-1].state == 'failed') {
@@ -85,23 +67,17 @@ angular.module('arraysApp')
             }
 
 
-
-
-            function refreshForm() {
-                $scope.dirty = 0;
-                $scope.imported = true;
-
-            }
-
+            // function refreshForm() {
+            //     $scope.dirty = 0;
+            //     $scope.imported = true;
+            // }
 
 
             function getJobStatus(datasetId) {
 
 
-
                 DatasetService.getJobStatus(datasetId)
                 .then(function(job) {
-
 
 
                     if (job.id == 0) {
@@ -125,7 +101,6 @@ angular.module('arraysApp')
             function lastStep() {
 
                 if (datasourceIndex == -1) {
-
 
                     $scope.$parent.$parent.dataset = dataset;
 
@@ -153,14 +128,11 @@ angular.module('arraysApp')
 
                     }
 
-
                 } else {
                     allDone();
                 }
 
-
             }
-
 
 
             function importProcess(id) {
@@ -229,16 +201,26 @@ angular.module('arraysApp')
             function allDone() {
 
                 $scope.inProgress = false;
-                refreshForm();
+
+                // refreshForm();
+                $scope.dirty = 0;
+                $scope.imported = true;
 
                 $scope.togglePublish();
 
                 $mdToast.show(
                     $mdToast.simple()
-                        .textContent('Dataset imported successfully!')
+                        .textContent('Data imported!')
                         .position('top right')
                         .hideDelay(3000)
                 );
+
+                $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+
             }
 
             function importDatasource(datasource) {
@@ -246,10 +228,7 @@ angular.module('arraysApp')
                 var id = datasource._id;
 
 
-
-
                 if ($scope.additionalDatasources.length == 0) {
-
 
 
                     if (datasource.dirty == 1) {
@@ -282,7 +261,6 @@ angular.module('arraysApp')
 
             //this block has to come first, do not move
 
-
             if (dataset.jobId !== 0) {
                 $scope.inProgress = true;
 
@@ -293,32 +271,24 @@ angular.module('arraysApp')
             }
             //----
 
+            $scope.primaryAction.text = ''; // will hide button
+            $scope.primaryAction.do = angular.noop(); // overwrite with noop, just in case
 
-            $scope.primaryAction.text = 'View';
             $scope.$watch('dirty', function(dirty) {
-                $scope.primaryAction.disabled = dirty;
                 if(dirty && !$scope.inProgress && !dataset.connection) {
                     $scope.importData();
                 }
             });
 
-
-            $scope.primaryAction.do = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
-                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                    makeFieldValuePairs(dataset.fe_filters.default);
-                $window.open(url, "_blank");
-            };
-
             $scope.showAdvanced = false;
             $scope.toggleShowAdvanced = function() {
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
-            }
+            };
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;
-            $scope.$parent.$parent.currentNavItem = 'Done';
+            $scope.$parent.$parent.currentNavItem = '';
             $scope.importLogger = [];
             $scope.datasetsToProcess = [];
             $scope.currentWorkingDataset = $scope.$parent.$parent.dataset;
@@ -338,12 +308,9 @@ angular.module('arraysApp')
                 $scope.additionalDatasources.map(function(ds) {
 
 
-                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName}
-                })
-            })
-
-
-
+                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName};
+                });
+            });
 
 
             $scope.dirty = dataset.connection? 0: $scope.$parent.$parent.dataset.dirty;
@@ -354,13 +321,13 @@ angular.module('arraysApp')
 
             $scope.additionalDatasources.forEach(function(datasource) {
 
-  
+
 
                 if ($scope.dirty == 0 && datasource.dirty > 0) {
                     $scope.dirty = datasource.dirty;
                 }
 
-                if ( (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) || 
+                if ( (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) ||
                        ($scope.dirty == 0 && datasource.dirty > $scope.dirty) ) {
                     $scope.dirty = datasource.dirty;
                 }
@@ -393,10 +360,7 @@ angular.module('arraysApp')
                 }
 
 
-
             };
-
-
 
 
             var datasourceIndex = -1;

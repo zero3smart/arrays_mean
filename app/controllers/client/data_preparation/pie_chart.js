@@ -22,7 +22,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -60,6 +63,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/pie-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -74,43 +78,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Aggregate By
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultAggregateByColumnName] ||
-            chartViewSettings.defaultAggregateByColumnName ;
+            chartViewSettings.defaultAggregateByColumnName;
 
             var numberOfRecords_notAvailable = chartViewSettings.aggregateByColumnName_numberOfRecords_notAvailable
 
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
-            // Aggregate By Available
-            var aggregateBy_humanReadable_available = undefined;
-
-
-            for (var colName in raw_rowObjects_coercionSchema) {
-                var colValue = raw_rowObjects_coercionSchema[colName];
-                if (colValue.operation == "ToInteger") {
-
-
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!aggregateBy_humanReadable_available) {
-                            aggregateBy_humanReadable_available = [];
-                            if (!numberOfRecords_notAvailable)
-                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
-                    }
-                }
-            }
-
-            if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length == 1)
-                    aggregateBy_humanReadable_available = undefined;
-            }
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof chartViewSettings.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
@@ -154,7 +128,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Grouped ResultSet
             batch.push(function (done) {
+
                 var aggregationOperators = [];
+
                 if (isSearchActive) {
                     var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
                     if (_orErrDesc.err) return done(_orErrDesc.err);
@@ -168,6 +144,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
 
+
+
+
+
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
                     aggregationOperators = aggregationOperators.concat(
                         [
@@ -175,14 +155,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             { // unique/grouping and summing stage
                                 $group: {
                                     _id: "$" + "rowParams." + groupBy_realColumnName,
-                                    value: {$sum: "$" + "rowParams." + aggregateBy_realColumnName} // the count
+                                    value: {$addToSet: {object: "$_id", totalSum: "$" + "rowParams." + aggregateBy_realColumnName}}
+
                                 }
                             },
                             { // reformat
                                 $project: {
                                     _id: 0,
                                     label: "$_id",
-                                    value: 1
+                                    value: {$sum: "$value.totalSum"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -199,14 +180,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             { // unique/grouping and summing stage
                                 $group: {
                                     _id: "$" + "rowParams." + groupBy_realColumnName,
-                                    value: {$sum: 1} // the count
+                                    value: {$addToSet: "$_id"} // the count
                                 }
                             },
                             { // reformat
                                 $project: {
                                     _id: 0,
                                     label: "$_id",
-                                    value: 1
+                                    value: {$size: "$value"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -299,12 +280,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         groupedResults.push(result);
                     });
 
-
-
-
-
                     done();
                 };
+
+                //console.log(JSON.stringify(aggregationOperators));
 
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
@@ -366,10 +345,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     // Aggregate By
-                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieChart', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
                 callback(err, data);
             });

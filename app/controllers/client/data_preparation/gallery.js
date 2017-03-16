@@ -21,16 +21,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // searchCol
     // embed
     // Other filters
+
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+
     var source_pKey = urlQuery.source_key;
+
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-
-
-
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
-
-
 
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -121,7 +122,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             };
                         }
                     }
-                    
+
                     return {
                         backgroundColor: '#FFF',
                         contentColor: '#000'
@@ -129,35 +130,37 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             }
 
-            
+
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
             var skipNResults = config.pageSize * (Math.max(pageNumber, 1) - 1);
             var limitToNResults = config.pageSize;
 
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
-            
+
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
 
             var sortDir = urlQuery.sortDir;
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending ? -1 : 1;
-      
+
 
             //
             var routePath_base = "/" + source_pKey + "/gallery";
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (askForPreview) routePath_base += '?preview=true';
+
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
-         
+
 
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
-          
+
 
             var isFilterActive = Object.keys(filterObj).length != 0;
 
@@ -187,7 +190,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return;
                 }
 
-            
+
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
@@ -201,7 +204,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function (done) {
                 raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
-
                     sourceDoc = _sourceDoc;
                     done();
                 });
@@ -211,7 +213,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function (done) {
                 processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
                     if (err) return done(err);
-
                     sampleDoc = _sampleDoc;
                     done();
                 });
@@ -222,9 +223,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
-
-
-               
                     done();
                 });
             });
@@ -285,7 +283,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-  
+
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -336,7 +334,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
 
-                if (err) return callback(err);     
+                if (err) return callback(err);
 
 
 
@@ -351,13 +349,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     datasetId: dataSourceDescription._id,
 
-                
+
 
 
 
                     brandColor: dataSourceDescription.brandColor,
                     // brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
-                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor), 
+                    brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
@@ -377,11 +375,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     fieldKey_objectTitle: dataSourceDescription.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
 
-                   
+
                     hasThumbs:  (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? true: false,
                     fieldKey_medThumbImageURL: (!dataSourceDescription.fe_image)? null: dataSourceDescription.fe_image.field,
                     scrapedImages: (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) ? dataSourceDescription.fe_image.scraped: null,
-                   
+
                     sortBy: sortBy,
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
@@ -406,7 +404,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
 

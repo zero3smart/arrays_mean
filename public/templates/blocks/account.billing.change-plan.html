@@ -1,7 +1,7 @@
-<md-dialog md-no-ink aria-label="Update Plan">
+<md-dialog md-no-ink aria-label="{{ subscription.state === 'expired' ? 'Start Subscription' : 'Update Plan' }}">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Update Plan</h2>
+            <h2>{{ subscription.state === 'expired' ? 'Start Subscription' : 'Update Plan' }}</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <span class="icon-close-big" aria-label="Close dialog"></span>
@@ -9,18 +9,36 @@
         </div>
     </md-toolbar>
 
-    <md-dialog-content layout-padding>
+    <md-dialog-content layout-padding ng-if="subscription.state !== 'expired'">
         <md-content>
-            <p>
-                Are you sure you want to change your plan to <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
-                Your account will be charged during the next billing cycle.
-            </p>
+            <p>Are you sure you want to change your plan to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
+            Your account will be charged during the next billing cycle.</p>
+
             <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
         </md-content>
 
         <md-dialog-actions layout="row" layout-align="end center">
-            <md-button class="md-dashboard confirm" ng-click="updateQuantity()">
+            <md-button class="md-dashboard confirm" ng-click="updateSubscription(plan.plan_code, subscription.quantity._)">
                 <span class="btn-label">Update Plan</span>
+            </md-button>
+            <md-button class="md-dashboard" ng-click="cancel()">
+                <span class="btn-label">Cancel</span>
+            </md-button>
+        </md-dialog-actions>
+
+    </md-dialog-content>
+
+    <md-dialog-content layout-padding ng-if="subscription.state === 'expired'">
+        <md-content>
+            <p>Are you sure you want to start a subscription to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
+            Your account will be charged during the next billing cycle.</p>
+
+            <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+        </md-content>
+
+        <md-dialog-actions layout="row" layout-align="end center">
+            <md-button class="md-dashboard confirm" ng-click="startSubscription(plan.plan_code, subscription.quantity._)">
+                <span class="btn-label">Start Subscription</span>
             </md-button>
             <md-button class="md-dashboard" ng-click="cancel()">
                 <span class="btn-label">Cancel</span>

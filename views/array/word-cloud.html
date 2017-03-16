@@ -15,7 +15,7 @@
 
         <header class="array-header header-shadow array-header-small clearfix">
             <div class="container-fluid">
-                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <h1 class="array-title">{{ arrayTitle }}{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</h1>
                 <div class="array-meta">
                     {% if team.subdomain | length %}<a class="array-meta-about color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a>{% endif %}{% if sourceDocURL %} <span class="array-meta-divider"> <a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a>{% endif %} <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-count hidden-xs">{{ sourceDoc.numberOfRows | comma }} Item{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
                 </div>

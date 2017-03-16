@@ -69,8 +69,11 @@ $(function () {
 			}
 			if (filter) {
 				filter.style.marginBottom = "10px";
+				document.querySelector('.site-content').style.paddingBottom = "60px";
+			} else {
+
+				document.querySelector('.site-content').style.paddingBottom = "0px";
 			}
-			document.querySelector('.site-content').style.paddingBottom = "0px";
 
 			signupFooter.classList.remove('show-signup-footer');
 			signupFooter.classList.add('close-signup-footer');

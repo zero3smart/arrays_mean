@@ -325,6 +325,9 @@ module.exports.switchAdmin = function(req,res) {
 
         //pull new Admin's editor and viewer related to the team
         batch.push(function(done) {
+
+      
+
             User.findById(newAdminId)
             .populate([{path:'_editors',select:'_team'}, {path:'_viewers',select: '_team'}])
             .exec(function(err,newAdmin) {
@@ -351,6 +354,8 @@ module.exports.switchAdmin = function(req,res) {
             .exec(function(err,oldAdmin) {
                 if (err) done(err);
                 else {
+
+
                     oldAdmin._editors = oldAdmin._editors.filter(function(value) {
                         return value._team == team._id;
                     })
@@ -360,13 +365,16 @@ module.exports.switchAdmin = function(req,res) {
                     oldAdmin.markModified('_editors');
                     oldAdmin.markModified('_viewers');
                     var index = oldAdmin._team.indexOf(team._id);
-                    oldAdmin._team.splice(index,1);
-                    if (oldAdmin.defaultLoginTeam == team._id) {
-                        oldAdmin.defaultLoginTeam = undefined;
+                    if (index >= 0 )  oldAdmin._team.splice(index,1);
+
+                    if (oldAdmin.defaultLoginTeam.equals(team._id)) {
+                        oldAdmin.defaultLoginTeam = (oldAdmin._team.length > 0) ? oldAdmin._team[0] : null;
                     }
                     oldAdmin.markModified('_team');
                     oldAdmin.markModified('defaultLoginTeam');
+
                     oldAdmin.save(done);
+
 
                 }
             })

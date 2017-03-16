@@ -27,9 +27,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // filters
     var source_pKey = urlQuery.source_key;
-     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -86,6 +91,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/bar-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
 
@@ -103,38 +109,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
 
+
+
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.barChart_aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
-            // Aggregate By Available
-            var colNames_orderedForAggregateByDropdown = undefined;
-            for (var colName in raw_rowObjects_coercionSchema) {
-                var colValue = raw_rowObjects_coercionSchema[colName];
-                if (colValue.operation == "ToInteger") {
-
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!colNames_orderedForAggregateByDropdown) {
-                            colNames_orderedForAggregateByDropdown = [];
-                            if (!numberOfRecords_notAvailable)
-                                colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-                        colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
-                    }
-
-                }
-            }
-
-            if (colNames_orderedForAggregateByDropdown) {
-                if (colNames_orderedForAggregateByDropdown.length == 1)
-                    colNames_orderedForAggregateByDropdown = undefined;
-            }
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
@@ -203,7 +183,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
-
+                        
                         aggregationOperators = aggregationOperators.concat(
                             [
                                 {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -272,7 +252,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"} 
                                     }
                                 },
                                 {
@@ -280,7 +260,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         category: "$_id.groupBy",
                                         label: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -297,14 +277,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         category: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 { // priotize by incidence, since we're $limit-ing below
@@ -368,13 +348,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             } else {
                                 finalizedButNotCoalesced_groupedResults.push({
                                     value: el.value,
-                                    label: 'default'
+                                    label: '(not specified)'
                                 });
                             }
                         });
 
                         var summedValuesByLowercasedLabels = {};
                         var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;
@@ -432,9 +413,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             //     offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
                             //     graphData.categories.push(offsetTime);
                             // } else {
-                                graphData.categories.push(category);
+                            graphData.categories.push(category);
                             // }
-
                             graphData.data.push(stackedResultsByGroup[category]);
                         }
                     }
@@ -487,7 +467,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_isDate: groupBy_isDate,
                     groupBy_outputInFormat: groupBy_outputInFormat,
                     // Aggregate By
-                    colNames_orderedForAggregateByDropdown: colNames_orderedForAggregateByDropdown,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'barChart', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     // Stack By
@@ -512,7 +492,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // graphData contains all the data rows; used by the template to create the barchart
                     graphData: graphData,
                     padding: dataSourceDescription.fe_views.views.barChart.padding,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
                 callback(err, data);

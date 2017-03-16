@@ -77,7 +77,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     sourceDoc: doc,
                     updatedAt: dataSourceDescription.updatedAt,
                     title: dataSourceDescription.title,
-                    brandColor: dataSourceDescription.brandColor,
+                    brandColor: dataSourceDescription.brandColor || '#FEB600',
                     description: dataSourceDescription.description,
                     urls: dataSourceDescription.urls,
                     lastUpdatedBy: updatedByDisplayName,

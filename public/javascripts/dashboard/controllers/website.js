@@ -9,7 +9,7 @@ angular.module('arraysApp')
                 AssetService.deleteImage($scope.team._id, folder, fileName).then(function (data) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Image deleted successfully!')
+                                .textContent('Image deleted.')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -23,7 +23,7 @@ angular.module('arraysApp')
                 AssetService.deleteImage($scope.team._id, 'icon', fileName).then(function (data) {
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('Icon deleted successfully!')
+                            .textContent('Icon deleted.')
                             .position('top right')
                             .hideDelay(3000)
                     );
@@ -74,7 +74,7 @@ angular.module('arraysApp')
 
                         if(fileItem.assetType == "icon") {
                             var iconUrl = fileItem["uploadUrls"]["icon"]["publicUrl"]
-                            $scope.iconsUrl.push(iconUrl)    
+                            $scope.iconsUrl.push(iconUrl)
                         }
 
                         if (this.formName) {
@@ -86,7 +86,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Image uploaded successfully!')
+                                .textContent('Image uploaded!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
@@ -114,7 +114,7 @@ angular.module('arraysApp')
 
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('Team updated successfully!')
+                                .textContent('Team updated!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );

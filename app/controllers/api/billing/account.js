@@ -10,7 +10,8 @@ var recurly = new Recurly(recurlyConfig);
 
 module.exports.create = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
+
 
     // Create Recurly user based on Arrays' user info
 
@@ -54,7 +55,7 @@ module.exports.create = function(req, res) {
 
 module.exports.get = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
 
     User.findById(userId)
         .populate('_team')

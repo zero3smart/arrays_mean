@@ -1,4 +1,7 @@
 {% macro default(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterObj) %}
+
+
+
 <form action="{{ basePath }}" method="get" class="form-search">
     <div class="sort-control visible-xs">
         <div class="dropdown-toggle search-toggle">
@@ -11,6 +14,9 @@
             <a href="#" class="btn dropdown-toggle dropdown-toggle-button-has-caret ui-label visible-xs" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
                 Search by <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
             </a>
+
+            <input type="hidden" name="preview" value="{{basePath | extractPreviewFromBasePath }}">
+
             <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
             {% if columnNames | length %}
             <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">

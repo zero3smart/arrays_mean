@@ -91,7 +91,7 @@
                         </div>
                     </md-input-container>
 
-                    <md-input-container class="md-block" flex-gt-sm>
+                    <md-input-container class="md-block" flex-gt-sm ng-if="billing.country === 'US'">
                         <label>State</label>
                         <md-select name="state" ng-model="billing.state" required aa-reset-validity-on-change="invalid">
                             <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
@@ -102,13 +102,22 @@
                         </div>
                     </md-input-container>
 
+                    <md-input-container class="md-block" flex-gt-sm ng-if="billing.country !== 'US'">
+                        <label>State</label>
+                        <input name="state" ng-model="billing.state" required aa-reset-validity-on-change="invalid" />
+                        <div ng-messages="billing_address.state.$error">
+                            <div ng-message="required">State is required.</div>
+                            <div ng-message="invalid">State is invalid.</div>
+                        </div>
+                    </md-input-container>
+
                     <md-input-container class="md-block" flex-gt-sm>
-                        <label>ZIP Code</label>
-                        <input name="zip" ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" aa-reset-validity-on-change="invalid" />
+                        <label>ZIP / Postal</label>
+                        <input name="zip" ng-model="billing.zip" required ng-minlength="{{ billing.country === 'US' ? 5 : 1 }}" ng-maxlength="20" maxlength="20" aa-reset-validity-on-change="invalid" />
                         <div ng-messages="billing_address.zip.$error">
                         <div ng-message="required">ZIP Code is required.</div>
                         <div ng-message="minlength">ZIP Code must be at least 5 digits.</div>
-                        <div ng-message="maxlangth">ZIP Code must be less than 17 digits.</div>
+                        <div ng-message="maxlength">ZIP Code must be no more than 20 digits.</div>
                         <div ng-message="invalid">ZIP Code is invalid.</div>
                     </div>
                     </md-input-container>

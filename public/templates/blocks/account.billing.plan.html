@@ -1,4 +1,4 @@
-<div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
+<div ng-if="subscription.state === 'active' || subscription.state === 'canceled' || subscription.state === 'expired'">
     <h2>Plan Summary</h2>
 
     <div class="md-headline">{{ plan.name }}</div>
@@ -21,5 +21,5 @@
     <div ng-if="plan.plan_interval_length._ === '12'">Billed annually</div>
     <br />
 
-    <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
+    <strong ng-if="subscription.state === 'canceled'">Subscription expires {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
 </div>

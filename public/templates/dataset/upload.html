@@ -7,9 +7,9 @@
             <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Add a data source from the options below.</p>
                 <ul class="dashboard-list">
-                    <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
-                    <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
-                    <li><a href="#" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
+                    <li><a class="pointer" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
+                    <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
+                    <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
                 </ul>
             </div>
 
@@ -47,7 +47,7 @@
                     <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
                 </md-button>
 
-                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a href="#" ng-click="addSourceType('')">Go back</a></p>
+                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p>
 
 
             </div>
@@ -75,7 +75,7 @@
                         <span class="btn-label">Upload Data</span>
                     </md-button>
 
-                    <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+                    <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a class="pointer" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
                 </div>
                 <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
 
@@ -136,8 +136,8 @@
                     <li>
                         <div ng-hide="additionalDatasource.uploader.isUploading">
                             <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
-                                <li><a href="#" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
-                                <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
+                                <li><a class="pointer" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
+                                <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
                             </ul>
                             <div ng-if="additionalDatasource.sourceType == 'csv'">
                                 <label>Upload spreadsheet</label>
@@ -158,7 +158,7 @@
                                     <span class="btn-label">Upload Data</span>
                                 </md-button>
 
-                                <p class="aa-file-select-close"><a href="#" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
+                                <p class="aa-file-select-close"><a class="pointer" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
                             </div>
                         </div>
 
@@ -189,8 +189,7 @@
             </div>
 
 
-
-        <div ng-if="dataset.fileName && !addingAdditionalDatasource">
+        <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && dataset.fileName && !addingAdditionalDatasource">
             <md-input-container>
                 <md-button class="md-dashboard" ng-click="addNewDatasource()">
                     <span class="btn-label">Combine with another data source</span></md-button>

@@ -9,9 +9,11 @@ var recurlyConfig = {
 };
 var recurly = new Recurly(recurlyConfig);
 
+var moment = require('moment');
+
 module.exports.create = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
 
     User.findById(userId)
         .populate('_team')
@@ -29,13 +31,16 @@ module.exports.create = function(req, res) {
                     return res.status(401).send({error: 'unauthorized'});
                 }
 
+                var trial_ends_at = moment().toISOString();
+
                 recurly.subscriptions.create({
                     plan_code: req.body.plan_code, // *required
                     account: {
                         account_code: user.defaultLoginTeam._id.toString()  // *required
                     },
                     quantity: req.body.quantity,
-                    currency: 'USD'                // *required
+                    currency: 'USD',                // *required
+                    trial_ends_at: req.body.skipTrial ? trial_ends_at : undefined
 
                 }, function(err, response) {
                     if (err) {
@@ -57,7 +62,7 @@ module.exports.create = function(req, res) {
 
 module.exports.getAll = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
 
     User.findById(userId)
         .populate('_team')
@@ -88,7 +93,7 @@ module.exports.getAll = function(req, res) {
 
 module.exports.update = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
     var options = {};
 
@@ -121,7 +126,7 @@ module.exports.update = function(req, res) {
 
 module.exports.cancel = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
 
     recurly.subscriptions.cancel(subscrId, function(err, response) {
@@ -141,7 +146,7 @@ module.exports.cancel = function(req, res) {
 
 module.exports.reactivate = function(req, res) {
 
-    var userId = req.user;
+    var userId = req.user._id;
     var subscrId = req.params.subscrId;
 
     recurly.subscriptions.reactivate(subscrId, function(err, response) {

@@ -43,7 +43,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -59,7 +62,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
-            var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
+            var mapBy = urlQuery.mapBy; 
+            // the human readable col name - real col name derived below
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
             //
@@ -78,6 +82,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             var brandColor = dataSourceDescription.brandColor;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -92,61 +97,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
            
-            var aggregateBy = urlQuery.aggregateBy;
+            var aggregateBy = urlQuery.aggregateBy? urlQuery.aggregateBy : dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
-            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName ;
-
-
-         
-
-            // Aggregate By Available
-            var aggregateBy_humanReadable_available = undefined;
-
-            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-
-
-            for (var colName in raw_rowObjects_coercionSchema) {
-                var colValue = raw_rowObjects_coercionSchema[colName];
-                if (colValue.operation == "ToInteger") {
-
-
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!aggregateBy_humanReadable_available) {
-                            aggregateBy_humanReadable_available = [];
-                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-
-
-                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
-                    }
-                }
-            }
-
-            
-
-
-            if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length == 1)
-                    aggregateBy_humanReadable_available = undefined;
-            }
+            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
-
-
-           
-
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
                 lngField = dataSourceDescription.fe_views.views.map.longitudeField;
+            var noiseLevel;
+
 
             var batch = new Batch();
             batch.concurrency(1);
@@ -199,25 +162,35 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                     }
+                    if (aggregateBy_realColumnName == config.aggregateByDefaultColumnName) {
+                        aggregationOperators = aggByNumberOfItems(aggregationOperators, dataSourceDescription.fe_views.views.map.coordTitle);
+                    } else {
+                        aggregationOperators = aggNotByNumberOfItems(aggregationOperators, dataSourceDescription.fe_views.views.map.coordTitle);
+                    }
 
                     var doneFn = function(err, _coordDocs) {
                         if (err) return done(err);
-
-                        coordRadiusValue = dataSourceDescription.fe_views.views.map.radiusBy;
+                        coordRadiusValue = aggregateBy;
                         var coordValue;
+                        var clustering = require('density-clustering');
+                        var dbscan = new clustering.DBSCAN();
+                        var dataset = [];
+
+                
 
                         coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
                         if (_coordDocs == undefined || _coordDocs == null) _coordDocs = [];
                         if (_coordDocs.length > 0 && coordRadiusValue != undefined) {
-                            coordMinMax.max = parseInt(_coordDocs[0].rowParams[coordRadiusValue]);
-                            coordMinMax.min = parseInt(_coordDocs[0].rowParams[coordRadiusValue]);
+                            // I think we can find the min and max without parsing all the docs
+                            coordMinMax.max = parseInt(_coordDocs[0]["coordRadiusValue"]);
+                            coordMinMax.min = parseInt(_coordDocs[0]["coordRadiusValue"]);
                         }
 
                         _coordDocs.forEach(function (el, i, arr) {
                             if (coordRadiusValue != undefined) {
 
-                                coordValue = parseInt(el.rowParams[coordRadiusValue]);
+                                coordValue = parseInt(el["coordRadiusValue"]);
                                 if(coordValue > coordMinMax.max) {
                                     coordMinMax.max = coordValue;
                                 } else if (coordValue < coordMinMax.min) {
@@ -228,14 +201,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     type: "Feature",
                                     geometry: {
                                         type: "Point",
-                                        coordinates: [el.rowParams[lngField], el.rowParams[latField]]
+                                        coordinates: [el["lngField"], el["latField"]]
                                     },
                                     properties: {
-                                        name: el.rowParams[coordTitle],
+                                        name: el["coordTitle"],
                                         total: coordValue,
                                         id: el._id
                                     }
                                 });
+                                dataset.push([el["lngField"], el["latField"]]);
 
                             } else {
 
@@ -251,9 +225,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     }
                                 });
 
+                                dataset.push([el.rowParams[lngField], el.rowParams[latField]]);
                             }
 
                         });
+                        winston.info("💬  Running density-clustering algorithm to calculate this dataset's noise");
+                        // parameters: 5 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
+                        var clusters = dbscan.run(dataset, 5, 2);
+                        winston.info("📡  Noise level:" + dbscan.noise.length);
+                        noiseLevel = dbscan.noise.length;
+        
                         done();
                     }
                     // Potentially change to cursor function to optimize
@@ -309,7 +290,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //
                     var doneFn = function (err, _groupedResults) {
                         if (err) return done(err);
-
+                        var clustering = require('density-clustering');
+                        var dbscan = new clustering.DBSCAN();
+                        var dataset = [];
                         if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
                         _groupedResults.forEach(function (el, i, arr) {
                             var countryName = el.name;
@@ -338,13 +321,85 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 },
                                 geometry: geometryForCountry
                             });
+
+                            dataset.push(geometryForCountry)
                         });
+                        winston.info("💬  Running density-clustering algorithm to calculate this dataset's noise");
+                        // parameters: 5 - neighborhood radius, 2 - number of points in neighborhood to form a cluster
+                        var clusters = dbscan.run(dataset, 5, 2);
+                        winston.info("📡  Noise level:" + dbscan.noise.length);
+                        noiseLevel = dbscan.noise.length;
+
                         done();
                     };
                     processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
                 });
             }
-            
+
+            var aggByNumberOfItems = function (aggregationOperators, coordTitle) {
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        {$unwind: "$" + "rowParams." + coordTitle},
+                        {$unwind: "$" + "rowParams." + lngField},
+                        {$unwind: "$" + "rowParams." + latField},
+                        {
+                            $group: {
+                                _id: {
+                                    mapBy: "$" + "rowParams." + coordTitle,
+                                    lngField: "$" + "rowParams." + lngField,
+                                    latField: "$" + "rowParams." + latField
+                                },
+                                value: {$addToSet: "$_id"} ,
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                coordTitle: "$_id.mapBy",
+                                lngField: "$_id.lngField",
+                                latField: "$_id.latField",
+                                coordRadiusValue: {$size: "$value"}
+                            }
+                        },
+                        {
+                            $sort: {coordRadiusValue: 1} // priotize by incidence, since we're $limit-ing below
+                        }
+
+                    ]);
+
+                return aggregationOperators            
+            }
+
+            var aggNotByNumberOfItems = function (aggregationOperators, coordTitle) {
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        {$unwind: "$" + "rowParams." + coordTitle},
+                        {$unwind: "$" + "rowParams." + lngField},
+                        {$unwind: "$" + "rowParams." + latField},
+                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
+                        {
+                            $group: {
+                                _id: {
+                                    mapBy: "$" + "rowParams." + coordTitle,
+                                    lngField: "$" + "rowParams." + lngField,
+                                    latField: "$" + "rowParams." + latField,
+                                    coordRadiusValue: "$" + "rowParams." + aggregateBy_realColumnName 
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                coordTitle: "$_id.mapBy",
+                                lngField: "$_id.lngField",
+                                latField: "$_id.latField",
+                                coordRadiusValue: "$_id.coordRadiusValue"
+                            }
+                        }
+
+                    ]);
+                return aggregationOperators            
+            }
 
             var user = null;
             batch.push(function(done) {
@@ -363,8 +418,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (err) return callback(err);
 
                 //
-
-
                 var data =
                 {
                     env: process.env,
@@ -419,10 +472,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'map', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview,
+                    noiseLevel: noiseLevel
 
                 };
                 callback(err, data);

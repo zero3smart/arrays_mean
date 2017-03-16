@@ -26,8 +26,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // filters
     var source_pKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
+    var askForPreview = false;
+    if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -74,6 +76,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
@@ -136,37 +139,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
-            // Aggregate By Available
-            var aggregateBy_humanReadable_available = undefined;
-            _.forOwn(raw_rowObjects_coercionSchema, function (colValue, colName) {
-                if (colValue.operation == "ToInteger") {
-                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
-                    if (!isExcluded) {
-                        var humanReadableColumnName = colName;
-                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
-
-                        if (!aggregateBy_humanReadable_available) {
-                            aggregateBy_humanReadable_available = [];
-                            if (!numberOfRecords_notAvailable)
-                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
-
-                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
-                    }
-                }
-            });
-
-            if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length == 1)
-                    aggregateBy_humanReadable_available = undefined;
-            }
-
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
-
 
 
             //
@@ -318,7 +294,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 {
@@ -326,7 +302,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         label: "$_id.groupBy",
                                         stack: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -342,14 +318,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         label: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -384,7 +360,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             var displayableVal;
 
                             if (groupBy_isDate) {
-                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription)
+                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription);
+
                             } else {
                                 displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
@@ -499,6 +476,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
+
+                console.log(JSON.stringify(aggregationOperators))
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -564,12 +544,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     // Aggregate By
-                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'lineGraph', 'AggregateBy', 'ToInteger'),
                     defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                     aggregateBy: aggregateBy,
                     // graphData contains all the data rows; used by the template to create the linechart
                     graphData: graphData,
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    isPreview: askForPreview
                 };
 
                 callback(err, data);

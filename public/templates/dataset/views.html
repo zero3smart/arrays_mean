@@ -20,6 +20,7 @@
                     class="dashboard-list-icon view"
                     ng-class="{'default-view': data.default_view == view.name}"
                     aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}"
+                    ng-model="dataset.fe_views.default_view"
                     ng-click="makeDefaultView(view.name)">
                     <i class="fa fa-lg fa-home" aria-hidden="true"></i>
                 </span>
@@ -36,12 +37,16 @@
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>
 
-                <!-- <span class="dashboard-list-icon"
-                    aa-tooltip="{{ dummyNeedsProcessing ? 'Open preview' : 'Process data to open preview' }}"
-                    ng-class="{'disabled': !dummyNeedsProcessing }"
-                    ng-click="" flex="5">
-                    <i class="fa fa-eye" aria-hidden="true"></i>
-                </span> -->
+                <span flex="5"></span>
+
+                <!-- TODO also check if !jobId || jobId == 0 && imported  -->
+
+                <span class="dashboard-list-icon"
+                    aa-tooltip="{{ previewCopy.fe_views.views[view.name] ? 'Open preview in new tab' : 'No changes to preview' }}"
+                    ng-class="{'disabled': !previewCopy.fe_views.views[view.name]}"
+                    ng-click="openViewPreview(view.name)" flex="5">
+                    <i class="fa {{ (dataset.dirty || !previewCopy.fe_views.views[view.name])? 'fa-eye-slash' : 'fa-eye' }}" aria-hidden="true"></i>
+                </span>
 
             </li>
         </ul>
