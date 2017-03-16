@@ -19,6 +19,8 @@ angular.module('arraysApp')
             // never needs to be disabled--if it is not needed, it is hidden
             $scope.secondaryAction.disabled = false;
 
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+
             // primary actions
             var _nextTab = function() {
                 $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {

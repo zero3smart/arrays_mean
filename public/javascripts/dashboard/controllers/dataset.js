@@ -21,6 +21,19 @@ angular.module('arraysApp')
 
 
             /**
+             * If firstImport is not set (existing datasets), set it to 0 (already imported)
+             * dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+             */
+            $scope.checkIfFirstImport = function(firstImportValue) {
+                if (typeof firstImportValue == 'undefined') {
+                    return 0;
+                } else {
+                    return firstImportValue;
+                }
+            };
+
+
+            /**
              * Tutorial banner messages
              * TODO Ideally this would have methods and a dictionary of messages for easy editing, getting, setting--
              * there may be issues of $scope to resolve that prevent a dictionary and/or methods from updating messages
@@ -31,7 +44,7 @@ angular.module('arraysApp')
             };
 
 
-            $scope.transitionTo = function(step,anchor) {
+            $scope.transitionTo = function(step, anchor) {
                 $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
                     reload: true,
                     inherit: false,

@@ -10,10 +10,6 @@ angular.module('arraysApp')
                 var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
             };
-            /**
-             * If you've made is to the Display tab, everything should be set and the firstImport is completed.
-             */
-            dataset.firstImport = 0;
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -70,6 +66,13 @@ angular.module('arraysApp')
             }
 
             $scope.$parent.$parent.dataset = dataset;
+            /**
+             * If you've made is to the Display tab, everything should be set and the firstImport is completed.
+             */
+            if (dataset.firstImport) {
+                dataset.firstImport = 0;
+                DatasetService.update($scope.$parent.$parent.dataset._id, { firstImport: 0 });
+            }
 
             $scope.$parent.$parent.currentNavItem = 'settings';
 
