@@ -1,32 +1,17 @@
 <md-nav-bar md-selected-nav-item="currentNavItem" md-no-ink role="navigation" aria-label="navigation links">
     <md-nav-item md-nav-click="navigate('dashboard.dataset.upload')" name="upload" value="upload">
-        Source</md-nav-item>
+        Source
+    </md-nav-item>
 
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-show="(dataset.firstImport == 0 || dataset.firstImport >= 2 || dataset.connection)">
+        Content
+    </md-nav-item>
 
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="(dataset.firstImport == 0 || dataset.firstImport >= 3 || dataset.connection)">
+        Views
+    </md-nav-item>
 
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-hide="!(dataset.fileName || dataset.connection)">
-        Content</md-nav-item>
-        <li role="option" aria-selected="false" aria-hidden="false">
-            <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!(dataset.fileName || dataset.connection)">
-            <span class="_md-nav-button-text placeholder"><span>Content</span></span>
-            </button>
-        </li>
-
-<md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="dataset.objectTitle ||
-    dataset.connection">
-        Views</md-nav-item>
-    <li role="option" aria-selected="false" aria-hidden="false">
-        <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="
-        (!dataset.connection && !dataset.objectTitle)">
-        <span class="_md-nav-button-text placeholder"><span>Views</span></span>
-        </button>
-    </li>
-
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings" ng-hide="!dataset.fe_views.default_view">
-        Display</md-nav-item>
-    <li role="option" aria-selected="false" aria-hidden="false">
-        <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!dataset.fe_views.default_view">
-        <span class="_md-nav-button-text placeholder"><span>Display</span></span>
-        </button>
-    </li>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings" ng-show="(dataset.firstImport == 0)">
+        Display
+    </md-nav-item>
 </md-nav-bar>

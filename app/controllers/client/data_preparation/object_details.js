@@ -14,8 +14,6 @@ var User = require('../../../models/users');
 module.exports.BindData = function (req, source_pKey, rowObject_id,askForPreview, callback) {
     var self = this;
 
-  askForPreview = true;
-
     importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,source_pKey)
         .then(function (dataSourceDescription) {
 

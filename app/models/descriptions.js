@@ -107,6 +107,12 @@ var DatasourceDescription_scheme = Schema({
     lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
+    firstImport: {type: Number, integer: true, default: 1},
+    // 0: false, not first import
+    // 1: Source tab
+    // 2: Content tab
+    // 3: Views tab
+    // 4: Display tab
     dirty: {type: Number, integer: true, default: 0},
     //0: nth to do, imported
     //1: reimport from begining

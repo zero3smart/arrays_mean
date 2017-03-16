@@ -1,37 +1,15 @@
 angular.module('arraysApp')
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', '$timeout', '$anchorScroll', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window', 'viewUrlService',
-        function($scope, $state, $timeout, $anchorScroll, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window, viewUrlService) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService', '$filter', '$window', 'viewUrlService',
+        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService, $filter, $window, viewUrlService) {
 
-            // scroll to listing request, if hash
-            $timeout(function() {
-                $anchorScroll();
-            });
-
+            // primary actions
             var _submitForm = function() {
-                $scope.submitForm($scope.formValidity);
+                $scope.submitForm();
             };
-
             var _viewViz = function() {
                 var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
-                // var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
-                //     dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                //     makeFieldValuePairs(dataset.fe_filters.default);
                 $window.open(url, '_blank');
             };
-
-            // function makeFieldValuePairs(obj) {
-            //     var fieldValuePairs  = [], result;
-            //     for (var p in obj) {
-            //         if( obj.hasOwnProperty(p) ) {
-            //             fieldValuePairs.push(p + '=' + obj[p]);
-            //         }
-            //     }
-            //     result = fieldValuePairs.join('&');
-            //     if (result !== '') {
-            //         result = '?' + result;
-            //     }
-            //     return result;
-            // }
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -41,66 +19,93 @@ angular.module('arraysApp')
             });
 
             $scope.$watch('vm.settingsForm.$dirty', function(dirty) {
+                $scope.setRemindUserUnsavedChanges(dirty);
+
                 if (dirty) {
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = _submitForm;
+
+                    $scope.secondaryAction.text = 'Revert';
+                    $scope.secondaryAction.disabled = false;
+                    $scope.secondaryAction.do = function() {
+                        $state.reload(); // lazy revert solution
+                    };
                 } else { // false or undefined
                     $scope.primaryAction.text = 'View';
                     $scope.primaryAction.do = _viewViz;
+
+                    $scope.secondaryAction.text = '';
                 }
+            }, true);
+
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
+
+            /**
+             * Commenting out for now as we are no longer auto-updating these settings
+             * and give the user the option to revert changes.
+             */
+            $scope.$watch('dataset.brandColor', function (newValue, oldValue) {
+                if(newValue !== oldValue) {
+                    $scope.vm.settingsForm.$setDirty();
+                }
+                // if(dataset.imported) {
+                //     DatasetService.update($scope.$parent.$parent.dataset._id, {brandColor: dataset.brandColor});
+                // }
             }, true);
 
             $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
 
             // still needed now that this step comes later?
-
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
-            // if (!dataset.url) {
-            //     dataset.url = $scope.convertToURLSafe(dataset.title);
-            // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             if ($filter('isSuperAdmin')(dataset.author) ) {
-                $scope.showOnArraysCo = (dataset.state == 'approved')? true: false;
+                $scope.showOnArraysCo = (dataset.state == 'approved');
             }
 
             $scope.$parent.$parent.dataset = dataset;
+            /**
+             * If you've made is to the Display tab, everything should be set and the firstImport is completed.
+             */
+            if (dataset.firstImport) {
+                dataset.firstImport = 0;
+                DatasetService.update($scope.$parent.$parent.dataset._id, { firstImport: 0 });
+            }
+
             $scope.$parent.$parent.currentNavItem = 'settings';
 
-            $scope.updatePublishSettings = function() {
-
-
-                if(!dataset.fe_visible) {
-                    dataset.isPublic = false;
-                    dataset.fe_listed = false;
-                } else {
-                    if(dataset.imported) {
-
-                        DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
-                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed});
-
-                    }
-                }
-            };
+            /**
+             * Commenting out for now as we are no longer auto-updating these settings
+             * and give the user the option to revert changes.
+             */
+            // $scope.updatePublishSettings = function() {
+            //     if(!dataset.fe_visible) {
+            //         dataset.isPublic = false;
+            //         dataset.fe_listed = false;
+            //     } else {
+            //         if(dataset.imported) {
+            //             DatasetService.update($scope.$parent.$parent.dataset._id,
+            //                 {isPublic: dataset.isPublic, fe_visible: dataset.fe_visible, fe_listed: dataset.fe_listed}
+            //             );
+            //         }
+            //     }
+            // };
 
             $scope.listOnArraysRequest = function() {
-
-                DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state: 'pending'})
-                .then(function(response) {
-                    if (response.status == 200 && response.data) {
-                        $scope.$parent.$parent.dataset = response.data;
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Request submitted!')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    }
-
-                });
-
+                DatasetService.approvalRequest($scope.$parent.$parent.dataset._id, {state: 'pending'})
+                    .then(function(response) {
+                        if (response.status == 200 && response.data) {
+                            $scope.$parent.$parent.dataset = response.data;
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Request submitted!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                                );
+                        }
+                    });
             };
 
             $scope.updateListingOnArrays = function(approved) {
@@ -108,30 +113,25 @@ angular.module('arraysApp')
                 if (dataset.imported) {
 
                     var appr = (approved == true ) ?  'approved' : 'disapproved';
-                    DatasetService.approvalRequest($scope.$parent.$parent.dataset._id,{state:appr})
-                    .then(function(response) {
+                    DatasetService.approvalRequest($scope.$parent.$parent.dataset._id, {state: appr})
+                        .then(function(response) {
 
-                        if (response.status == 200 && response.data) {
+                            if (response.status == 200 && response.data) {
 
-
-                            if (!$filter('isSuperAdmin')(dataset.author)) {
-
-                                $scope.$parent.$parent.dataset = response.data;
-                                $mdToast.show(
-                                    $mdToast.simple()
-                                        .textContent('Listing status updated!')
-                                        .position('top right')
-                                        .hideDelay(3000)
-                                );
+                                if (!$filter('isSuperAdmin')(dataset.author)) {
+                                    $scope.$parent.$parent.dataset = response.data;
+                                    $mdToast.show(
+                                        $mdToast.simple()
+                                            .textContent('Listing status updated!')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                        );
+                                }
 
                             }
-
-                        }
-                    });
+                        });
 
                 } else {
-
-
                     if (approved == true) {
                         dataset.state = 'approved';
                     }
@@ -139,7 +139,7 @@ angular.module('arraysApp')
             };
 
 
-            $scope.submitForm = function(isValid) {
+            $scope.submitForm = function() {
 
                 $scope.submitting = true;
 
@@ -168,10 +168,11 @@ angular.module('arraysApp')
                     $scope.submitting = false;
                     $scope.vm.settingsForm.$setPristine();
 
-                    // NOTE attempting to open _blank here will fire pop up blocker
+                    // NOTE attempting to open _blank here will fire pop up blocker,
+                    // which is one the reasons the primary action button becomes "View"
 
                 }, function (error) {
-                        $mdToast.show(
+                    $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')

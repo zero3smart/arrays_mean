@@ -183,7 +183,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
-
+                        
                         aggregationOperators = aggregationOperators.concat(
                             [
                                 {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -355,6 +355,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var summedValuesByLowercasedLabels = {};
                         var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;
@@ -420,8 +421,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
-
-                //console.log(JSON.stringify(aggregationOperators));
 
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
