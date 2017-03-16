@@ -171,7 +171,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         chartBy: "$" + "rowParams." + chartBy_realColumnName
                                     },
                                     value: {
-                                        $sum: "$" + "rowParams." + aggregateBy_realColumnName
+                                        $addToSet: {object: "$_id", totalSum: "$" + "rowParams." + aggregateBy_realColumnName}
+
                                     } // the count
                                 }
                             },
@@ -180,7 +181,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     _id: 0,
                                     groupBy: "$_id.groupBy",
                                     chartBy: "$_id.chartBy",
-                                    value: 1
+                                    value: {$sum: "$value.totalSum"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
@@ -191,6 +192,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                              } */
                         ]);
                 } else {
+
+
                     aggregationOperators = aggregationOperators.concat(
                         [
                             {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -201,7 +204,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                         chartBy: "$" + "rowParams." + chartBy_realColumnName
                                     },
-                                    value: {$sum: 1} // the count
+                                    value: {$addToSet: "$_id"} // the count
                                 }
                             },
                             { // reformat
@@ -209,7 +212,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     _id: 0,
                                     groupBy: "$_id.groupBy",
                                     chartBy: "$_id.chartBy",
-                                    value: 1
+                                    value: {$size: "$value"}
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below

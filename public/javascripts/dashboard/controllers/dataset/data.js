@@ -1,8 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources',
-        'availableTypeCoercions', 'modalService',
-        function ($scope, $state, $q, DatasetService, AuthService, $mdToast,  $filter, dataset, additionalDatasources, availableTypeCoercions,
-            modalService) {
+    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'modalService', '$window', 'viewUrlService',
+        function ($scope, $state, $q, DatasetService, AuthService, $mdToast,  $filter, dataset, additionalDatasources, availableTypeCoercions, modalService, $window, viewUrlService) {
             $scope.$parent.$parent.currentNavItem = 'data';
 
             $scope.availableTypeCoercions = availableTypeCoercions;
@@ -13,7 +11,7 @@ angular.module('arraysApp')
             if (!dataset.fe_excludeFields) {
                 dataset.fe_excludeFields = {};
                 for (var i = 0; i < dataset.columns.length; i++) {
-                    dataset.fe_excludeFields[dataset.columns[i].name.replace('.','')] = false;
+                    dataset.fe_excludeFields[dataset.columns[i].name.replace('.', '')] = false;
                 }
                 $scope.excludeAll = true; // set toggle to "Exclude All"
             } else {
@@ -26,11 +24,22 @@ angular.module('arraysApp')
                 }
             }
 
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
 
-            $scope.primaryAction.text = (dataset.imported) ? 'Save' : 'Next';
-
-            $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.formValidity);
+            // primary actions
+            // NOTE dashboard.dataset.process also contains logic
+            // to progress or not based on firstImport
+            var _nextTab = function() {
+                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                $state.transitionTo(nextState, {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
             };
 
             $scope.secondaryAction.do = function() {
@@ -40,18 +49,17 @@ angular.module('arraysApp')
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
             if(!dataset.fe_excludeFieldsObjDetail) {
                 dataset.fe_excludeFieldsObjDetail = {};
-                for (var i = 0; i < dataset.columns.length; i++) {
+                for (i = 0; i < dataset.columns.length; i++) {
                     dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
                 }
             }
-
-
 
 
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {
 
                     $scope.formValidity = validity;
+                    // TODO check this connection logic
                     if (dataset.connection) {
                         $scope.primaryAction.disabled = false;
                     } else {
@@ -61,12 +69,22 @@ angular.module('arraysApp')
                 }
             });
 
-            $scope.$watch('submitting',function(sub) {
+            $scope.$watch('submitting', function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             });
 
-            $scope.$watch('vm.dataForm.$dirty',function(dirty) {
-                $scope.primaryAction.disabled = !dirty;
+            $scope.$watch('vm.dataForm.$dirty', function(dirty) {
+                if (dirty) {
+                    // $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
+                    $scope.primaryAction.do = function() {
+                        $scope.submitForm($scope.formValidity);
+                    };
+                } else {
+                    // $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
+                }
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
@@ -95,10 +113,11 @@ angular.module('arraysApp')
             var joinDataCols = [];
 
 
-            if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.join
-                && $scope.$parent.$parent.dataset.connection.join.tableName) {
+            if ($scope.$parent.$parent.dataset.connection &&
+                $scope.$parent.$parent.dataset.connection.join &&
+                $scope.$parent.$parent.dataset.connection.join.tableName) {
 
-                DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id,$scope.$parent.$parent.dataset.connection)
+                DatasetService.colsForJoinTables($scope.$parent.$parent.dataset._id, $scope.$parent.$parent.dataset.connection)
                     .then(function(response) {
 
                         if (response.status == 200 && response.data) {
@@ -129,7 +148,7 @@ angular.module('arraysApp')
                 for (var i = 0; i < $scope.originalFields.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.originalFields[i].name] = exclude;
                 }
-                $scope.excludeAll = exclude ? false : true; // toggle
+                $scope.excludeAll = !exclude; // toggle
             };
 
             $scope.toggleObjectDetailDisplay = function(fieldName) {
@@ -142,7 +161,7 @@ angular.module('arraysApp')
                     DatasetService: DatasetService
                 };
 
-                modalService.openDialog('joinTable',data)
+                modalService.openDialog('joinTable', data)
                     .then(function(savedDataset) {
                         joinDataCols = savedDataset.joinCols;
                         delete savedDataset.joinCols;
@@ -153,7 +172,7 @@ angular.module('arraysApp')
             };
 
 
-            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly,columnIndex) {
+            $scope.openFieldDialog = function (fieldName, firstRecord, custom, customFieldIndex, filterOnly, columnIndex) {
 
 
                 var data = {
@@ -168,7 +187,7 @@ angular.module('arraysApp')
                 };
 
 
-                modalService.openDialog('field',data)
+                modalService.openDialog('field', data)
                     .then(function(savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
@@ -177,7 +196,7 @@ angular.module('arraysApp')
                         if(filterOnly) {
                             $scope.openFabricatedFilterDialog();
                         }
-                    },function() {
+                    }, function() {
 
                         if(filterOnly) {
                             $scope.openFabricatedFilterDialog();
@@ -193,7 +212,7 @@ angular.module('arraysApp')
                     additionalDatasources: $scope.$parent.$parent.additionalDatasources
                 };
 
-                modalService.openDialog('nested',data)
+                modalService.openDialog('nested', data)
                     .then(function(result) {
 
                         $scope.$parent.$parent.dataset = result.dataset;
@@ -204,7 +223,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                    },function() {
+                    }, function() {
                     // console.log('You cancelled the nested dialog.');
                     });
 
@@ -237,7 +256,7 @@ angular.module('arraysApp')
 
                 };
 
-                modalService.openDialog('fabricated',data)
+                modalService.openDialog('fabricated', data)
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.vm.dataForm.$setDirty();
@@ -249,10 +268,10 @@ angular.module('arraysApp')
             $scope.openImageScrapingDialog = function () {
 
                 var data = {
-                    dataset : $scope.$parent.$parent.dataset
+                    dataset: $scope.$parent.$parent.dataset
                 };
 
-                modalService.openDialog('imageScraping',data)
+                modalService.openDialog('imageScraping', data)
                     .then(function (savedDataset){
                         $scope.$parent.$parent.dataset = savedDataset;
                         sortColumnsByDisplayOrder();
@@ -414,6 +433,10 @@ angular.module('arraysApp')
                 }
 
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
+
+                // TODO do this in process.js, not here?
+                // although both dataset and $parent.$parent.dataset are lost between states
+                if (dataset.firstImport == 2) $scope.$parent.$parent.dataset.firstImport = 3;
             };
 
             $scope.reset = function () {
@@ -423,6 +446,9 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+                // TODO Put object title <label> back in <md-input-container>
+                // and set objectTitle default as first field (below).
+                // In initial attempts, $scope.data.objectTitle was not being properly saved.
                 $scope.data.objectTitle = dataset.objectTitle;
                 $scope.data.fe_image = dataset.fe_image;
 
@@ -477,6 +503,7 @@ angular.module('arraysApp')
             };
 
             $scope.submitForm = function (isValid) {
+
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
@@ -486,37 +513,32 @@ angular.module('arraysApp')
                     $scope.submitting = true;
 
                     var errorHandler = function (error) {
-                            $scope.submitting = false;
-                            $mdToast.show(
+                        $scope.submitting = false;
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(3000)
-                            );
-                        }, done = function() {
-                            $scope.submitting = false;
+                        );
+                    };
+                    var done = function() {
+                        $scope.submitting = false;
 
-                            $mdToast.show(
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Visualization updated!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
 
+                        _nextTab();
 
-                        var nextState = ($scope.$parent.$parent.dataset.dirty )? 'dashboard.dataset.process' : 'dashboard.dataset.views';
-                        $state.transitionTo(nextState, {id: dataset._id}, {
-                            reload: true,
-                            inherit: false,
-                            notify: true
-                        });
                     };
 
                     var queue = [];
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
-
 
                     queue.push(DatasetService.save(finalizedDataset));
 

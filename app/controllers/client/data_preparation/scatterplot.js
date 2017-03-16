@@ -21,7 +21,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var sourceKey = urlQuery.source_key;
     var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + sourceKey : sourceKey;
-
     var askForPreview = false;
     if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
@@ -158,20 +157,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // ----------
                     documents = groupedDocuments;
                     var sampleDoc = documents[0];
-                    func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
-                        var uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+                    // func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+
+                        // var uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                         /*
                          * Define numeric fields list which may be used as plot axes.
                          * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                          */
-                        numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
-                            if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
-                                return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
-                            } else {
-                                return true;
-                            }
-                        });
+                        // numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
+                            // if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
+                                // return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
+                            // } else {
+                                // return true;
+                            // }
+                        // });
                     });
                     done();
                 }
@@ -218,7 +218,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     documents: documents,
                     metaData: dataSourceDescription,
-                    renderableFields: numericFields,
+                    // renderableFields: numericFields,
                     array_source_key: sourceKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
@@ -247,9 +247,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     colNames_orderedForXAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.xAxisField', 'ToInteger'),
                     colNames_orderedForYAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.yAxisField', 'ToInteger'),
                     defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
-
-
-
 
                 };
                 callback(err, data);

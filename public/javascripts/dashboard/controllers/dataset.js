@@ -21,6 +21,19 @@ angular.module('arraysApp')
             };
 
             /**
+             * If firstImport is not set (existing datasets), set it to 0 (already imported)
+             * dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+             */
+            $scope.checkIfFirstImport = function(firstImportValue) {
+                if (typeof firstImportValue == 'undefined') {
+                    return 0;
+                } else {
+                    return firstImportValue;
+                }
+            };
+
+
+            /**
              * If dataset is "dirty", show browser dialog to remind user to save changes
              * These event listeners only check for navigation outside of the dashboard or page refresh.
              */
@@ -63,14 +76,16 @@ angular.module('arraysApp')
             $scope.navigate = function(step) {
                 // Don't open dialog when navigating to process data
                 if(step !== 'dashboard.dataset.process' && $scope.dataset.dirty) {
-                    var dialogPromise = $scope.openUnsavedChangesDialog('Save changes');
+                    var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes
                         $scope.secondaryAction.do(); // from reset() data.js
                         $scope.navigateAndSave(step);
                     }, function() {
                         // TODO Labeled "Continue Editing" but should process data
-                        $scope.processData();
+                        // Disabled for now as it doesn't check if objectTitle exists.
+                        // Once objectTitle has a default, we can safely do this
+                        // $scope.processData();
                     });
                 } else {
                     $scope.navigateAndSave(step);

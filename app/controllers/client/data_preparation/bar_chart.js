@@ -109,9 +109,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
 
+
+
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.barChart_aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
+
+
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
+
+
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
@@ -173,7 +182,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
-
+                        
                         aggregationOperators = aggregationOperators.concat(
                             [
                                 {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -242,7 +251,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"} 
                                     }
                                 },
                                 {
@@ -250,7 +259,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         _id: 0,
                                         category: "$_id.groupBy",
                                         label: "$_id.stackBy",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 {
@@ -267,14 +276,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 { // unique/grouping and summing stage
                                     $group: {
                                         _id: "$" + "rowParams." + groupBy_realColumnName,
-                                        value: {$sum: 1}
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 { // reformat
                                     $project: {
                                         _id: 0,
                                         category: "$_id",
-                                        value: 1
+                                        value: {$size: "$value"}
                                     }
                                 },
                                 { // priotize by incidence, since we're $limit-ing below
@@ -345,6 +354,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var summedValuesByLowercasedLabels = {};
                         var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;

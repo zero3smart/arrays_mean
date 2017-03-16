@@ -1,12 +1,12 @@
 <li class="gallery-item gallery-item-text">
 {% if fe_galleryItem_useBackgroundColor %}
 	{% if fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor == "#FFFFFF" %}
-		<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link" style="background-color:{{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }};">
+		<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}{{ '?preview=true' if isPreview }}" class="gallery-item-text-link" style="background-color:{{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }};">
 	{% else %}
-		<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link" style="background-color:{{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }}; border-color: {{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }}">
+		<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}{{ '?preview=true' if isPreview }}" class="gallery-item-text-link" style="background-color:{{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }}; border-color: {{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }}">
 	{% endif %}
 {% else %}
-	<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link">
+	<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}{{ '?preview=true' if isPreview }}" class="gallery-item-text-link">
 {% endif %}
 		<div class="gallery-item-text-inner">
 		{% if fe_galleryItem_secondaryColumnDisplay and fe_galleryItem_useBackgroundColor %}

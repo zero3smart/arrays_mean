@@ -5,7 +5,9 @@ var humanReadableColumnName_objectTitle = "Object Title";
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
 
+
 var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
+
 
     var split = source_pKey.split("-");
     if (split.length != 3 && process.env.NODE_ENV !== 'enterprise') {
@@ -72,16 +74,17 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
         feVisible_rowParams_keys.push(key);
     }
 
-    if (dataSourceDescription.imageScraping) {
-        for (var i = 0; i < dataSourceDescription.imageScraping.length; i++) {
-           for (var j = 0; j < dataSourceDescription.imageScraping[i].setFields.length; j++) {
-                var index = feVisible_rowParams_keys.indexOf(dataSourceDescription.imageScraping[i].setFields[j].newFieldName)
-                if (index >= 0) {
-                     feVisible_rowParams_keys.splice(index,1);
-                }
-            }
-        }
-    }
+
+    // if (dataSourceDescription.imageScraping) {
+    //     for (var i = 0; i < dataSourceDescription.imageScraping.length; i++) {
+    //        for (var j = 0; j < dataSourceDescription.imageScraping[i].setFields.length; j++) {
+    //             var index = feVisible_rowParams_keys.indexOf(dataSourceDescription.imageScraping[i].setFields[j].newFieldName)
+    //             if (index >= 0) {
+    //                  feVisible_rowParams_keys.splice(index,1);
+    //             }
+    //         }
+    //     }
+    // }
 
     return feVisible_rowParams_keys;
 };
@@ -162,6 +165,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
     // fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
     //
     // ^^^^^^commented out because we don't want dropdowns to display object title but I'm not deleting because we may change our minds down the road
+
+
     var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
     var available_keys = [];
     var field = 'fieldsNotAvailable';

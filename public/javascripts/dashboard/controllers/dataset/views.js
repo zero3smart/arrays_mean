@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','previewCopy','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService', 'user', '$window', 'viewUrlService',
-        function($scope, dataset,previewCopy,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user,$window,viewUrlService) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset', 'previewCopy', 'views', 'viewResource', '$mdDialog', 'DatasetService', '$mdToast', '$state', '$filter', 'AssetService', 'user', '$window', 'viewUrlService',
+        function($scope, dataset, previewCopy, views, viewResource, $mdDialog, DatasetService, $mdToast, $state, $filter, AssetService, user, $window, viewUrlService) {
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -13,14 +13,27 @@ angular.module('arraysApp')
 
             if ($scope.previewCopy) {
                 $scope.$parent.$parent.dataset.fe_views = $scope.previewCopy.fe_views;
-                $scope.primaryAction.text = ''
+                $scope.primaryAction.text = '';
             }
 
+            // never needs to be disabled--if it is not needed, it is hidden
+            $scope.secondaryAction.disabled = false;
 
-            // $scope.primaryAction.text = (dataset.imported && dataset.fe_views) ? 'Save' : 'Next';
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
 
+            // primary actions
+            var _nextTab = function() {
+                $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
+            };
 
-            if (previewCopy) $scope.secondaryAction.disabled = false;
 
             // $scope.$watch('vm.viewsForm.$valid', function(validity) {
             //     if (validity !== undefined) {
@@ -29,37 +42,39 @@ angular.module('arraysApp')
             //     }
             // });
 
-            $scope.$watch('previewCopy',function(previewExist) {
+            $scope.$watch('previewCopy', function(previewExist) {
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
-                    $scope.secondaryAction.text = "Revert";
-                    $scope.primaryAction.text = "Save";
                     $scope.primaryAction.disabled = false;
-                    $scope.secondaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
+                    $scope.primaryAction.do = $scope.submitForm;
+
+                    /**
+                     * Do not show if firstImport.
+                     * Consistent with Content tab--also prevents endless Revert cycle on first import.
+                     */
+                    $scope.secondaryAction.text = !dataset.firstImport ? 'Revert' : '';
+
                     $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
+
                 } else {
-                    $scope.primaryAction.disabled = true;
-                    delete $scope.primaryAction.text;
-                    delete $scope.secondaryAction.text;
+
+                    $scope.primaryAction.disabled = false;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
+
+                    $scope.secondaryAction.text = '';
                     $scope.tutorial.message = '';
                 }
-            })
+            });
 
-
-            $scope.primaryAction.do = function() {
-                $scope.submitForm();
-            };
-
-            $scope.$watch('submitting',function(sub) {
-
+            $scope.$watch('submitting', function(sub) {
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
-
-
             });
 
             $scope.secondaryAction.do = function() { // revert changes
                 $scope.submitting = true;
-                 DatasetService.draftAction($scope.$parent.$parent.dataset._id,'revert')
+                DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
                         $scope.submitting = false;
                         if (response.status == 200 && response.data) {
@@ -70,33 +85,29 @@ angular.module('arraysApp')
 
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent('Visualization updated!')
+                                    .textContent('Changes reverted.')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
 
-                            // $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
-                            //     reload: true,
-                            //     inherit: false,
-                            //     notify: true
-                            // });
-
+                            // simplest way to refresh page content, although causes flash
+                            // TODO reset view visibiliy checkboxes and default view indicators
+                            $state.reload();
                         }
-                    },function(err) {
+                    }, function(err) {
                         $scope.submitting = false;
                         //console.log(error);
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent(error)
+                                .textContent(err)
                                 .position('top right')
                                 .hideDelay(5000)
                         );
 
-                    })
+                    });
 
 
-
-            }
+            };
 
 
             $scope.$parent.$parent.currentNavItem = 'views';
@@ -123,83 +134,85 @@ angular.module('arraysApp')
             $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
 
 
-            $scope.makeDefaultView = function(viewName) {
+            // Use this to INITIALIZE the default view
+            $scope.initDefaultView = function(viewName) {
                 $scope.data.default_view = viewName;
 
-                $scope.makeViewVisible();
+                $scope.setViewVisibility(viewName, true);
             };
 
-            $scope.makeViewVisible = function() {
+            // Use this to SET the default view, if view is visible
+            $scope.setDefaultView = function(viewName) {
+                if (dataset.fe_views.views[viewName] && dataset.fe_views.views[viewName].visible) {
+                    $scope.data.default_view = viewName;
+                }
+                $scope.saveViewSettingToDraft();
+            };
+
+            $scope.setViewVisibility = function(viewName, visibility) {
 
                 if (!$scope.$parent.$parent.dataset.fe_views.views) {
                     $scope.$parent.$parent.dataset.fe_views.views = {};
                 }
 
-                if (!$scope.$parent.$parent.dataset.fe_views.views[$scope.data.default_view]) {
-                    $scope.$parent.$parent.dataset.fe_views.views[$scope.data.default_view] = {visible: true};
+                if (!$scope.$parent.$parent.dataset.fe_views.views[viewName]) {
+                    $scope.$parent.$parent.dataset.fe_views.views[viewName] = {visible: visibility};
                 } else {
-                    $scope.$parent.$parent.dataset.fe_views.views[$scope.data.default_view].visible = true;
+                    $scope.$parent.$parent.dataset.fe_views.views[viewName].visible = visibility;
 
                 }
 
                 $scope.saveViewSettingToDraft();
-
-
             };
 
-             $scope.saveViewSettingToDraft = function() {
+            $scope.saveViewSettingToDraft = function() {
 
                 var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                 delete finalizedDataset.columns;
                 finalizedDataset.fe_views.default_view = $scope.data.default_view;
 
                 DatasetService.save(finalizedDataset)
-                .then(function(response) {
+                    .then(function(response) {
 
-                    if (response.status == 200) {
-                        var preview = response.data.preview;
+                        if (response.status == 200) {
+                            var preview = response.data.preview;
 
-                        if (preview) {
-                            $scope.previewCopy = preview;
-                            $scope.data.default_view = preview.fe_views.default_view;
-                            $scope.$parent.$parent.dataset.fe_views.view = $scope.previewCopy.fe_views;
+                            if (preview) {
+                                $scope.previewCopy = preview;
+                                $scope.data.default_view = preview.fe_views.default_view;
+                                $scope.$parent.$parent.dataset.fe_views.view = $scope.previewCopy.fe_views;
+
+                            }
 
                         }
 
-                    }
 
+                    });
 
-                })
+            };
 
-            }
-
-
-
+            // for custom views, this will simply make the last custom view default?
             $scope.customViews = [];
 
             for (var i = 0; i < views.length; i++) {
-
                 if (views[i]._team) {
-
                     $scope.customViews.push(views[i].name);
 
                     if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
-                        $scope.makeDefaultView(views[i].name);
+                        $scope.initDefaultView(views[i].name);
                     }
                 }
             }
 
+
             if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
-                $scope.makeDefaultView('gallery');
-
+                $scope.initDefaultView('gallery');
             }
-
-
 
 
             $scope.openViewDialog = function (evt, id) {
 
-                viewResource.get({id:id},function(data) {
+                viewResource.get({id: id}, function(data) {
 
                     $mdDialog.show({
                         controller: ViewDialogController,
@@ -210,12 +223,15 @@ angular.module('arraysApp')
                         fullscreen: true, // Only for -xs, -sm breakpoints.
                         locals: {
                             viewName: data.name,
-                            belongsToTeam : data._team,
+                            belongsToTeam: data._team,
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
                             // hide 'Advanced' tabs from all but superAdmin
-                            viewTabs: data.tabs.filter(function(tabName){
+                            viewTabs: data.tabs.filter(function (tabName){
+                                if(data.name == 'wordCloud') {
+                                    return tabName !== 'Menus'
+                                }
                                 if(user.role !== 'superAdmin') {
                                     return tabName !== 'Advanced';
                                 } else {
@@ -262,10 +278,6 @@ angular.module('arraysApp')
             };
 
 
-
-
-
-
             // open modal on load, for testing
             // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // barChart
             // $scope.openViewDialog(null, "581a83b24fc526c798a72559"); // lineGraph
@@ -278,10 +290,7 @@ angular.module('arraysApp')
             // $scope.openViewDialog(null, "5851e8eb9daaffbe4871bd03"); // pieChart
 
 
-
-
             $scope.submitForm = function () {
-
 
                 // $scope.$parent.$parent.dataset.fe_views.default_view = $scope.data.default_view;
 
@@ -289,40 +298,42 @@ angular.module('arraysApp')
 
                     $scope.submitting = true;
 
-                    DatasetService.draftAction($scope.$parent.$parent.dataset._id,'apply')
-                    .then(function(response) {
-                        $scope.submitting = false;
-                        if (response.status == 200 && response.data.finalView) {
+                    DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'apply')
+                        .then(function(response) {
+                            $scope.submitting = false;
+                            if (response.status == 200 && response.data.finalView) {
 
-                            $scope.previewCopy = null;
-                            $scope.$parent.$parent.dataset.fe_views = response.data.finalView;
+                                $scope.previewCopy = null;
+                                $scope.$parent.$parent.dataset.fe_views = response.data.finalView;
 
-                            $mdToast.show(
+                                $mdToast.show(
                                 $mdToast.simple()
                                     .textContent('Visualization updated!')
                                     .position('top right')
                                     .hideDelay(3000)
-                            );
+                                );
 
-                            $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
+                                if (dataset.firstImport == 3) {
+                                    dataset.firstImport = 0; // not 4--you've made it
+                                    $state.transitionTo('dashboard.dataset.settings', {id: $scope.$parent.$parent.dataset._id}, {
+                                        reload: true,
+                                        inherit: false,
+                                        notify: true
+                                    });
+                                }
 
-
-                        }
-                    },function(err) {
-                        $scope.submitting = false;
+                            }
+                        }, function(err) {
+                            $scope.submitting = false;
                         //console.log(error);
-                        $mdToast.show(
+                            $mdToast.show(
                             $mdToast.simple()
-                                .textContent(error)
+                                .textContent(err)
                                 .position('top right')
                                 .hideDelay(5000)
                         );
 
-                    })
+                        });
 
 
                     // var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
@@ -386,8 +397,8 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,AssetService,
-                DatasetService,team,default_view,reimportStep) {
+            function ViewDialogController($scope, $mdDialog, $filter, viewName, belongsToTeam, viewDisplayName, dataset, viewSetting, viewTabs, colsAvailable, AssetService,
+                DatasetService, team, default_view, reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -398,7 +409,7 @@ angular.module('arraysApp')
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
-                $scope.isCustomView = belongsToTeam? true: false;
+                $scope.isCustomView = !!belongsToTeam;
                 $scope.reimportStep = reimportStep;
 
 
@@ -407,9 +418,9 @@ angular.module('arraysApp')
                 $scope.loadIcons = function() {
 
                     AssetService.loadIcons()
-                    .then(function(data) {
-                        $scope.iconsUrl = data;
-                    });
+                        .then(function(data) {
+                            $scope.iconsUrl = data;
+                        });
 
                 };
 
@@ -421,7 +432,7 @@ angular.module('arraysApp')
 
                 $scope.loadDatasetsForMapping = function() {
 
-                    if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
+                    if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded == false) {
 
                         DatasetService.getDatasetsWithQuery({_team: team._id})
                             .then(function (all) {
@@ -446,10 +457,10 @@ angular.module('arraysApp')
                     $scope.loading = true;
                     if (pKey && !$scope.otherDatasetCols[pKey]) {
                         DatasetService.getMappingDatasourceCols(pKey)
-                        .then(function(cols) {
-                            $scope.otherDatasetCols[pKey] = cols.data;
-                            $scope.loading = false;
-                        });
+                            .then(function(cols) {
+                                $scope.otherDatasetCols[pKey] = cols.data;
+                                $scope.loading = false;
+                            });
                     }
                 };
 
@@ -512,6 +523,9 @@ angular.module('arraysApp')
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+                    if (!$scope.dataset.fe_views.default_view) {
+                        $scope.dataset.fe_views.default_view = dataset.fe_views.view.default_view;
+                    }
 
                     if (!$scope.dataset.fe_views.views[viewName]) {
                         $scope.dataset.fe_views.views[viewName] = {};
@@ -526,7 +540,7 @@ angular.module('arraysApp')
                         var setting_name = viewSetting[i].name;
                         $scope.data[setting_name] =  $scope.dataset.fe_views.views[viewName][setting_name];
 
-                        if (typeof $scope.data[setting_name] == 'undefined' && viewSetting[i].inputType =='keyValue') {
+                        if (typeof $scope.data[setting_name] == 'undefined' && viewSetting[i].inputType == 'keyValue') {
                             $scope.data[setting_name] = [];
                         }
                     }
@@ -553,7 +567,7 @@ angular.module('arraysApp')
                 //     });
                 // };
 
-                $scope.addMore = function (field,pushType) {
+                $scope.addMore = function (field, pushType) {
                     if (pushType == 'object') {
                         field.push({});
                     } else {
@@ -564,7 +578,7 @@ angular.module('arraysApp')
                 $scope.isArray = function(requireType) {
                     if (Array.isArray(requireType)) {
                         return true;
-                    } 
+                    }
                     return false;
                 };
 
@@ -577,9 +591,10 @@ angular.module('arraysApp')
                             }
                         }
                         return false;
-                    }
+                    };
 
                     var returnDataTypeMatch = function (requireType) {
+
 
                         return function(col) {
 
@@ -589,7 +604,7 @@ angular.module('arraysApp')
 
                                     var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
                                     if ($scope.isArray(requireType)) {
-                                       return requireTypeArray(lowercase, requireType) 
+                                        return requireTypeArray(lowercase, requireType);
                                     }
                                     return lowercase.indexOf(requireType.toLowerCase()) >= 0;
                                 }
@@ -599,15 +614,15 @@ angular.module('arraysApp')
                             return true;
 
                         };
-                    }
+                    };
 
 
                     return returnDataTypeMatch(requireType);
                 };
 
                 $scope.AppendNumberOfItems = function(menu, cols) {
-                    if (menu == "Aggregate By") {
-                        cols.push("Number of Items");
+                    if (menu == 'Aggregate By') {
+                        cols.push('Number of Items');
                     }
                     return cols;
                 };
@@ -645,13 +660,13 @@ angular.module('arraysApp')
                     };
                 };
 
-                $scope.remove = function(setting,index) {
-                    $scope.data[setting].splice(index,1);
+                $scope.remove = function(setting, index) {
+                    $scope.data[setting].splice(index, 1);
                 };
 
 
-                $scope.notChosen= function(arrayOfObject,target,index) {
-                    for (var i = 0; i <arrayOfObject.length ;i++) {
+                $scope.notChosen = function(arrayOfObject, target, index) {
+                    for (var i = 0; i < arrayOfObject.length ;i++) {
                         if (index !== i) {
                             if (arrayOfObject[i].key == target) {
                                 return false;
@@ -662,10 +677,10 @@ angular.module('arraysApp')
                 };
 
 
-                $scope.checkDuplicateKey = function(list,$index) {
+                $scope.checkDuplicateKey = function(list, $index) {
                     return function(col) {
 
-                        return $scope.notChosen(list,col,$index);
+                        return $scope.notChosen(list, col, $index);
                     };
                 };
 
@@ -716,7 +731,7 @@ angular.module('arraysApp')
                 $scope.save = function () {
 
                     if (typeof $scope.reimportStep !== 'undefined') {
-                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1: $scope.reimportStep;
+                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1 : $scope.reimportStep;
                     }
 
                     if ($scope.isDefault == true) {

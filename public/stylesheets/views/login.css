@@ -94,7 +94,7 @@ div.signup-link {
     left: 50%;
     top: -0.6em;
     margin-left: -1.5em;
-    background-color:var(--color-background);
+    background-color: #ffffff;
     width: 3em;
     text-align: center;
 }
@@ -103,6 +103,15 @@ div.signup-link {
 }
 .login .loginForm .help-block {
     color: red;
+}
+
+.block-pull-right {
+    text-align: right; 
+    display: block;
+}
+
+#login-submit + span {
+    padding-left: 4px;
 }
 
 /* Dedicated Login Page */

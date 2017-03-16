@@ -1,4 +1,4 @@
- var winston = require('winston');
+var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');

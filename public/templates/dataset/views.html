@@ -11,6 +11,7 @@
                 <span flex="10"
                     aa-tooltip="{{ data.default_view == view.name ? 'Default view must be visible' : (dataset.fe_views.views[view.name].visible ? 'Set view as not visible' : 'Set view as visible') }}">
                 <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
+                    ng-change="saveViewSettingToDraft()"
                     ng-disabled="data.default_view == view.name"
                     class="view-visible"
                     aria-label="{{view.name}} Visibility" md-no-ink></md-checkbox>
@@ -19,8 +20,8 @@
                 <span flex="10"
                     class="dashboard-list-icon view"
                     ng-class="{'default-view': data.default_view == view.name}"
-                    aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}"
-                    ng-click="makeDefaultView(view.name)">
+                    aa-tooltip="{{ dataset.fe_views.views[view.name].visible ? ( data.default_view == view.name ? 'Default view' : 'Set as default view' ) : 'Make view visible to set as default' }}"
+                    ng-click="setDefaultView(view.name)">
                     <i class="fa fa-lg fa-home" aria-hidden="true"></i>
                 </span>
 
@@ -41,10 +42,9 @@
                 <!-- TODO also check if !jobId || jobId == 0 && imported  -->
 
                 <span class="dashboard-list-icon"
-                    aa-tooltip="{{ previewCopy.fe_views.views[view.name] ? 'Open preview in new tab' : 'No changes to preview' }}"
-                    ng-class="{'disabled': !previewCopy.fe_views.views[view.name]}"
+                    aa-tooltip="{{ dataset.fe_views.views[view.name].visible ? 'Open preview in new tab' : 'View must be visible to preview' }}"
                     ng-click="openViewPreview(view.name)" flex="5">
-                    <i class="fa {{ (dataset.dirty || !previewCopy.fe_views.views[view.name])? 'fa-eye-slash' : 'fa-eye' }}" aria-hidden="true"></i>
+                    <i class="fa fa-eye" aria-hidden="true"></i>
                 </span>
 
             </li>
