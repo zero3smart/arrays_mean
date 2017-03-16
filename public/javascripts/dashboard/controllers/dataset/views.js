@@ -74,11 +74,9 @@ angular.module('arraysApp')
             });
 
             $scope.revertChanges = function(onPage) { // revert changes
-                console.log('reverrt');
                 $scope.submitting = true;
                 DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
-                        console.log(response);
                         $scope.submitting = false;
                         if (response.status == 200 && response.data) {
 
@@ -114,7 +112,7 @@ angular.module('arraysApp')
 
             $scope.secondaryAction.do = function() {
                 $scope.revertChanges(true);
-            }
+            };
             $scope.$parent.$parent.discardChangesThisView = $scope.revertChanges;
 
             $scope.$parent.$parent.currentNavItem = 'views';
