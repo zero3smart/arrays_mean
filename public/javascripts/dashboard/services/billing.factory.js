@@ -30,7 +30,7 @@
                 'update': { method: 'PUT' }
             });
         })
-        .factory('Invoices', function($resource) {
-            return $resource('api/billing/invoices/:invoiceId', null, {});
+        .factory('Adjustments', function($resource) {
+            return $resource('api/billing/adjustments/:adjustmentId', null, {});
         });
 })();

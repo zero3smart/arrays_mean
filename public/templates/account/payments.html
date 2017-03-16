@@ -3,23 +3,19 @@
 
     <ul class="dashboard-list user-list" ng-cloak>
 
-        <li ng-if="invoices.length > 0" layout="row" layout-align="none center">
+        <li ng-if="adjustments.length > 0" layout="row" layout-align="none center">
             
-            <span flex>Number</span>
-            <span flex>Billed On</span>
-            <span flex>Due On</span>
-            <span flex>Status</span>
-            <span flex>Total</span>
+            <span flex="50">Description</span>
+            <span flex>Created On</span>
+            <span flex class="text-right">Amount</span>
 
         </li>
 
-        <li ng-repeat="invoice in invoices" layout="row" layout-align="none center">
+        <li ng-repeat="adjustment in adjustments" layout="row" layout-align="none center">
             
-            <span flex>#{{ invoice.invoice_number._ }}</span>
-            <span flex>{{ invoice.created_at._ | date }}</span>
-            <span flex>{{ invoice.closed_at._ | date }}</span>
-            <span flex>{{ invoice.state }}</span>
-            <span flex>{{ invoice.total_in_cents._ / 100 | currency : '$' : 2 }} USD</span>
+            <span flex="50">{{ adjustment.description }}</span>
+            <span flex>{{ adjustment.created_at._ | date }}</span>
+            <span flex class="text-right">{{ adjustment.total_in_cents._ / 100 | currency : '$' : 2 }} USD</span>
 
         </li>
     </ul>

@@ -16,7 +16,7 @@ var ctrlBillingAccount = require('../controllers/api/billing/account');
 var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
 var ctrlPlans = require('../controllers/api/billing/plans');
 var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
-var ctrlInvoices = require('../controllers/api/billing/invoices');
+var ctrlAdjustments = require('../controllers/api/billing/adjustments');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -133,7 +133,7 @@ router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
 router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);
 router.put('/billing/subscriptions/:subscrId/cancel', ctrlSubscriptions.cancel);
 router.put('/billing/subscriptions/:subscrId/reactivate', ctrlSubscriptions.reactivate);
-router.get('/billing/invoices', ctrlInvoices.getAll);
+router.get('/billing/adjustments', ctrlAdjustments.getAll);
 
 
 module.exports = router;

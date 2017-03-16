@@ -1,14 +1,14 @@
 angular.module('arraysApp')
-    .controller('PaymentsCtrl', ['$scope', '$log', 'invoices', 
-        function($scope, $log, invoices) {
+    .controller('PaymentsCtrl', ['$scope', '$log', 'adjustments', 
+        function($scope, $log, adjustments) {
 
-            invoices.$promise.then(function(data) {
-                // $log.log(data.data.invoices.invoice);
+            adjustments.$promise.then(function(data) {
+                $log.log(data.data.adjustments.adjustment);
 
-                if (data.data.invoices.invoice.length > 1) {
-                    $scope.invoices = data.data.invoices.invoice;
+                if (data.data.adjustments.adjustment.length > 1) {
+                    $scope.adjustments = data.data.adjustments.adjustment;
                 } else {
-                    $scope.invoices = [data.data.invoices.invoice];
+                    $scope.adjustments = [data.data.adjustments.adjustment];
                 }
                 
             });

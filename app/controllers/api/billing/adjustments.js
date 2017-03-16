@@ -29,7 +29,7 @@ module.exports.getAll = function(req, res) {
                     return res.status(401).send({ error: 'unauthorized' });
                 }
 
-                recurly.invoices.listByAccount(user.defaultLoginTeam._id.toString(), {}, function(err, response) {
+                recurly.adjustments.list(user.defaultLoginTeam._id.toString(), function(err, response) {
                     if (err) {
                         res.status(err.statusCode).send(err);
                     } else {

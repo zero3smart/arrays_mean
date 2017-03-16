@@ -82,8 +82,8 @@ angular.module('arraysApp')
                             restrict: function(AuthService) {
                                 return AuthService.ensureIsAdmin();
                             },
-                            invoices: ['Invoices', function(Invoices) {
-                                return Invoices.get();
+                            adjustments: ['Adjustments', function(Adjustments) {
+                                return Adjustments.get();
                             }]
                         }
                     })
