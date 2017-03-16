@@ -41,6 +41,7 @@ angular.module('arraysApp')
             // });
 
             $scope.$watch('previewCopy', function(previewExist) {
+                $scope.setRemindUserUnsavedChanges(previewExist);
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
                     $scope.primaryAction.disabled = false;
@@ -70,7 +71,7 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = $scope.primaryAction.disabled || (sub == true) ;
             });
 
-            $scope.secondaryAction.do = function() { // revert changes
+            function revertChanges() { // revert changes
                 $scope.submitting = true;
                 DatasetService.draftAction($scope.$parent.$parent.dataset._id, 'revert')
                     .then(function(response) {
@@ -99,14 +100,13 @@ angular.module('arraysApp')
                             $mdToast.simple()
                                 .textContent(err)
                                 .position('top right')
-                                .hideDelay(5000)
+                                .hideDelay(3000)
                         );
-
                     });
+            }
 
-
-            };
-
+            $scope.secondaryAction.do = revertChanges;
+            $scope.discardChangesThisView = revertChanges;
 
             $scope.$parent.$parent.currentNavItem = 'views';
 
