@@ -3,7 +3,7 @@ angular.module('arraysApp')
         function($scope, $log, adjustments) {
 
             adjustments.$promise.then(function(data) {
-                $log.log(data.data.adjustments.adjustment);
+                // $log.log(data.data.adjustments.adjustment);
 
                 if (data.data.adjustments.adjustment.length > 1) {
                     $scope.adjustments = data.data.adjustments.adjustment;
