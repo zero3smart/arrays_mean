@@ -42,6 +42,8 @@ angular.module('arraysApp')
             //     }
             // });
 
+            $scope.tutorial.message = 'Here you can make changes to your views.\n';
+
             $scope.$watch('previewCopy', function(previewExist) {
 
                 if (dataset.imported && dataset.dirty == 0 && previewExist !== null && previewExist._id) {
@@ -55,7 +57,7 @@ angular.module('arraysApp')
                      */
                     $scope.secondaryAction.text = !dataset.firstImport ? 'Revert' : '';
 
-                    $scope.tutorial.message = 'DRAFT'; // workaround to display HTML in banner
+                    if (!dataset.sample) $scope.tutorial.message = 'DRAFT';
 
                 } else {
 
@@ -64,7 +66,7 @@ angular.module('arraysApp')
                     $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
 
                     $scope.secondaryAction.text = '';
-                    $scope.tutorial.message = '';
+                    if (!dataset.sample) $scope.tutorial.message = '';
                 }
             });
 
@@ -230,7 +232,7 @@ angular.module('arraysApp')
                             // hide 'Advanced' tabs from all but superAdmin
                             viewTabs: data.tabs.filter(function (tabName){
                                 if(data.name == 'wordCloud') {
-                                    return tabName !== 'Menus'
+                                    return tabName !== 'Menus';
                                 }
                                 if(user.role !== 'superAdmin') {
                                     return tabName !== 'Advanced';

@@ -42,7 +42,7 @@ angular.module('arraysApp')
                 }
             }, true)
 
-            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.\nClick \'Publish\' to continue and process your data.';
+            $scope.tutorial.message = 'Here you can edit how your visualization looks on your team page.';
 
             // still needed now that this step comes later?
             if (!dataset.fe_listed) {dataset.fe_listed = false;}

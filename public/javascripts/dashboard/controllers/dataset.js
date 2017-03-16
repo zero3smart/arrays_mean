@@ -63,7 +63,6 @@ angular.module('arraysApp')
                 message: ''
             };
 
-
             $scope.transitionTo = function(step,anchor) {
                 $state.transitionTo(step, {id: $scope.dataset._id, '#': anchor}, {
                     reload: true,
