@@ -24,6 +24,8 @@ angular.module('arraysApp')
                 }
             }
 
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+
             // primary actions
             // NOTE dashboard.dataset.process also contains logic
             // to progress or not based on firstImport
