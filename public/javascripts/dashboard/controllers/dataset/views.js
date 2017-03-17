@@ -1,6 +1,12 @@
 angular.module('arraysApp')
     .controller('DatasetViewsCtrl', ['$scope', 'dataset', 'previewCopy', 'views', 'viewResource', '$mdDialog', 'DatasetService', '$mdToast', '$state', '$filter', 'AssetService', 'user', '$window', 'viewUrlService',
         function($scope, dataset, previewCopy, views, viewResource, $mdDialog, DatasetService, $mdToast, $state, $filter, AssetService, user, $window, viewUrlService) {
+
+            if ($scope.team.isEnterprise) {
+                $state.transitionTo('dashboard.dataset.settings', {id: dataset._id});
+            return;
+            }
+
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -112,22 +118,28 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.currentNavItem = 'views';
 
-            var colsAvailable = dataset.columns.map(function(column) {
-                return column.name;
-            }).concat(dataset.customFieldsToProcess.map(function(customField) {
-                return customField.fieldName;
-            })).concat(dataset.fe_nestedObject.fields.map(function(fieldName) {
-                if (dataset.fe_nestedObject.prefix)
-                    return dataset.fe_nestedObject.prefix + fieldName;
-                return fieldName;
-            })).concat(dataset.relationshipFields.map(function(field) {
-                return field.field;
+            if (!$scope.team.isEnterprise) {
 
-            }));
+                var colsAvailable = dataset.columns.map(function(column) {
+                    return column.name;
+                }).concat(dataset.customFieldsToProcess.map(function(customField) {
+                    return customField.fieldName;
+                })).concat(dataset.fe_nestedObject.fields.map(function(fieldName) {
+                    if (dataset.fe_nestedObject.prefix)
+                        return dataset.fe_nestedObject.prefix + fieldName;
+                    return fieldName;
+                })).concat(dataset.relationshipFields.map(function(field) {
+                    return field.field;
 
-            colsAvailable = colsAvailable.filter(function(fieldName){
-                return !dataset.fe_excludeFields[fieldName];
-            });
+                }));
+
+                colsAvailable = colsAvailable.filter(function(fieldName){
+                    return !dataset.fe_excludeFields || !dataset.fe_excludeFields[fieldName];
+                });
+
+            }
+
+            
 
 
             $scope.data = {};
@@ -191,22 +203,9 @@ angular.module('arraysApp')
 
             };
 
-            // for custom views, this will simply make the last custom view default?
-            $scope.customViews = [];
+          
 
-            for (var i = 0; i < views.length; i++) {
-                if (views[i]._team) {
-                    $scope.customViews.push(views[i].name);
-
-                    if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
-                        $scope.initDefaultView(views[i].name);
-
-                    }
-                }
-            }
-
-
-
+    
             if (!$scope.$parent.$parent.dataset.fe_views.default_view) {
                 $scope.initDefaultView('gallery');
             }
@@ -225,7 +224,7 @@ angular.module('arraysApp')
                         fullscreen: true, // Only for -xs, -sm breakpoints.
                         locals: {
                             viewName: data.name,
-                            belongsToTeam: data._team,
+                            // belongsToTeam: data._team,
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
@@ -267,7 +266,7 @@ angular.module('arraysApp')
             };
 
             $scope.openViewPreview = function(viewName) {
-                if (!dataset.dirty && $scope.previewCopy && $scope.previewCopy.fe_views.views[viewName]) {
+                if (!dataset.dirty && !$scope.team.isEnterprise &&  $scope.previewCopy && $scope.previewCopy.fe_views.views[viewName])  {
                     var url = viewUrlService.getViewUrl($scope.subdomain, dataset, viewName, true);
                     $window.open(url, '_blank');
                 }
@@ -336,70 +335,11 @@ angular.module('arraysApp')
                         );
 
                         });
-
-
-                    // var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    // delete finalizedDataset.columns;
-                    // DatasetService.save(finalizedDataset)
-                    //     .then(function (response) {
-                    //         $scope.submitting = false;
-                    //         if (response.status == 200) {
-                    //             var id = response.data.id;
-                    //             $mdToast.show(
-                    //                 $mdToast.simple()
-                    //                     .textContent('Visualization updated!')
-                    //                     .position('top right')
-                    //                     .hideDelay(3000)
-                    //             );
-
-                    // var useCustomView = false;
-
-
-                    // for (var key in finalizedDataset.fe_views.views) {
-
-                    //     if ($scope.customViews.indexOf(key) >= 0 && finalizedDataset.fe_views.views[key].visible==true) {
-                    //         useCustomView = true;
-                    //         break;
-                    //     }
-                    // }
-
-
-                    // finalizedDataset.useCustomView = useCustomView;
-
-                    // DatasetService.save(finalizedDataset)
-                    //     .then(function (response) {
-                    //         $scope.submitting = false;
-                    //         if (response.status == 200) {
-                    //             var id = response.data.id;
-                    //             $mdToast.show(
-                    //                 $mdToast.simple()
-                    //                     .textContent('Visualization updated!')
-                    //                     .position('top right')
-                    //                     .hideDelay(3000)
-                    //             );
-
-                    //             $state.transitionTo('dashboard.dataset.settings', {id: id}, {
-                    //                 reload: true,
-                    //                 inherit: false,
-                    //                 notify: true
-                    //             });
-
-                    //         }
-
-                    //     }, function (error) {
-                    //         $scope.submitting = false;
-                    //         $mdToast.show(
-                    //             $mdToast.simple()
-                    //                 .textContent(error)
-                    //                 .position('top right')
-                    //                 .hideDelay(5000)
-                    //         );
-                    //     });
                 }
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName, belongsToTeam, viewDisplayName, dataset, viewSetting, viewTabs, colsAvailable, AssetService,
+            function ViewDialogController($scope, $mdDialog, $filter, viewName, /*belongsToTeam,*/ viewDisplayName, dataset, viewSetting, viewTabs, colsAvailable, AssetService,
                 DatasetService, team, default_view, reimportStep) {
 
                 $scope.viewName = viewName;
@@ -411,7 +351,7 @@ angular.module('arraysApp')
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
-                $scope.isCustomView = !!belongsToTeam;
+                // $scope.isCustomView = !!belongsToTeam;
                 $scope.reimportStep = reimportStep;
 
 

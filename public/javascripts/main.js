@@ -49,10 +49,13 @@ $(document).ready(function () {
             return word.toLowerCase();
         }).join('-');
 
-         var href;
+        var href;
+
+
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
+
 
             href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
             window.location.href = href;

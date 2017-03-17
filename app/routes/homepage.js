@@ -25,6 +25,8 @@ router.get('/', function (req, res) {
                     return res.redirect('auth/login');
                 }
 
+                // console.log(teamDescriptions)
+
                 
                 team_show_controller.BindData(req,teamDescriptions[0],function(err,bindData) {
                     if (err) {

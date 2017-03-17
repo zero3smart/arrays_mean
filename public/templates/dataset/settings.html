@@ -44,7 +44,7 @@
         </md-input-container>
 
         <div>
-            <md-button ng-hide="dataset.connection || dataset.sample || user.role=='superAdmin'"
+            <md-button ng-hide="dataset.connection || dataset.sample || user.role=='superAdmin' || team.isEnterprise "
                 ng-disabled="dataset.state=='approved' || dataset.state =='pending'|| !dataset.imported"
                 class="md-dashboard" aria-label="More actions menu"
                 ng-click="listOnArraysRequest()">

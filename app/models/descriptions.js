@@ -569,6 +569,17 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
         })
         .lean()
         .exec(function (err, descriptions) {
+
+            if (!descriptions) {
+                console.log("no descriptions ===== ");
+                console.log(subdomainQuery);
+                console.log(uid);
+                console.log(revision);
+
+            }
+
+
+            // if (!descriptions) return fn(null,[]);
             descriptions = descriptions.filter(function (description) {
                 if (description._team !== null) {
                     return description
@@ -607,6 +618,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+    
 
     imported_data_preparation.DataSourceDescriptionWithPKey(false,sourceKey)
        .then(function(datasourceDescription) {

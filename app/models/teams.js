@@ -69,6 +69,10 @@ team.GetTeams = function(fn) {
 };
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
+    if (process.env.NODE_ENV == 'enterprise') {
+        teamQuery = {subdomain: process.env.subdomain};
+    }
+
 
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
@@ -99,6 +103,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
     function nonLoginUserQuery (cb) {
         var publicAndImportedDataset = {isPublic: true,imported:true,fe_visible:true,state:'approved'};
         var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
+        if (process.env.NODE_ENV == 'enterprise') delete publicAndImportedDataset.state;
         getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true}, { 'subscription.state': 'active' } ] }, {$or: [publicAndImportedDataset,publicAndConnectedDataset]}, cb);
     }
 
@@ -109,13 +114,17 @@ team.GetTeamsAndDatasources = function(userId, fn) {
             .exec(function(err, foundUser) {
                 if (err) return fn(err);
                 if (!foundUser) return nonLoginUserQuery(fn);
+
                 var importedDataset = {imported:true,fe_visible:true,state: 'approved'};
                 var connectedDataset = {connection:{$ne:null}, fe_listed:true,fe_visible:true};
+
+                 if (process.env.NODE_ENV == 'enterprise') delete importedDataset.state;
 
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({}, {$or:[importedDataset,connectedDataset] } , fn);
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
+
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };

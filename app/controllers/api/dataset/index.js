@@ -593,7 +593,7 @@ module.exports.save = function (req, res) {
             function(callback) {
                 datasource_description.findById(req.body._id)
                 .lean()
-                .populate('schema_id')
+                .populate('schema_id _team')
                 .populate('author')
                 .exec(function(err,doc) {
                     if (err) callback(err);
@@ -637,7 +637,7 @@ module.exports.save = function (req, res) {
                 if (Object.keys(update.$set).length == 0) { //nothing to update
                     callback(null,doc,false,null);
                 } else {
-                    if (!doc.imported || doc.imported == false || doc.imported == null) {
+                    if (!doc.imported || doc.imported == false || doc.imported == null || doc._team.isEnterprise) {
                         callback(null,doc,false,update);
                     } else callback(null,doc,makeCopy,update); 
                 }

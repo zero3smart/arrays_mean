@@ -68,9 +68,9 @@ View.getAllCustomViews(function(err,customViews) {
     } else {
         customViews.forEach(function(view) {
 
+            var customViewFileLocation = __dirname + '/../../user/' + view + '/views/index';
 
-
-            router.get('/:source_key/' + view.name,ensureAuthorized,function(req,res,next) {
+            router.get('/:source_key/' + view ,ensureAuthorized,function(req,res,next) {
 
 
                 var source_key = req.params.source_key;
@@ -80,8 +80,28 @@ View.getAllCustomViews(function(err,customViews) {
                     res.status(403).send("Bad Request - source_key missing")
                     return;
                 }
-                res.render(view.name);
+                res.render(customViewFileLocation);
             })
+
+            router.get('/:source_key/getData' , ensureAuthorized,function(req,res,next) {
+
+                var team = req.subdomains[0];
+                if (!team && process.env.subdomain) {
+                    team = process.env.subdomain;
+                }
+                var controller = require('../../user/' + team + '/src/controller');
+
+                controller.BindData(req,function(err,bindData) {
+                    if (err) {
+                         winston.error("❌  Error getting bind data for custom view %s , err: %s" , view,err);
+                        return res.status(500).send(err.response || 'Internal Server Error');
+                    }
+                    winston.info("💬   getting data for custom view: %s", view);
+                    res.json(bindData);
+                })
+            })
+
+
 
         })
     }
@@ -93,7 +113,6 @@ var object_details_controller = require('../controllers/client/data_preparation/
 
 //object detail page
 router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
-
 
     var source_key = req.params[0] + req.params[1];
     source_key = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + source_key.substring(1) : source_key.substring(1);

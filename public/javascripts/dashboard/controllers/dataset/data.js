@@ -30,7 +30,8 @@ angular.module('arraysApp')
             // NOTE dashboard.dataset.process also contains logic
             // to progress or not based on firstImport
             var _nextTab = function() {
-                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 
+                ($scope.team.isEnterprise ) ? 'dashboard.dataset.settings' : 'dashboard.dataset.views';
                 $state.transitionTo(nextState, {id: dataset._id}, {
                     reload: true,
                     inherit: false,
@@ -38,7 +39,8 @@ angular.module('arraysApp')
                 });
             };
             var _viewViz = function() {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                var url = ($scope.team.isEnterprise) ? viewUrlService.getViewUrl($scope.subdomain, dataset, $scope.team.subdomain, false) :
+                viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
             };
 

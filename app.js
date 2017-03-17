@@ -117,6 +117,7 @@ if (cluster.isMaster) {
                     eachCb(err)
                 } else {
                     if (stat.isDirectory() && files) {
+                        //serving the views
                         var view_path = path.join(userFolderPath, file + "/views");
                         viewsToSet.push(view_path);
 
@@ -130,6 +131,7 @@ if (cluster.isMaster) {
             })
         }, function (err) {
             if (err)  return winston.error("❌ cannot sync the user folder files :", err);
+
             app.set('views', viewsToSet)
             nunjucks.setup({
                 watch: isDev,
