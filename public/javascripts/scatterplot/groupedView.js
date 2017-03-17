@@ -201,6 +201,10 @@ scatterplot.view.grouped.prototype.render = function (data) {
             /*
              * Return bubble URL.
              */
+            if (chart._galleryView) {
+                var substringLength = location.pathname.length - "scatterplot".length;
+                return location.pathname.substring(0, substringLength) + 'gallery?' + urlParams;
+            }
             return location.pathname + '?' + urlParams;
         }).append('circle')
         .attr('class', 'bubble')

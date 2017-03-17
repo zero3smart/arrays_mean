@@ -3,7 +3,7 @@
  * @param {Object[]} data
  * @param {Object} metaData
  */
-scatterplot.chart = function (data, metaData) {
+scatterplot.chart = function (galleryView, data, metaData) {
     /**
      * Chart data.
      * @private
@@ -122,6 +122,7 @@ scatterplot.chart = function (data, metaData) {
      * @member {Selection}
      */
     this._yLabelContainer = undefined;
+    this._galleryView = galleryView;
     /**
      * Data x accessor.
      * @private

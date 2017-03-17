@@ -173,7 +173,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
                 if (aggregateBy_realColumnName == config.aggregateByDefaultColumnName) {
                     aggregationOperators = aggByNumberOfItems(aggregationOperators, dataSourceDescription.fe_image.field);
-                    console.log(JSON.stringify(aggregationOperators))
                 }
                 if (aggregationOperators.length > 0) {
                     processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
@@ -181,6 +180,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     processedRowObjects_mongooseModel.find({}).exec(doneFn);
                 }
             });
+
             var aggByNumberOfItems = function (aggregationOperators, image) {
                 var unwind = [
                     {$unwind: "$" + "rowParams." + xAxis_realName},
@@ -217,6 +217,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 var fullAggregateQuery = unwind.concat(group, project, sort)
                 aggregationOperators = aggregationOperators.concat(fullAggregateQuery);
                 return aggregationOperators;
+            }
+
+            var hasGalleryView = function() {
+                if (dataSourceDescription.fe_views.views.gallery) {
+                    if (dataSourceDescription.fe_views.views.gallery.visible == true) {
+                        return true;
+                    }
+                }
+                return false;
             }
             
             var user = null;
@@ -272,7 +281,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     yAxis_humanReadable: yAxis_humanReadable,
                     colNames_orderedForXAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.xAxisField', 'ToInteger'),
                     colNames_orderedForYAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.yAxisField', 'ToInteger'),
-                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
+                    hasGalleryView: hasGalleryView
 
                 };
                 callback(err, data);

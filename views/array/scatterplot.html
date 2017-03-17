@@ -60,8 +60,8 @@
                                         searchCol: searchCol,
                                         searchQ: searchQ,
                                         yAxis: yAxis,
-                                        xAxis: '',
-                                        aggregateBy: aggregateBy
+                                        aggregateBy: aggregateBy,
+                                        xAxis: ''
                                     })
                                 )
                                 }}
@@ -73,30 +73,13 @@
                                     routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
-                                        yAxis: '',
                                         xAxis: xAxis,
-                                        aggregateBy: aggregateBy
+                                        aggregateBy: aggregateBy,
+                                        yAxis: ''
                                     })
                                 )
                                 }}
-<!-- 
-                                {{
-                                dropdown.axis(
-                                    'y',
-                                    'Y-Axis',
-                                    metaData.fe_views.views.scatterplot.defaults.yAxisField,
-                                    renderableFields
-                                )
-                                }}
 
-                                {{
-                                dropdown.axis(
-                                    'x',
-                                    'X-Axis',
-                                    metaData.fe_views.views.scatterplot.defaults.xAxisField,
-                                    renderableFields
-                                )
-                                }} -->
                             </nav>
 
                              <div class="sort-bar-right pull-right">
@@ -169,9 +152,10 @@
         // Define input data set.
         var scatterData = {{ documents | dump | safe }};
         // Render scatterplot.
-        var xAccessor = "{{ xAxis if xAxis else xAxis_humanReadable }}"
-        var yAccessor = "{{ yAxis if yAxis else yAxis_humanReadable }}"
-        var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
+        var xAccessor = "{{ xAxis if xAxis else xAxis_humanReadable }}";
+        var yAccessor = "{{ yAxis if yAxis else yAxis_humanReadable }}";
+        var galleryView = {{ hasGalleryView() }};
+        var scatterPlot = new scatterplot.chart(galleryView, scatterData.map(function(d) {
             d.rowParams.id = d._id;
             d.rowParams.radiusBy = d.rowParams['{{aggregateBy_realColumnName}}']
             return d.rowParams;

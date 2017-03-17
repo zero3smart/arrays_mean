@@ -42,6 +42,9 @@ scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
         } else {
             d.density = 1;
             densityMatrix[xValue][yValue] = d;
+            if (densityMatrix[xValue][yValue].hasOwnProperty("Number of Items")) {
+                densityMatrix[xValue][yValue].density = d["Number of Items"];
+            }
         }
     });
 
@@ -130,11 +133,12 @@ scatterplot.view.standard.prototype.render = function (data) {
             /*
              * Create new URI object from current location.
              */
-            var scatterplotLength = 11;
-            var splitAt = location.href.length - 11;
-            var linkHalf = location.href.substring(0, splitAt)
-
-            var uri = URI(linkHalf);
+            // var validPortionsOfLocation = window.location.origin + window.location.pathname;
+            // var scatterplotLength = "scatterplot".length;
+            // var splitAt = validPortionsOfLocation.length - 11;
+            // var linkHalf = validPortionsOfLocation.substring(0, splitAt)
+            // console.log(linkHalf)
+            var uri = new URI(location.href);
             /*
              * Object x and y values.
              */
@@ -145,13 +149,20 @@ scatterplot.view.standard.prototype.render = function (data) {
              * Otherwise set link to set of objects on gallery view.
              */
             if (densityMatrix[x][y].density === 1) {
-                uri = uri.segment(2, d.id)
-                    .search('');
+                uri = uri.segment(1, "")
+                    .search("");
+                uri.segment(d.id); 
             } else {
                 /*
                  * Prepare filterObj with search params corresponding to that objects set.
                  */
                 var filterObj = convertQueryStringToObject(location.search.substring(1));
+                var invalidFilters = ["xAxis", "yAxis", "aggregateBy"];
+                for (var i = 0; i < invalidFilters.length; i++) {
+                    if (filterObj.hasOwnProperty(invalidFilters[i])) {
+                        delete filterObj[invalidFilters[i]];
+                    }
+                }
                 /*
                  * Prepare filters with search params corresponding to that objects set.
                  */
@@ -166,8 +177,11 @@ scatterplot.view.standard.prototype.render = function (data) {
                 /*
                  * Generate URL to gallery with prepared filters.
                  */
-                uri = uri.segment(2, 'gallery')
-                    .search('?' + decodeURIComponent($.param(filterObj)));
+                if (chart._galleryView) {
+                    uri = uri.segment(1, 'gallery')
+                        .search('?' + decodeURIComponent($.param(filterObj)));
+                }
+
             }
             /*
              * Return URL string.
