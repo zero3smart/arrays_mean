@@ -52,7 +52,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var routePath_base = '/' + sourceKey + '/scatterplot';
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-            if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
+            if (urlQuery.preview == 'true') routePath_base += '?preview=true';
             /*
              * Check filter active and update composed URL params.
              */
@@ -282,7 +282,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     colNames_orderedForXAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.xAxisField', 'ToInteger'),
                     colNames_orderedForYAxisDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'defaults.yAxisField', 'ToInteger'),
                     defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
-                    hasGalleryView: hasGalleryView
+                    hasGalleryView: hasGalleryView,
+                    isPreview: askForPreview
 
                 };
                 callback(err, data);
