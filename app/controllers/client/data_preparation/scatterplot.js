@@ -129,43 +129,45 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         if (urlQuery.preview == 'true') routerPath_base += '?preview=true';
 
                         if (req.user) {
-                            User.findById(req.user, function(err, user) {
-                                if (err) return done(err);
+                            User.findById(req.user)
+                                .populate('defaultLoginTeam')
+                                .exec(function(err, user) {
+                                    if (err) return done(err);
 
-                                /*
-                                 * Run callback function to finish action.
-                                 */
-                                callback(err, {
-                                    env: process.env,
+                                    /*
+                                     * Run callback function to finish action.
+                                     */
+                                    callback(err, {
+                                        env: process.env,
 
-                                    user: user,
+                                        user: user,
 
-                                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
+                                        displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
 
-                                    documents: documents,
-                                    metaData: dataSourceDescription,
-                                    renderableFields: numericFields,
-                                    array_source_key: sourceKey,
-                                    team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                                    brandColor: dataSourceDescription.brandColor,
-                                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
-                                    uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
-                                    sourceDoc: sourceDoc,
-                                    view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                                    view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
-                                    //
-                                    routePath_base: routePath_base,
-                                    filterObj: filterObj,
-                                    isFilterActive: isFilterActive,
-                                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                                    searchCol: searchCol || '',
-                                    searchQ: searchQ || '',
-                                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                                    // multiselectable filter fields
-                                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                                        documents: documents,
+                                        metaData: dataSourceDescription,
+                                        renderableFields: numericFields,
+                                        array_source_key: sourceKey,
+                                        team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                                        brandColor: dataSourceDescription.brandColor,
+                                        brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
+                                        uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                                        sourceDoc: sourceDoc,
+                                        view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                                        view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
+                                        //
+                                        routePath_base: routePath_base,
+                                        filterObj: filterObj,
+                                        isFilterActive: isFilterActive,
+                                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                                        searchCol: searchCol || '',
+                                        searchQ: searchQ || '',
+                                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                                        // multiselectable filter fields
+                                        multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                                        defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view)
+                                    });
                                 });
-                            })
                         } else {
                             /*
                              * Run callback function to finish action.

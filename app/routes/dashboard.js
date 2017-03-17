@@ -1,3 +1,5 @@
+var User = require('../models/users');
+
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
@@ -20,10 +22,22 @@ router.get('/logout', function(req, res) {
 
 
 router.get('/*', function(req, res) {
-    res.render('dashboard/index', {
-        env: process.env,
-        user: req.user
-    });
+
+    User.findById(req.user)
+        .populate('_team')
+        .lean()
+        .exec(function(err, user) {
+            if (err) {
+                res.send(err);
+            } else {
+                user.team = user._team;
+                
+                res.render('dashboard/index', {
+                    env: process.env,
+                    user: req.user
+                });
+            }
+        });
 });
 
 module.exports = router;

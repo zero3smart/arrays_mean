@@ -155,10 +155,16 @@ angular
              * Start Intercom support widget
              */
             window.Intercom('boot', {
-                app_id: 'z0ulomtz',
+                app_id: $scope.env.intercomAppId,
                 name: $scope.user.firstName + ' ' + $scope.user.lastName, // Full name
                 email: $scope.user.email, // Email address
-                created_at: new Date($scope.user.createdAt).getTime() / 1000 // Signup date as a Unix timestamp
+                created_at: new Date($scope.user.createdAt).getTime() / 1000, // Signup date as a Unix timestamp
+                company: {
+                    id: $scope.user.defaultLoginTeam._id,
+                    name: $scope.user.defaultLoginTeam.title,
+                    created_at: new Date($scope.user.defaultLoginTeam.createdAt).getTime() / 1000,
+                    plan: $scope.user.defaultLoginTeam.subscription.plan.plan_code
+                }
             });
 
         }]);

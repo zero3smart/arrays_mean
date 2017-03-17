@@ -187,11 +187,13 @@ module.exports.BindData = function (req, source_pKey, rowObject_id,askForPreview
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }
