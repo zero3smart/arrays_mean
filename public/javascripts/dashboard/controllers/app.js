@@ -159,12 +159,12 @@ angular
                 name: $scope.user.firstName + ' ' + $scope.user.lastName, // Full name
                 email: $scope.user.email, // Email address
                 created_at: new Date($scope.user.createdAt).getTime() / 1000, // Signup date as a Unix timestamp
-                company: {
+                company: $scope.user.defaultLoginTeam ? {
                     id: $scope.user.defaultLoginTeam._id,
                     name: $scope.user.defaultLoginTeam.title,
                     created_at: new Date($scope.user.defaultLoginTeam.createdAt).getTime() / 1000,
                     plan: $scope.user.defaultLoginTeam.subscription ? $scope.user.defaultLoginTeam.subscription.plan.plan_code : ''
-                }
+                } : {}
             });
 
         }]);
