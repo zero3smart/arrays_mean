@@ -563,7 +563,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
     }
 
    var self = this;
-    self.find({uid: uid, importRevision: revision, fe_visible: true})
+    self.find({uid: uid, importRevision: revision})
         .populate({
             path: '_team',
             match: subdomainQuery
