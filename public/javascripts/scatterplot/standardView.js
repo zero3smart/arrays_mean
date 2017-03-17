@@ -130,7 +130,11 @@ scatterplot.view.standard.prototype.render = function (data) {
             /*
              * Create new URI object from current location.
              */
-            var uri = URI(location.href);
+            var scatterplotLength = 11;
+            var splitAt = location.href.length - 11;
+            var linkHalf = location.href.substring(0, splitAt)
+
+            var uri = URI(linkHalf);
             /*
              * Object x and y values.
              */
