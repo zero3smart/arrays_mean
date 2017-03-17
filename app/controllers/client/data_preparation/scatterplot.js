@@ -137,23 +137,24 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function(err, groupedDocuments) {
                     if (err) return done(err);
-                        if (!groupedDocuments[0].rowParams) {
-                            documents = [];
-                            var imageField = dataSourceDescription.fe_image.field;
-                            groupedDocuments.forEach(function (el, i, arr) {
-                                documents.push({
-                                    _id: el.id,
-                                    rowParams: {}
-                                })
-                                documents[i].rowParams[xAxis_realName] = el.xAxis;
-                                documents[i].rowParams[yAxis_realName] = el.yAxis;
-                                documents[i].rowParams[imageField] = el.image,
-                                documents[i].rowParams[aggregateBy_realColumnName] = el.aggregateBy
+                    console.log(groupedDocuments)
+                    if (!groupedDocuments[0].rowParams) {
+                        documents = [];
+                        var imageField = dataSourceDescription.fe_image.field;
+                        groupedDocuments.forEach(function (el, i, arr) {
+                            documents.push({
+                                _id: el.id,
+                                rowParams: {}
                             })
-                        } else {
-                            documents = groupedDocuments;
-                        }
-                        var sampleDoc = documents[0];
+                            documents[i].rowParams[xAxis_realName] = el.xAxis;
+                            documents[i].rowParams[yAxis_realName] = el.yAxis;
+                            documents[i].rowParams[imageField] = el.image,
+                            documents[i].rowParams[aggregateBy_realColumnName] = el.aggregateBy
+                        })
+                    } else {
+                        documents = groupedDocuments;
+                    }
+                    var sampleDoc = documents[0];
                     done();
                 };
 
@@ -169,7 +170,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
                 if (aggregateBy_realColumnName == config.aggregateByDefaultColumnName) {
-                    aggregationOperators = aggByNumberOfItems(aggregationOperators, dataSourceDescription.fe_image.field)
+                    aggregationOperators = aggByNumberOfItems(aggregationOperators, dataSourceDescription.fe_image.field);
+                    console.log(JSON.stringify(aggregationOperators))
                 }
                 if (aggregationOperators.length > 0) {
                     processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
@@ -178,36 +180,68 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             });
             var aggByNumberOfItems = function (aggregationOperators, image) {
-                aggregationOperators = aggregationOperators.concat([
+                var unwind = [
                     {$unwind: "$" + "rowParams." + xAxis_realName},
-                    {$unwind: "$" + "rowParams." + yAxis_realName},
-                    {$unwind: "$" + "rowParams." + image},
-                    {
-                        $group: {
-                            _id: {
-                                id: "$_id",
-                                xAxis: "$" + "rowParams." + xAxis_realName,
-                                yAxis: "$" + "rowParams." + yAxis_realName,
-                                image: "$" + "rowParams." + image
-                            },
-                            value: {$addToSet: "$_id"},
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 0,
-                            id: "$_id.id",
-                            xAxis: "$_id.xAxis",
-                            yAxis: "$_id.yAxis",
-                            image: "$_id.image",
-                            aggregateBy: {$size: "$value"}
-                        }
-                    },
-                    {
-                        $sort: {aggregateBy: 1}
+                    {$unwind: "$" + "rowParams." + yAxis_realName}
+                ]
+                var group = [{
+                    $group: {
+                        _id: {
+                            xAxis: "$" + "rowParams." + xAxis_realName,
+                            yAxis: "$" + "rowParams." + yAxis_realName,
+                        },
+                        value: {$addToSet: "$_id"},
                     }
+                }]
+                var project = [{
+                    $project: {
+                        _id: 0,
+                        id: "$value",
+                        xAxis: "$_id.xAxis",
+                        yAxis: "$_id.yAxis",
+                        aggregateBy: {$size: "$value"},
+                    }
+                }]
+                var sort = {
+                    $sort: {aggregateBy: 1}
+                }
 
-                ]);
+                if (image) {
+                    group[0]["$group"].image = {$addToSet: "$rowParams." + image};
+                    project[0]["$project"].image = "$image";
+                }
+                var fullAggregateQuery = unwind.concat(group, project, sort)
+                aggregationOperators = aggregationOperators.concat(fullAggregateQuery);
+                // aggregationOperators = aggregationOperators.concat([
+                //     {$unwind: "$" + "rowParams." + xAxis_realName},
+                //     {$unwind: "$" + "rowParams." + yAxis_realName},
+                //     {
+                //         $group: {
+                //             _id: {
+                //                 // id: "$_id",
+                //                 xAxis: "$" + "rowParams." + xAxis_realName,
+                //                 yAxis: "$" + "rowParams." + yAxis_realName,
+                //             },
+                //             value: {$addToSet: "$_id"},
+                //         }
+                //     },
+                //     {
+                //         $project: {
+                //             _id: 0,
+                //             id: "$value",
+                //             xAxis: "$_id.xAxis",
+                //             yAxis: "$_id.yAxis",
+                //             aggregateBy: {$size: "$value"}
+                //         }
+                //     },
+                //     {
+                //         $sort: {aggregateBy: 1}
+                //     }
+
+                // ]);
+                if (image) {
+
+                }
                 return aggregationOperators;
             }
             
