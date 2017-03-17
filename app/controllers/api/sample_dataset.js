@@ -73,7 +73,7 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 // change dirty to 1
                 duplicatedDescription.dirty = 1;
                 // change firstImport to 1
-                duplicatedDataset.firstImport = 1;
+                duplicatedDescription.firstImport = 1;
                 // flag it as a sample so it can't be published to arrays.co
                 duplicatedDescription.sample = true;
                 // set imported to false so it doesn't try to load automatically when viewing website
