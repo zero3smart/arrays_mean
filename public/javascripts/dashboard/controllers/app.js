@@ -163,7 +163,7 @@ angular
                     id: $scope.user.defaultLoginTeam._id,
                     name: $scope.user.defaultLoginTeam.title,
                     created_at: new Date($scope.user.defaultLoginTeam.createdAt).getTime() / 1000,
-                    plan: $scope.user.defaultLoginTeam.subscription.plan.plan_code
+                    plan: $scope.user.defaultLoginTeam.subscription ? $scope.user.defaultLoginTeam.subscription.plan.plan_code : ''
                 }
             });
 
