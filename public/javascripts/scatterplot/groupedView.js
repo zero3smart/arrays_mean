@@ -86,6 +86,7 @@ scatterplot.view.grouped.prototype._prepareData = function (data) {
      * Create radius scale function.
      */
     var maxRadius = Math.min(xStep, yStep) / 2 + Math.min(chart._margin.top, chart._margin.right, chart._margin.bottom, chart._margin.left);
+
     var radiusScale = d3.scale.linear()
         .domain([0, 1, maxGroup])
         .range([0, chart._radius, maxRadius]);
@@ -200,6 +201,10 @@ scatterplot.view.grouped.prototype.render = function (data) {
             /*
              * Return bubble URL.
              */
+            if (chart._galleryView) {
+                var substringLength = location.pathname.length - "scatterplot".length;
+                return location.pathname.substring(0, substringLength) + 'gallery?' + urlParams;
+            }
             return location.pathname + '?' + urlParams;
         }).append('circle')
         .attr('class', 'bubble')

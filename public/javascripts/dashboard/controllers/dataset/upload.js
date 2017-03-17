@@ -1,12 +1,13 @@
-
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService',
-        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService) {
-
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', '$window', 'viewUrlService',
+        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, $window, viewUrlService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
+
+            $scope.$parent.$parent.discardChangesThisView = angular.noop;
+            $scope.setRemindUserUnsavedChanges(false);
 
             /** if not enterprise, skip option links (only one choice of CSV)
              *  and go straight to CSV upload
@@ -35,38 +36,45 @@ angular.module('arraysApp')
 
             $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
 
-            $scope.primaryAction.text = (dataset.imported) ? null: 'Next';
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+
+            $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
 
-            $scope.tutorial.message = 'Here you can add one or more data sources.\nIn this example, a spreadsheet has already been uploaded. Click \'Next\' to continue.';
+            $scope.tutorial.message = 'Here you can add your data source.\nIn this example, a spreadsheet has already been uploaded.';
 
             $scope.$watch('dataset.connection.tableName', function(hasTable) {
-
                 if (!dataset.fileName) {
-
-
                     $scope.primaryAction.disabled = !(hasTable && hasTable !== null && $scope.isConnecting !== true);
                 }
             });
 
-            $scope.primaryAction.do = function() {
+            var _save = function() {
+                if (dataset.firstImport == 1) dataset.firstImport = 2;
+
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
                 delete finalizedDataset.__v;
 
-
-
                 DatasetService.save(finalizedDataset)
-                .then(function() {
-                    $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
-                        reload: true,
-                        inherit: false,
-                        notify: true
+                    .then(function() {
+                        $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
+                            reload: true,
+                            inherit: false,
+                            notify: true
+                        });
                     });
-                });
             };
+
+            var _viewViz = function() {
+                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                $window.open(url, '_blank');
+            };
+
+            $scope.primaryAction.do = dataset.firstImport ? _save : _viewViz;
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);
@@ -75,33 +83,33 @@ angular.module('arraysApp')
             $scope.connectToDB = function() {
                 $scope.isConnecting = true;
 
-                DatasetService.connectToRemoteDatasource(dataset._id,dataset.connection)
-                .then(function(response) {
+                DatasetService.connectToRemoteDatasource(dataset._id, dataset.connection)
+                    .then(function(response) {
 
 
-                    if (response.status == 200 && !response.data.error) {
-                        $scope.isConnecting = false;
-                        $scope.tables = response.data;
+                        if (response.status == 200 && !response.data.error) {
+                            $scope.isConnecting = false;
+                            $scope.tables = response.data;
 
-                        $mdToast.show(
+                            $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Connected to database!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                    } else {
-                        $scope.isConnecting = undefined;
+                        } else {
+                            $scope.isConnecting = undefined;
 
-                        $mdToast.show(
+                            $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Error connecting to database.')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
 
-                    }
+                        }
 
-                });
+                    });
             };
 
 
@@ -287,26 +295,25 @@ angular.module('arraysApp')
 
             $scope.removeSource = function(dataset, notify) {
                 DatasetService.deleteSource(dataset._id)
-                .then(function(response) {
+                    .then(function(response) {
 
-                    if (response.status == 200) {
-                        var toastFileName = dataset.fileName;
-                        dataset.fileName = null;
-                        dataset.raw_rowObjects_coercionScheme = {};
-                        $scope.uploader.queue = [];
-                        if(notify) {
-                            $mdToast.show(
+                        if (response.status == 200) {
+                            var toastFileName = dataset.fileName;
+                            dataset.fileName = null;
+                            dataset.raw_rowObjects_coercionScheme = {};
+                            $scope.uploader.queue = [];
+                            if(notify) {
+                                $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(toastFileName + ' removed.')
                                     .position('top right')
                                     .hideDelay(3000)
                             );
+                            }
                         }
-                    }
 
 
-
-                });
+                    });
 
             };
 
@@ -354,9 +361,9 @@ angular.module('arraysApp')
                         };
                     }
                 })
-                .then(function () {
-                    callback(datasource, true);
-                });
+                    .then(function () {
+                        callback(datasource, true);
+                    });
             };
 
             $scope.clearAll = function (id, title, ev) {
@@ -379,26 +386,26 @@ angular.module('arraysApp')
                         };
                     }
                 })
-                .then(function () {
-                    var addlDatasources = $scope.additionalDatasources;
-                    $scope.removeSource(dataset, false);
-                    for (var i = 0; i < addlDatasources.length; i++) {
-                        $scope.removeAdditionalDatasource(addlDatasources[i], false);
-                    }
-                    $mdToast.show(
+                    .then(function () {
+                        var addlDatasources = $scope.additionalDatasources;
+                        $scope.removeSource(dataset, false);
+                        for (var i = 0; i < addlDatasources.length; i++) {
+                            $scope.removeAdditionalDatasource(addlDatasources[i], false);
+                        }
+                        $mdToast.show(
                         $mdToast.simple()
                             .textContent('All data sources cleared.')
                             .position('top right')
                             .hideDelay(3000)
                     );
-                }, function(error) {
-                    $mdToast.show(
+                    }, function(error) {
+                        $mdToast.show(
                         $mdToast.simple()
                             .textContent(error)
                             .position('top right')
                             .hideDelay(3000)
                     );
-                });
+                    });
             };
 
         }]);

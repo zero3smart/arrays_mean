@@ -70,15 +70,17 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 duplicatedDescription._team = createdTeam._id;
                 // change the associated author
                 duplicatedDescription.author = user;
-                // change dirty to 3
+                // change dirty to 1
                 duplicatedDescription.dirty = 1;
+                // change firstImport to 1
+                duplicatedDescription.firstImport = 1;
                 // flag it as a sample so it can't be published to arrays.co
                 duplicatedDescription.sample = true;
                 // set imported to false so it doesn't try to load automatically when viewing website
                 duplicatedDescription.imported = false;
                 // don't allow publishing of sample dataset
                 duplicatedDescription.fe_listed = false;
-                duplicatedDescription.fe_visible = false;
+                duplicatedDescription.fe_visible = true;
                 duplicatedDescription.isPublic = false;
                 // loop through all the mixed fields and save to empty objects if they're not already set then mark modified so they save into db
                 for(var i = 0; i < mixedFields.length; i++) {

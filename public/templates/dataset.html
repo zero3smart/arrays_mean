@@ -1,25 +1,25 @@
-<!-- <div class="process-data" ng-class="{ 'show': dataset.dirty && !$state.is('dashboard.dataset.done') && dataset.imported }">
-You have unsaved changes. <a class="pointer" ng-click="processData()">Process data</a> to save and publish changes.
-</div> -->
 <div class="process-data" ng-class="{ 'show': $state.is('dashboard.dataset.views') && !dataset.sample && tutorial.message == 'DRAFT' }"><!--
--->You are working with drafts of your views that can be previewed by clicking &thinsp;<i class="fa fa-eye }}" aria-hidden="true"></i>.
-Changes will not be published until saved.
-</div>
-<div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }">{{ tutorial.message }}</div>
+-->Preview changes by clicking&ensp;<i class="fa fa-eye }}" aria-hidden="true"></i></div>
+
+<div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }"><!--
+-->{{ tutorial.message }}<!--
+--><span ng-if="$state.is('dashboard.dataset.views')">Preview changes by clicking&ensp;<i class="fa fa-eye }}" aria-hidden="true"></i></span><!--
+--></div>
+
 <header layout-xs="col" layout-gt-xs="row" layout-align="space-between start" ng-if="!$state.is('dashboard.dataset.new')">
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Visualization Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Visualization' }}</h1>
 
-
-
     <div>
-        <md-button ng-show="secondaryAction.text && ($state.is('dashboard.dataset.data') || $state.is('dashboard.dataset.views')) " class="md-dashboard md-dashboard-header" md-no-ink
+        <md-button ng-show="secondaryAction.text && ($state.is('dashboard.dataset.data') || $state.is('dashboard.dataset.views') || $state.is('dashboard.dataset.settings'))"
+            class="md-dashboard md-dashboard-header" md-no-ink
             ng-disabled="secondaryAction.disabled"
             ng-click="secondaryAction.do()">
             <span class="btn-label">{{ secondaryAction.text }}</span>
         </md-button>
 
-        <md-button ng-hide="!primaryAction.text" class="md-dashboard md-dashboard-header" md-no-ink
+        <md-button ng-hide="!primaryAction.text"
+            class="md-dashboard md-dashboard-header" md-no-ink
             ng-class="{ 'confirm': !$state.is('dashboard.dataset.list') }"
             ng-disabled="primaryAction.disabled"
             ng-click="primaryAction.do()">

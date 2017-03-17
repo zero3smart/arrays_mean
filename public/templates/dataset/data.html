@@ -3,11 +3,11 @@
 
         <h2>Format Your Content</h2>
 
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 48px">
-            <label>Select the field you'd like to use as a title for each item</label>
+        <h4 class="no-padding">Select the field you'd like to use as a title for each item&thinsp;*</h4>
+        <md-input-container ng-hide="dataset.connection" class="md-block" style="margin-top: 0;">
             <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
                        ng-model="data.objectTitle"
-                       >
+                       md-no-asterisk>
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
                     {{column.name}}
                 </md-option>
@@ -135,7 +135,7 @@
                 <span flex="10"></span>
 
                 <span class="dashboard-list-icon obj-detail-toggle" flex="10"
-                    aa-tooltip="{{ dataset.fe_excludeFieldsObjDetail[field.name] ? 'Include field in' : 'Exclude field from' }} object detail"
+                    aa-tooltip="{{ dataset.fe_excludeFieldsObjDetail[field.name] ? 'Include field in' : 'Exclude field from' }} object detail view"
                     ng-click="toggleObjectDetailDisplay(field.name)">
                     <span class="fa-stack">
                         <i class="fa fa-sticky-note-o fa-stack-2x"></i>
