@@ -137,44 +137,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function(err, groupedDocuments) {
                     if (err) return done(err);
-                    // ---------
-                    // if (aggregateBy_realColumnName) {
-                    //     var aggregateMinMax = {};
-                    //     aggregateMinMax.max = parseInt(groupedDocuments[0].rowParams[aggregateBy_realColumnName])
-                    //     aggregateMinMax.min = parseInt(groupedDocuments[0].rowParams[aggregateBy_realColumnName])
-
-                    //     groupedDocuments.forEach(function (el, i, arr) {
-                    //         aggregateValue = parseInt(el.rowParams[aggregateBy_realColumnName]);
-                    //         if (aggregateValue > aggregateMinMax.max) {
-                    //             aggregateMinMax.max = aggregateValue;
-                    //         } else if (aggregateValue < aggregateMinMax.min) {
-                    //             aggregateMinMax.min = aggregateValue;
-                    //         }
-                    //         groupedDocuments[i].rowParams["aggregateRadius"] = aggregateValue
-
-                    //     })
-                    // }
-                    // ----------
-                    documents = groupedDocuments;
-                    var sampleDoc = documents[0];
-
-                    // func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
-
-                        // var uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
-                        /*
-                         * Define numeric fields list which may be used as plot axes.
-                         * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
-                         */
-                        // numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
-                            // if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
-                                // return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
-                            // } else {
-                                // return true;
-                            // }
-                        // });
-                    });
+                        documents = groupedDocuments;
+                        var sampleDoc = documents[0];
                     done();
-                }
+                };
 
                 var aggregationOperators = [];
                 if (isSearchActive) {
@@ -192,7 +158,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 } else {
                     processedRowObjects_mongooseModel.find({}).exec(doneFn);
                 }
-            })
+            });
             
             var user = null;
             batch.push(function (done) {
@@ -252,7 +218,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 callback(err, data);
             })
 
-        })
+    })
+}
 
 
-};
+
