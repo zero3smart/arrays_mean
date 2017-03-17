@@ -95,6 +95,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var xAxis_humanReadable = dataSourceDescription.fe_displayTitleOverrides[xAxis] || dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField;
             var xAxis_realName = xAxis ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(xAxis, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(xAxis_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaults.xAxisField;
 
+            var objectTitle = dataSourceDescription.objectTitle;
+
             var documents;
             var numericFields;
 
@@ -137,7 +139,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function(err, groupedDocuments) {
                     if (err) return done(err);
-                    console.log(groupedDocuments)
                     if (!groupedDocuments[0].rowParams) {
                         documents = [];
                         var imageField = dataSourceDescription.fe_image.field;
@@ -150,6 +151,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             documents[i].rowParams[yAxis_realName] = el.yAxis;
                             documents[i].rowParams[imageField] = el.image,
                             documents[i].rowParams[aggregateBy_realColumnName] = el.aggregateBy
+                            documents[i].rowParams[objectTitle] = el.objectTitle
                         })
                     } else {
                         documents = groupedDocuments;
@@ -191,12 +193,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             yAxis: "$" + "rowParams." + yAxis_realName,
                         },
                         value: {$addToSet: "$_id"},
+                        title: {$addToSet: "$rowParams." + objectTitle},
                     }
                 }]
                 var project = [{
                     $project: {
                         _id: 0,
                         id: "$value",
+                        objectTitle: "$title",
                         xAxis: "$_id.xAxis",
                         yAxis: "$_id.yAxis",
                         aggregateBy: {$size: "$value"},
@@ -212,36 +216,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
                 var fullAggregateQuery = unwind.concat(group, project, sort)
                 aggregationOperators = aggregationOperators.concat(fullAggregateQuery);
-                // aggregationOperators = aggregationOperators.concat([
-                //     {$unwind: "$" + "rowParams." + xAxis_realName},
-                //     {$unwind: "$" + "rowParams." + yAxis_realName},
-                //     {
-                //         $group: {
-                //             _id: {
-                //                 // id: "$_id",
-                //                 xAxis: "$" + "rowParams." + xAxis_realName,
-                //                 yAxis: "$" + "rowParams." + yAxis_realName,
-                //             },
-                //             value: {$addToSet: "$_id"},
-                //         }
-                //     },
-                //     {
-                //         $project: {
-                //             _id: 0,
-                //             id: "$value",
-                //             xAxis: "$_id.xAxis",
-                //             yAxis: "$_id.yAxis",
-                //             aggregateBy: {$size: "$value"}
-                //         }
-                //     },
-                //     {
-                //         $sort: {aggregateBy: 1}
-                //     }
-
-                // ]);
-                if (image) {
-
-                }
                 return aggregationOperators;
             }
             
