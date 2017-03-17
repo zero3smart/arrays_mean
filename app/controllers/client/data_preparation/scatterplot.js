@@ -82,8 +82,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
              * Aggregate for radius size
              */
             var aggregateBy = urlQuery.aggregateBy;
-            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
-            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
+            var aggregateBy_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName] || dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) : (typeof dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy_humanReadable, dataSourceDescription) : dataSourceDescription.fe_views.views.scatterplot.defaultAggregateByColumnName;
 
             // yAxis
             var yAxis = urlQuery.yAxis;
@@ -253,10 +253,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     searchQ: searchQ,
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     // multiselectable filter fields,
+                    aggregateBy: aggregateBy,
                     colNames_orderedForAggregateByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'AggregateBy', 'ToInteger'),
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     aggregateBy_realColumnName: aggregateBy_realColumnName,
-                    defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+                    aggregateBy_humanReadable: aggregateBy_humanReadable,
                     xAxis: xAxis,
                     yAxis: yAxis,
                     xAxis_humanReadable: xAxis_humanReadable,
