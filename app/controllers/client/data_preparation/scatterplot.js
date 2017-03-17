@@ -137,7 +137,22 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function(err, groupedDocuments) {
                     if (err) return done(err);
-                        documents = groupedDocuments;
+                        if (!groupedDocuments[0].rowParams) {
+                            documents = [];
+                            var imageField = dataSourceDescription.fe_image.field;
+                            groupedDocuments.forEach(function (el, i, arr) {
+                                documents.push({
+                                    _id: el.id,
+                                    rowParams: {}
+                                })
+                                documents[i].rowParams[xAxis_realName] = el.xAxis;
+                                documents[i].rowParams[yAxis_realName] = el.yAxis;
+                                documents[i].rowParams[imageField] = el.image,
+                                documents[i].rowParams[aggregateBy_realColumnName] = el.aggregateBy
+                            })
+                        } else {
+                            documents = groupedDocuments;
+                        }
                         var sampleDoc = documents[0];
                     done();
                 };
@@ -153,12 +168,48 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
+                if (aggregateBy_realColumnName == config.aggregateByDefaultColumnName) {
+                    aggregationOperators = aggByNumberOfItems(aggregationOperators, dataSourceDescription.fe_image.field)
+                }
                 if (aggregationOperators.length > 0) {
                     processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
                 } else {
                     processedRowObjects_mongooseModel.find({}).exec(doneFn);
                 }
             });
+            var aggByNumberOfItems = function (aggregationOperators, image) {
+                aggregationOperators = aggregationOperators.concat([
+                    {$unwind: "$" + "rowParams." + xAxis_realName},
+                    {$unwind: "$" + "rowParams." + yAxis_realName},
+                    {$unwind: "$" + "rowParams." + image},
+                    {
+                        $group: {
+                            _id: {
+                                id: "$_id",
+                                xAxis: "$" + "rowParams." + xAxis_realName,
+                                yAxis: "$" + "rowParams." + yAxis_realName,
+                                image: "$" + "rowParams." + image
+                            },
+                            value: {$addToSet: "$_id"},
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            id: "$_id.id",
+                            xAxis: "$_id.xAxis",
+                            yAxis: "$_id.yAxis",
+                            image: "$_id.image",
+                            aggregateBy: {$size: "$value"}
+                        }
+                    },
+                    {
+                        $sort: {aggregateBy: 1}
+                    }
+
+                ]);
+                return aggregationOperators;
+            }
             
             var user = null;
             batch.push(function (done) {
