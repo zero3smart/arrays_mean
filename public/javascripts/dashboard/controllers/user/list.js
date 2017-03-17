@@ -301,7 +301,6 @@ angular
 
             function UserDialogController($scope, $mdDialog, selectedUser) {
 
-
                 $scope.selectedUser = selectedUser;
 
                 $scope.updateUserRoles(selectedUser);

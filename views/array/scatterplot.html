@@ -38,22 +38,48 @@
 
                               <nav class="sort-bar-left pull-left" role="navigation">
                                 {{
-                                dropdown.axis(
-                                    'y',
+                                dropdown.sortbar(
+                                    'Radius size',
+                                    aggregateBy if aggregateBy else aggregateBy_humanReadable,
+                                    colNames_orderedForAggregateByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        yAxis: yAxis,
+                                        xAxis: xAxis,
+                                        aggregateBy: ''
+                                    })
+                                )
+                                }}
+                                {{
+                                dropdown.sortbar(
+                                    'X-Axis',
+                                    xAxis if xAxis else xAxis_humanReadable,
+                                    colNames_orderedForXAxisDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        yAxis: yAxis,
+                                        aggregateBy: aggregateBy,
+                                        xAxis: ''
+                                    })
+                                )
+                                }}
+                                {{
+                                dropdown.sortbar(
                                     'Y-Axis',
-                                    metaData.fe_views.views.scatterplot.defaults.yAxisField,
-                                    renderableFields
+                                    yAxis if yAxis else yAxis_humanReadable,
+                                    colNames_orderedForYAxisDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        xAxis: xAxis,
+                                        aggregateBy: aggregateBy,
+                                        yAxis: ''
+                                    })
                                 )
                                 }}
 
-                                {{
-                                dropdown.axis(
-                                    'x',
-                                    'X-Axis',
-                                    metaData.fe_views.views.scatterplot.defaults.xAxisField,
-                                    renderableFields
-                                )
-                                }}
                             </nav>
 
                              <div class="sort-bar-right pull-right">
@@ -126,16 +152,20 @@
         // Define input data set.
         var scatterData = {{ documents | dump | safe }};
         // Render scatterplot.
-        var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
+        var xAccessor = "{{ xAxis if xAxis else xAxis_humanReadable }}";
+        var yAccessor = "{{ yAxis if yAxis else yAxis_humanReadable }}";
+        var galleryView = {{ hasGalleryView() }};
+        var scatterPlot = new scatterplot.chart(galleryView, scatterData.map(function(d) {
             d.rowParams.id = d._id;
+            d.rowParams.radiusBy = d.rowParams['{{aggregateBy_realColumnName}}']
             return d.rowParams;
         }), metaData).setXAccessor(function(d) {
-                    return d['{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}']
-                }, '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}')
+                    return d[xAccessor]
+                }, xAccessor)
                 .setYAccessor(function(d) {
-                    return d['{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}'];
-                }, '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}')
-                .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
+                    return d[yAccessor];
+                }, yAccessor)
+                .searchBy({{ searchCol if searchCol else '' | dump | safe }}, {{ searchQ if searchQ else '' | dump | safe }})
         .setColor('{{ metaData.brandColor }}')
                 .render('#scatterplot');
 

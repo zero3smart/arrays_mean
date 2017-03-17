@@ -20,7 +20,7 @@ scatterplot.view.standard.prototype = Object.create(scatterplot.view.main.protot
  */
 scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
     /*
-     * Definde reference to the chart.
+     * Define reference to the chart.
      */
     var chart = this._chart;
 
@@ -42,6 +42,9 @@ scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
         } else {
             d.density = 1;
             densityMatrix[xValue][yValue] = d;
+            if (densityMatrix[xValue][yValue].hasOwnProperty("Number of Items")) {
+                densityMatrix[xValue][yValue].density = d["Number of Items"];
+            }
         }
     });
 
@@ -53,10 +56,35 @@ scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
  * @override
  */
 scatterplot.view.standard.prototype.render = function (data) {
+
+    var relativeBubbleSize = function(radius, ratio) {
+        if (ratio == undefined) {
+            var ratio = 1;
+        }
+        var count = 0;
+        while(radius > 100) {
+            // first time is fine, then add to the ratio
+            radius = radius / ratio;
+            count++;
+            if (count > 0) {
+                ratio += (radius/100);
+            }
+        } 
+        return [ratio, radius]
+    }
     /*
      * Definde reference to the chart.
      */
     var chart = this._chart;
+    var viewportArea = chart._innerHeight * chart._innerWidth;
+
+    var totalBubbleArea = 0;
+    for (var i = 0; i < data.length; i++) {
+        var bubbleArea = Math.pow(data[i].radiusBy, 2) * Math.PI;
+        totalBubbleArea += bubbleArea;
+    }
+    var bubbleDividerOrMultiplier = (viewportArea/totalBubbleArea)/(data.length/5);
+    // 5 is an arbitrary number but it works for making bubble size small enough without being too small
 
     var chartData = [];
     var densityMatrix = this.getDensityMatrix(data);
@@ -70,9 +98,16 @@ scatterplot.view.standard.prototype.render = function (data) {
     /*
      * Select bubbles.
      */
+    var ratio;
     var bubbles = chart._canvas.selectAll('circle.bubble')
         .data(chartData.map(function (d) {
-            d.radius = chart._radius;
+            d.radius = Math.sqrt((Math.pow(d.radiusBy, 2) * Math.PI) * bubbleDividerOrMultiplier);
+            var relativeSizeRatio = relativeBubbleSize(d.radius, ratio)
+            ratio = relativeSizeRatio[0]
+            d.radius = relativeSizeRatio[1]
+            if (d.radius < 3) {
+                d.radius = 3
+            };
             return d;
         }), function (d) {
             return d.id;
@@ -86,7 +121,9 @@ scatterplot.view.standard.prototype.render = function (data) {
             return chart._xScale(chart._xAccessor(d));
         }).attr('cy', function (d) {
         return chart._yScale(chart._yAccessor(d));
-    }).attr('r', chart._radius);
+    }).attr('r', function (d) {
+        return d.radius;
+    });
     /*
      * Render new bubbles.
      */
@@ -96,7 +133,12 @@ scatterplot.view.standard.prototype.render = function (data) {
             /*
              * Create new URI object from current location.
              */
-            var uri = URI(location.href);
+            // var validPortionsOfLocation = window.location.origin + window.location.pathname;
+            // var scatterplotLength = "scatterplot".length;
+            // var splitAt = validPortionsOfLocation.length - 11;
+            // var linkHalf = validPortionsOfLocation.substring(0, splitAt)
+            // console.log(linkHalf)
+            var uri = new URI(location.href);
             /*
              * Object x and y values.
              */
@@ -107,13 +149,20 @@ scatterplot.view.standard.prototype.render = function (data) {
              * Otherwise set link to set of objects on gallery view.
              */
             if (densityMatrix[x][y].density === 1) {
-                uri = uri.segment(2, d.id)
-                    .search('');
+                var uidSegment = window.location.pathname.replace("scatterplot", "");
+                var redirect = window.location.origin + uidSegment + d.id;
+                return redirect;
             } else {
                 /*
                  * Prepare filterObj with search params corresponding to that objects set.
                  */
                 var filterObj = convertQueryStringToObject(location.search.substring(1));
+                var invalidFilters = ["xAxis", "yAxis", "aggregateBy"];
+                for (var i = 0; i < invalidFilters.length; i++) {
+                    if (filterObj.hasOwnProperty(invalidFilters[i])) {
+                        delete filterObj[invalidFilters[i]];
+                    }
+                }
                 /*
                  * Prepare filters with search params corresponding to that objects set.
                  */
@@ -128,8 +177,11 @@ scatterplot.view.standard.prototype.render = function (data) {
                 /*
                  * Generate URL to gallery with prepared filters.
                  */
-                uri = uri.segment(2, 'gallery')
-                    .search('?' + decodeURIComponent($.param(filterObj)));
+                if (chart._galleryView) {
+                    uri = uri.segment(1, 'gallery')
+                        .search('?' + decodeURIComponent($.param(filterObj)));
+                }
+
             }
             /*
              * Return URL string.
@@ -150,7 +202,9 @@ scatterplot.view.standard.prototype.render = function (data) {
         chart._bubbleMouseOutEventHandler(this);
     }).transition()
         .duration(1000)
-        .attr('r', chart._radius);
+        .attr('r', function (d) {
+            return d.radius;
+        });
     /*
      * Remove absent bubbles.
      */
@@ -177,7 +231,8 @@ scatterplot.view.standard.prototype.showTooltip = function (bubble, data) {
     /*
      * Append image if there is only one character.
      */
-    if (data.density === 1) {
+    var hasImage = chart._metaData.fe_image && (chart._metaData.fe_image.field ? true : false)
+    if (data.density === 1 && hasImage) {
         content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_image.field] + ')"></div>' +
             '<div class="scatterplot-tooltip-title">' + data[chart._metaData.objectTitle] + '</div>';
     }
