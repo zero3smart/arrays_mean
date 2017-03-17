@@ -149,9 +149,9 @@ scatterplot.view.standard.prototype.render = function (data) {
              * Otherwise set link to set of objects on gallery view.
              */
             if (densityMatrix[x][y].density === 1) {
-                uri = uri.segment(1, "")
-                    .search("");
-                uri.segment(d.id); 
+                var uidSegment = window.location.pathname.replace("scatterplot", "");
+                var redirect = window.location.origin + uidSegment + d.id;
+                return redirect;
             } else {
                 /*
                  * Prepare filterObj with search params corresponding to that objects set.
