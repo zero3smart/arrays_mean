@@ -20,8 +20,8 @@ angular
 
             return subdomain + '/' +
                 dataset.uid +
-                '-r' + dataset.importRevision + '/' +
-                viewName.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                '-r' + dataset.importRevision + 
+                ((viewName !== null) ? '/' + viewName.split(/(?=[A-Z])/).join('-').toLowerCase()  : '') +
                 makeFieldValuePairs(dataset.fe_filters.default) + (showPreview ? '?preview=true' : '');
         };
 

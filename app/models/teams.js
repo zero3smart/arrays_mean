@@ -174,7 +174,7 @@ team.GetTeamBySubdomain = function(req, fn) {
 
     function getPublishedDataset (cb) {
         var publishedImportedDataset = {isPublic:true,imported:true,fe_listed:true,fe_visible:true,
-            'fe_views.views': {$exists:true}, 'fe_views.default_view': {$exists: true}};
+            firstImport:0};
         var publishedConnectedDataset = {isPublic:true,fe_listed:true,fe_visible:true};
         getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true },
          { 'subscription.state': 'active' } ] }, {$or: [publishedImportedDataset,publishedConnectedDataset]},
@@ -194,7 +194,7 @@ team.GetTeamBySubdomain = function(req, fn) {
                     }
                     userIsPartOfThisTeam = false;
                 }
-                var importedDataset = {imported: true, 'fe_views.views': {$exists:true}, 'fe_views.default_view': {$exists: true}};
+                var importedDataset = {imported: true, firstImport:0};
                 var connectedDataset = {imported: true, connection: {$ne: null}};
 
 

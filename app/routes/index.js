@@ -3,6 +3,8 @@ var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');
 
+var express = require('express');
+
 var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
@@ -43,6 +45,7 @@ var _mountRoutes_ensureWWW = function (app) {
         }
     });
 };
+
 //
 
 function isNotRootDomain (subdomains) {
@@ -70,26 +73,13 @@ var _defaultViewRoutes = new Promise(function(resolve,reject) {
 });
 
 
-var _customViewRoutes = new Promise(function(resolve,reject) {
-    View.getAllCustomViews(function(err,data) {
-        if (err) {reject(err);}
-        else {
-            var string = "";
-            data.map(function(view) {
-                string += "|" + view.name;
-            })
-            resolve(string);
 
-        }
-    })
-})
 
 var urlRegexForDataset;
 var _mountRoutes_subdomainRedirect = function(app) {
-    Promise.all([_defaultViewRoutes,_customViewRoutes])
+    Promise.all([_defaultViewRoutes])
     .then(function(values) {
-
-        urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)(-r\\d)\/(getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');  
+        urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)(-r\\d)\/(getData|[0-9a-f]{24}" + values[0] + ")",'g');  
 
     })
 }
@@ -130,14 +120,19 @@ var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
 
+   
+
+
+
         if (process.env.NODE_ENV !== 'enterprise') {
 
             urlRegexForDataset.lastIndex = 0;
 
             var isRouteForDataset = urlRegexForDataset.test(req.url);
 
-
             if (isNotRootDomain(req.subdomains)) {
+
+
                 if (isRouteForDataset) {
                     return next();
                 } else {
@@ -168,8 +163,6 @@ var _mountRoutes_endPoints = function (app) {
         next();
       
     });
-
-    
 
     app.use('/', require('./homepage'));  
     app.use('/s', require('./shared_pages'));

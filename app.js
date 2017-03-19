@@ -50,6 +50,8 @@ if (cluster.isMaster) {
     var fs = require('fs');
     var cors = require('cors');
     var async = require('async');
+    var subdomain = require('express-subdomain');
+    
 
     var app = express();
 
@@ -79,6 +81,7 @@ if (cluster.isMaster) {
 
 
     var userFolderPath = __dirname + "/user";
+    var customRoutes = __dirname + '/app/routes/custom'
 
     var viewsToSet = [];
 
@@ -121,10 +124,7 @@ if (cluster.isMaster) {
                         var view_path = path.join(userFolderPath, file + "/views");
                         viewsToSet.push(view_path);
 
-                        //serving static files for custom views
-                        app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
-
-
+                        app.use(subdomain(team_name,require(customRoutes)));
                     }
                     eachCb();
                 }

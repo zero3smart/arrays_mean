@@ -25,8 +25,6 @@ module.exports.ensureAuthorized = function(req, res, next) {
             return res.status(500).send(err.response || 'Internal Server Error');
         }
 
-
-
         if (!datasource) return res.redirect('/');
 
         next();

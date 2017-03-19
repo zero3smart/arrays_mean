@@ -39,6 +39,8 @@ function getAllDatasetsWithQuery(query, res) {
             return res.status(200).json({datasets: dataset});
         })
     } else {
+
+    
         datasource_description.find({$and: [{master_id: {$exists:false},schema_id: {$exists: false}}, query]}, {
             _id: 1,
             uid: 1,
