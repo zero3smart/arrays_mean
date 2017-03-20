@@ -105,6 +105,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 dLatField = dataSourceDescription.fe_views.views.globe.destinationLatitude,
                 dLonField = dataSourceDescription.fe_views.views.globe.destinationLongitude;
 
+            var pointColor = dataSourceDescription.fe_views.views.globe.pointColor || dataSourceDescription.brandColor || "#feb600";
+
             var flightPaths = [];
 
             var batch = new Batch();
@@ -212,7 +214,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                    brandColor: dataSourceDescription.brandColor,
+                    pointColor: pointColor,
                     brandWhiteText: func.useLightBrandText(dataSourceDescription.brandColor),
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
