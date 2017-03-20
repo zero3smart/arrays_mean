@@ -86,7 +86,21 @@ angular
                 if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
                     $scope.primaryAction.disabled = false;
                 } else {
-                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.users.length + 1 ? false : true; // limit based on billing
+                    // console.log($scope.users);
+                    // console.log($scope.datasets);
+
+                    // Only limit Editor users on subscription
+                    var editorUsers = [];
+                    angular.forEach($scope.users, function(user) {
+                        angular.forEach($scope.datasets, function(dataset) {
+
+                            if (user._editors.indexOf(dataset._id) !== -1) {
+                                editorUsers.push(user);
+                            }
+                        });
+                    });
+
+                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
                 }
             };
 
