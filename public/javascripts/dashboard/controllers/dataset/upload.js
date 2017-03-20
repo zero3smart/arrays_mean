@@ -5,6 +5,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
+            $scope.newDatasource = false;
 
             $scope.$parent.$parent.discardChangesThisView = angular.noop;
             $scope.setRemindUserUnsavedChanges(false);
@@ -407,5 +408,12 @@ angular.module('arraysApp')
                     );
                     });
             };
+
+            $scope.uploadNewDatasource = function() {
+                $scope.uploader.uploadAll();
+                $scope.dataset.dirty = 0;
+                $scope.primaryAction.text = 'Next';
+                $scope.primaryAction.do = _save;
+            }
 
         }]);

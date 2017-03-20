@@ -409,7 +409,6 @@ module.exports.get = function (req, res) {
             } else {
 
                 if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
-                    console.log("no req session columns")
 
                     _readDatasourceColumnsAndSampleRecords(false, description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                         if (err) return res.status(500).json(err);
@@ -420,12 +419,8 @@ module.exports.get = function (req, res) {
                     });
 
                 } else {
-                    console.log("req session columns")
-                    console.log(req.params.id)
-                    console.log(req.session.columns[req.params.id])
 
                     if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
-                    console.log(description)
 
                     return res.status(200).json({dataset: description});
                 }
@@ -835,43 +830,17 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
                             var oldColumnsLength = _.size(description.raw_rowObjects_coercionScheme);
                             var difference = Math.abs(newColumnsLength - oldColumnsLength);
                             var newColumnsLengthOrDifference = difference;
+                            var isDifference = true;
                             if (difference > newColumnsLength) {
+                                isDifference = false;
                                 newColumnsLengthOrDifference = newColumnsLength;
                             }
-                            // columns = output[0].map(function (e, i) {
-                            //     // change any empty string keys to "Field"
-                            //     if(e === '') {
-                            //         numberOfEmptyFields++;
-                            //         e = "Field" + numberOfEmptyFields;
-                            //     }
-                            //     var columnName = {name: e.replace(/\./g, '_')};
-                            //     // if replacing dataset
-                            //     if (replacementDataSource) {
-                            //         // if returns true, return without further processing
-                            //         if (!checkForContinutity(columnName, description.raw_rowObjects_coercionScheme)) {
-                            //             // check the data type!!!
-                            //             numberOfInconsistentColumns++;
-                            //             if (numberOfInconsistentColumns > difference) {
-                            //                 // they're not compatible - fast fail
-                            //                 b
-                            //             }
-                            //         }
-                            //     }
-                            //     return columnName;
-                            // });
-
-                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, replacementDataSource, function (err, columns) {
+                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacementDataSource, function (err, newColumns) {
                                 if (err) {
                                     readStream.destroy();
                                     next(err)
                                 }
-                                if (difference == 0) {
-                                    // there's no need to go through all of the below again
-                                    readStream.destroy();
-                                    // next(null, {"columns": _.keys(description.raw_rowObjects_coercionScheme), "continuity": true});
-                                    next(null, columns)
-                                }
-                                columns = columns; 
+                                columns = newColumns; 
                             })
                             readStream.resume();
                         } else if (countOfLines == 2) {
@@ -895,7 +864,7 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
         );
 }
 
-function mapColumnsOrErr(columns, rowObjects, difference, replacementDataSource, callback) {
+function mapColumnsOrErr(columns, rowObjects, difference, isDifference, replacementDataSource, callback) {
     var numberOfEmptyFields = 0;
     var numberOfInconsistentColumns = 0;
 
@@ -907,15 +876,19 @@ function mapColumnsOrErr(columns, rowObjects, difference, replacementDataSource,
         }
         var columnName = {name: name.replace(/\./g, '_')};
         if (replacementDataSource) {
-            if (!checkForContinutity(columnName, rowObjects)) {
+            if (!checkForContinutity(columnName.name, rowObjects)) {
                 numberOfInconsistentColumns++;
-                if(numberOfInconsistentColumns >= difference) {
+                if(numberOfInconsistentColumns > difference && isDifference) {
+                    return callback({message: "Datasources are not compatible"});
+                }
+                if(numberOfInconsistentColumns >= difference && !isDifference) {
                     return callback({message: "Datasources are not compatible"});
                 }
            }
         }
         columns[i] = columnName;
     }
+    // continuity = true;
     callback(null, columns)
 }
 
@@ -994,8 +967,6 @@ function intuitDataype(name, sample) {
     
 
 module.exports.upload = function (req, res) {
-    console.log(req.body)
-    console.log("----------------------------")
 
     if (!req.body.id) return res.status(500).send('No ID given');
 
@@ -1024,13 +995,11 @@ module.exports.upload = function (req, res) {
                     oldFileName = doc.fileName;
                     replacement = true;
                 }
-                console.log(doc.fileName)
                 //description refering to the master/parent dataset
                 description = doc;
                 description_title = description.title
 
                 if (!child) {
-                    console.log("no child")
                     doc.fileName = null;
                     doc.title = req.body.tempTitle;
                     doc.save();
@@ -1127,24 +1096,28 @@ module.exports.upload = function (req, res) {
                     }
                     return done(err);
                 }
+                console.log(columns)
                 winston.info("✅  File validation okay : " + file.originalname);
-                if (!Array.isArray(columns) && columns.continuity) {
-                    // upload datasource to s3
-                    var uploadToDataset = description._id;
+                // if (!Array.isArray(columns) && columns.continuity) {
+                //     columns = columns.newColumns;
+                //     console.log(columns)
+                //     // upload datasource to s3
+                //     var uploadToDataset = description._id;
 
-                    if (child) uploadToDataset = req.body.id;
+                //     if (child) uploadToDataset = req.body.id;
 
-                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
-                        if (err) {
-                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
-                        }
+                //     datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                //         if (err) {
+                //             winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
+                //         }
 
-                        done(err);
-                    });
-                }
+                //         done(err);
+                //     });
+                // }
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
+                console.log(columns)
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
                 req.session.columns[description._id] = columns;

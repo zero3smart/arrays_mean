@@ -201,7 +201,7 @@
                     <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name || 'No file selected' }}</span>
                 </div>
 
-                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploader.uploadAll()"
+                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploadNewDatasource()"
                     ng-if="uploader.queue.length > 0 && dataset.fileName"
                     ng-disabled="uploader.isUploading || !uploadForm.$valid ">
                     <span class="btn-label">Upload Data</span>
