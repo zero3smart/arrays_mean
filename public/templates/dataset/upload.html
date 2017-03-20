@@ -195,10 +195,10 @@
                 <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
 
                 <div layout="row" layout-align="start center">
-                    <label for="datafile" class="md-button md-dashboard" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" >
+                    <label for="datafile" class="md-button md-dashboard" ng-disabled="!uploadForm.$valid || uploader.queue.length > 0" >
                         Replace data source
                     </label>
-                    <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name || 'No file selected' }}</span>
+                    <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name }}</span>
                 </div>
 
                 <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploadNewDatasource()"

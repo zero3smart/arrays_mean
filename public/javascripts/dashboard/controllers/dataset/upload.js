@@ -269,7 +269,6 @@ angular.module('arraysApp')
                             .position('top right')
                             .hideDelay(3000)
                     );
-
                     fileItem.isError = true;
                     fileItem.isUploaded = false;
                     fileItem.isSuccess = false;
@@ -411,6 +410,7 @@ angular.module('arraysApp')
 
             $scope.uploadNewDatasource = function() {
                 $scope.uploader.uploadAll();
+                $scope.uploader.queue = [];
                 $scope.dataset.dirty = 0;
                 $scope.primaryAction.text = 'Next';
                 $scope.primaryAction.do = _save;
