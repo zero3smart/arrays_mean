@@ -409,8 +409,9 @@ module.exports.get = function (req, res) {
             } else {
 
                 if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
+                    console.log("no req session columns")
 
-                    _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                    _readDatasourceColumnsAndSampleRecords(false, description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                         if (err) return res.status(500).json(err);
 
                         req.session.columns[req.params.id] = columns;
@@ -419,8 +420,12 @@ module.exports.get = function (req, res) {
                     });
 
                 } else {
+                    console.log("req session columns")
+                    console.log(req.params.id)
+                    console.log(req.session.columns[req.params.id])
 
                     if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
+                    console.log(description)
 
                     return res.status(200).json({dataset: description});
                 }
@@ -446,7 +451,7 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
           
             if (description.uid && !req.session.columns[description._id]) {
 
-                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                _readDatasourceColumnsAndSampleRecords(false, description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                     if (err) return res.status(500).send(err);
 
                     req.session.columns[description._id] = columns;
@@ -785,7 +790,7 @@ module.exports.save = function (req, res) {
     }
 };
 
-function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, next) {
+function _readDatasourceColumnsAndSampleRecords(replacementDataSource, description, fileReadStream, next) {
     var delimiter;
     if (description.format == 'CSV') {
         delimiter = ',';
@@ -826,15 +831,48 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                         countOfLines++;
 
                         if (countOfLines == 1) {
-                            var numberOfEmptyFields = 0;
-                            columns = output[0].map(function (e) {
-                                // change any empty string keys to "Field"
-                                if(e === '') {
-                                    numberOfEmptyFields++;
-                                    e = "Field" + numberOfEmptyFields;
+                            var newColumnsLength = output[0].length;
+                            var oldColumnsLength = _.size(description.raw_rowObjects_coercionScheme);
+                            var difference = Math.abs(newColumnsLength - oldColumnsLength);
+                            var newColumnsLengthOrDifference = difference;
+                            if (difference > newColumnsLength) {
+                                newColumnsLengthOrDifference = newColumnsLength;
+                            }
+                            // columns = output[0].map(function (e, i) {
+                            //     // change any empty string keys to "Field"
+                            //     if(e === '') {
+                            //         numberOfEmptyFields++;
+                            //         e = "Field" + numberOfEmptyFields;
+                            //     }
+                            //     var columnName = {name: e.replace(/\./g, '_')};
+                            //     // if replacing dataset
+                            //     if (replacementDataSource) {
+                            //         // if returns true, return without further processing
+                            //         if (!checkForContinutity(columnName, description.raw_rowObjects_coercionScheme)) {
+                            //             // check the data type!!!
+                            //             numberOfInconsistentColumns++;
+                            //             if (numberOfInconsistentColumns > difference) {
+                            //                 // they're not compatible - fast fail
+                            //                 b
+                            //             }
+                            //         }
+                            //     }
+                            //     return columnName;
+                            // });
+
+                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, replacementDataSource, function (err, columns) {
+                                if (err) {
+                                    readStream.destroy();
+                                    next(err)
                                 }
-                                return {name: e.replace(/\./g, '_')};
-                            });
+                                if (difference == 0) {
+                                    // there's no need to go through all of the below again
+                                    readStream.destroy();
+                                    // next(null, {"columns": _.keys(description.raw_rowObjects_coercionScheme), "continuity": true});
+                                    next(null, columns)
+                                }
+                                columns = columns; 
+                            })
                             readStream.resume();
                         } else if (countOfLines == 2) {
                             columns = columns.map(function (e, i) {
@@ -855,6 +893,38 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                     });
             })
         );
+}
+
+function mapColumnsOrErr(columns, rowObjects, difference, replacementDataSource, callback) {
+    var numberOfEmptyFields = 0;
+    var numberOfInconsistentColumns = 0;
+
+    for (var i = 0; i < columns.length; i++) {
+        var name = columns[i];
+        if(name === '') {
+            numberOfEmptyFields++;
+            name = "Field" + numberOfEmptyFields;
+        }
+        var columnName = {name: name.replace(/\./g, '_')};
+        if (replacementDataSource) {
+            if (!checkForContinutity(columnName, rowObjects)) {
+                numberOfInconsistentColumns++;
+                if(numberOfInconsistentColumns >= difference) {
+                    return callback({message: "Datasources are not compatible"});
+                }
+           }
+        }
+        columns[i] = columnName;
+    }
+    callback(null, columns)
+}
+
+function checkForContinutity(name, excludeFieldsObject) {
+    if (excludeFieldsObject.hasOwnProperty(name)) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function verifyDataType(name, sample, rowObjects, index) {
@@ -924,10 +994,15 @@ function intuitDataype(name, sample) {
     
 
 module.exports.upload = function (req, res) {
+    console.log(req.body)
+    console.log("----------------------------")
 
     if (!req.body.id) return res.status(500).send('No ID given');
 
     var child = req.body.child;
+    var replacement = false;
+    var oldFileName;
+
 
     var batch = new Batch;
     batch.concurrency(1);
@@ -945,11 +1020,17 @@ module.exports.upload = function (req, res) {
             .exec(function (err, doc) {
     
                 if (err) return done(err);
+                if (doc.fileName) {
+                    oldFileName = doc.fileName;
+                    replacement = true;
+                }
+                console.log(doc.fileName)
                 //description refering to the master/parent dataset
                 description = doc;
                 description_title = description.title
 
                 if (!child) {
+                    console.log("no child")
                     doc.fileName = null;
                     doc.title = req.body.tempTitle;
                     doc.save();
@@ -1032,12 +1113,35 @@ module.exports.upload = function (req, res) {
             }
 
             // Verify that the file is readable & in the valid format.
-            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
+            _readDatasourceColumnsAndSampleRecords(replacement, description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
                     winston.error("❌  Error validating datasource : " + file.originalname + " : error " + err.message);
+                    if (replacement) {
+                        datasource_description.findById(req.body.id)
+                            .populate('_team')
+                            .exec(function (error, doc) {
+                                if (error) return done(error);
+                                doc.fileName = oldFileName;
+                                doc.save();
+                        });
+                    }
                     return done(err);
                 }
                 winston.info("✅  File validation okay : " + file.originalname);
+                if (!Array.isArray(columns) && columns.continuity) {
+                    // upload datasource to s3
+                    var uploadToDataset = description._id;
+
+                    if (child) uploadToDataset = req.body.id;
+
+                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                        if (err) {
+                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
+                        }
+
+                        done(err);
+                    });
+                }
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};

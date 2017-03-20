@@ -112,11 +112,6 @@
                         ng-click="removeSourceDialog(dataset, removeSource, $event)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
-
-                    <!-- <md-button class="md-block md-dashboard">
-                        <span class="btn-label">Update</span>
-                    </md-button> -->
-
                 </li>
             </ul>
 
@@ -193,7 +188,48 @@
                 </ul>
                 <!-- </div> -->
             </div>
+        <!--  -->
+        <div ng-hide="!dataset.fileName" class="aa-file-select no-padding">
 
+            <div ng-hide="uploader.isUploading">
+                <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
+
+                <div layout="row" layout-align="start center">
+                    <label for="datafile" class="md-button md-dashboard" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" >
+                        Replace data source
+                    </label>
+                    <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name || 'No file selected' }}</span>
+                </div>
+
+                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploader.uploadAll()"
+                    ng-if="uploader.queue.length > 0 && dataset.fileName"
+                    ng-disabled="uploader.isUploading || !uploadForm.$valid ">
+                    <span class="btn-label">Upload Data</span>
+                </md-button>
+
+                <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a class="pointer" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+            </div>
+            <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
+
+                <div layout="row" layout-align="space-between center">
+                    <span flex="45">
+                        <span class="dashboard-list-name">{{ item.file.name }}</span>
+                    </span>
+
+                    <div flex="5"></div>
+
+
+                    <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
+                        <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+                    </div>
+                </div>
+                <md-button class="md-block md-dashboard cancel" style="margin-top: 11px;" ng-click="item.cancel()">
+                    <span class="btn-label">Cancel</span>
+                </md-button>
+
+            </div>
+        </div>
+        <!--  -->
 
         <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && dataset.fileName && !addingAdditionalDatasource">
             <md-input-container>
