@@ -32,7 +32,7 @@ var DatasourceDescription_scheme = Schema({
     format: String, //csv, tsv, json
     connection: Object,
     title: String,
-    brandColor: String,
+    brandColor: {type: String, default: "#feb600"},
     urls: Array,
     description: String,
     fe_visible: {type: Boolean, default: true},
