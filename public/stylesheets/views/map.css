@@ -104,6 +104,10 @@
     border-bottom-left-radius: 0;
 }
 
+.map-container .dropdown-toggle {
+    margin-right: 10px;
+}
+
 /* @end Dropdown buttons */
 
 /* @group Map popups */

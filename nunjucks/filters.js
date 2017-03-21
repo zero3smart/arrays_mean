@@ -276,7 +276,6 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('constructedRoutePath', function (routePath_base, filterObj, queryObj) {
         // Merge filterObj to queryObj
 
-
         var _queryObj = {};
         if (filterObj)
             for (var key in filterObj)
@@ -303,7 +302,6 @@ module.exports = function (nunjucks_env,env) {
                 }
             }
         if (routePath == '') return routePath_base;
-  
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);

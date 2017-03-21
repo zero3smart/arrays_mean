@@ -80,8 +80,12 @@
             <p ng-message="pattern">Subdomain name must be lowercase and not contain any whitespace or special characters.</p>
         </div>
     </div>
-
+    
     <div>
+        <input type="checkbox" name="tcRead" ng-model="readTermsConditions" ng-true-value="2" check-required/>
+        <span class="span-tos">I've read the 
+            <a href="https://www.arrays.co/terms-of-service">Terms of Service</a>
+        </span>
         <button type="submit" class="btn btn-success pull-right" ng-disabled="infoForm.$invalid">Register</button>
     </div>
 </form>

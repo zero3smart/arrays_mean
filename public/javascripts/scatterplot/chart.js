@@ -3,7 +3,7 @@
  * @param {Object[]} data
  * @param {Object} metaData
  */
-scatterplot.chart = function (data, metaData) {
+scatterplot.chart = function (galleryView, data, metaData) {
     /**
      * Chart data.
      * @private
@@ -122,6 +122,7 @@ scatterplot.chart = function (data, metaData) {
      * @member {Selection}
      */
     this._yLabelContainer = undefined;
+    this._galleryView = galleryView;
     /**
      * Data x accessor.
      * @private
@@ -163,7 +164,7 @@ scatterplot.chart = function (data, metaData) {
      * @private
      * @member {Integer}
      */
-    this._threshold = 300;
+    this._threshold = 1000;
     /**
      * Chart view.
      * @private
@@ -333,8 +334,8 @@ scatterplot.chart.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._xAxis.tickSize(- this._innerHeight, 0);
-    this._yAxis.tickSize(- this._innerWidth, 0);
+    // this._xAxis.tickSize(- this._innerHeight, 0);
+    // this._yAxis.tickSize(- this._innerWidth, 0);
     /*
      * Move x axis corresponding with chart height.
      */

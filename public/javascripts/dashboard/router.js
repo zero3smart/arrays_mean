@@ -74,6 +74,19 @@ angular.module('arraysApp')
                             }]
                         }
                     })
+                    .state('dashboard.account.payments', {
+                        url: '/payments',
+                        controller: 'PaymentsCtrl',
+                        templateUrl: 'templates/account/payments.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin();
+                            },
+                            adjustments: ['Adjustments', function(Adjustments) {
+                                return Adjustments.get();
+                            }]
+                        }
+                    })
                     .state('dashboard.account.payment', {
                         url: '/payment/:plan_code/:quantity',
                         controller: 'BillingCtrl',

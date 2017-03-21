@@ -32,7 +32,7 @@ var DatasourceDescription_scheme = Schema({
     format: String, //csv, tsv, json
     connection: Object,
     title: String,
-    brandColor: String,
+    brandColor: {type: String, default: "#feb600"},
     urls: Array,
     description: String,
     fe_visible: {type: Boolean, default: true},
@@ -563,7 +563,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
     }
 
    var self = this;
-    self.find({uid: uid, importRevision: revision, fe_visible: true})
+    self.find({uid: uid, importRevision: revision})
         .populate({
             path: '_team',
             match: subdomainQuery

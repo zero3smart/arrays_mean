@@ -163,6 +163,7 @@ angular
                 var changeToTeam = $scope.teams[$index];
                 AuthService.switchTeam(changeToTeam._id)
                 .then(function() {
+                    $scope.$parent.updateSubdomain();
                     $scope.$parent.team = AuthService.currentTeam();
                     $scope.$parent.user = AuthService.currentUser();
                     $mdToast.show(
