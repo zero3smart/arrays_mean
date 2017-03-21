@@ -88,12 +88,16 @@ angular
                 if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
                     $scope.primaryAction.disabled = false;
                 } else {
+
                     // Only limit Editor users on subscription
                     var editorUsers = [];
                     angular.forEach($scope.users, function(user) {
+                        var editorMatched = false;
+
                         angular.forEach($scope.datasets, function(dataset) {
-                            if (user._editors.indexOf(dataset._id) !== -1) {
+                            if ( user._editors.indexOf(dataset._id) >= 0 && editorMatched === false ) {
                                 editorUsers.push(user);
+                                editorMatched = true;
                             }
                         });
                     });
