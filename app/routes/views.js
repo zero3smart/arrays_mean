@@ -60,53 +60,6 @@ View.getAllBuiltInViews(function(err,defaultViews) {
 })
 
 
-View.getAllCustomViews(function(err,customViews) {
-
-    if (err) {
-         winston.error("❌  Error getting default views to bind for routes: ", err);
-         return;
-    } else {
-        customViews.forEach(function(view) {
-
-            var customViewFileLocation = __dirname + '/../../user/' + view + '/views/index';
-
-            router.get('/:source_key/' + view ,ensureAuthorized,function(req,res,next) {
-
-
-                var source_key = req.params.source_key;
-
-
-                if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
-                    res.status(403).send("Bad Request - source_key missing")
-                    return;
-                }
-                res.render(customViewFileLocation);
-            })
-
-            router.get('/:source_key/getData' , ensureAuthorized,function(req,res,next) {
-
-                var team = req.subdomains[0];
-                if (!team && process.env.subdomain) {
-                    team = process.env.subdomain;
-                }
-                var controller = require('../../user/' + team + '/src/controller');
-
-                controller.BindData(req,function(err,bindData) {
-                    if (err) {
-                         winston.error("❌  Error getting bind data for custom view %s , err: %s" , view,err);
-                        return res.status(500).send(err.response || 'Internal Server Error');
-                    }
-                    winston.info("💬   getting data for custom view: %s", view);
-                    res.json(bindData);
-                })
-            })
-
-
-
-        })
-    }
-
-})
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 

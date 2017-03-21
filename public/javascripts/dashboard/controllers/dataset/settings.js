@@ -9,10 +9,11 @@ angular.module('arraysApp')
             var _viewViz = function() {
                 var url;
                 if ($scope.team.isEnterprise) {
-                    url = viewUrlService.getViewUrl($scope.subdomain, dataset, $scope.team.subdomain, false);
+                    url = viewUrlService.getViewUrl($scope.subdomain, dataset,null, false);
                 } else {
                     url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 }
+
                 $window.open(url, '_blank');
             };
 

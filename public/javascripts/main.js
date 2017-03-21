@@ -49,15 +49,12 @@ $(document).ready(function () {
             return word.toLowerCase();
         }).join('-');
 
-        var href;
-
-
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
 
 
-            href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
+            href = baseUrl + '/' +  sourceKey;
             window.location.href = href;
         } else {
             href = '/' + sourceKey + '/' + default_view_url;

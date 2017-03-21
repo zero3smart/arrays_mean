@@ -15,28 +15,35 @@ router.get('/', function (req, res) {
 
     if (process.env.NODE_ENV == 'enterprise') {
 
-        teams.GetTeamsAndDatasources(req.user,function(err,teamDescriptions) {
-            if (err) {
-                winston.error("❌  Error getting bind data for Team show: ", err);
+        teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
+
+            if (err && err.message != 'No SubDomain Asked!') {
+                winston.error("❌  Error getting bind data during authorizing : ", err);
                 return res.status(500).send(err.response || 'Internal Server Error');
-            } else {
-
-                if (!teamDescriptions || teamDescriptions.length == 0) {
-                    return res.redirect('auth/login');
-                }
-
-                // console.log(teamDescriptions)
-
-                
-                team_show_controller.BindData(req,teamDescriptions[0],function(err,bindData) {
-                    if (err) {
-                        winston.error("❌  Error getting bind data for Team show: ", err);
-                        return res.status(500).send(err.response || 'Internal Server Error');
-                    }
-                    return res.render('team/show', bindData);
-                })
             }
-        })
+
+            if (!teamDescriptions || teamDescriptions.length == 0
+                || (err && err.message == 'No SubDomain Asked!')) {
+
+                var bindData =
+                {
+                    env: process.env
+                };
+                return res.redirect(baseURL);
+                
+            }
+            // If a subdomain is asked, the team page would be displayed at the base url
+            team_show_controller.BindData(req, teamDescriptions[0], function (err, bindData) {
+                if (err) {
+                    winston.error("❌  Error getting bind data for Team show: ", err);
+                    return res.status(500).send(err.response || 'Internal Server Error');
+                }
+                return res.render('team/show', bindData);
+            });
+
+
+        });
+
 
     } else {
         if (req.subdomains.length == 0 || (req.subdomains.length == 1 && req.subdomains[0] == 'www')) {

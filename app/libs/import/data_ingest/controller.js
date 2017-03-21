@@ -220,12 +220,12 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             dataSourceDescription.fe_image,
             function(err) {
 
-                 if (err) { 
+                if (err) { 
 
                     winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                     return callback(err);
                 } else {
-                    callback();
+                    return callback();
                 }
 
             })

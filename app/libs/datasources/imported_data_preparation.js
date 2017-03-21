@@ -15,7 +15,6 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
             reject();
         });
     }
-
     
     var subdomain = process.env.NODE_ENV !== 'enterprise'? split[0]: null;
     var uid = process.env.NODE_ENV !== 'enterprise'? split[1] : split[0];
@@ -24,6 +23,8 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
 
     return new Promise(function (resolve, reject) {
         var dataSourceDescriptions = require('../../models/descriptions');
+
+     
 
         dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(preview,subdomain,uid, revision, function (err, data) {
             if (err) reject(err);
