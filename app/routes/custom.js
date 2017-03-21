@@ -19,6 +19,19 @@ router.get('/',function(req,res) {
    
     teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
 
+
+        if (teamDescriptions.length == 0) {
+            var data = {
+                env: process.env,
+                team: {
+                    title: process.env.subdomain
+                }
+
+            };
+
+            return res.render('team/show', data);
+        }
+ 
         if (err && err.message != 'No SubDomain Asked!') {
             winston.error("❌  Error getting bind data during authorizing : ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
