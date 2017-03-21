@@ -24,7 +24,6 @@ angular.module('arraysApp')
 
                     Job.get({id: $scope.currentJobId}).$promise.then(function(job) {
 
-
                         job.log = $scope.jobs[$scope.jobs.length - 1].log;
 
                         $scope.jobs[$scope.jobs.length - 1] = job;
