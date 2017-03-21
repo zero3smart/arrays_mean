@@ -1,23 +1,41 @@
 {% if user %}
 	<!-- start Intercom widget -->
 	<script>
+	console.log('test')
+	
 		window.intercomSettings = {
 			app_id: "{{ env.INTERCOM_APP_ID }}",
 			name: "{{ user.firstName }} {{ user.lastName }}", // Full name
 			email: "{{ user.email }}", // Email address
 			created_at: {{ user.createdAt | unixTimestamp }}, // Signup date as a Unix timestamp
-			company: user.defaultLoginTeam ? {
+			{% if user.defaultLoginTeam %}
+			company: {
 				id: "{{ user.defaultLoginTeam._id }}",
 				name: "{{ user.defaultLoginTeam.title }}",
 				created_at: {{ user.defaultLoginTeam.createdAt | unixTimestamp }},
-				plan: "{{ user.defaultLoginTeam.subscription.plan.plan_code }}"
-			} : {}
+				plan: "{{ user.defaultLoginTeam.subscription.plan.plan_code }}",
+			},
+			"Share Links Visited": 0, // Number
+	    	"Sample Viz Created": 0, // Boolean
+	    	"Share Links Created": 0 // Number
+			{% endif %}
+
+		    // Put quotes around text strings
+		    // Send numbers as integers or floats without quotes
+		    // Send dates as a unix timestamp in seconds and end key names with "_at"
+		    // Send null when no value exists for a user
+
+
+
 	};
+	console.log('test');
+	console.log(window.intercomSettings);
 	</script>
 	<script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/{{ env.INTERCOM_APP_ID }}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})()</script>
 	<!-- end Intercom widget -->
 {% else %}
 	<!-- start Intercom widget -->
+	console.log('test no user');
 	<script>
 		window.intercomSettings = {
 			app_id: "{{ env.INTERCOM_APP_ID }}"
