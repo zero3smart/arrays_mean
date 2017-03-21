@@ -128,11 +128,13 @@ module.exports.BindData = function (req, teamDescription, callback) {
         };
 
         if (req.user) {
-            User.findById(req.user, function(err, user) {
-                if (err) return callback(err);
-                data.user = user;
-                callback(err, data);
-            });
+            User.findById(req.user)
+                .populate('defaultLoginTeam')
+                .exec(function(err, user) {
+                    if (err) return callback(err);
+                    data.user = user;
+                    callback(err, data);
+                });
         } else {
             callback(err, data);
         }

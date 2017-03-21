@@ -461,7 +461,8 @@ angular.module('arraysApp')
                 // and set objectTitle default as first field (below).
                 // In initial attempts, $scope.data.objectTitle was not being properly saved.
                 $scope.data.objectTitle = dataset.objectTitle;
-                $scope.data.fe_image = dataset.fe_image;
+                $scope.data.fe_image = $scope.$parent.$parent.dataset.fe_image;
+
 
                 sortColumnsByDisplayOrder();
 
@@ -569,6 +570,7 @@ angular.module('arraysApp')
                         delete finalizedDatasource.urls;
                         delete finalizedDatasource.description;
                         delete finalizedDatasource.objectTitle;
+                        delete finalizedDatasource.fe_image;
                         delete finalizedDatasource.fe_excludeFields;
                         delete finalizedDatasource.fe_displayTitleOverrides;
                         delete finalizedDatasource.fe_fieldDisplayOrder;

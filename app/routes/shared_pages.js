@@ -59,7 +59,7 @@ router.get('/:shared_page_id', function (req, res) {
             var viewType = doc.viewType;
             var query = doc.query || {};
 
-            var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map-view', 'timeline', 'word-cloud', 'pie-set', 'bar-chart'];
+            var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'pie-set', 'bar-chart'];
             if (viewTypes.indexOf(viewType) !== -1) {
                 query.source_key = source_key;
                 var camelCaseViewType = viewType.replace(/-([a-z])/ig, function (all, letter) {
