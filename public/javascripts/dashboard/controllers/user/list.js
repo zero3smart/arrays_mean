@@ -73,6 +73,8 @@ angular
 
                     }
                 }
+
+                $scope.updatePrimaryActionAbility();
             };
 
 
@@ -86,14 +88,10 @@ angular
                 if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
                     $scope.primaryAction.disabled = false;
                 } else {
-                    // console.log($scope.users);
-                    // console.log($scope.datasets);
-
                     // Only limit Editor users on subscription
                     var editorUsers = [];
                     angular.forEach($scope.users, function(user) {
                         angular.forEach($scope.datasets, function(dataset) {
-
                             if (user._editors.indexOf(dataset._id) !== -1) {
                                 editorUsers.push(user);
                             }
@@ -228,24 +226,24 @@ angular
                             .then(function(response) {
                                 if (response.status == 200) {
                                     $mdToast.show(
-                                    $mdToast.simple()
-                                        .textContent('User role saved!')
-                                        .position('top right')
-                                        .hideDelay(3000)
-                                );
+                                        $mdToast.simple()
+                                            .textContent('User role saved!')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                    );
                                     $scope.users.push(selected);
                                 }
                             },function(err) {
                                 $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(err)
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                                    $mdToast.simple()
+                                        .textContent(err)
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
                             });
 
                     }, function () {
-                    // console.log('You decided to not to give permission this user to your datasets');
+                    // console.log('You decided not to give this user permission to your datasets');
                     });
             };
 
