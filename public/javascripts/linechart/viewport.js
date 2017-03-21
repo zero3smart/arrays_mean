@@ -338,9 +338,9 @@ linechart.viewport.prototype.render = function (container) {
                 /*
                  * Get nearest to x date's index.
                  */
-                if (self._options.groupBy_isDate) {
-                    invertedData = invertedData.getTime();  
-                }
+                // if (self._options.groupBy_isDate) {
+                //     invertedData = invertedData.getTime();  
+                // }
                 var index = self._bisect(self._dataDomain, invertedData);
                 window.location.href = self._options.redirectBaseUrl +
                         moment(invertedData, moment.ISO_8601).format(self._options.outputInFormat);
