@@ -34,16 +34,50 @@ router.get('/',function(req,res) {
 
     });
 
+})
 
+router.get('/dashboard',function(req,res) {
 
+    if (process.env.NODE_ENV == 'enterprise') {
+
+        return res.render('dashboard/index', {
+            env: process.env,
+            user: req.user
+        });
+        
+    } else { //redirect to main domain
+
+        var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
+        rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
+        return res.redirect(rootDomain + '/dashboard');
+
+    }
 })
 
 
+router.get('/env',function(req,res) {
+    if (process.env.NODE_ENV == 'enterprise') {
 
+        var host = process.env.HOST || 'localhost:9080' ;
+        var obj = {
+            node_env: process.env.NODE_ENV,
+            host: host,
+            s3Bucket: process.env.AWS_S3_BUCKET
+        }
+        return res.json(obj);
+        
+    } else { //redirect to main domain
 
+        var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
+        rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
+        return res.redirect(rootDomain + '/env');
+
+    }
+})
 
 
 router.get('/:source_key', ensureAuthorized, function(req,res) {
+
     var source_key = req.params.source_key;
     if (source_key == null || typeof source_key == 'undefined' || source_key == "") {
         res.status(403).send("Bad Request - source_key missing")

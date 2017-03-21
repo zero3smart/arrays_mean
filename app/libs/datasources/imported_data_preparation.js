@@ -15,7 +15,6 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
             reject();
         });
     }
-
     
     var subdomain = process.env.NODE_ENV !== 'enterprise'? split[0]: null;
     var uid = process.env.NODE_ENV !== 'enterprise'? split[1] : split[0];
