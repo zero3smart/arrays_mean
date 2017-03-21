@@ -236,6 +236,7 @@ angular
                                             .hideDelay(3000)
                                     );
                                     $scope.users.push(selected);
+                                    $scope.updatePrimaryActionAbility();
                                 }
                             },function(err) {
                                 $mdToast.show(
