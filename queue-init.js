@@ -43,8 +43,6 @@ module.exports = function() {
 	    .save(function(err) {
 	        if (err) return cb(err);
 	        else {
-
-
 	            datasource_description.findOneAndUpdate({_id: datasetId},{$set:{jobId: job.id}},{new: true},function(err,updatedDataset) {
 
 	                if (err) return cb(err);
