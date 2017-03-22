@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team', '$window',
-        function($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team, $window) {
+    .controller('UserListCtrl', ['$scope', '$state', '$log', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team', '$window',
+        function($scope, $state, $log, AuthService, User, $mdToast, users, $mdDialog, datasets, Team, $window) {
 
             $scope.primaryAction.disabled = true;
             $scope.primaryAction.text = 'Invite User';
@@ -157,7 +157,7 @@ angular
                     });
 
                 }, function() {
-                    // console.log('You decided to keep this user.');
+                    // $log.log('You decided to keep this user.');
                 });
 
             };
@@ -247,7 +247,7 @@ angular
                         });
 
                 }, function() {
-                    // console.log('You decided not to give this user permission to your datasets');
+                    // $log.log('You decided not to give this user permission to your datasets');
                 });
             };
 
@@ -288,7 +288,7 @@ angular
                                         $scope.$parent.$parent.user = AuthService.currentUser();
                                         $scope.$parent.$parent.teams = AuthService.allTeams();
 
-                                        console.log($scope);
+                                        $log.log($scope);
 
                                         $scope.users = User.getAll({ teamId: $scope.$parent.team._id });
                                         $mdToast.show(
@@ -310,7 +310,7 @@ angular
                         });
 
                 }, function() {
-                    // console.log('user decided not to transfer admin');
+                    // $log.log('user decided not to transfer admin');
                 });
             };
 
@@ -470,7 +470,7 @@ angular
                                 );
                             }
                         }, function(err) {
-                            console.log(err);
+                            $log.log(err);
                             $mdToast.show(
                                 $mdToast.simple()
                                 .textContent(err)
