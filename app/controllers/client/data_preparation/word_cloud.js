@@ -168,10 +168,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function(done) {
                 if (req.user) {
                     User.findById(req.user)
-                        .populate('defaultLoginTeam')
+                        .deepPopulate('defaultLoginTeam.datasourceDescriptions')
                         .exec(function(err, doc) {
                             if (err) return done(err);
                             user = doc;
+
+                        user.sampleImported = false;
+                        for (var i = 0; i < user.defaultLoginTeam.datasourceDescriptions.length; i+=1) {
+                            if (user.defaultLoginTeam.datasourceDescriptions[i].sample == true && user.defaultLoginTeam.datasourceDescriptions[i].imported == true) {
+                                user.sampleImported = true;
+                                break;
+                            }
+                        }
                             done();
                         });
                 } else {

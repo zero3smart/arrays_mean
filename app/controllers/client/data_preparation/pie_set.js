@@ -331,11 +331,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .deepPopulate('defaultLoginTeam.datasourceDescriptions')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+
+                        user.sampleImported = false;
+                        for (var i = 0; i < user.defaultLoginTeam.datasourceDescriptions.length; i+=1) {
+                            if (user.defaultLoginTeam.datasourceDescriptions[i].sample == true && user.defaultLoginTeam.datasourceDescriptions[i].imported == true) {
+                                user.sampleImported = true;
+                                break;
+                            }
+                        }
+                            done();
+                        });
                 } else {
                     done();
                 }

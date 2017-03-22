@@ -2,7 +2,7 @@
 	<!-- start Intercom widget -->
 	<script>
 	console.log('test')
-	
+
 		window.intercomSettings = {
 			app_id: "{{ env.INTERCOM_APP_ID }}",
 			name: "{{ user.firstName }} {{ user.lastName }}", // Full name
@@ -16,7 +16,7 @@
 				plan: "{{ user.defaultLoginTeam.subscription.plan.plan_code }}",
 			},
 			"Share Links Visited": 0, // Number
-	    	"Sample Viz Created": 0, // Boolean
+	    	"Sample Viz Created": {{ user.sampleImported }}, // Boolean
 	    	"Share Links Created": 0 // Number
 			{% endif %}
 

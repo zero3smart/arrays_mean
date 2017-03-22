@@ -33,7 +33,8 @@ var userSchema = new mongoose.Schema({
 
 userSchema.plugin(findOrCreate);
 
-
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
+userSchema.plugin(deepPopulate, {whitelist: ['defaultLoginTeam.datasourceDescriptions', '_team.datasourceDescriptions']});
 
 userSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');
