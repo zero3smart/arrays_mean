@@ -20,6 +20,10 @@ var userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    sampleImported: {
+        type: Boolean,
+        default: false
+    },
     _team: [{type: Schema.Types.ObjectId, ref: 'Team'}],
     active: {
         type: Boolean,

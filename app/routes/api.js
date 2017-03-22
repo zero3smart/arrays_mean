@@ -100,6 +100,7 @@ router.post('/user/:id', ctrlUsers.save);
 router.delete('/user/:id', ctrlUsers.delete);
 router.get('/user/getAll/:teamId',ctrlUsers.getAll);
 router.put('/user/defaultLoginTeam/:teamId',ctrlUsers.defaultLoginTeam);
+router.put('/user/sampleImported/:teamId',ctrlUsers.sampleImported);
 
 //views
 router.get('/view', ctrlView.getAll);

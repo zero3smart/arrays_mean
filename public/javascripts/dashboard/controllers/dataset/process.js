@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout',
-        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout) {
+    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout', 'User', 'Team',
+        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout, User, Team) {
 
 
             //-- helper functions ---//
@@ -235,7 +235,11 @@ angular.module('arraysApp')
             }
 
             function importDatasource(datasource) {
-
+                if(datasource.sample == true) {
+                    $scope.user.sampleImported = true;
+                    User.sampleImported( {id:$scope.user._id}, {sampleImported: true} );
+                }
+                
                 var id = datasource._id;
 
 
