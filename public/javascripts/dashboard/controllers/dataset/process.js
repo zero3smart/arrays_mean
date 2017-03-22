@@ -2,7 +2,6 @@ angular.module('arraysApp')
     .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout',
         function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout) {
 
-
             //-- helper functions ---//
 
             function errorHandler(response) {
