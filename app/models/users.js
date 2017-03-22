@@ -20,6 +20,10 @@ var userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    sampleImported: {
+        type: Boolean,
+        default: false
+    },
     _team: [{type: Schema.Types.ObjectId, ref: 'Team'}],
     active: {
         type: Boolean,
@@ -33,7 +37,8 @@ var userSchema = new mongoose.Schema({
 
 userSchema.plugin(findOrCreate);
 
-
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
+userSchema.plugin(deepPopulate, {whitelist: ['defaultLoginTeam.datasourceDescriptions', '_team.datasourceDescriptions']});
 
 userSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');

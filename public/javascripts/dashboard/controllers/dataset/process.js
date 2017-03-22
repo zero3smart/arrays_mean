@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout',
-        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout) {
+    .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout', 'User', 'Team',
+        function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout, User, Team) {
 
             //-- helper functions ---//
 
@@ -233,7 +233,21 @@ angular.module('arraysApp')
             }
 
             function importDatasource(datasource) {
+                if(datasource.sample == true) {
+                    $scope.user.sampleImported = true;
+                    User.sampleImported( {id:$scope.user._id}, {sampleImported: true} );
+                    window.Intercom('update', {
+                        email: $scope.user.email,
+                        "Sample Viz Created": $scope.user.sampleImported, // Boolean
+                    });
+                }
 
+                //Send notification to Intercom when dataset is imported
+                window.Intercom('trackEvent', 'Visualization Imported', {
+                   viz_title: datasource.title,
+                   sample: datasource.sample || false
+                });
+                
                 var id = datasource._id;
 
 
