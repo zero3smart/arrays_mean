@@ -176,6 +176,9 @@ angular.module('arraysApp')
                     .then(function(savedDataset) {
                         joinDataCols = savedDataset.joinCols;
                         delete savedDataset.joinCols;
+
+                        console.log(savedDataset);
+                        
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.loadJoinCols();
                     });
@@ -553,7 +556,7 @@ angular.module('arraysApp')
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
 
                     console.log(finalizedDataset);
-                    
+
                     delete finalizedDataset.columns;
 
                     queue.push(DatasetService.save(finalizedDataset));

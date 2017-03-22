@@ -613,8 +613,8 @@ module.exports.save = function (req, res) {
                 var update = {$set:{}};
                 var makeCopy = false;
 
-                console.log(req.body);
-                
+                console.log(req.body.connection);
+
                 _.forOwn(req.body,function(value,key) {
         
                     if (key !='author' && key !== '_team' 
