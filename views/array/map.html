@@ -128,6 +128,7 @@
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,
+                        aggregateBy: aggregateBy,
                         mapBy: mapBy
                 }) | safe }}";
                 var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
