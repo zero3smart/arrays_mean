@@ -35,7 +35,7 @@
                         <md-select ng-hide="team.admin==selectedUser._id" ng-model="userRoles[dataset._id]"
                             flex="25" aria-label="User role" name="role" required
                             class="no-margin">
-                            <md-option ng-repeat="role in availableUserRoles" value="{{role.value}}">{{role.name}}</md-option>
+                            <md-option ng-repeat="role in availableUserRoles" value="{{role.value}}" ng-disabled="{{ role.disabled }}">{{role.name}}</md-option>
                         </md-select>
 
                         <p ng-if="team.admin==selectedUser._id">Admin</p>

@@ -322,12 +322,21 @@ angular
 
                 $scope.updateUserRoles(selectedUser);
 
-                $scope.availableUserRoles = [
-                    {name: 'Editor', value: 'editor'},
-                    {name: 'Viewer', value: 'viewer'},
-                    {name: 'None', value: ''}
+                if ($scope.primaryAction.disabled === true && Object.values($scope.userRoles).indexOf('editor') === -1) {
+                    $scope.availableUserRoles = [
+                        {name: 'Editor', value: 'editor', disabled: true},
+                        {name: 'Viewer', value: 'viewer'},
+                        {name: 'None', value: ''}
 
-                ];
+                    ];
+                } else {
+                    $scope.availableUserRoles = [
+                        {name: 'Editor', value: 'editor'},
+                        {name: 'Viewer', value: 'viewer'},
+                        {name: 'None', value: ''}
+
+                    ];
+                }
 
                 $scope.hide = function(data) {
                     $mdDialog.hide(data);
