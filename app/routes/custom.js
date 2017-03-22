@@ -16,7 +16,7 @@ router.get('/static/*', function(req,res) {
 
 //team page
 router.get('/',function(req,res) {
-   
+
     teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
 
 

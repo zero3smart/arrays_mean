@@ -1,7 +1,7 @@
 
 var cluster = require('cluster');
 var dotenv = require('dotenv');
-var isDev = process.env.NODE_ENV == 'production' ? false : true;
+var isDev = process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'enterprise' ? false : true;
 var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
 dotenv.config({
     path: dotenv_path,
@@ -123,7 +123,6 @@ if (cluster.isMaster) {
                         //serving the views
                         var view_path = path.join(userFolderPath, file + "/views");
                         viewsToSet.push(view_path);
-
                         app.use(subdomain(team_name,require(customRoutes)));
                     }
                     eachCb();
