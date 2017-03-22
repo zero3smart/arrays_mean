@@ -300,7 +300,6 @@ map.on('load', function () {
             var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
 
             var filterObjForThisFilterColVal;
-            
             filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
             var filterObjString = $.param(filterObjForThisFilterColVal);
             var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
