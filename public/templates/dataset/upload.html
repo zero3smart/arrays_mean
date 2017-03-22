@@ -10,7 +10,9 @@
                 <ul class="dashboard-list">
                     <li><a class="pointer" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
                     <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
-                    <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
+<!--                     <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
+ -->                    <li><a class="pointer" ng-click="addSourceType('database')"><span ng-if="env.node_env !== 'enterprise' " aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from database</span></a></li>
+                    <li><a class="pointer" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from API</a></li>
                 </ul>
             </div>
 
@@ -76,7 +78,7 @@
                         <span class="btn-label">Upload Data</span>
                     </md-button>
 
-                    <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a class="pointer" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+                    <p class="aa-file-select-close"><a class="pointer" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
                 </div>
                 <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
 
