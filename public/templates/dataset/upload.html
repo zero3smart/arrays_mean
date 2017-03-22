@@ -8,11 +8,12 @@
             <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Add a data source from the options below.</p>
                 <ul class="dashboard-list">
+                    <!-- inline cursor styling until the functionality is implemented -->
                     <li><a class="pointer" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
-                    <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
-<!--                     <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
- -->                    <li><a class="pointer" ng-click="addSourceType('database')"><span ng-if="env.node_env !== 'enterprise' " aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from database</span></a></li>
-                    <li><a class="pointer" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from API</a></li>
+                    <li><a class="pointer" style="cursor:help" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Upload a JSON file</a></li>
+               <!--      <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li> -->
+                    <li><a class="pointer" ng-click="addSourceType('database')"><span ng-if="env.node_env !== 'enterprise' " aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature" style="cursor:help">Import from database</span></a></li>
+                    <li><a class="pointer" style="cursor: help" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from API</a></li>
                 </ul>
             </div>
 
