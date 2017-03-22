@@ -613,7 +613,7 @@ module.exports.save = function (req, res) {
                 var update = {$set:{}};
                 var makeCopy = false;
 
-                console.log(req.body.connection);
+    
 
                 _.forOwn(req.body,function(value,key) {
         

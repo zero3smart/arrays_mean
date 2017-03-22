@@ -51,7 +51,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.discardChangesThisView = angular.noop;
 
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
-            if(!dataset.fe_excludeFieldsObjDetail) {
+            if(!dataset.fe_excludeFieldsObjDetail && !$scope.team.isEnterprise) {
                 dataset.fe_excludeFieldsObjDetail = {};
                 for (i = 0; i < dataset.columns.length; i++) {
                     dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
