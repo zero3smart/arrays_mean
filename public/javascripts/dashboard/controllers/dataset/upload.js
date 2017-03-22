@@ -260,6 +260,7 @@ angular.module('arraysApp')
                             .position('top right')
                             .hideDelay(3000)
                     );
+                    $scope.uploader.queue = [];
 
                 } else {
                     // Error
