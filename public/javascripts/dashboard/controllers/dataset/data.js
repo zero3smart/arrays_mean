@@ -551,6 +551,9 @@ angular.module('arraysApp')
                     var queue = [];
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+
+                    console.log(finalizedDataset);
+                    
                     delete finalizedDataset.columns;
 
                     queue.push(DatasetService.save(finalizedDataset));
