@@ -452,6 +452,10 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
          */
         var dataPoint = _.find(dataSet, ['date', bisectedData]);
         if (dataPoint) {
+            var number = dataPoint.value;
+            var parts = number.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            dataPoint.value = parts.join(".");
             values.push(dataPoint);
         } else {
             values.push({value: 0});
