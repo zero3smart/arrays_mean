@@ -5,6 +5,7 @@ angular
 
             $scope.primaryAction.disabled = true;
             $scope.primaryAction.text = 'Invite User';
+            $scope.maxEditorsReached = true;
 
             $scope.users = users;
             $scope.datasets = datasets;
@@ -85,7 +86,7 @@ angular
                 }
 
                 if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
-                    $scope.primaryAction.disabled = false;
+                    $scope.maxEditorsReached = false;
                 } else {
 
                     // Only limit Editor users on subscription
@@ -101,7 +102,7 @@ angular
                         });
                     });
 
-                    $scope.primaryAction.disabled = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
+                    $scope.maxEditorsReached = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
                 }
             };
 
@@ -321,7 +322,7 @@ angular
 
                 $scope.updateUserRoles(selectedUser);
 
-                if ($scope.primaryAction.disabled === true && Object.values($scope.userRoles).indexOf('editor') === -1) {
+                if ($scope.maxEditorsReached === true && Object.values($scope.userRoles).indexOf('editor') === -1) {
                     $scope.availableUserRoles = [
                         { name: 'Editor', value: 'editor', disabled: true },
                         { name: 'Viewer', value: 'viewer' },
