@@ -28,7 +28,6 @@ require('../../../libs/import/queue-worker');
 var kue = require('kue');
 
 
-
 function getAllDatasetsWithQuery(query, res) {
 
     if (query.master_id) { //getting the preview copy

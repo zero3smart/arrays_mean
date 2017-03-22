@@ -193,7 +193,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
 
   
       
-    if (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field) { // dont omit scraping
+    if (dataSourceDescription.fe_image && dataSourceDescription.fe_image.field && !dataSourceDescription.sample) { // dont omit scraping
 
         winston.info("🔁  start image scraping");
         job.log("🔁  start image scraping");

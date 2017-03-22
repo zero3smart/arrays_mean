@@ -17,6 +17,7 @@ var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
 var ctrlPlans = require('../controllers/api/billing/plans');
 var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
 var ctrlAdjustments = require('../controllers/api/billing/adjustments');
+var ctrlJob = require('../controllers/api/job')
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -24,7 +25,8 @@ var auth = ejwt({
 }).unless({
     path: [/\/api\/user/i,
         /\/api\/team/i,
-        /\/api\/view/i
+        /\/api\/view/i,
+        /\/api\/job/i
     ]
 });
 
@@ -40,6 +42,9 @@ router.use('/',auth, function (err, req, res, next) {
         return next();
     }
 });
+
+router.get('/job/:id', ctrlJob.getJob)
+router.get('/job/:id/log', ctrlJob.getJobLog)
 
 
 //admin functions

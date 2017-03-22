@@ -2,7 +2,6 @@ angular.module('arraysApp')
     .controller('DatasetProcessCtrl', ['$scope', '$state', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q', 'Job', '$timeout', 'User', 'Team',
         function($scope, $state, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q, Job, $timeout, User, Team) {
 
-
             //-- helper functions ---//
 
             function errorHandler(response) {
@@ -23,7 +22,6 @@ angular.module('arraysApp')
                     $scope.jobs[$scope.jobs.length - 1].state == 'inactive') {
 
                     Job.get({id: $scope.currentJobId}).$promise.then(function(job) {
-
 
                         job.log = $scope.jobs[$scope.jobs.length - 1].log;
 

@@ -7,6 +7,7 @@
 			name: "{{ user.firstName }} {{ user.lastName }}", // Full name
 			email: "{{ user.email }}", // Email address
 			created_at: {{ user.createdAt | unixTimestamp }}, // Signup date as a Unix timestamp
+
 			{% if user.defaultLoginTeam %}
 			company: {
 				id: "{{ user.defaultLoginTeam._id }}",

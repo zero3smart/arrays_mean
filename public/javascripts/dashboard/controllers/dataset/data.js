@@ -23,6 +23,10 @@ angular.module('arraysApp')
                     }
                 }
             }
+            // save the sample dataset image field - will check the final dataset image field against this one and only initiate image scraping if it changes. Otherwise, we don't want a bunch of copies of the sample images.
+            if (dataset.sample) {
+                $scope.sampleImageField = dataset.fe_image.field;
+            }
 
             dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
 
@@ -422,7 +426,7 @@ angular.module('arraysApp')
                     $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
 
 
-                    if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {
+                    if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || $scope.data.fe_image.field == $scope.sampleImageField) {
                         $scope.data.fe_image.scraped = false;
                     }
                     if ($scope.data.fe_image.field !== '') {
