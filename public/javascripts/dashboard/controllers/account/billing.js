@@ -49,8 +49,6 @@ angular.module('arraysApp')
 
             $scope.updateEditorUsers();
 
-            console.log($scope.editorUsers);
-
             $scope.loaded = false;
 
             $scope.errors = {};
