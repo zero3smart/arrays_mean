@@ -111,6 +111,8 @@ Temporary Items
 ## csv files ##
 *.csv
 
+## userFolder
+user/*
 
 #dump
 dump/

@@ -56,6 +56,7 @@ if (cluster.isMaster) {
 
 
     //job queue user interface
+
     // if (process.env.NODE_ENV == 'production') {
     //     var kue = require('kue');
     //     var ui = require('kue-ui');
@@ -72,9 +73,6 @@ if (cluster.isMaster) {
     //     app.use('/kui',ui.app);
 
     // }
-
-
-
 
     require('./config/setup-passport');
 
