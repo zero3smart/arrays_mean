@@ -24,18 +24,21 @@ module.exports.BindData = function (req, callback) {
 
         var user = null;
         if (req.user) {
-            User.findById(req.user, function(err, doc) {
-                if (err) return callback(err);
-                user = doc;
+            User.findById(req.user)
+                .populate('defaultLoginTeam')
+                .exec(function(err, doc) {
+                    if (err) return callback(err);
+                    user = doc;
 
-                var data = {
-                    env: process.env,
-                    user: user,
-                    sources: datasetArray
-                };
+                    var data = {
+                        env: process.env,
+                        user: user,
+                        sources: datasetArray
+                    };
 
-                callback(err, data);
-            });
+                    callback(err, data);
+
+                });
         } else {
             var data = {
                 env: process.env,

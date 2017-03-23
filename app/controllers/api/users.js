@@ -124,7 +124,8 @@ module.exports.get = function (req, res) {
                         authToken: token,
                         invited: user.invited,
                         role: role,
-                        defaultLoginTeam: user.defaultLoginTeam
+                        defaultLoginTeam: user.defaultLoginTeam,
+                        createdAt: user.createdAt
                     }
 
 

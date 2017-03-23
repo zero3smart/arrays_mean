@@ -18,6 +18,9 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('dateFormat', function (date, format) {
         return format ? moment(date).utc().format(format) : moment(date).utc().format("MMMM Do, YYYY");
     });
+    nunjucks_env.addFilter('unixTimestamp', function (date) {
+        return moment(date).utc().unix();
+    });
     nunjucks_env.addFilter('isArray', function (val) {
         return Array.isArray(val);
     });

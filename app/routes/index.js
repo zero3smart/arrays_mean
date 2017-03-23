@@ -194,17 +194,18 @@ var _mountRoutes_endPoints = function (app) {
     
 };
 
-module.exports.MountRoutes = function (app) {
+module.exports.MountRoutes = function(app) {
 
-    app.get('/env',function(req,res) {
+    app.get('/env', function(req, res) {
         var host = process.env.HOST || 'localhost:9080' ;
         var obj = {
             node_env: process.env.NODE_ENV,
             host: host,
-            s3Bucket: process.env.AWS_S3_BUCKET
-        }
+            s3Bucket: process.env.AWS_S3_BUCKET,
+            intercomAppId: process.env.INTERCOM_APP_ID ? process.env.INTERCOM_APP_ID : ''
+        };
         return res.json(obj);
-    })
+    });
 
 
     _mountRoutes_monitoring(app);
