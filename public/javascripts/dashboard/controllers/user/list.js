@@ -11,6 +11,7 @@ angular
             $scope.datasets = datasets;
 
             users.$promise.then(function(users) {
+                $scope.updateUserRolesOnTeam();
                 $scope.updatePrimaryActionAbility();
             });
 
@@ -125,8 +126,6 @@ angular
                     });
                 });
             };
-
-            $scope.updateUserRolesOnTeam();
 
             // $log.log(users);
             // $log.log(datasets);
