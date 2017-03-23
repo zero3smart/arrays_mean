@@ -20,10 +20,14 @@
                 <img src="/images/image-not-found-sm.png" />
             </div> -->
             
-            <span ng-class="{'pending': user.invited[person._id]}" flex>
+            <span ng-class="{'pending': user.invited[person._id]}" flex="70">
                 <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
                 <span class="dashboard-list-name" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
                 <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
+            </span>
+
+            <span flex>
+                <span ng-if="person.role" flex>{{ person.role }}</span>
             </span>
 
             <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10" aa-tooltip="Edit user">

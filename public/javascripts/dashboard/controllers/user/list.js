@@ -74,7 +74,9 @@ angular
                     }
                 }
 
+                $scope.updateUserRolesOnTeam();
                 $scope.updatePrimaryActionAbility();
+                // $log.log(users);
             };
 
 
@@ -105,6 +107,29 @@ angular
                     $scope.maxEditorsReached = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
                 }
             };
+
+            $scope.updateUserRolesOnTeam = function() {
+                angular.forEach($scope.users, function(user) {
+                    angular.forEach($scope.datasets, function(dataset) {
+                        user.role = '';
+                    });
+                    angular.forEach($scope.datasets, function(dataset) {
+                        if (user._viewers.indexOf(dataset._id) >= 0) {
+                            user.role = 'Viewer';
+                        }
+                    });
+                    angular.forEach($scope.datasets, function(dataset) {
+                        if (user._editors.indexOf(dataset._id) >= 0) {
+                            user.role = 'Editor';
+                        }
+                    });
+                });
+            };
+
+            $scope.updateUserRolesOnTeam();
+
+            // $log.log(users);
+            // $log.log(datasets);
 
             $scope.primaryAction.do = function(ev) {
                 $scope.openUserDialog(ev, {});
@@ -346,11 +371,12 @@ angular
                 };
 
                 $scope.saveUser = function() {
-                    $scope.bindUserRolesToSelectedUser(selectedUser);
-                    $scope.updateUserRoles(selectedUser);
 
                     selectedUser.$save(function(savedUser) {
                         if (savedUser) {
+                            $scope.bindUserRolesToSelectedUser(selectedUser);
+                            $scope.updateUserRoles(selectedUser);
+
                             $mdToast.show(
                                 $mdToast.simple()
                                 .textContent('User Role saved successfully!')
