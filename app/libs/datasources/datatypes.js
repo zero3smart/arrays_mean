@@ -284,3 +284,70 @@ var _makeFormatValid = function(format) {
 
 }
 module.exports.makeFormatValid = _makeFormatValid;
+
+var _verifyDataType = function(name, sample, rowObjects, index) {
+    var numberRE = /([^0-9\.,-]|\s)/;
+    var rowObject = rowObjects[index]
+    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
+        var secondRowObject = intuitDatatype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+
+    } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
+        var secondRowObject = intuitDatatype(name, sample);
+        rowObject.data_type = secondRowObject.data_type;
+        rowObject.operation = secondRowObject.operation;
+    }
+    return rowObject;
+};
+module.exports.verifyDataType = _verifyDataType;
+
+var _intuitDatatype = function(name, sample) {
+    var format = _isDate(sample)[1];
+    if (format !== null) {
+        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+    }
+
+    var dateRE = /(year|DATE)/i;
+    if (dateRE.test(name)) {
+        format = _isEdgeDate(sample)[1];
+        if (format === 'ISO_8601') {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        } else if (format !== null) {
+
+            if (_isValidFormat(format)) {
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
+            } else {
+                var valid_format = _makeFormatValid(format);
+                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: valid_format, operation: 'ToDate'};
+            }
+
+        } else {
+            return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
+        }
+    }
+
+    // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
+    var numberRE = /([^0-9\.,-]|\s)/;
+    var floatRE = /[^0-9,-]/;
+    var IdRE = /(Id|ID)/;
+    if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
+        // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
+        format = _isISODateOrString(sample)[1];
+        if(format !== null) {
+            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
+        }
+    } else if(floatRE.test(sample)) {
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
+        }
+    } else {
+        var numberWithoutComma = sample.replace(",", "");
+        if (!isNaN(Number(numberWithoutComma))) {
+            return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
+        }
+    }
+    return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
+};
+module.exports.intuitDatatype = _intuitDatatype

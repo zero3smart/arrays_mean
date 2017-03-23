@@ -16,6 +16,7 @@ var datasource_file_service = require('../../../libs/utils/aws-datasource-files-
 var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
 var s3ImageHosting = require('../../../libs/utils/aws-image-hosting');
+var reimport = require('../../../libs/datasources/reimport');
 
 var hadoop = require('../../../libs/datasources/hadoop');
 
@@ -785,7 +786,7 @@ module.exports.save = function (req, res) {
     }
 };
 
-function _readDatasourceColumnsAndSampleRecords(replacementDataSource, description, fileReadStream, next) {
+function _readDatasourceColumnsAndSampleRecords(replacement, description, fileReadStream, next) {
     var delimiter;
     if (description.format == 'CSV') {
         delimiter = ',';
@@ -826,7 +827,32 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
                         countOfLines++;
 
                         if (countOfLines == 1) {
-                            var newColumnsLength = output[0].length;
+
+                            // mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacement, function (err, newColumns, equal) {
+                            //     if (err) {
+                            //         readStream.destroy();
+                            //         next(err)
+                            //     }
+                            //     if (equal) {
+                            //         readStream.destroy();
+                            //         next(null, [])
+                            //     }
+                            //     columns = newColumns;
+                            // })
+
+                            var numberOfEmptyFields = 0;
+                            columns = output[0].map(function (e) {
+                                // change any empty string keys to "Field"
+                                if(e === '') {
+                                    numberOfEmptyFields++;
+                                    e = "Field" + numberOfEmptyFields;
+                                }
+                                return {name: e.replace(/\./g, '_')};
+                            });
+                            readStream.resume();
+
+                        } else if (countOfLines == 2) {
+                            var newColumnsLength = columns.length;
                             var oldColumnsLength = _.size(description.raw_rowObjects_coercionScheme);
                             var difference = Math.abs(newColumnsLength - oldColumnsLength);
                             var newColumnsLengthOrDifference = difference;
@@ -835,10 +861,10 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
                                 isDifference = false;
                                 newColumnsLengthOrDifference = newColumnsLength;
                             }
-                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacementDataSource, function (err, newColumns, equal) {
+                            reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference, replacement, function (err, newColumns, equal) {
                                 if (err) {
                                     readStream.destroy();
-                                    next(err)
+                                    next(err);
                                 }
                                 if (equal) {
                                     readStream.destroy();
@@ -846,17 +872,17 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
                                 }
                                 columns = newColumns;
                             })
-                            readStream.resume();
-                        } else if (countOfLines == 2) {
-                            columns = columns.map(function (e, i) {
-                                var rowObject = intuitDataype(e.name, output[0][i]);
-                                rowObjects.push(rowObject);
-                                return rowObject
-                            });
+
+                            // columns = columns.map(function (e, i) {
+                            //     var rowObject = datatypes.intuitDataype(e.name, output[0][i]);
+                            //     rowObjects.push(rowObject);
+                            //     return rowObject
+                            // });
+
                             readStream.resume();
                         } else if (countOfLines == 3){
                             columns = columns.map(function (e, i) {
-                            return verifyDataType(e.name, output[0][i], rowObjects, i)
+                            return datatypes.verifyDataType(e.name, output[0][i], rowObjects, i)
                             });
                             readStream.resume();
                         } else {
@@ -868,110 +894,7 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
         );
 }
 
-function mapColumnsOrErr(columns, rowObjects, difference, isDifference, replacementDataSource, callback) {
-    var numberOfEmptyFields = 0;
-    var numberOfInconsistentColumns = 0;
 
-    for (var i = 0; i < columns.length; i++) {
-        var name = columns[i];
-        if(name === '') {
-            numberOfEmptyFields++;
-            name = "Field" + numberOfEmptyFields;
-        }
-        var columnName = {name: name.replace(/\./g, '_')};
-        if (replacementDataSource) {
-            if (!checkForContinutity(columnName.name, rowObjects)) {
-                numberOfInconsistentColumns++;
-                if(numberOfInconsistentColumns > difference && isDifference) {
-                    return callback({message: "Datasources are not compatible"});
-                }
-                if(numberOfInconsistentColumns >= difference && !isDifference) {
-                    return callback({message: "Datasources are not compatible"});
-                }
-           }
-        }
-        columns[i] = columnName;
-    }
-    if(numberOfInconsistentColumns == 0) {
-        // if there are no column inconsistencies, there's no need to do any reimporting
-        callback(null, columns, true)
-    }
-    // continuity = true;
-    callback(null, columns, false)
-}
-
-function checkForContinutity(name, excludeFieldsObject) {
-    if (excludeFieldsObject.hasOwnProperty(name)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function verifyDataType(name, sample, rowObjects, index) {
-    var numberRE = /([^0-9\.,-]|\s)/;
-    var rowObject = rowObjects[index]
-    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
-        var secondRowObject = intuitDataype(name, sample);
-        rowObject.data_type = secondRowObject.data_type;
-        rowObject.operation = secondRowObject.operation;
-
-    } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
-        var secondRowObject = intuitDataype(name, sample);
-        rowObject.data_type = secondRowObject.data_type;
-        rowObject.operation = secondRowObject.operation;
-    }
-    return rowObject;
-};
-
-function intuitDataype(name, sample) {
-    var format = datatypes.isDate(sample)[1];
-    if (format !== null) {
-        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
-    }
-
-    var dateRE = /(year|DATE)/i;
-    if (dateRE.test(name)) {
-        format = datatypes.isEdgeDate(sample)[1];
-        if (format === 'ISO_8601') {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
-        } else if (format !== null) {
-
-            if (datatypes.isValidFormat(format)) {
-                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
-            } else {
-                var valid_format = datatypes.makeFormatValid(format);
-                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: valid_format, operation: 'ToDate'};
-            }
-
-        } else {
-            return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
-        }
-    }
-
-    // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-    var numberRE = /([^0-9\.,-]|\s)/;
-    var floatRE = /[^0-9,-]/;
-    var IdRE = /(Id|ID)/;
-    if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
-        // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
-        format = datatypes.isISODateOrString(sample)[1];
-        if(format !== null) {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
-        }
-    } else if(floatRE.test(sample)) {
-        var numberWithoutComma = sample.replace(",", "");
-        if (!isNaN(Number(numberWithoutComma))) {
-            return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
-        }
-    } else {
-        var numberWithoutComma = sample.replace(",", "");
-        if (!isNaN(Number(numberWithoutComma))) {
-            return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
-        }
-    }
-    return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
-};
     
 
 module.exports.upload = function (req, res) {
@@ -1002,6 +925,7 @@ module.exports.upload = function (req, res) {
                 if (doc.fileName) {
                     oldFileName = doc.fileName;
                     replacement = true;
+                    console.log(replacement)
                 }
                 //description refering to the master/parent dataset
                 description = doc;
