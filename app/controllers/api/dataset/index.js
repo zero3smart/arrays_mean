@@ -835,12 +835,16 @@ function _readDatasourceColumnsAndSampleRecords(replacementDataSource, descripti
                                 isDifference = false;
                                 newColumnsLengthOrDifference = newColumnsLength;
                             }
-                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacementDataSource, function (err, newColumns) {
+                            mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacementDataSource, function (err, newColumns, equal) {
                                 if (err) {
                                     readStream.destroy();
                                     next(err)
                                 }
-                                columns = newColumns; 
+                                if (equal) {
+                                    readStream.destroy();
+                                    next(null, [])
+                                }
+                                columns = newColumns;
                             })
                             readStream.resume();
                         } else if (countOfLines == 2) {
@@ -888,8 +892,12 @@ function mapColumnsOrErr(columns, rowObjects, difference, isDifference, replacem
         }
         columns[i] = columnName;
     }
+    if(numberOfInconsistentColumns == 0) {
+        // if there are no column inconsistencies, there's no need to do any reimporting
+        callback(null, columns, true)
+    }
     // continuity = true;
-    callback(null, columns)
+    callback(null, columns, false)
 }
 
 function checkForContinutity(name, excludeFieldsObject) {
@@ -1096,61 +1104,66 @@ module.exports.upload = function (req, res) {
                     }
                     return done(err);
                 }
-                console.log(columns)
                 winston.info("✅  File validation okay : " + file.originalname);
-                // if (!Array.isArray(columns) && columns.continuity) {
-                //     columns = columns.newColumns;
-                //     console.log(columns)
-                //     // upload datasource to s3
-                //     var uploadToDataset = description._id;
+                // if there's a re-import of dataset and nothing has changed
+                if (columns.length == 0) {
+                    console.log("uploading to aws s3")
+                    // Upload datasource to AWS S3
 
-                //     if (child) uploadToDataset = req.body.id;
+                    if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
-                //     datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
-                //         if (err) {
-                //             winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
-                //         }
+                    var uploadToDataset = description._id;
 
-                //         done(err);
-                //     });
-                // }
+                    if (child) uploadToDataset = req.body.id;
 
-                // Store columnNames and firstRecords for latter call on dashboard pages
-                if (!req.session.columns) req.session.columns = {};
-                console.log(columns)
-                // TODO: Do we need to save the columns for the additional datasource,
-                // since it should be same as the master datasource???
-                req.session.columns[description._id] = columns;
-                description.raw_rowObjects_coercionScheme = {};
-
-                for(var i = 0; i < columns.length; i++) {
-                    var column = columns[i];
-                    if (column.data_type !== 'String') {
-                        description.raw_rowObjects_coercionScheme[column.name] = {};
-                        if (column.operation === 'ToDate') {
-                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
-                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
+                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                        if (err) {
+                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                         }
-                        description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+
+                        done(err);
+                    });
+
+                } else {
+
+                    // Store columnNames and firstRecords for latter call on dashboard pages
+                    if (!req.session.columns) req.session.columns = {};
+                    console.log(columns)
+                    // TODO: Do we need to save the columns for the additional datasource,
+                    // since it should be same as the master datasource???
+                    req.session.columns[description._id] = columns;
+                    description.raw_rowObjects_coercionScheme = {};
+
+                    for(var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        if (column.data_type !== 'String') {
+                            description.raw_rowObjects_coercionScheme[column.name] = {};
+                            if (column.operation === 'ToDate') {
+                                description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
+                                description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
+                            }
+                            description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+                        }
                     }
+
+                    // Upload datasource to AWS S3
+
+        
+                    if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
+
+                    var uploadToDataset = description._id;
+
+                    if (child) uploadToDataset = req.body.id;
+
+                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                        if (err) {
+                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
+                        }
+
+                        done(err);
+                    });
                 }
 
-                // Upload datasource to AWS S3
-
-    
-                if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
-
-                var uploadToDataset = description._id;
-
-                if (child) uploadToDataset = req.body.id;
-
-                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
-                    if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
-                    }
-
-                    done(err);
-                });
             });
         });
 
