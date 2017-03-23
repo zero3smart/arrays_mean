@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$log', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 
-        function($scope, $stateParams, $mdDialog, $state, $http, $window, $log, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans) {
+    .controller('BillingCtrl', ['$scope', '$stateParams', '$mdDialog', '$state', '$http', '$window', '$log', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'users', 'plans', 'datasets', 
+        function($scope, $stateParams, $mdDialog, $state, $http, $window, $log, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, users, plans, datasets) {
 
             $scope.users = users;
 
@@ -13,6 +13,43 @@ angular.module('arraysApp')
                     $scope.plan = getPlanFromPlans($stateParams.plan_code, $scope.plans);
                 }
             });
+
+            $scope.datasets = datasets;
+
+            $scope.editorUsers = [];
+
+            $scope.updateEditorUsers = function() {
+                if ($scope.$parent.team && $scope.$parent.team.subscription && $scope.$parent.team.subscription.quantity) {
+                    $scope.subscriptionQuantity = parseInt($scope.$parent.team.subscription.quantity);
+                } else {
+                    $scope.subscriptionQuantity = 0;
+                }
+
+                if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
+                    $scope.maxEditorsReached = false;
+                } else {
+
+                    // Only limit Editor users on subscription
+                    var editorUsers = [];
+                    angular.forEach($scope.users, function(user) {
+                        var editorMatched = false;
+
+                        angular.forEach($scope.datasets, function(dataset) {
+                            if (user._editors.indexOf(dataset._id) >= 0 && editorMatched === false) {
+                                editorUsers.push(user);
+                                editorMatched = true;
+                            }
+                        });
+                    });
+
+                    $scope.editorUsers = editorUsers;
+                    $scope.maxEditorsReached = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
+                }
+            };
+
+            $scope.updateEditorUsers();
+
+            console.log($scope.editorUsers);
 
             $scope.loaded = false;
 

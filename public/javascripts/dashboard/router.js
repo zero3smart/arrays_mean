@@ -67,10 +67,21 @@ angular.module('arraysApp')
                             },
                             users: ['User', 'AuthService', function(User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
-                                return User.getAll({teamId: currentTeam._id});
+                                return User.getAll({teamId: currentTeam._id}).$promise;
                             }],
                             plans: ['Plans', function (Plans) {
                                 return Plans.get();
+                            }],
+                            datasets: ['restrict', 'DatasetService', 'AuthService', '$q', function (restrict, DatasetService, AuthService, $q) {
+
+                                var user = AuthService.currentUser();
+
+                                var deferred = $q.defer();
+                                DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
+                                .then(function(data) {
+                                    deferred.resolve(data);
+                                });
+                                return deferred.promise;
                             }]
                         }
                     })
@@ -97,7 +108,10 @@ angular.module('arraysApp')
                             },
                             plans: ['Plans', function (Plans) {
                                 return Plans.get();
-                            }]
+                            }],
+                            datasets: function() {
+                                return {};
+                            }
                         }
                     })
                     .state('dashboard.account.upgradeEnterprise', {
@@ -110,7 +124,10 @@ angular.module('arraysApp')
                             },
                             plans: ['Plans', function (Plans) {
                                 return Plans.get();
-                            }]
+                            }],
+                            datasets: function() {
+                                return {};
+                            }
                         }
                     })
                     // .state('dashboard.account.close', {
@@ -128,7 +145,10 @@ angular.module('arraysApp')
                             },
                             plans: ['Plans', function (Plans) {
                                 return Plans.get();
-                            }]
+                            }],
+                            datasets: function() {
+                                return {};
+                            }
                         }
                     })
                     //

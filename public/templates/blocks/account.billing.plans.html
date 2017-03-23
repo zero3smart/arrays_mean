@@ -9,11 +9,11 @@
 
             <md-input-container>
                 <label>Number of Seats</label>
-                <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
-                <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
+                <input name="quantity" required type="number" min="{{ editorUsers.length + 1 }}" ng-min="{{ editorUsers.length + 1 }}" step="1" ng-model="newPlan.quantity" />
+                <div ng-messages="plans_form.quantity.$error" ng-if="editorUsers.length < 1">
                     <div ng-message="min">Must be greater than 0.</div>
                 </div>
-                <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
+                <div ng-messages="plans_form.quantity.$error" ng-if="editorUsers.length > 0">
                     <div ng-message="min">Cannot be less than the number of seats on your team.</div>
                 </div>
             </md-input-container>
@@ -60,7 +60,7 @@
                 </md-button>
             </div>
             <div ng-if="planItem.plan_code === plan.plan_code && (subscription.state === 'active' || subscription.state === 'canceled')" layout="row" layout-align="center center">
-                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid">
+                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid" aria-label="Update Plan">
                     <span ng-if="!plans_form.quantity.$dirty" class="btn-label">My Plan</span>
                     <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
                 </md-button>
