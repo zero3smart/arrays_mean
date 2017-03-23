@@ -43,12 +43,13 @@ angular.module('arraysApp')
                         name: "imageFilter",
                         fn: function(item,options) {
                             var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                            return '|jpg|png|jpeg|bmp|gif|svg+xml|'.indexOf(type) !== -1;
                         }
                     }]
                 });
 
                 _uploader.onAfterAddingFile = function(fileItem) {
+                    console.log("hi")
                     fileItem.uploadUrls = {};
                     fileItem.assetType = this.assetType;
 
@@ -144,7 +145,7 @@ angular.module('arraysApp')
             },
             isImage: function(file) {
                 var type =  '|' + file.type.slice(file.type.lastIndexOf('/') + 1) + '|';
-                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                return '|jpg|png|jpeg|bmp|gif|svg+xml|'.indexOf(type) !== -1;
             }
         };
 
