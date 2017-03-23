@@ -56,25 +56,23 @@ if (cluster.isMaster) {
 
 
     //job queue user interface
-    if (process.env.NODE_ENV !== 'production') {
-        var kue = require('kue');
-        var ui = require('kue-ui');
-            kue.createQueue({
-            redis: process.env.REDIS_URL
-        })
-        ui.setup({
-            apiURL: '/api',
-            baseURL: '/kue',
-            updateInterval: 5000
-        })
 
-        app.use('/api',kue.app);
-        app.use('/kui',ui.app);
+    // if (process.env.NODE_ENV == 'production') {
+    //     var kue = require('kue');
+    //     var ui = require('kue-ui');
+    //         kue.createQueue({
+    //         redis: process.env.REDIS_URL
+    //     })
+    //     ui.setup({
+    //         apiURL: '/api',
+    //         baseURL: '/kue',
+    //         updateInterval: 5000
+    //     })
 
-    }
+    //     app.use('/api',kue.app);
+    //     app.use('/kui',ui.app);
 
-
-
+    // }
 
     require('./config/setup-passport');
 

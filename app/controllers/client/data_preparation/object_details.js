@@ -276,8 +276,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id,askForPreview
                 //
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
-                    default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
+                    default_filterJSON = queryString.stringify("?" + dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
+
 
                 var i = source_pKey.indexOf('-');
 
