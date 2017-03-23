@@ -33,7 +33,7 @@
             </md-switch>
         </md-input-container>
 
-        <md-input-container ng-if="(dataset.author | isSuperAdmin)" class="md-block publish-settings">
+        <md-input-container ng-if="(dataset.author | isSuperAdmin) && env.node_env !== 'enterprise' " class="md-block publish-settings">
             <label style="margin-bottom: 15px" id="request-listing">List on arrays.co</label>
             <md-switch ng-model="showOnArraysCo"
                 ng-change="updateListingOnArrays(showOnArraysCo)"

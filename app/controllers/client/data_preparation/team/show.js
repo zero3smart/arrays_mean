@@ -27,11 +27,11 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
         if (dataSourceDescription.connection) {
 
-            var default_view = 'gallery';
+            var default_view = (default_customView) ? default_customView : 'gallery';
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
-
+ 
 
             var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
             var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
@@ -93,7 +93,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     default_view: default_view,
                     banner: dataSourceDescription.banner
                 };
-
 
                 cb(err, sourceDescription);
             });

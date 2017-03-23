@@ -175,7 +175,7 @@ team.GetTeamBySubdomain = function(req, fn) {
     function getPublishedDataset (cb) {
         var publishedImportedDataset = {isPublic:true,imported:true,fe_listed:true,fe_visible:true,
             firstImport:0};
-        var publishedConnectedDataset = {isPublic:true,fe_listed:true,fe_visible:true};
+        var publishedConnectedDataset = {isPublic:true,fe_listed:true,fe_visible:true, connection: {$ne:null}};
         getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true },
          { 'subscription.state': 'active' } ] }, {$or: [publishedImportedDataset,publishedConnectedDataset]},
           cb);
@@ -194,9 +194,8 @@ team.GetTeamBySubdomain = function(req, fn) {
                     }
                     userIsPartOfThisTeam = false;
                 }
-                var importedDataset = {imported: true, firstImport:0};
-                var connectedDataset = {imported: true, connection: {$ne: null}};
-
+                var importedDataset = {imported: true, firstImport:0, fe_listed: true};
+                var connectedDataset = {connection: {$ne: null}, firstImport:0, fe_listed: true};
 
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
@@ -280,7 +279,6 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                     }
 
                                 }
-
 
 
 

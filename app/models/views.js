@@ -10,6 +10,7 @@ var View_scheme = Schema({
 });
 
 var view = mongoose.model('View', View_scheme);
+var Team = require('./teams');
 
 
 view.getAllBuiltInViews = function(fn) {
@@ -28,10 +29,20 @@ view.getAllBuiltInViews = function(fn) {
 }
 
 view.getAllCustomViews = function(fn) {
+	var customViews = [];
+	Team.find({isEnterprise: true},{subdomain:1})
+	.exec(function(err,allEnterprise) {
+		if (allEnterprise) {
+			allEnterprise.map(function(team) {
+				customViews.push(team.subdomain);
+			})
+		}
+		fn(err,customViews);
 
-	var customViews = ["atlas","insight","rhodiumgroup"];
+	})
 
-	fn(null,customViews);
+	// var customViews = ["atlas","insight","rhodiumgroup"];
+	// fn(null,customViews);
 }
 
 module.exports = view;
