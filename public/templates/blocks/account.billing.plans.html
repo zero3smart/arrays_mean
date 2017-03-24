@@ -15,7 +15,7 @@
         <div flex="50" flex-xs="100">
 
             <h1>Plans</h1>
-
+            
         </div>
 
         <div flex="50" flex-xs="100">
@@ -24,6 +24,18 @@
                 <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
                 <md-radio-button value="1">Billed Monthly</md-radio-button>
             </md-radio-group>
+
+            <!-- This is needed for updating existing plans -->
+            <md-input-container ng-if="plan">
+                <label>Number of Users</label>
+                <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
+                <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
+                    <div ng-message="min">Must be greater than 0.</div>
+                </div>
+                <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
+                    <div ng-message="min">Cannot be less than the number of users on your team.</div>
+                </div>
+            </md-input-container>
 
         </div>
 
@@ -53,12 +65,12 @@
             </md-button>
         </div> -->
         <div ng-if="plan">
-            <div ng-if="planItem.plan_code != plan.plan_code || (subscription.state !== 'active' && subscription.state !== 'canceled')" layout="row" layout-align="center center">
+            <div ng-if="planItem.plan_code != plan.plan_code || (subscription.state !== 'active' && subscription.state !== 'canceled')" layout="row">
                 <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity, subscription.state)" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                     <span class="btn-label">Select This Plan</span>
                 </md-button>
             </div>
-            <div ng-if="planItem.plan_code === plan.plan_code && (subscription.state === 'active' || subscription.state === 'canceled')" layout="row" layout-align="center center">
+            <div ng-if="planItem.plan_code === plan.plan_code && (subscription.state === 'active' || subscription.state === 'canceled')" layout="row">
                 <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid">
                     <span ng-if="!plans_form.quantity.$dirty" class="btn-label">My Plan</span>
                     <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
