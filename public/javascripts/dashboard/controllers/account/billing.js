@@ -25,26 +25,29 @@ angular.module('arraysApp')
                     $scope.subscriptionQuantity = 0;
                 }
 
-                if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
-                    $scope.maxEditorsReached = false;
-                } else {
-
-                    // Only limit Editor users on subscription
-                    var editorUsers = [];
+                angular.forEach($scope.$parent.user.invited, function(invitedUser, key) {
                     angular.forEach($scope.users, function(user) {
-                        var editorMatched = false;
-
-                        angular.forEach($scope.datasets, function(dataset) {
-                            if (user._editors.indexOf(dataset._id) >= 0 && editorMatched === false) {
-                                editorUsers.push(user);
-                                editorMatched = true;
-                            }
-                        });
+                        if (key === user._id) {
+                            user._viewers = invitedUser._viewers;
+                            user._editors = invitedUser._editors;
+                        }
                     });
+                });
 
-                    $scope.editorUsers = editorUsers;
-                    $scope.maxEditorsReached = $scope.subscriptionQuantity > editorUsers.length + 1 ? false : true;
-                }
+                // Only limit Editor users on subscription
+                var editorUsers = [];
+                angular.forEach($scope.users, function(user) {
+                    var editorMatched = false;
+
+                    angular.forEach($scope.datasets, function(dataset) {
+                        if (user._editors.indexOf(dataset._id) >= 0 && editorMatched === false) {
+                            editorUsers.push(user);
+                            editorMatched = true;
+                        }
+                    });
+                });
+
+                $scope.editorUsers = editorUsers;
             };
 
             $scope.updateEditorUsers();
