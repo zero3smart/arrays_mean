@@ -5,22 +5,13 @@
 
     <div layout="row" layout-xs="column" layout-margin>
 
-        <div flex="33" flex-xs="100">
+        <div flex="50" flex-xs="100">
 
-            <md-input-container>
-                <label>Number of Users</label>
-                <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
-                <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
-                    <div ng-message="min">Must be greater than 0.</div>
-                </div>
-                <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
-                    <div ng-message="min">Cannot be less than the number of users on your team.</div>
-                </div>
-            </md-input-container>
+            <h1>Plans</h1>
 
         </div>
 
-        <div flex="66" flex-xs="100">
+        <div flex="50" flex-xs="100">
 
             <md-radio-group name="plan_interval_length" ng-model="newPlan.plan_interval_length">
                 <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
@@ -35,7 +26,7 @@
 
 <div layout-gt-sm="row" layout="column" layout-padding layout-wrap>
 
-    <div flex-gt-sm="33" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: newPlan.plan_interval_length } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
+    <div flex-gt-sm="50" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: newPlan.plan_interval_length } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
 
         <span class="md-headline">{{ planItem.name }}</span>
 
@@ -48,9 +39,9 @@
 
         <br />
         <br />
-        <div ng-if="!plan" layout="row" layout-align="center center">
+        <div ng-if="!plan" layout="row">
             <md-button ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: newPlan.quantity })" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
-                <span class="btn-label">Start Free Trial</span>
+                <span class="btn-label">Start Plan</span>
             </md-button>
         </div>
         <div ng-if="plan">
@@ -76,7 +67,7 @@
 
     </div>
 
-    <div flex-gt-sm="33" flex>
+    <div flex-gt-sm="100" flex>
 
         <span class="md-headline">Arrays Enterprise</span>
 
@@ -86,7 +77,7 @@
 
         <br />
         <br />
-        <div layout="row" layout-align="center center">
+        <div layout="row">
             <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
                 <span class="btn-label">Contact Us</span>
             </md-button>
