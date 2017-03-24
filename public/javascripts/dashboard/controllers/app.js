@@ -154,20 +154,27 @@ angular
             }
 
 
-            /**
-             * Start Intercom support widget
-             */
-            window.Intercom('boot', {
+            var options = {
                 app_id: $scope.env.intercomAppId,
                 name: $scope.user.firstName + ' ' + $scope.user.lastName, // Full name
                 email: $scope.user.email, // Email address
                 created_at: new Date($scope.user.createdAt).getTime() / 1000, // Signup date as a Unix timestamp
-                company: $scope.user.defaultLoginTeam ? {
+                company:  {
                     id: $scope.user.defaultLoginTeam._id,
                     name: $scope.user.defaultLoginTeam.title,
                     created_at: new Date($scope.user.defaultLoginTeam.createdAt).getTime() / 1000,
                     plan: $scope.user.defaultLoginTeam.subscription ? $scope.user.defaultLoginTeam.subscription.plan.plan_code : ''
-                } : {}
-            });
+                },
+                "Team Title": $scope.user.defaultLoginTeam.title, // String
+                "Subdomain": $scope.user.defaultLoginTeam.subdomain, // String
+                "Sample Viz Created": $scope.user.sampleImported, // Boolean
+            };
+            // console.log(options);
+            // console.log('-------$scope.user---------')
+            // console.log($scope.user);
+            /**
+             * Start Intercom support widget
+             */
+            window.Intercom('boot', options);
 
         }]);

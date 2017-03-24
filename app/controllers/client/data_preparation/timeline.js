@@ -476,10 +476,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     User.findById(req.user)
                         .populate('defaultLoginTeam')
                         .exec(function(err, doc) {
-                            if (err) {
-                                console.log("error finding user");
-                                return done(err);
-                            }
+                            if (err) return done(err);
                             user = doc;
                             done();
                         });

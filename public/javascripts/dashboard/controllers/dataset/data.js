@@ -23,6 +23,10 @@ angular.module('arraysApp')
                     }
                 }
             }
+            // save the sample dataset image field - will check the final dataset image field against this one and only initiate image scraping if it changes. Otherwise, we don't want a bunch of copies of the sample images.
+            if (dataset.sample) {
+                $scope.sampleImageField = dataset.fe_image.field;
+            }
 
             dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
 
@@ -106,7 +110,6 @@ angular.module('arraysApp')
 
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
             if (!dataset.fe_visible) {dataset.fe_visible = true;}
-
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.$parent.$parent.additionalDatasources = angular.copy(additionalDatasources);
 
@@ -278,21 +281,21 @@ angular.module('arraysApp')
                     });
             };
 
-            $scope.openImageScrapingDialog = function () {
+            // $scope.openImageScrapingDialog = function () {
 
-                var data = {
-                    dataset: $scope.$parent.$parent.dataset
-                };
+            //     var data = {
+            //         dataset: $scope.$parent.$parent.dataset
+            //     };
 
-                modalService.openDialog('imageScraping', data)
-                    .then(function (savedDataset){
-                        $scope.$parent.$parent.dataset = savedDataset;
-                        sortColumnsByDisplayOrder();
-                        $scope.vm.dataForm.$setDirty();
-                    }, function () {
-                        // console.log('You cancelled the image scraping dialog.');
-                    });
-            };
+            //     modalService.openDialog('imageScraping', data)
+            //         .then(function (savedDataset){
+            //             $scope.$parent.$parent.dataset = savedDataset;
+            //             sortColumnsByDisplayOrder();
+            //             $scope.vm.dataForm.$setDirty();
+            //         }, function () {
+            //             // console.log('You cancelled the image scraping dialog.');
+            //         });
+            // };
 
 
             $scope.openJoinDialog = function() {
@@ -421,7 +424,6 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
-
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
 
                 $scope.$parent.$parent.dataset.includeEmptyFields = $scope.dataset.includeEmptyFields;
@@ -430,7 +432,7 @@ angular.module('arraysApp')
                     $scope.data.fe_image.overwrite !== $scope.$parent.$parent.dataset.fe_image.overwrite) {
 
 
-                    if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field) {
+                    if ($scope.data.fe_image.field !== $scope.$parent.$parent.dataset.fe_image.field || $scope.data.fe_image.field == $scope.sampleImageField) {
                         $scope.data.fe_image.scraped = false;
                     }
                     if ($scope.data.fe_image.field !== '') {
@@ -446,7 +448,6 @@ angular.module('arraysApp')
                 }
 
                 $scope.$parent.$parent.dataset.fe_image = $scope.data.fe_image;
-
                 // TODO do this in process.js, not here?
                 // although both dataset and $parent.$parent.dataset are lost between states
                 if (dataset.firstImport == 2) $scope.$parent.$parent.dataset.firstImport = 3;
@@ -454,7 +455,6 @@ angular.module('arraysApp')
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
-
                 if (!dataset.columns) return;
 
                 $scope.data = {};
@@ -463,7 +463,7 @@ angular.module('arraysApp')
                 // and set objectTitle default as first field (below).
                 // In initial attempts, $scope.data.objectTitle was not being properly saved.
                 $scope.data.objectTitle = dataset.objectTitle;
-                $scope.data.fe_image = $scope.$parent.$parent.dataset.fe_image;
+                $scope.data.fe_image = angular.copy($scope.$parent.$parent.dataset.fe_image);
 
 
                 sortColumnsByDisplayOrder();
@@ -504,7 +504,6 @@ angular.module('arraysApp')
             $scope.overwriteDisabled = false;
 
             $scope.updateOverwrite = function() {
-
                 if ($scope.data.fe_image == null || $scope.data.fe_image.field == '' ) return;
 
                 if ($scope.data.fe_image.field !==  $scope.$parent.$parent.dataset.fe_image.field) {
@@ -520,8 +519,6 @@ angular.module('arraysApp')
 
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
-
-                // console.log($scope.$parent.$parent.dataset)
 
                 if (isValid) {
                     $scope.submitting = true;

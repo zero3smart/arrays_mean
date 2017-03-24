@@ -46,6 +46,9 @@ bower_components
 .bower-registry
 .bower-tmp
 
+##userFolder
+user/*
+
 
 ##userfolder
 user/*
@@ -111,6 +114,8 @@ Temporary Items
 ## csv files ##
 *.csv
 
+## userFolder
+user/*
 
 #dump
 dump/

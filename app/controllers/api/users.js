@@ -123,7 +123,8 @@ module.exports.get = function (req, res) {
                         invited: user.invited,
                         role: role,
                         defaultLoginTeam: user.defaultLoginTeam,
-                        createdAt: user.createdAt
+                        createdAt: user.createdAt,
+                        sampleImported: user.sampleImported
                     }
 
 
@@ -413,6 +414,13 @@ module.exports.save = function(req, res) {
     });
 };
 
+module.exports.sampleImported = function(req, res) {
+   User.findByIdAndUpdate(req.user,{$set: {sampleImported: req.body.sampleImported}})
+    .exec(function(err,result) {
+        if (err) return res.send(err);
+        return res.status(200).json(result);
+    })
+}
 
 module.exports.defaultLoginTeam = function(req,res) {
     var teamId = req.params.teamId;
