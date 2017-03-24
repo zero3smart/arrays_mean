@@ -18,9 +18,8 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
     router.get('/auth/ldap',passport.authenticate('saml'));
 
-
-
     router.post('/auth/ldap', function(req, res, next) {
+
         passport.authenticate('saml', function(err, user, info) {
 
             if (err) return next(err);
@@ -125,7 +124,6 @@ router.get('/',function(req,res) {
 
     teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
 
-
         if (teamDescriptions.length == 0) {
             var data = {
                 env: process.env,
@@ -134,7 +132,6 @@ router.get('/',function(req,res) {
                 }
 
             };
-
             return res.render('team/show', data);
         }
  

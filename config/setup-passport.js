@@ -104,9 +104,7 @@ if (process.env.NODE_ENV !== 'enterprise') {
                 if (!created && user && !user.active) return done(err, false, {message: 'This account is not active.'});
                 return done(err, user);
             })
-
          })
-
          passport.use(samlStrategy);
 
     }

@@ -187,6 +187,9 @@ team.GetTeamBySubdomain = function(req, fn) {
             .populate('_team')
             .populate('defaultLoginTeam')
             .exec(function(err, foundUser) {
+                if (err) return fn(err);
+                if (!foundUser) return  getPublishedDataset(fn);
+
                 for (var i = 0; i < foundUser._team.length; i++) {
                     if (team_key === foundUser._team[i].subdomain) {
                         userIsPartOfThisTeam = true;
@@ -197,8 +200,6 @@ team.GetTeamBySubdomain = function(req, fn) {
                 var importedDataset = {imported: true, firstImport:0, fe_listed: true};
                 var connectedDataset = {connection: {$ne: null}, firstImport:0, fe_listed: true};
 
-                if (err) return fn(err);
-                if (!foundUser) return  getPublishedDataset(fn);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key }, {$or:[connectedDataset,importedDataset] } , fn);
 
@@ -210,8 +211,6 @@ team.GetTeamBySubdomain = function(req, fn) {
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] },
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
-
-
 
                 } else if (userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser.defaultLoginTeam._id;
