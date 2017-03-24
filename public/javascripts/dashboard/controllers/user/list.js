@@ -77,7 +77,6 @@ angular
 
                 $scope.updateUserRolesOnTeam();
                 $scope.updatePrimaryActionAbility();
-                // $log.log(users);
             };
 
 
@@ -110,8 +109,18 @@ angular
             };
 
             $scope.updateUserRolesOnTeam = function() {
+                // Update roles on invited users
+                angular.forEach($scope.$parent.user.invited, function(invitedUser, key) {
+                    angular.forEach($scope.users, function(user) {
+                        if (key === user._id) {
+                            user._viewers = invitedUser._viewers;
+                            user._editors = invitedUser._editors;
+                        }
+                    });
+                });
+
                 angular.forEach($scope.users, function(user) {
-                    angular.forEach($scope.datasets, function(dataset) {
+                    angular.forEach($scope.datasets, function() {
                         user.role = '';
                     });
                     angular.forEach($scope.datasets, function(dataset) {
@@ -126,9 +135,6 @@ angular
                     });
                 });
             };
-
-            // $log.log(users);
-            // $log.log(datasets);
 
             $scope.primaryAction.do = function(ev) {
                 $scope.openUserDialog(ev, {});
@@ -207,6 +213,7 @@ angular
                         $scope.$parent.user.invited = object.user.invited;
                         $window.sessionStorage.setItem('user', JSON.stringify($scope.$parent.user));
                     }
+                    $scope.updateUserRolesOnTeam();
                 }, function(data) {
                     if (data && data.modalType == 'admin' && data.person) {
                         $scope.openAdminDialog(ev, data.person);
@@ -260,6 +267,7 @@ angular
                                     .hideDelay(3000)
                                 );
                                 $scope.users.push(selected);
+                                $scope.updateUserRolesOnTeam();
                                 $scope.updatePrimaryActionAbility();
                             }
                         }, function(err) {
@@ -313,7 +321,7 @@ angular
                                         $scope.$parent.$parent.user = AuthService.currentUser();
                                         $scope.$parent.$parent.teams = AuthService.allTeams();
 
-                                        $log.log($scope);
+                                        // $log.log($scope);
 
                                         $scope.users = User.getAll({ teamId: $scope.$parent.team._id });
                                         $mdToast.show(

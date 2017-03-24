@@ -26,7 +26,7 @@
                 <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
             </span>
 
-            <span flex>
+            <span ng-class="{'pending': user.invited[person._id]}" flex>
                 <span ng-if="person.role" flex>{{ person.role }}</span>
             </span>
 

@@ -50,20 +50,20 @@ module.exports.checkPw = function(req,res) {
     })
 }
 
-module.exports.getAll = function(req,res) {
+module.exports.getAll = function(req, res) {
     if (!req.user) {
-        res.status(401).send({error: 'unauthorized'});
+        res.status(401).send({ error: 'unauthorized' });
     }
     var teamId = req.params.teamId;
-    User.find({_team: teamId, _id:{$ne: req.user}})
-    .exec(function(err,allOtherUsers) {
-        if (err) {
-            res.send(err);
-        } else {
-            res.json(allOtherUsers);
-        }
-    })
-}
+    User.find({ _team: teamId, _id: { $ne: req.user } })
+        .exec(function(err, allOtherUsers) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(allOtherUsers);
+            }
+        });
+};
 
 module.exports.get = function (req, res) {
 
