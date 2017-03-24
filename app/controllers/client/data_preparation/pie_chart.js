@@ -306,8 +306,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
-             
-
                 //
                 var data =
                 {

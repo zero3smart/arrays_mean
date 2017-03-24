@@ -97,12 +97,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
            
-            var aggregateBy = urlQuery.aggregateBy? urlQuery.aggregateBy : dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            console.log(defaultAggregateByColumnName_humanReadable)
 
-            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
@@ -170,7 +171,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     var doneFn = function(err, _coordDocs) {
                         if (err) return done(err);
-                        coordRadiusValue = aggregateBy;
+                        coordRadiusValue = aggregateBy_realColumnName;
                         var coordValue;
                         var clustering = require('density-clustering');
                         var dbscan = new clustering.DBSCAN();
