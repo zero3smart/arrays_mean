@@ -18,14 +18,18 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
     router.get('/auth/ldap',passport.authenticate('saml'));
 
-    router.post('/auth/ldap',function(req,res,next) {
-        res.redirect('https://google.com');
-        // passport.authenticate('saml',function(err,user,info) {
-        //     console.log(err);
-        //     console.log(user);
-
-        // })
+    router.post('/auth/ldap',passport.authenticate('saml'),function(req,res){
+         res.redirect('https://google.com');
     })
+
+    // router.post('/auth/ldap',function(req,res,next) {
+    //     res.redirect('https://google.com');
+    //     // passport.authenticate('saml',function(err,user,info) {
+    //     //     console.log(err);
+    //     //     console.log(user);
+
+    //     // })
+    // })
 }
 
 //team page
