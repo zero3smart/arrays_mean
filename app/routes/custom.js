@@ -44,40 +44,11 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
 }
 
-//team page
-router.get('/',function(req,res) {
-
-    teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
-
-
-        if (teamDescriptions.length == 0) {
-            var data = {
-                env: process.env,
-                team: {
-                    title: process.env.subdomain
-                }
-
-            };
-
-            return res.render('team/show', data);
-        }
- 
-        if (err && err.message != 'No SubDomain Asked!') {
-            winston.error("❌  Error getting bind data during authorizing : ", err);
-            return res.status(500).send(err.response || 'Internal Server Error');
-        }
-    
-        team_show_controller.BindData(req, teamDescriptions[0], function (err, bindData) {
-            if (err) {
-                winston.error("❌  Error getting bind data for Team show: ", err);
-                return res.status(500).send(err.response || 'Internal Server Error');
-            }
-            return res.render('team/show', bindData);
-        });
-
+router.get('/signup/*', function(req, res) {
+    return res.render('signup/index',{
+        env: process.env
     });
-
-})
+});
 
 router.get('/dashboard',function(req,res) {
 
@@ -148,5 +119,41 @@ router.get('/:source_key/getData',ensureAuthorized,function(req,res) {
 
     })
 })
+
+//team page
+router.get('/',function(req,res) {
+
+    teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
+
+
+        if (teamDescriptions.length == 0) {
+            var data = {
+                env: process.env,
+                team: {
+                    title: process.env.subdomain
+                }
+
+            };
+
+            return res.render('team/show', data);
+        }
+ 
+        if (err && err.message != 'No SubDomain Asked!') {
+            winston.error("❌  Error getting bind data during authorizing : ", err);
+            return res.status(500).send(err.response || 'Internal Server Error');
+        }
+    
+        team_show_controller.BindData(req, teamDescriptions[0], function (err, bindData) {
+            if (err) {
+                winston.error("❌  Error getting bind data for Team show: ", err);
+                return res.status(500).send(err.response || 'Internal Server Error');
+            }
+            return res.render('team/show', bindData);
+        });
+
+    });
+
+})
+
 
 module.exports = router;
