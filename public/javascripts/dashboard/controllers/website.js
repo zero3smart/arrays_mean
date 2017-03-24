@@ -49,7 +49,6 @@ angular.module('arraysApp')
                 });
 
                 _uploader.onAfterAddingFile = function(fileItem) {
-                    console.log("hi")
                     fileItem.uploadUrls = {};
                     fileItem.assetType = this.assetType;
 

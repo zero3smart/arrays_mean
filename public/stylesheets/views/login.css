@@ -36,15 +36,16 @@
 .socialButtons .btn-facebook {background: #3b5998;}
 .socialButtons .btn-twitter {background: #00aced;}
 .socialButtons .btn-google {background: #c32f10;}
+.socialButtons .btn-custom {background: #feb600;}
 
 .socialButtons .btn-facebook:focus {color:white;}
 .socialButtons .btn-twitter:focus {color:white;}
 .socialButtons .btn-google:focus {color:white;}
+.socialButtons .btn-custom:focus {color:white;}
 
 #login-modal .input-group {
     margin-top:10px;
     margin-bottom: 10px;
-
 }
 
 #login-modal .modal-dialog {

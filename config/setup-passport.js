@@ -37,7 +37,8 @@ passport.use(localStrategy);
 
 
 
-var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
+var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://'
+baseURL += process.env.NODE_ENV == 'enterprise' ? '' : 'app.'
 baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 // once we switch from private beta to public beta remove this and the conditional
@@ -76,7 +77,32 @@ if (process.env.NODE_ENV !== 'enterprise') {
     passport.use(googleStrategy);
 
 
+} else {
+    if (process.env.AUTH_PROTOCOL == 'LDAP') {
+         var SamlStrategy = require('passport-saml').Strategy;
+         var configPath = '../user/' + (process.env.subdomain) + '/src/config.json';
+         var authConfig = require(configPath);
+
+         var samlStrategy = new SamlStrategy({
+            issuer: baseURL,
+            path: baseURL + '/auth/ldap/callback',
+            entryPoint: authConfig.auth.entryPoint,
+            cert: authConfig.auth.cert
+         },function(profile,done) {
+            console.log("profile returned:: ");
+            console.log(profile);
+            if (!profile.email) {
+                return done(new Error("No email found"),null);
+            } 
+
+
+         })
+
+         passport.use(samlStrategy);
+
+    }
 }
+
 
 
 
