@@ -14,6 +14,19 @@ router.get('/static/*', function(req,res) {
     res.sendFile(customStaticFileLocation);
 });
 
+if (process.env.AUTH_PROTOCOL == 'LDAP') {
+    
+    router.get('/ldap',passport.authenticate('saml'));
+
+    router.post('/ldap/callback',function(req,res,next) {
+        passport.authenticate('saml',function(err,user,info) {
+            console.log(err);
+            console.log(user);
+
+        })
+    })
+}
+
 //team page
 router.get('/',function(req,res) {
 

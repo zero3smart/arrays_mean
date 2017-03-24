@@ -81,20 +81,7 @@ if (process.env.NODE_ENV !== 'enterprise') {
         })(req, res, next);
     });
 
-} else {
-    if (process.env.AUTH_PROTOCOL == 'LDAP') {
-        router.get('/ldap',passport.authenticate('saml'));
-
-        router.post('/ldap/callback',function(req,res,next) {
-            passport.authenticate('saml',function(err,user,info) {
-                console.log(err);
-                console.log(user);
-
-            })
-        })
-    }
-}
-
+} 
 
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
