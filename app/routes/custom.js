@@ -18,14 +18,10 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
     router.get('/auth/ldap',passport.authenticate('saml'));
 
-    router.post('/auth/ldap',passport.authenticate('saml'),function(req,res){
-         res.redirect('https://google.com');
-    })
-
 
 
     router.post('/auth/ldap', function(req, res, next) {
-        passport.authenticate('google', function(err, user, info) {
+        passport.authenticate('saml', function(err, user, info) {
 
             if (err) return next(err);
             if (!user) {
