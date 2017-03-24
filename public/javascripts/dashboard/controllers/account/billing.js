@@ -14,8 +14,13 @@ angular.module('arraysApp')
                 }
             });
 
+            // if subscription state isn't set, the trial hasn't begun
             if(!$scope.plan) {
-                $scope.plan = $scope.$parent.team.subscription
+                if (Object.keys($scope.$parent.team.subscription.state).length < 1) {
+                    $scope.plan = undefined;
+                } else {
+                    $scope.plan = $scope.$parent.team.subscription
+                }
             }
 
             $scope.loaded = false;

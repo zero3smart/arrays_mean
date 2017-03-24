@@ -3,7 +3,6 @@
 
 <form name="plans_form" novalidate class="plans-form">
     <div ng-if="!plan" layout="row">
-        <!-- {{plans[0]}} -->
         <md-button ng-click="startTrialSubscription()" class="md-dashboard md-button-wide" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                 <span class="btn-label">Start Your 30-Day Free Trial</span>
             </md-button>
