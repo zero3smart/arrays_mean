@@ -1,7 +1,14 @@
 <h2 ng-if="plan && subscription.state !== 'expired'">Change Plans</h2>
 <h2 ng-if="plan && subscription.state === 'expired'">Start New Subscription</h2>
 
-<form name="plans_form" novalidate>
+<form name="plans_form" novalidate class="plans-form">
+
+    <div ng-if="!plan" layout="row">
+        <!-- {{plans[0]}} -->
+        <md-button ui-sref="dashboard.account.payment({ plan_code: plans[0].plan_code, quantity: newPlan.quantity })" class="md-dashboard md-button-wide" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
+                <span class="btn-label">Start Your 30-Day Free Trial</span>
+            </md-button>
+    </div>
 
     <div layout="row" layout-xs="column" layout-margin>
 
@@ -37,13 +44,14 @@
         <div ng-if="planItem.plan_interval_length._ === '1'">Billed monthly</div>
         <div ng-if="planItem.plan_interval_length._ === '12'">Billed annually</div>
 
-        <br />
+        <!-- Commenting out Start Plan Button until implemented of trial w/o billing info -->
+      <!--   <br />
         <br />
         <div ng-if="!plan" layout="row">
             <md-button ui-sref="dashboard.account.payment({ plan_code: planItem.plan_code, quantity: newPlan.quantity })" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                 <span class="btn-label">Start Plan</span>
             </md-button>
-        </div>
+        </div> -->
         <div ng-if="plan">
             <div ng-if="planItem.plan_code != plan.plan_code || (subscription.state !== 'active' && subscription.state !== 'canceled')" layout="row" layout-align="center center">
                 <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity, subscription.state)" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
@@ -60,29 +68,27 @@
         <div ng-if="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 ">
             <span class="md-caption">Reduce Users to 1 to select this plan</span>
         </div>
-        <br />
-        <br />
 
         <div style="white-space: pre-wrap;">{{ planItem.description }}</div>
-
+        <br>
     </div>
 
     <div flex-gt-sm="100" flex>
+        <md-divider></md-divider>
+        <br>
 
         <span class="md-headline">Arrays Enterprise</span>
 
-        <div class="md-display-2">&nbsp;</div>
+        <!-- <div class="md-display-2">&nbsp;</div> -->
 
         <div>Contact us for pricing info. Nonprofit rates available.</div>
 
-        <br />
         <br />
         <div layout="row">
             <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
                 <span class="btn-label">Contact Us</span>
             </md-button>
         </div>
-        <br />
 
         <div style="white-space: pre-wrap;">
 For organizations and institutions that want maximum customization, security, and support.
