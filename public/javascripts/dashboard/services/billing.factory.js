@@ -32,5 +32,8 @@
         })
         .factory('Adjustments', function($resource) {
             return $resource('api/billing/adjustments/:adjustmentId', null, {});
-        });
+        })
+        .factory('Trials', function($resource) {
+            return $resource('api/billing/trial', null, {})
+        })
 })();
