@@ -294,7 +294,6 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                     uuid: subscription.uuid
 
                                 };
-                                console.log(team.subscription)
 
                             } else {
                                 team.subscription = {};

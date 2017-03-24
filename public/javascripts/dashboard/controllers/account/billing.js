@@ -14,6 +14,10 @@ angular.module('arraysApp')
                 }
             });
 
+            if(!$scope.plan) {
+                $scope.plan = $scope.$parent.team.subscription
+            }
+
             $scope.loaded = false;
 
             $scope.errors = {};
@@ -45,6 +49,7 @@ angular.module('arraysApp')
                 quantity: 1,
                 plan_interval_length: '12'
             };
+            console.log($scope.newPlan)
 
             // Which cards to validated against in the CC input
             $scope.cardsAccepted = [
@@ -278,18 +283,27 @@ angular.module('arraysApp')
             };
 
             $scope.updateBillingInfo = function(plan_code, quantity) {
-                console.log(plan_code)
-                console.log(quantity)
-                console.log($scope.billing)
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
-                    $log.log(res);
+                    // $log.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
 
                         // If adding billing for first time, create subscription
                         if (plan_code) {
-                            $scope.startTrialSubscription(plan_code, quantity);
+                            startSubscription(plan_code, quantity, function() {
+                                $mdToast.show(
+                                    $mdToast.simple()
+                                    .textContent('Subscription started')
+                                    .action('Ok')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                                );
+
+                                $mdDialog.hide();
+                            });
+                            
+                            $state.go('dashboard.account.billing');
                         } else {
                             $mdToast.show(
                                 $mdToast.simple()
@@ -377,9 +391,7 @@ angular.module('arraysApp')
             $scope.startTrialSubscription = function() {
                 Trials.save()
                 .$promise.then(function (res) {
-                    console.log(res)
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        console.log(res.data)
                         if ($scope.$parent.team.subscription) {
                             $scope.$parent.team.subscription.state = res.data.subscription.state;
                             $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
@@ -390,6 +402,7 @@ angular.module('arraysApp')
                             };
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+                        $scope.plan = res.data.subscription
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -443,7 +456,7 @@ angular.module('arraysApp')
             var startSubscription = function(plan_code, quantity, callback) {
                 Subscriptions.save({ 'plan_code': plan_code, 'quantity': quantity, 'skipTrial': true })
                 .$promise.then(function(res) {
-                    // $log.log(res.data);
+                    // $log.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
@@ -468,22 +481,32 @@ angular.module('arraysApp')
 
             //Update subscription plan
             var updateSubscription = function(subscrId, plan_code, quantity, callback) {
-
-                Subscriptions.update({ subscrId: subscrId }, {
-                    quantity: quantity,
-                    plan_code: plan_code
-                })
-                .$promise.then(function(res) {
-                    // $log.log(res.data);
-
-                    $scope.$parent.team.subscription.state = res.data.subscription.state;
-                    $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
-                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
-
-                    getSubscriptions(function() {
-                        return callback();
+                // if we just faked an account for them & therefore don't actually have a subscription
+                if (!subscrId) {
+                    $state.transitionTo('dashboard.account.payment', {plan_code: plan_code, quantity: quantity}, {
+                        reload: true,
+                        inherit: false
+                        // notify: true
                     });
-                });
+                    return callback();
+                } else {
+                    Subscriptions.update({ subscrId: subscrId }, {
+                        quantity: quantity,
+                        plan_code: plan_code
+                    })
+                    .$promise.then(function(res) {
+                        // $log.log(res);
+
+                        $scope.$parent.team.subscription.state = res.data.subscription.state;
+                        $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        getSubscriptions(function() {
+                            return callback();
+                        });
+                    });
+                }
+
             };
 
             $scope.cancelSubscription = function() {
