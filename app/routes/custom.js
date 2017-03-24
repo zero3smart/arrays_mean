@@ -22,14 +22,30 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
          res.redirect('https://google.com');
     })
 
-    // router.post('/auth/ldap',function(req,res,next) {
-    //     res.redirect('https://google.com');
-    //     // passport.authenticate('saml',function(err,user,info) {
-    //     //     console.log(err);
-    //     //     console.log(user);
 
-    //     // })
-    // })
+
+    router.post('/auth/ldap', function(req, res, next) {
+        passport.authenticate('google', function(err, user, info) {
+
+            if (err) return next(err);
+            if (!user) {
+                return res.redirect('/auth/login')
+            } else {
+                if (!user._team || user._team.length === 0) {
+                    return res.redirect('/signup/info/' + user._id);
+
+                } else {
+
+                    req.logIn(user, function(err) {
+                        if (err) return next(err);
+                        return res.redirect(req.session.returnTo || '/dashboard');
+                    });
+                }
+            }
+        })(req, res, next);
+    });
+
+
 }
 
 //team page

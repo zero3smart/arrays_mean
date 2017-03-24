@@ -79,22 +79,31 @@ if (process.env.NODE_ENV !== 'enterprise') {
 
 } else {
     if (process.env.AUTH_PROTOCOL == 'LDAP') {
+
          var SamlStrategy = require('passport-saml').Strategy;
          var configPath = '../user/' + (process.env.subdomain) + '/src/config.json';
          var authConfig = require(configPath);
 
          var samlStrategy = new SamlStrategy({
-            issuer: baseURL,
-            path: baseURL + '/auth/ldap/callback',
+            issuer: baseURL, //can ignore?
+            path: baseURL + '/auth/ldap/callback', // can ignore?
             entryPoint: authConfig.auth.entryPoint,
             cert: authConfig.auth.cert
          },function(profile,done) {
-            console.log("profile returned:: ");
-            console.log(profile);
             if (!profile.email) {
-                return done(new Error("No email found"),null);
+                return done(new Error("No email found"),{message: 'No email found'});
             } 
-
+            var findQuery = {email: profile.email};
+            var insertQuery = {
+                email: profile.email,
+                provider: 'ldap',
+                firstName: profile.firstName,
+                lastName: profile.lastName
+            };
+            User.findOrCreate(findQuery,insertQuery,function(err,user,created) {
+                if (!created && user && !user.active) return done(err, false, {message: 'This account is not active.'});
+                return done(err, user);
+            })
 
          })
 
