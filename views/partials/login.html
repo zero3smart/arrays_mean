@@ -22,7 +22,7 @@
 
              {% set error = flash.error | first %}
              <div class="alert alert-danger">
-                {% if error.message== "activation pending"%}
+                {% if error.message== "Activation pending."%}
                     Your account has not been activated.
                     <a class="alert-link pointer" href="{{error.link}}">Resend the activaton email</a>.
                 {% else %}
