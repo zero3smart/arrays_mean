@@ -198,6 +198,7 @@ team.GetTeamBySubdomain = function(req, fn) {
                 var connectedDataset = {connection: {$ne: null}, firstImport:0, fe_listed: true};
 
                 if (err) return fn(err);
+                if (!foundUser) return  getPublishedDataset(fn);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key }, {$or:[connectedDataset,importedDataset] } , fn);
 
