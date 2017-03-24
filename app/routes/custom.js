@@ -18,7 +18,9 @@ if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
     router.get('/auth/ldap',passport.authenticate('saml'));
 
-    router.post('/auth/ldap/callback',function(req,res,next) {
+    router.post('/auth/ldap',function(req,res,next) {
+        console.log("first layer");
+        
         passport.authenticate('saml',function(err,user,info) {
             console.log(err);
             console.log(user);
