@@ -378,6 +378,31 @@ angular.module('arraysApp')
                 Trials.save()
                 .$promise.then(function (res) {
                     console.log(res)
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        console.log(res.data)
+                        if ($scope.$parent.team.subscription) {
+                            $scope.$parent.team.subscription.state = res.data.subscription.state;
+                            $scope.$parent.team.subscription.quantity = res.data.subscription.quantity._;
+                        } else {
+                            $scope.$parent.team.subscription = {
+                                state: res.data.subscription.state,
+                                quantity: res.data.subscription.quantity._
+                            };
+                        }
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                            .textContent('Subscription started')
+                            .action('Ok')
+                            .position('top right')
+                            .hideDelay(3000)
+                        );
+
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // $log.log(res.data);
+                    }
                 })
             }
 
