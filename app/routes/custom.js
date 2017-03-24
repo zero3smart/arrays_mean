@@ -6,7 +6,7 @@ var path = require('path');
 var ensureAuthorized = require('../libs/middleware/ensure-authorized').ensureAuthorized;
 var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
-
+var passport = require('passport');
 
 //serving static file
 router.get('/static/*', function(req,res) {
@@ -15,7 +15,7 @@ router.get('/static/*', function(req,res) {
 });
 
 if (process.env.AUTH_PROTOCOL == 'LDAP') {
-    
+
     router.get('/ldap',passport.authenticate('saml'));
 
     router.post('/ldap/callback',function(req,res,next) {
