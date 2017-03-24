@@ -35,8 +35,7 @@ angular.module('arraysApp')
                 year: d.getFullYear(),
 
                 country: 'US',
-                // was checking 
-                account_type: 'trial'
+                account_type: 'checking'
             };
 
             $scope.subscription = {
@@ -49,7 +48,6 @@ angular.module('arraysApp')
                 quantity: 1,
                 plan_interval_length: '12'
             };
-            console.log($scope.newPlan)
 
             // Which cards to validated against in the CC input
             $scope.cardsAccepted = [
@@ -244,11 +242,7 @@ angular.module('arraysApp')
                 };
 
                 $scope.updateSubscription = function(plan_code, quantity) {
-                    // $log.log(plan_code);
-                    // $log.log(quantity);
-
                     var subscrId = $scope.subscription.uuid;
-                    console.log(plan_code)
                     updateSubscription(subscrId, plan_code, quantity, function() {
                         $mdToast.show(
                             $mdToast.simple()
@@ -302,7 +296,7 @@ angular.module('arraysApp')
 
                                 $mdDialog.hide();
                             });
-                            
+
                             $state.go('dashboard.account.billing');
                         } else {
                             $mdToast.show(
