@@ -256,7 +256,6 @@ angular
                         selected.defaultLoginTeam = $scope.team._id;
                     }
 
-
                     AuthService.inviteUser(selected)
                         .then(function(response) {
                             if (response.status == 200) {
@@ -379,10 +378,11 @@ angular
 
                 $scope.saveUser = function() {
 
+                    $scope.bindUserRolesToSelectedUser(selectedUser);
+                    $scope.updateUserRoles(selectedUser);
+
                     selectedUser.$save(function(savedUser) {
                         if (savedUser) {
-                            $scope.bindUserRolesToSelectedUser(selectedUser);
-                            $scope.updateUserRoles(selectedUser);
 
                             $mdToast.show(
                                 $mdToast.simple()
