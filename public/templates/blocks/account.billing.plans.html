@@ -14,6 +14,7 @@
 
         <div flex="50" flex-xs="100">
 
+
             <h1>Plans</h1>
             
         </div>
@@ -30,10 +31,11 @@
                 <label>Number of Users</label>
                 <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
                 <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
+
                     <div ng-message="min">Must be greater than 0.</div>
                 </div>
-                <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
-                    <div ng-message="min">Cannot be less than the number of users on your team.</div>
+                <div ng-messages="plans_form.quantity.$error" ng-if="editorUsers.length > 0">
+                    <div ng-message="min">Cannot be less than the number of Editors on your team.</div>
                 </div>
             </md-input-container>
 
@@ -50,7 +52,7 @@
         <span class="md-headline">{{ planItem.name }}</span>
 
         <div class="md-display-2">{{ planItem.unit_amount_in_cents.USD._ / 100 / planItem.plan_interval_length._ | currency : $ : 0 }}</div>
-        <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per user, per month</strong></div>
+        <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per seat, per month</strong></div>
         <div ng-if="planItem.display_quantity._ === 'false'"><strong>Per month</strong></div>
 
         <div ng-if="planItem.plan_interval_length._ === '1'">Billed monthly</div>
@@ -70,15 +72,17 @@
                     <span class="btn-label">Select This Plan</span>
                 </md-button>
             </div>
+
             <div ng-if="planItem.plan_code === plan.plan_code && (subscription.state === 'active' || subscription.state === 'canceled')" layout="row">
                 <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid">
+
                     <span ng-if="!plans_form.quantity.$dirty" class="btn-label">My Plan</span>
                     <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
                 </md-button>
             </div>
         </div>
         <div ng-if="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 ">
-            <span class="md-caption">Reduce Users to 1 to select this plan</span>
+            <span class="md-caption">Reduce Seats to 1 to select this plan</span>
         </div>
 
         <div style="white-space: pre-wrap;">{{ planItem.description }}</div>

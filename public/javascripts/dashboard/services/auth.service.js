@@ -308,14 +308,14 @@
 
 
 
-        var inviteUser = function (newUser) {
-            return $http.post('/api/admin/invite', newUser)
-        }
+        var inviteUser = function(newUser) {
+            return $http.post('/api/admin/invite', newUser);
+        };
 
         var resendInvite = function(id) {
             var currentUserId = currentUser()._id;
-            return $http.get('/api/user/' + currentUserId + '/resend?Invitee=' + id) 
-        }
+            return $http.get('/api/user/' + currentUserId + '/resend?Invitee=' + id);
+        };
 
 
 
