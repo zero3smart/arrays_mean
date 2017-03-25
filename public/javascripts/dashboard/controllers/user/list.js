@@ -214,6 +214,7 @@ angular
                         $window.sessionStorage.setItem('user', JSON.stringify($scope.$parent.user));
                     }
                     $scope.updateUserRolesOnTeam();
+                    $scope.updatePrimaryActionAbility();
                 }, function(data) {
                     if (data && data.modalType == 'admin' && data.person) {
                         $scope.openAdminDialog(ev, data.person);
