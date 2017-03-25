@@ -4,9 +4,6 @@ var bucket = process.env.AWS_S3_BUCKET;
 var fs = require('fs');
 var s3 = new aws.S3();
 
-
-
-
 function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, datasetId, cb) {
 
     var file = fs.createReadStream(filePath);

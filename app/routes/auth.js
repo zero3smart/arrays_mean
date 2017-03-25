@@ -5,11 +5,6 @@ var jwt = require('jsonwebtoken');
 var User = require('../models/users');
 var Team = require('../models/teams');
 
-router.get('/google', passport.authenticate('google', {
-    scope: ['https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email']
-}));
-
 var Recurly = require('node-recurly');
 var recurlyConfig = {
     API_KEY: process.env.RECURLY_API_KEY ? process.env.RECURLY_API_KEY : null,
@@ -46,46 +41,51 @@ var updateSubscriptionInfo = function(user, callback) {
     });
 };
 
-router.get('/google/callback', function(req, res, next) {
-    passport.authenticate('google', function(err, user, info) {
+if (process.env.NODE_ENV !== 'enterprise') {
 
-        if (err) return next(err);
-        // once we switch from private beta to public beta remove the signup redirect and the betaProduction conditional
-        if (!user && info.betaProduction) {
-            return res.redirect('https://www.arrays.co/signup');
-        } else if (!user) {
-            return res.redirect('/auth/login')
-        } else {
-            if (!user._team || user._team.length === 0) {
-                return res.redirect('/signup/info/' + user._id);
+    router.get('/google', passport.authenticate('google', {
+        scope: ['https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email']
+    }));
 
+
+    router.get('/google/callback', function(req, res, next) {
+        passport.authenticate('google', function(err, user, info) {
+
+            if (err) return next(err);
+            // once we switch from private beta to public beta remove the signup redirect and the betaProduction conditional
+            if (!user && info.betaProduction) {
+                return res.redirect('https://www.arrays.co/signup');
+            } else if (!user) {
+                return res.redirect('/auth/login')
             } else {
+                if (!user._team || user._team.length === 0) {
+                    return res.redirect('/signup/info/' + user._id);
 
-                req.logIn(user, function(err) {
-                    if (err) return next(err);
+                } else {
 
-                    
-                    // Update subscription info from Recurly
-                    updateSubscriptionInfo(user, function(err) {
+                    req.logIn(user, function(err) {
                         if (err) return next(err);
 
-                        return res.redirect(req.session.returnTo || '/dashboard');
+                        
+                        // Update subscription info from Recurly
+                        updateSubscriptionInfo(user, function(err) {
+                            if (err) return next(err);
+
+                            return res.redirect(req.session.returnTo || '/dashboard');
+                        });
+                        
                     });
-                    
-                });
+                }
             }
-        }
-    })(req, res, next);
-});
+        })(req, res, next);
+    });
 
-
-
-
+} 
 
 router.post('/login', function(req, res, next) {
+    
     passport.authenticate('local', function(err, user, info) {
-
-
 
         if (err) return next(err);
         if (!user) {

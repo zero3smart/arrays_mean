@@ -34,7 +34,8 @@ angular.module('arraysApp')
             // NOTE dashboard.dataset.process also contains logic
             // to progress or not based on firstImport
             var _nextTab = function() {
-                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 'dashboard.dataset.views';
+                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 
+                ($scope.team.isEnterprise ) ? 'dashboard.dataset.settings' : 'dashboard.dataset.views';
                 $state.transitionTo(nextState, {id: dataset._id}, {
                     reload: true,
                     inherit: false,
@@ -42,7 +43,8 @@ angular.module('arraysApp')
                 });
             };
             var _viewViz = function() {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                var url = ($scope.team.isEnterprise) ? viewUrlService.getViewUrl($scope.subdomain, dataset, $scope.team.subdomain, false) :
+                viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
                 $window.open(url, '_blank');
             };
 
@@ -53,7 +55,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.discardChangesThisView = angular.noop;
 
             /** If object to exclude fields from object detail doesn't exist, make it. Include all (false) by default */
-            if(!dataset.fe_excludeFieldsObjDetail) {
+            if(!dataset.fe_excludeFieldsObjDetail && !$scope.team.isEnterprise) {
                 dataset.fe_excludeFieldsObjDetail = {};
                 for (i = 0; i < dataset.columns.length; i++) {
                     dataset.fe_excludeFieldsObjDetail[dataset.columns[i].name] = false;
@@ -65,8 +67,10 @@ angular.module('arraysApp')
                 if (validity !== undefined) {
 
                     $scope.formValidity = validity;
-                    // TODO check this connection logic
-                    if (dataset.connection) {
+
+        
+                    if (dataset.connection || $scope.team.isEnterprise == true) {
+
                         $scope.primaryAction.disabled = false;
                     } else {
                         $scope.primaryAction.disabled = !validity;
@@ -78,6 +82,7 @@ angular.module('arraysApp')
             $scope.$watch('submitting', function(sub) {
                 $scope.primaryAction.disabled = (sub == true);
             });
+
 
 
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
@@ -98,6 +103,7 @@ angular.module('arraysApp')
                 $scope.secondaryAction.disabled = !dirty;
                 if (dirty && dataset.imported) $scope.secondaryAction.text = 'Revert';
                 else $scope.secondaryAction.text = null;
+
             });
 
             $scope.tutorial.message = 'Here you can set the title for each item and edit fields and filters.';
@@ -173,6 +179,8 @@ angular.module('arraysApp')
                     .then(function(savedDataset) {
                         joinDataCols = savedDataset.joinCols;
                         delete savedDataset.joinCols;
+                        $scope.vm.dataForm.$setDirty();
+
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.loadJoinCols();
                     });
@@ -542,6 +550,8 @@ angular.module('arraysApp')
                     var queue = [];
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+
+
                     delete finalizedDataset.columns;
 
                     queue.push(DatasetService.save(finalizedDataset));

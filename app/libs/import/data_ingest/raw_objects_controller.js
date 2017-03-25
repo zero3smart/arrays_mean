@@ -75,16 +75,6 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
     
     job.log("🔁  Importing " + fileType + " \"" + title + "\"");
 
-    var filepath;
-
-    var readFromlocal = false;
-    
-    //To BE modified to match the new version
-    // if (process.env.READ_FILE_FROM && process.env.READ_FILE_FROM == 'local') {
-    //      var path_prefix = __dirname + "/../../user/"  + description._team.subdomain + '/data';
-    //      filepath = CSV_resources_path_prefix + "/" + importUID;
-    //      readFromlocal = true;
-    // }
 
     var raw_rowObjects_coercionScheme = description.raw_rowObjects_coercionScheme; // look up data type scheme here
     // var raw_rowObjects_mismatchScheme = description.raw_rowObjects_mismatchScheme;

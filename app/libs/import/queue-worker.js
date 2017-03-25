@@ -214,7 +214,7 @@ queue.worker.process('importProcessed',function(job,done) {
 
 
     batch.push(function(done) {
-        if (!hasSchema) { 
+        if (!hasSchema && !description._team.isEnterprise) { 
             var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(description._id).forThisDataSource_RawRowObject_model
             raw_row_objects_forThisDescription.count(function(err,numberOfDocs) {
                 if (err) return done(err);
