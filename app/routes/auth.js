@@ -25,7 +25,6 @@ var updateSubscriptionInfo = function(user, callback) {
     recurly.subscriptions.listByAccount(user.defaultLoginTeam.toString(), {}, function(err, response) {
 
         var subscription = { data: { subscription: false } };
-
         if (err) {
             console.log('Subscription error:', err);
             return callback();
@@ -36,15 +35,19 @@ var updateSubscriptionInfo = function(user, callback) {
             } else {
                 subscription.data.subscription = response.data.subscriptions.subscription;
             }
+
+            Team.UpdateSubscription(user._id, subscription, function(status, err, response) {
+                if (err) return callback(err);
+
+                return callback();
+            });
+        
         }
+        return callback();
 
-        Team.UpdateSubscription(user._id, subscription, function(status, err, response) {
-            if (err) return callback(err);
-
-            return callback();
-        });
     });
 };
+
 
 router.get('/google/callback', function(req, res, next) {
     passport.authenticate('google', function(err, user, info) {
