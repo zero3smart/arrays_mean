@@ -866,6 +866,23 @@ md-dialog-actions {
     width: 100%;
 }
 
+md-radio-button {
+    margin-bottom: 2px;
+}
+
+.radio-group {
+    margin: 20px 0 16px;
+}
+
+.num-seats {
+    margin-top: 50px;
+    margin-bottom: -12px;
+}
+
+md-card {
+    box-shadow: none;
+}
+
 .md-button.md-dashboard-icon {
     padding-right: 12px;
 }

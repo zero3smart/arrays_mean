@@ -1,31 +1,35 @@
-<h2 ng-if="plan && subscription.state !== 'expired'">Change Plans</h2>
 <h2 ng-if="plan && subscription.state === 'expired'">Start New Subscription</h2>
 
 <form name="plans_form" novalidate class="plans-form">
     <div ng-if="!plan" layout="row">
-        <md-button ng-click="startTrialSubscription()" class="md-dashboard md-button-wide" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
-                <span class="btn-label">Start Your 30-Day Free Trial</span>
-            </md-button>
+        <md-button ng-click="startTrialSubscription()" class="md-dashboard md-button-wide confirm" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
+            <span class="btn-label">Start Your 30-Day Free Trial</span>
+        </md-button>
+        
     </div>
+    <hr ng-if="!plan">
 
-    <div layout="row" layout-xs="column" layout-margin>
-
+    <div layout="row" layout-xs="column" class="radio-group">
+        <div flex="50" flex-xs="100">
+            <span class="md-headline" ng-if="!plan">Plans</span>
+            <span class="md-headline" ng-if="plan && subscription.state !== 'expired'">Change Plans</span>
+        </div>
         <div flex="50" flex-xs="100">
 
             <md-radio-group name="plan_interval_length" ng-model="newPlan.plan_interval_length">
-                <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
-                <md-radio-button value="1">Billed Monthly</md-radio-button>
+                <md-radio-button class="md-subhead" value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
+                <md-radio-button class="md-subhead" value="1">Billed Monthly</md-radio-button>
             </md-radio-group>
 
             <!-- This is needed for updating existing plans -->
-            <md-input-container ng-if="plan">
-                <label>Number of Users</label>
+            <md-input-container class="num-seats" ng-if="plan">
+                <label>Number of Seats</label>
                 <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
                 <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
                     <div ng-message="min">Must be greater than 0.</div>
                 </div>
                 <div ng-messages="plans_form.quantity.$error" ng-if="users.length > 0">
-                    <div ng-message="min">Cannot be less than the number of users on your team.</div>
+                    <div ng-message="min">Cannot be less than the number of seats on your team.</div>
                 </div>
             </md-input-container>
 
@@ -35,14 +39,14 @@
 
 </form>
 
-<div layout-gt-sm="row" layout="column" layout-padding layout-wrap>
+<div layout-gt-sm="row" layout="column" layout-wrap>
 
     <div flex-gt-sm="50" flex ng-repeat="planItem in plans | filter: { plan_interval_length: { _: newPlan.plan_interval_length } } : true | orderBy: { planItem: { unit_amount_in_cents: { USD: '_' } } } : true">
 
         <span class="md-headline">{{ planItem.name }}</span>
 
         <div class="md-display-2">{{ planItem.unit_amount_in_cents.USD._ / 100 / planItem.plan_interval_length._ | currency : $ : 0 }}</div>
-        <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per user, per month</strong></div>
+        <div ng-if="planItem.display_quantity._ === 'true'"><strong>Per seat, per month</strong></div>
         <div ng-if="planItem.display_quantity._ === 'false'"><strong>Per month</strong></div>
 
         <div ng-if="planItem.plan_interval_length._ === '1'">Billed monthly</div>
@@ -57,6 +61,7 @@
             </md-button>
         </div> -->
         <div ng-if="plan">
+            <br>
             <div ng-if="planItem.plan_code != plan.plan_code || (subscription.state !== 'active' && subscription.state !== 'canceled')" layout="row">
                 <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity, subscription.state)" class="md-dashboard" ng-disabled="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                     <span class="btn-label">Select This Plan</span>
@@ -68,9 +73,10 @@
                     <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
                 </md-button>
             </div>
+            <br>
         </div>
         <div ng-if="planItem.display_quantity._ === 'false' && newPlan.quantity > 1 ">
-            <span class="md-caption">Reduce Users to 1 to select this plan</span>
+            <span class="md-caption">Reduce Seats to 1 to select this plan</span>
         </div>
 
         <div style="white-space: pre-wrap;">{{ planItem.description }}</div>
@@ -97,7 +103,7 @@
         <div style="white-space: pre-wrap;">
 For organizations and institutions that want maximum customization, security, and support.
 
-• Unlimited users
+• Unlimited seats
 • Unlimited visualizations
 • Upload spreadsheets
 • Connect to database or API
