@@ -140,6 +140,7 @@ router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);
 router.put('/billing/subscriptions/:subscrId/cancel', ctrlSubscriptions.cancel);
 router.put('/billing/subscriptions/:subscrId/reactivate', ctrlSubscriptions.reactivate);
 router.get('/billing/adjustments', ctrlAdjustments.getAll);
+router.post('/billing/trial', ctrlSubscriptions.createTrial);
 
 
 module.exports = router;

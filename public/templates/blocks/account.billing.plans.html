@@ -2,10 +2,8 @@
 <h2 ng-if="plan && subscription.state === 'expired'">Start New Subscription</h2>
 
 <form name="plans_form" novalidate class="plans-form">
-
     <div ng-if="!plan" layout="row">
-        <!-- {{plans[0]}} -->
-        <md-button ui-sref="dashboard.account.payment({ plan_code: plans[0].plan_code, quantity: newPlan.quantity })" class="md-dashboard md-button-wide" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
+        <md-button ng-click="startTrialSubscription()" class="md-dashboard md-button-wide" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
                 <span class="btn-label">Start Your 30-Day Free Trial</span>
             </md-button>
     </div>
@@ -13,14 +11,6 @@
     <div layout="row" layout-xs="column" layout-margin>
 
         <div flex="50" flex-xs="100">
-
-
-            <h1>Plans</h1>
-            
-        </div>
-
-        <div flex="50" flex-xs="100">
-
             <md-radio-group name="plan_interval_length" ng-model="newPlan.plan_interval_length">
                 <md-radio-button value="12">Billed Annually <span>(Save 33%)</span></md-radio-button>
                 <md-radio-button value="1">Billed Monthly</md-radio-button>

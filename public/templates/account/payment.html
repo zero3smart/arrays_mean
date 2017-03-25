@@ -137,11 +137,11 @@
         <md-card-actions ng-if="!billing.exists" layout="row" layout-align="end center">
 
             <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
-                <span class="btn-label">Start Trial</span>
+                <span class="btn-label">Submit</span>
             </md-button>
 
             <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
-                <span class="btn-label">Start Trial</span>
+                <span class="btn-label">Submit</span>
             </md-button>
 
             <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
