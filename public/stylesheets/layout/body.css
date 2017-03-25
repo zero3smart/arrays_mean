@@ -90,6 +90,7 @@
     padding-top: 15px;
     padding-bottom: 15px;
     height: 60px;
+    font-family: var(--font-family-calibre);
 }
 
 .input-subscribe {

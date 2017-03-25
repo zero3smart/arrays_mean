@@ -151,6 +151,9 @@ angular.module('arraysApp')
                             if ( typeof billingInfo[field] === 'string' ) {
                                 $scope.billing[field] = billingInfo[field];
                             }
+
+                            $scope.billing.month = billingInfo.month._;
+                            $scope.billing.year = billingInfo.year._;
                         }
 
                         // Set tab based on payment method
