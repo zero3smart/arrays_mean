@@ -7,7 +7,6 @@ module.exports.ensureAuthorized = function(req, res, next) {
 
     var sourceKey;
 
-
     if (typeof req.params.source_key == 'undefined') {
 
     	sourceKey = req.params[0] + req.params[1];
@@ -20,14 +19,11 @@ module.exports.ensureAuthorized = function(req, res, next) {
     }
 
 
-
     datasourceDescriptions.GetDatasourceByUserAndKey(req.user, sourceKey, function(err, datasource) {
         if (err) {
             winston.error("❌  Error getting bind data to authoriziing: ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
         }
-
-
 
         if (!datasource) return res.redirect('/');
 

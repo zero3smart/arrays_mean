@@ -57,12 +57,19 @@ function getImageAtUrl(remoteImageSourceURL,callback) {
 
 
 function _signedUrlForPutObject(key,fileType,callback) {
+
+
+    if (fileType.indexOf('svg') >= 0) { //fix space when uploading svg error
+        fileType = 'image/svg+xml';
+    }
+
     var params = {
         Bucket: bucket,
         Key: key,
         ACL: 'public-read',
         ContentType: fileType
     };
+
     s3.getSignedUrl('putObject',params,function(err,signedUrl) {
         
         callback(err,{putSignedUrl: signedUrl, publicUrl: _appendKeyToBucket(key)});
@@ -84,8 +91,10 @@ function _getAllIconsForTeam(teamSubdomain,callback) {
         else {
             var listOfUrls = [];
             var objects = data.Contents;
+
             for (var i = 0; i < objects.length; i++) {
                 var objKey = objects[i].Key;
+
                 var url = _appendKeyToBucket(objKey);
 
                 listOfUrls.push(url);

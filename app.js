@@ -1,7 +1,7 @@
 
 var cluster = require('cluster');
 var dotenv = require('dotenv');
-var isDev = process.env.NODE_ENV == 'production' ? false : true;
+var isDev = process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'enterprise' ? false : true;
 var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
 dotenv.config({
     path: dotenv_path,
@@ -17,7 +17,6 @@ if (cluster.isMaster) {
 
 
     require('./queue-init')();
-
 
 
 
@@ -51,6 +50,8 @@ if (cluster.isMaster) {
     var fs = require('fs');
     var cors = require('cors');
     var async = require('async');
+    var subdomain = require('express-subdomain');
+    
 
     var app = express();
 
@@ -78,6 +79,7 @@ if (cluster.isMaster) {
 
 
     var userFolderPath = __dirname + "/user";
+    var customRoutes = __dirname + '/app/routes/custom'
 
     var viewsToSet = [];
 
@@ -116,19 +118,17 @@ if (cluster.isMaster) {
                     eachCb(err)
                 } else {
                     if (stat.isDirectory() && files) {
+                        //serving the views
                         var view_path = path.join(userFolderPath, file + "/views");
                         viewsToSet.push(view_path);
-
-                        //serving static files for custom views
-                        app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
-
-
+                        app.use(subdomain(team_name,require(customRoutes)));
                     }
                     eachCb();
                 }
             })
         }, function (err) {
             if (err)  return winston.error("❌ cannot sync the user folder files :", err);
+
             app.set('views', viewsToSet)
             nunjucks.setup({
                 watch: isDev,

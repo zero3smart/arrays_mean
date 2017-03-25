@@ -66,9 +66,6 @@
 
             {% if env.NODE_ENV !== 'enterprise' %}
 
-
-
-
             <div class="row loginOr">
               <div class="col-xs-12">
                 <hr class="hrOr">
@@ -94,10 +91,23 @@
                </div>
             </div>
 
+            {% elif env.NODE_ENV =='enterprise' and env.AUTH_PROTOCOL %}
+
+                <div class="row loginOr">
+                  <div class="col-xs-12">
+                    <hr class="hrOr">
+                    <span class="spanOr">or</span>
+                  </div>
+                </div>
+
+                <div class="row socialButtons">
+                   <div class="col-xs-6 col-xs-offset-3">
+                      <a href="/auth/{{env.AUTH_PROTOCOL | lower}}" class="btn btn-block btn-custom">
+                        {{env.AUTH_PROTOCOL}}
+                      </a>
+                   </div>
+                </div>
             {% endif %}
-
-
-
 
          </div>
                 </div>

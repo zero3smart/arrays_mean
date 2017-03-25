@@ -37,8 +37,7 @@ var DatasourceDescription_scheme = Schema({
     description: String,
     fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: false},
-
-    useCustomView: {type: Boolean, default: false},
+    
     fileName: String,
 
     raw_rowObjects_coercionScheme: Object,
@@ -367,7 +366,7 @@ function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
         .populate({
             path: '_team',
             match: teamQuery,
-            select: 'subdomain admin _id title'
+            select: 'subdomain admin _id title isEnterprise'
         })
         .sort({"createdAt": "desc"})
         .exec(function (err, datasets) {
@@ -570,6 +569,10 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
         })
         .lean()
         .exec(function (err, descriptions) {
+    
+
+        
+            // if (!descriptions) return fn(null,[]);
             descriptions = descriptions.filter(function (description) {
                 if (description._team !== null) {
                     return description
@@ -608,7 +611,6 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
-
     imported_data_preparation.DataSourceDescriptionWithPKey(false,sourceKey)
        .then(function(datasourceDescription) {
 

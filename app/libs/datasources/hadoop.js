@@ -99,7 +99,6 @@ module.exports.readColumnsAndSample = function(body,tableName,fn) {
 
     if (db) {
 
-
         _readColumnsAndSample(tableName,fn);
 
     } else {
@@ -210,7 +209,7 @@ module.exports.initConnection = function(body,callback) {
 
     } else {
 
-
+        
         _initConnection(body.url,function(err) {
 
             if (err) callback(err);

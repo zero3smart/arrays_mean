@@ -54,7 +54,9 @@ angular.module('arraysApp')
 
             $scope.navigate = function(step) {
                 // Don't open dialog when navigating to process data
+
                 if($scope.remindUserUnsavedChanges) {
+
                     var dialogPromise = $scope.openUnsavedChangesDialog('Continue Editing');
                     dialogPromise.then(function() {
                         // Discard changes

@@ -10,7 +10,7 @@ module.exports = function (grunt) {
                     npmInstall: true
                 },
                 projects: {
-                    'user/*/': ['build']
+                    'user/*': ['build']
                 }
             }
 

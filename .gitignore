@@ -50,6 +50,9 @@ bower_components
 user/*
 
 
+##userfolder
+user/*
+
 ### SublimeText ###
 # cache files for sublime text
 *.tmlanguage.cache

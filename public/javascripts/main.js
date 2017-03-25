@@ -1,12 +1,15 @@
 $(window).load(function () {
 
+    if (mixpanel) {
+        trackEvent("page load");
 
-    trackEvent("page load");
+        trackEvent('page viewed', {
+            'page name': document.title,
+            'url': window.location.pathname
+        });
 
-    trackEvent('page viewed', {
-        'page name': document.title,
-        'url': window.location.pathname
-    });
+
+    }
 
     /**
      * Add class to body to prevent weird page width transitions
@@ -49,12 +52,12 @@ $(document).ready(function () {
             return word.toLowerCase();
         }).join('-');
 
-         var href;
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
 
-            href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
+
+            href = baseUrl + '/' +  sourceKey;
             window.location.href = href;
         } else {
             href = '/' + sourceKey + '/' + default_view_url;

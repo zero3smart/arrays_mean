@@ -60,40 +60,12 @@ View.getAllBuiltInViews(function(err,defaultViews) {
 })
 
 
-View.getAllCustomViews(function(err,customViews) {
-
-    if (err) {
-         winston.error("❌  Error getting default views to bind for routes: ", err);
-         return;
-    } else {
-        customViews.forEach(function(view) {
-
-
-
-            router.get('/:source_key/' + view.name,ensureAuthorized,function(req,res,next) {
-
-
-                var source_key = req.params.source_key;
-
-
-                if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
-                    res.status(403).send("Bad Request - source_key missing")
-                    return;
-                }
-                res.render(view.name);
-            })
-
-        })
-    }
-
-})
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
 
 //object detail page
 router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
-
 
     var source_key = req.params[0] + req.params[1];
     source_key = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + source_key.substring(1) : source_key.substring(1);
