@@ -30,7 +30,7 @@ module.exports.createTrial = function(req, res) {
                     return res.status(401).send({error: 'unauthorized'});
                 }
                 var trial_started_at = moment().toISOString();
-                var trial_ends_at = moment().add(1, 'minute').toISOString();
+                var trial_ends_at = moment().add(1, 'month').toISOString();
                 // fake the response/subscription data
                 // then call
                 // or change update subscription to handle team data
