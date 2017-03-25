@@ -912,17 +912,13 @@ module.exports.GenerateImageURLFieldsByScraping
                     })
 
                 } else {
-                    callback(null); // all url has been saved to processed row objects
+                    return callback(null); // all url has been saved to processed row objects
                 }
             }
 
 
             for (var i = 0; i < docs.length; i++) {
-                q.push({doc: docs[i]},function(err) {
-                    if (err) {
-                        return callback(err);
-                    }
-                })
+                q.push({doc: docs[i]});
             }
 
         });

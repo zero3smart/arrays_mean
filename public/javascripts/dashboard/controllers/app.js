@@ -104,6 +104,7 @@ angular
 
             $scope.explore_url += env.host;
 
+
             $scope.updateSubdomain = function() {
                 $scope.team = AuthService.currentTeam();
                 $scope.team.subscription = $scope.team.subscription || {};
@@ -129,6 +130,8 @@ angular
 
                 AuthService.logout();
             };
+
+            
 
             /**
              * Sidebar

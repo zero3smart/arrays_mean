@@ -108,7 +108,7 @@ angular
 				return openFabricatedFilterDialog(data);
 			} else if (type == 'join') {
 				return openJoinDialog(data);
-			} else if (type == 'joinTables') {
+			} else if (type == 'joinTable') {
 				return openJoinTableDialog(data);
 			// } else if (type == 'imageScraping') {
 				// return openImageScrapingDialog(data);

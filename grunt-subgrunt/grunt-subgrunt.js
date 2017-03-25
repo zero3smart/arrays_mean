@@ -4,12 +4,14 @@ var async = require('async');
 var glob = require('glob');
 
 module.exports = function (grunt) { 
+
     var runNpmInstall = function (path, options, next) {
         grunt.util.spawn({
             cmd: options.npmPath,
             args: ['install'],
             opts: { cwd: path, stdio: 'inherit' }
         }, function (err, result, code) {
+
             if (err || code > 0) {
                 grunt.fail.warn('Failed installing node modules in "' + path + '".');
             }
@@ -69,6 +71,7 @@ module.exports = function (grunt) {
     };
 
     grunt.registerMultiTask('subgrunt', 'Run sub-projects\' grunt tasks.', function () {
+
         var cb = this.async();
         var options = this.options({
             npmInstall: true,
@@ -88,40 +91,52 @@ module.exports = function (grunt) {
             projects = res;
         }
 
-        async.eachLimit(Object.keys(projects), options.limit, function (path, next) {
+        //modified to better suit our case
 
-          
+        for (var key in projects) {
 
-
-            var tasks = projects[path];
+            var tasks = projects[key];
             if (!(tasks instanceof Array)) {
                 tasks = [tasks];
             }
-
-            glob(path + '/Gruntfile.js', {
+            glob(key + '/Gruntfile.js', {
                 nocase: true
-            }, function (err, files) {
-
+            },function(err,files) {
 
                 files = files.toString();
-                path = files.substring(0,files.length-13);
-          
+
                 if (err || !files.length) {
                     grunt.fail.warn('The "' + path + '" directory is not valid, or does not contain a Gruntfile.');
-                    return next();
+                    return;
                 }
 
-                if (options.npmInstall) {
-                    runNpmInstall(path, options, function () {
-                        runGruntTasks(path, tasks, options, options.npmClean ? function () {
-                            runNpmClean(path, options, next);
-                        } : next);
-                    });
-                }
-                else {
-                    runGruntTasks(path, tasks, options, next);
-                }
-            });
-        }, cb);
+                files = files.split(',');
+
+                async.eachLimit(files, options.limit,function(gruntFile,next) {
+
+                    var path = gruntFile.toString().substring(0,gruntFile.length-13);
+                    if (options.npmInstall) {
+
+                        runNpmInstall(path, options, function () {
+                            runGruntTasks(path, tasks, options, options.npmClean ? function () {
+                                runNpmClean(path, options, next);
+                            } : next);
+                        });
+                    }
+                    else {
+                        runGruntTasks(path, tasks, options, next);
+                    }
+
+
+                },cb);
+
+
+
+            })
+
+
+
+        }
+
     });
 };

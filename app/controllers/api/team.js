@@ -42,7 +42,8 @@ module.exports.create = function (req, res) {
             }
             // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
             // also, if we're creating sampleTeam for the first time
-            if (process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !=='sampleTeam') {
+            if (process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !=='sampleTeam' && 
+                process.env.NODE_ENV !== 'enterprise') {
                 sample_dataset.delegateDatasetDuplicationTasks(req.user, createdTeam, function (err) {
                     if(err) {
                         res.send({error: err})

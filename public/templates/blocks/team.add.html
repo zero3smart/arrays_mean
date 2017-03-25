@@ -20,6 +20,16 @@
             </md-input-container>
         </md-content>
 
+
+        <md-input-container class="md-block" flex="100" flex-gt-sm="65">
+
+            <md-checkbox ng-model="newTeam.isEnterprise"
+                aria-label="Is Enterprise">
+                is Enterprise?
+            </md-checkbox>
+        </md-input-container>
+
+
         <md-dialog-actions layout="row" layout-align="end center">
             <md-button md-no-ink ng-disabled="vm.teamForm.$invalid || !vm.teamForm.$dirty" class="md-dashboard confirm" type="submit">
                 <span class="btn-label">Create Team</span>

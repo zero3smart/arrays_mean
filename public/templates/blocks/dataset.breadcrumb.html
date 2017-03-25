@@ -3,15 +3,18 @@
         Source
     </md-nav-item>
 
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-show="(dataset.firstImport == 0 || dataset.firstImport >= 2 || dataset.connection)">
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-show="(dataset.firstImport == 0 || dataset.firstImport >= 2 || dataset.connection || team.isEnterprise )">
         Content
     </md-nav-item>
 
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="(dataset.firstImport == 0 || dataset.firstImport >= 3 || dataset.connection)">
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="!team.isEnterprise && 
+    (dataset.firstImport == 0 || dataset.firstImport >= 3)">
         Views
     </md-nav-item>
+
 
     <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings" ng-show="(dataset.firstImport == 0)">
         Display
     </md-nav-item>
+
 </md-nav-bar>
