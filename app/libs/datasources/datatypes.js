@@ -288,12 +288,12 @@ module.exports.makeFormatValid = _makeFormatValid;
 var _verifyDataType = function(name, sample, rowObject) {
     var numberRE = /([^0-9\.,-]|\s)/;
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
-        var secondRowObject = intuitDatatype(name, sample);
+        var secondRowObject = _intuitDatatype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
 
     } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
-        var secondRowObject = intuitDatatype(name, sample);
+        var secondRowObject = _intuitDatatype(name, sample);
         rowObject.data_type = secondRowObject.data_type;
         rowObject.operation = secondRowObject.operation;
     }

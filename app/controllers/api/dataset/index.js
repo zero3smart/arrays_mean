@@ -1052,6 +1052,14 @@ module.exports.upload = function (req, res) {
                     // Store columnNames and firstRecords for latter call on dashboard pages
                     if (!req.session.columns) req.session.columns = {};
                     console.log(columns)
+                    if (replacement) {
+                        // check if the column names are different from the fe_exclude fields -- again, they will be in opposite order
+                        var newExcludeFields = reimport.checkAgainstExistingFEEcludeFields(columns, description.fe_excludeFields);
+                        console.log(newExcludeFields)
+                        console.log("there was a replacement dataset weeee")
+                        console.log(replacement)
+                        console.log(description.fe_excludeFields)
+                    }
                     // TODO: Do we need to save the columns for the additional datasource,
                     // since it should be same as the master datasource???
                     req.session.columns[description._id] = columns;
