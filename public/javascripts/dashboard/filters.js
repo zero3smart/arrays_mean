@@ -14,6 +14,14 @@ app.filter('isSuperAdmin', function() {
         }
     }
 })
+
+app.filter('datasourceUIDFromTitle',function() {
+    return function(title) {
+        return title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_")
+    }
+})
+
+
 app.filter('capitalize', function () {
     return function (input) {
         if (input != null)
