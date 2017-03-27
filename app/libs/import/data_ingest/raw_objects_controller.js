@@ -196,7 +196,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
     var readStream = datasource_file_service.getDatasource(description).createReadStream();
 
-    readStream = readStream.pipe(es.split())
+    readStream = readStream.pipe(es.split(/\n|\r/))
         .pipe(es.mapSync(function (line) {
 
                 // pause the readstream
