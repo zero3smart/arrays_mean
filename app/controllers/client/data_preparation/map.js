@@ -100,9 +100,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
-            console.log(defaultAggregateByColumnName_humanReadable)
 
-            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) :
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
