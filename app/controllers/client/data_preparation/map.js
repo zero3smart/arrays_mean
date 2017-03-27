@@ -100,11 +100,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
-            console.log(defaultAggregateByColumnName_humanReadable)
 
-            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable, dataSourceDescription) :
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            if (!defaultAggregateByColumnName_humanReadable) {
+                defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
+            }
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
