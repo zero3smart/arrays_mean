@@ -804,7 +804,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
     var rowObjects = []
 
     var readStream = fileReadStream
-        .pipe(es.split())
+        .pipe(es.split(/\n|\r/))
         .pipe(es.mapSync(function (line) {
                 readStream.pause();
 
