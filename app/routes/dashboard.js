@@ -30,6 +30,7 @@ router.get('/*', function(req, res) {
             if (err) {
                 res.send(err);
             } else {
+                if (!user) res.redirect('/auth/login');
                 user.team = user._team;
                 
                 res.render('dashboard/index', {
