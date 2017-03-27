@@ -64,7 +64,9 @@ $(document).ready(function () {
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
                 href += "?" + default_filterJSON;
             }
-            window.location.href = baseUrl + href;
+            // window.location.href = ;
+            var viewTab = window.open(baseUrl + href, '_blank');
+            viewTab.focus();
 
          }
     });
