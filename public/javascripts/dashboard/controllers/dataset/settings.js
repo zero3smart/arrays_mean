@@ -17,6 +17,8 @@ angular.module('arraysApp')
                 $window.open(url, '_blank');
             };
 
+
+
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
@@ -163,6 +165,9 @@ angular.module('arraysApp')
                 DatasetService.save(finalizedDataset).then(function (response) {
 
                     if (response.status == 200) {
+
+                        dataset.uid = $filter('datasourceUIDFromTitle')(dataset.title);
+
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Visualization updated!')
