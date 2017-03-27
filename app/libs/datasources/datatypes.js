@@ -285,9 +285,8 @@ var _makeFormatValid = function(format) {
 }
 module.exports.makeFormatValid = _makeFormatValid;
 
-var _verifyDataType = function(name, sample, rowObjects, index) {
+var _verifyDataType = function(name, sample, rowObject) {
     var numberRE = /([^0-9\.,-]|\s)/;
-    var rowObject = rowObjects[index]
     if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
         var secondRowObject = intuitDatatype(name, sample);
         rowObject.data_type = secondRowObject.data_type;

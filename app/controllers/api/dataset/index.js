@@ -882,7 +882,7 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                             readStream.resume();
                         } else if (countOfLines == 3){
                             columns = columns.map(function (e, i) {
-                            return datatypes.verifyDataType(e.name, output[0][i], rowObjects, i)
+                                return datatypes.verifyDataType(e.name, output[0][i], columns[i])
                             });
                             readStream.resume();
                         } else {
@@ -925,7 +925,6 @@ module.exports.upload = function (req, res) {
                 if (doc.fileName) {
                     oldFileName = doc.fileName;
                     replacement = true;
-                    console.log(replacement)
                 }
                 //description refering to the master/parent dataset
                 description = doc;
