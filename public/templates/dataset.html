@@ -1,6 +1,10 @@
 <div class="process-data" ng-class="{ 'show': $state.is('dashboard.dataset.views') && !dataset.sample && tutorial.message == 'DRAFT' }"><!--
 -->Preview changes by clicking&ensp;<i class="fa fa-eye }}" aria-hidden="true"></i></div>
 
+<div class="process-data" ng-class="{ 'show': $state.is('dashboard.dataset.views') && !dataset.sample && tutorial.message && tutorial.message !== 'DRAFT'}">
+    {{ tutorial.message }}
+</div>
+
 <div class="process-data" ng-class="{ 'show': !$state.is('dashboard.dataset.list') && dataset.sample && tutorial.message }"><!--
 -->{{ tutorial.message }}<!--
 --><span ng-if="$state.is('dashboard.dataset.views')">Preview changes by clicking&ensp;<i class="fa fa-eye }}" aria-hidden="true"></i></span><!--

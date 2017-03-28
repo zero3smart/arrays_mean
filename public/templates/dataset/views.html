@@ -42,6 +42,7 @@
                 <!-- TODO also check if !jobId || jobId == 0 && imported  -->
 
                 <span class="dashboard-list-icon"
+                    ng-class="{'span-disabled': keywordsChanged && view.name == 'wordCloud'}"
                     aa-tooltip="{{ dataset.fe_views.views[view.name].visible ? 'Open preview in new tab' : 'View must be visible to preview' }}"
                     ng-click="openViewPreview(view.name)" flex="5">
                     <i class="fa fa-eye" aria-hidden="true"></i>
