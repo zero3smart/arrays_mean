@@ -100,6 +100,7 @@ module.exports.BindData = function (req, callback) {
                     key:  description.uid + '-r' + description.importRevision,
                     sourceDoc: doc,
                     updatedAt: description.updatedAt,
+                    createdAt: description.createdAt,
                     title: description.title,
                     brandColor: description.brandColor,
                     description: description.description,
