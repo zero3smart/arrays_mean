@@ -23,6 +23,7 @@ angular.module('arraysApp')
                     }
                 }
             }
+            console.log(dataset)
 
             dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
 
@@ -394,7 +395,6 @@ angular.module('arraysApp')
                         return $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) -
                             $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name);
                 });
-
 
             }
 

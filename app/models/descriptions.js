@@ -56,7 +56,7 @@ var DatasourceDescription_scheme = Schema({
         overwrite: {type: Boolean, default: false},
         scraped: {type: Boolean,default: false},
         selector : String //optional
-    } ,
+    },
 
     fe_fieldDisplayOrder: Array,
     fe_filters: {
@@ -132,7 +132,6 @@ var DatasourceDescription_scheme = Schema({
     //approved
     //disapproved, maybe notify the user about this
     includeEmptyFields: {type: Boolean, default: true}
-
 
 
 

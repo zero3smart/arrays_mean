@@ -588,7 +588,6 @@ module.exports.save = function (req, res) {
         function twoAreEqual(a,b) {
             return _.isEqual(a,b) || JSON.stringify(a) == JSON.stringify(b);
         }
-
         // Update of Existing Dataset
         async.waterfall([
             function(callback) {
@@ -828,18 +827,6 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
 
                         if (countOfLines == 1) {
 
-                            // mapColumnsOrErr(output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference,  replacement, function (err, newColumns, equal) {
-                            //     if (err) {
-                            //         readStream.destroy();
-                            //         next(err)
-                            //     }
-                            //     if (equal) {
-                            //         readStream.destroy();
-                            //         next(null, [])
-                            //     }
-                            //     columns = newColumns;
-                            // })
-
                             var numberOfEmptyFields = 0;
                             columns = output[0].map(function (e) {
                                 // change any empty string keys to "Field"
@@ -852,16 +839,8 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                             readStream.resume();
 
                         } else if (countOfLines == 2) {
-                            var newColumnsLength = columns.length;
-                            var oldColumnsLength = _.size(description.raw_rowObjects_coercionScheme);
-                            var difference = Math.abs(newColumnsLength - oldColumnsLength);
-                            var newColumnsLengthOrDifference = difference;
-                            var isDifference = true;
-                            if (difference > newColumnsLength) {
-                                isDifference = false;
-                                newColumnsLengthOrDifference = newColumnsLength;
-                            }
-                            reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, newColumnsLengthOrDifference, isDifference, replacement, function (err, newColumns, equal) {
+                            
+                            reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, replacement, function (err, newColumns, equal) {
                                 if (err) {
                                     readStream.destroy();
                                     next(err);
@@ -871,13 +850,7 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                                     next(null, [])
                                 }
                                 columns = newColumns;
-                            })
-
-                            // columns = columns.map(function (e, i) {
-                            //     var rowObject = datatypes.intuitDataype(e.name, output[0][i]);
-                            //     rowObjects.push(rowObject);
-                            //     return rowObject
-                            // });
+                            });
 
                             readStream.resume();
                         } else if (countOfLines == 3){
@@ -1048,23 +1021,15 @@ module.exports.upload = function (req, res) {
                     });
 
                 } else {
-
                     // Store columnNames and firstRecords for latter call on dashboard pages
                     if (!req.session.columns) req.session.columns = {};
-                    console.log(columns)
-                    if (replacement) {
-                        // check if the column names are different from the fe_exclude fields -- again, they will be in opposite order
-                        var newExcludeFields = reimport.checkAgainstExistingFEEcludeFields(columns, description.fe_excludeFields);
-                        console.log(newExcludeFields)
-                        console.log("there was a replacement dataset weeee")
-                        console.log(replacement)
-                        console.log(description.fe_excludeFields)
-                    }
+
                     // TODO: Do we need to save the columns for the additional datasource,
                     // since it should be same as the master datasource???
                     req.session.columns[description._id] = columns;
                     description.raw_rowObjects_coercionScheme = {};
 
+                    // reset the ordered column names
                     for(var i = 0; i < columns.length; i++) {
                         var column = columns[i];
                         if (column.data_type !== 'String') {
