@@ -89,16 +89,17 @@ angular.module('arraysApp')
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
                 $scope.setRemindUserUnsavedChanges(dirty);
 
-                if (dirty) {
+                if (dirty || dataset.replacement) {
                     // $scope.primaryAction.disabled = false;
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
                     $scope.primaryAction.do = function() {
                         $scope.submitForm($scope.formValidity);
                     };
+
                 } else {
                     // $scope.primaryAction.disabled = false;
-                    $scope.primaryAction.text = dataset.firstImport || dataset.replacement ? 'Next' : 'View';
-                    $scope.primaryAction.do = dataset.firstImport || dataset.replacement ? _nextTab : _viewViz;
+                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
                 }
 
                 $scope.secondaryAction.disabled = !dirty;
@@ -423,6 +424,8 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
+                $scope.$parent.$parent.dataset.replacement = false;
+
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
 
                 $scope.$parent.$parent.dataset.includeEmptyFields = $scope.dataset.includeEmptyFields;
