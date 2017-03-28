@@ -260,10 +260,10 @@ angular.module('arraysApp')
                     dataset.dirty = 1;
                     dataset.fileName = fileItem.file.name;
                     dataset.raw_rowObjects_coercionScheme = response.raw_rowObjects_coercionScheme;
+                    dataset.fe_excludeFields = response.fe_excludeFields;
+                    dataset.fe_excludeFieldsObjDetail = response.fe_excludeFieldsObjDetail;
+                    dataset.replacement = response.replacement;
 
-                    if (response.replacement) {
-                        dataset.dirty = 1;
-                    }
 
                     $mdToast.show(
                         $mdToast.simple()

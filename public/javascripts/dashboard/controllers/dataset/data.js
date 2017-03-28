@@ -29,8 +29,14 @@ angular.module('arraysApp')
                 $scope.sampleImageField = dataset.fe_image.field;
             }
 
-            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+            // for reimported dataset
+            if (dataset.replacement) {
+                $scope.setDirty(1);
+                $scope.primaryAction.text = 'Next'
+                $scope.primaryAction.do = _nextTab;
+            }
 
+            dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
             // primary actions
             // NOTE dashboard.dataset.process also contains logic
             // to progress or not based on firstImport

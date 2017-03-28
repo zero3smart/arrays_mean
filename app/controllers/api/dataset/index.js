@@ -1027,6 +1027,10 @@ module.exports.upload = function (req, res) {
                     // Store columnNames and firstRecords for latter call on dashboard pages
                     if (!req.session.columns) req.session.columns = {};
 
+                    if(replacement && columns.length > _.size(description.fe_excludeFields)) {
+                        description.fe_excludeFields = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFields)
+                        description.fe_excludeFieldsObjDetail = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFieldsObjDetail)
+                    }
                     // TODO: Do we need to save the columns for the additional datasource,
                     // since it should be same as the master datasource???
                     req.session.columns[description._id] = columns;
@@ -1110,7 +1114,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, replacement: replacement}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, replacement: replacement, fe_excludeFields: description.fe_excludeFields, fe_excludeFieldsObjDetail: description.fe_excludeFieldsObjDetail}));
     });
 };
 

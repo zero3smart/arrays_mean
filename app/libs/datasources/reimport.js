@@ -36,6 +36,20 @@ var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, 
 }
 module.exports.mapColumnsOrErr = _mapColumnsOrErr
 
+var _addNewColumnsToFE_ExcludeFields = function(columns, fields) {
+    for (var i = 0; i < columns.length; i++) {
+        if (!checkForContinutity(columns[i].name, fields)) {
+            console.log("not the same")
+            console.log("add to fields")
+            
+            fields[columns[i].name] = false;
+        }
+    }
+    return fields;
+}
+module.exports.addNewColumnsToFE_ExcludeFields = _addNewColumnsToFE_ExcludeFields;
+
+
 var checkForContinutity = function(name, rowObjects) {
     if (rowObjects.hasOwnProperty(name)) {
         return true;
@@ -43,3 +57,4 @@ var checkForContinutity = function(name, rowObjects) {
         return false;
     }
 }
+
