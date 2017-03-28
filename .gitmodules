@@ -1,3 +1,6 @@
 [submodule "user/rhodiumgroup"]
-	path = user/rhodiumgroup
-	url = https://0b322b878919da3bb6e63091dac66168f7324d08:x-oauth-basic@github.com/schemadesign/rhodium_arrays.git
+  path = user/rhodiumgroup
+  url = https://0b322b878919da3bb6e63091dac66168f7324d08:x-oauth-basic@github.com/schemadesign/rhodium_arrays.git
+[submodule "user/uwpolisci"]
+  path = user/uwpolisci
+  url = https://0b322b878919da3bb6e63091dac66168f7324d08:x-oauth-basic@github.com/schemadesign/echr_arrays.git

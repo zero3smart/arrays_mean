@@ -247,7 +247,7 @@ angular.module('arraysApp')
                    viz_title: datasource.title,
                    sample: datasource.sample || false
                 });
-                
+
                 var id = datasource._id;
 
 
@@ -307,7 +307,6 @@ angular.module('arraysApp')
             $scope.toggleShowAdvanced = function() {
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
             };
-
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;
@@ -334,7 +333,6 @@ angular.module('arraysApp')
                         $scope.datasetsToProcess[ds._id] = {uid: ds.fileName};
                     });
                 });
-
 
             $scope.dirty = dataset.connection ? 0 : $scope.$parent.$parent.dataset.dirty;
 
