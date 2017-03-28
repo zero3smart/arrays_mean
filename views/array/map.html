@@ -60,7 +60,7 @@
                             <nav class="sort-bar-left pull-left" role="navigation">
                                 {{
                                 dropdown.sortbar(
-                                    'Aggregate By',
+                                    'Display By',
                                     aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
                                     colNames_orderedForAggregateByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
@@ -124,7 +124,7 @@
                 var coordData = {{ coordCollection | dump | safe }};
                 var filterObj = {{ filterObj | dump | safe }};
                 var noiseLevel = {{noiseLevel}};
-    
+
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,
