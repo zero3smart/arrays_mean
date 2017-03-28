@@ -265,7 +265,7 @@ angular.module('arraysApp')
                                     $scope.keywordsChanged = true;
                                     savedDataset.dirty = 3;
                                     savedDataset.firstImport = 3;
-                                    $scope.tutorial.message = "Click \'Save\' to implement changes made to word cloud"
+                                    $scope.tutorial.message = "You have unprocessed changes. \'Save\' to process."
                                 }
                             }
                             $scope.$parent.$parent.dataset = savedDataset;
