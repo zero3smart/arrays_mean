@@ -1110,7 +1110,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, replacement: replacement}));
     });
 };
 

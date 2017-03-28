@@ -261,6 +261,10 @@ angular.module('arraysApp')
                     dataset.fileName = fileItem.file.name;
                     dataset.raw_rowObjects_coercionScheme = response.raw_rowObjects_coercionScheme;
 
+                    if (response.replacement) {
+                        dataset.dirty = 1;
+                    }
+
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent(dataset.fileName + ' uploaded!')
