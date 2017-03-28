@@ -262,6 +262,7 @@ angular.module('arraysApp')
                     dataset.raw_rowObjects_coercionScheme = response.raw_rowObjects_coercionScheme;
                     dataset.fe_excludeFields = response.fe_excludeFields;
                     dataset.fe_excludeFieldsObjDetail = response.fe_excludeFieldsObjDetail;
+                    dataset.replacement = response.replacement;
 
                     $mdToast.show(
                         $mdToast.simple()

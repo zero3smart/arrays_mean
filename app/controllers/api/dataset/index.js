@@ -16,6 +16,7 @@ var datasource_file_service = require('../../../libs/utils/aws-datasource-files-
 var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
 var s3ImageHosting = require('../../../libs/utils/aws-image-hosting');
+var reimport = require('../../../libs/datasources/reimport');
 
 var hadoop = require('../../../libs/datasources/hadoop');
 
@@ -191,7 +192,7 @@ module.exports.approvalRequest = function(req,res) {
             } else {
                 if (!dataset.author.isSuperAdmin()) {
                     nodemailer.notifyVizApprovalAction(dataset,done);
-                } else done();
+                }
 
             }
         })
@@ -411,7 +412,7 @@ module.exports.get = function (req, res) {
 
                 if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
 
-                    _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                    _readDatasourceColumnsAndSampleRecords(false, description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                         if (err) return res.status(500).json(err);
 
                         req.session.columns[req.params.id] = columns;
@@ -447,7 +448,7 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
 
             if (description.uid && !req.session.columns[description._id]) {
 
-                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                _readDatasourceColumnsAndSampleRecords(false, description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                     if (err) return res.status(500).send(err);
 
                     req.session.columns[description._id] = columns;
@@ -588,7 +589,6 @@ module.exports.save = function (req, res) {
         function twoAreEqual(a,b) {
             return _.isEqual(a,b) || JSON.stringify(a) == JSON.stringify(b);
         }
-
         // Update of Existing Dataset
         async.waterfall([
             function(callback) {
@@ -646,6 +646,7 @@ module.exports.save = function (req, res) {
                 }
             },
             function(doc,makeCopy,updateStatement,callback) {
+
                 if (updateStatement !== null && makeCopy == false) {
                     var datasetId = mongoose.Types.ObjectId(doc._id);
 
@@ -687,11 +688,6 @@ module.exports.save = function (req, res) {
                     copy.master_id = datasetId;
 
                     copy.fe_views = updateStatement.$set.fe_views;
-                    // if there's something other than views to update, update it
-                    delete updateStatement.$set.fe_views;
-                    datasource_description.findByIdAndUpdate(datasetId, updateStatement, function (err) {
-                        if (err) callback (err)
-                    })
 
                     //find the copy, if not create one
                     datasource_description.findOneAndUpdate(findQuery,copy,{upsert:true,new:true},
@@ -792,7 +788,7 @@ module.exports.save = function (req, res) {
     }
 };
 
-function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, next) {
+function _readDatasourceColumnsAndSampleRecords(replacement, description, fileReadStream, next) {
     var delimiter;
     if (description.format == 'CSV') {
         delimiter = ',';
@@ -833,6 +829,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                         countOfLines++;
 
                         if (countOfLines == 1) {
+
                             var numberOfEmptyFields = 0;
                             columns = output[0].map(function (e) {
                                 // change any empty string keys to "Field"
@@ -843,16 +840,25 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                                 return {name: e.replace(/\./g, '_')};
                             });
                             readStream.resume();
+
                         } else if (countOfLines == 2) {
-                            columns = columns.map(function (e, i) {
-                                var rowObject = intuitDataype(e.name, output[0][i]);
-                                rowObjects.push(rowObject);
-                                return rowObject
+
+                            reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, replacement, function (err, newColumns, equal) {
+                                if (err) {
+                                    readStream.destroy();
+                                    next(err);
+                                }
+                                if (equal) {
+                                    readStream.destroy();
+                                    next(null, [])
+                                }
+                                columns = newColumns;
                             });
+
                             readStream.resume();
                         } else if (countOfLines == 3){
                             columns = columns.map(function (e, i) {
-                            return verifyDataType(e.name, output[0][i], rowObjects, i)
+                                return datatypes.verifyDataType(e.name, output[0][i], columns[i])
                             });
                             readStream.resume();
                         } else {
@@ -864,70 +870,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
         );
 }
 
-function verifyDataType(name, sample, rowObjects, index) {
-    var numberRE = /([^0-9\.,-]|\s)/;
-    var rowObject = rowObjects[index]
-    if(rowObject.operation == "ToDate" && !moment(sample, rowObject.input_format, true).isValid()) {
-        var secondRowObject = intuitDataype(name, sample);
-        rowObject.data_type = secondRowObject.data_type;
-        rowObject.operation = secondRowObject.operation;
 
-    } else if((rowObject.operation == "ToInteger" || rowObject.operation == "ToFloat") && numberRE.test(sample)) {
-        var secondRowObject = intuitDataype(name, sample);
-        rowObject.data_type = secondRowObject.data_type;
-        rowObject.operation = secondRowObject.operation;
-    }
-    return rowObject;
-};
-
-function intuitDataype(name, sample) {
-    var format = datatypes.isDate(sample)[1];
-    if (format !== null) {
-        return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
-    }
-
-    var dateRE = /(year|DATE)/i;
-    if (dateRE.test(name)) {
-        format = datatypes.isEdgeDate(sample)[1];
-        if (format === 'ISO_8601') {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
-        } else if (format !== null) {
-
-            if (datatypes.isValidFormat(format)) {
-                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: format, operation: 'ToDate'};
-            } else {
-                var valid_format = datatypes.makeFormatValid(format);
-                return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: valid_format, operation: 'ToDate'};
-            }
-
-        } else {
-            return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
-        }
-    }
-
-    // if the sample has anything other than numbers and a "." or a "," then it's most likely a string
-    var numberRE = /([^0-9\.,-]|\s)/;
-    var floatRE = /[^0-9,-]/;
-    var IdRE = /(Id|ID)/;
-    if(numberRE.test(sample) || IdRE.test(name) || sample === "") {
-        // if it's definitely not a number, double check to see if it's a valid ISO 8601 date
-        format = datatypes.isISODateOrString(sample)[1];
-        if(format !== null) {
-            return {name: name, sample: sample, data_type: 'Date', input_format: format, output_format: 'YYYY-MM-DD', operation: 'ToDate'};
-        }
-    } else if(floatRE.test(sample)) {
-        var numberWithoutComma = sample.replace(",", "");
-        if (!isNaN(Number(numberWithoutComma))) {
-            return {name: name, sample: sample, data_type: 'Number', operation: 'ToFloat'};
-        }
-    } else {
-        var numberWithoutComma = sample.replace(",", "");
-        if (!isNaN(Number(numberWithoutComma))) {
-            return {name: name, sample: sample, data_type: 'Number', operation: 'ToInteger'};
-        }
-    }
-    return {name: name, sample: sample, data_type: 'Text', operation: 'ToString'};
-};
 
 
 module.exports.upload = function (req, res) {
@@ -935,6 +878,9 @@ module.exports.upload = function (req, res) {
     if (!req.body.id) return res.status(500).send('No ID given');
 
     var child = req.body.child;
+    var replacement = false;
+    var oldFileName;
+
 
     var batch = new Batch;
     batch.concurrency(1);
@@ -952,6 +898,10 @@ module.exports.upload = function (req, res) {
             .exec(function (err, doc) {
 
                 if (err) return done(err);
+                if (doc.fileName) {
+                    oldFileName = doc.fileName;
+                    replacement = true;
+                }
                 //description refering to the master/parent dataset
                 description = doc;
                 description_title = description.title
@@ -1039,48 +989,84 @@ module.exports.upload = function (req, res) {
             }
 
             // Verify that the file is readable & in the valid format.
-            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
+            _readDatasourceColumnsAndSampleRecords(replacement, description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
                     winston.error("❌  Error validating datasource : " + file.originalname + " : error " + err.message);
+                    if (replacement) {
+                        datasource_description.findById(req.body.id)
+                            .populate('_team')
+                            .exec(function (error, doc) {
+                                if (error) return done(error);
+                                doc.fileName = oldFileName;
+                                doc.save();
+                        });
+                    }
                     return done(err);
                 }
                 winston.info("✅  File validation okay : " + file.originalname);
+                // if there's a re-import of dataset and nothing has changed
+                if (columns.length == 0) {
+                    console.log("uploading to aws s3")
+                    // Upload datasource to AWS S3
 
-                // Store columnNames and firstRecords for latter call on dashboard pages
-                if (!req.session.columns) req.session.columns = {};
-                // TODO: Do we need to save the columns for the additional datasource,
-                // since it should be same as the master datasource???
-                req.session.columns[description._id] = columns;
-                description.raw_rowObjects_coercionScheme = {};
+                    if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
-                for(var i = 0; i < columns.length; i++) {
-                    var column = columns[i];
-                    if (column.data_type !== 'String') {
-                        description.raw_rowObjects_coercionScheme[column.name] = {};
-                        if (column.operation === 'ToDate') {
-                            description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
-                            description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
+                    var uploadToDataset = description._id;
+
+                    if (child) uploadToDataset = req.body.id;
+
+                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                        if (err) {
+                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                         }
-                        description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+
+                        done(err);
+                    });
+
+                } else {
+                    // Store columnNames and firstRecords for latter call on dashboard pages
+                    if (!req.session.columns) req.session.columns = {};
+
+                    if(replacement && columns.length > _.size(description.fe_excludeFields)) {
+                        description.fe_excludeFields = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFields)
+                        description.fe_excludeFieldsObjDetail = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFieldsObjDetail)
                     }
+                    // TODO: Do we need to save the columns for the additional datasource,
+                    // since it should be same as the master datasource???
+                    req.session.columns[description._id] = columns;
+                    description.raw_rowObjects_coercionScheme = {};
+
+                    // reset the ordered column names
+                    for(var i = 0; i < columns.length; i++) {
+                        var column = columns[i];
+                        if (column.data_type !== 'String') {
+                            description.raw_rowObjects_coercionScheme[column.name] = {};
+                            if (column.operation === 'ToDate') {
+                                description.raw_rowObjects_coercionScheme[column.name]["outputFormat"] = column.output_format;
+                                description.raw_rowObjects_coercionScheme[column.name]["format"] = column.input_format;
+                            }
+                            description.raw_rowObjects_coercionScheme[column.name]["operation"] = column.operation;
+                        }
+                    }
+
+                    // Upload datasource to AWS S3
+
+
+                    if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
+
+                    var uploadToDataset = description._id;
+
+                    if (child) uploadToDataset = req.body.id;
+
+                    datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
+                        if (err) {
+                            winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
+                        }
+
+                        done(err);
+                    });
                 }
 
-                // Upload datasource to AWS S3
-
-
-                if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
-
-                var uploadToDataset = description._id;
-
-                if (child) uploadToDataset = req.body.id;
-
-                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
-                    if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
-                    }
-
-                    done(err);
-                });
             });
         });
 
@@ -1088,6 +1074,7 @@ module.exports.upload = function (req, res) {
             winston.info("✅  Uploaded datasource : " + file.originalname);
 
             if (!child) {
+
                 description.dirty = 1; // Full Import with image scraping
                 datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
                     if(err) {
@@ -1128,7 +1115,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, fe_excludeFields: description.fe_excludeFields, fe_excludeFieldsObjDetail: description.fe_excludeFieldsObjDetail, replacement: replacement}));
     });
 };
 

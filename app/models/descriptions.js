@@ -37,7 +37,7 @@ var DatasourceDescription_scheme = Schema({
     description: String,
     fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: false},
-    
+
     fileName: String,
 
     raw_rowObjects_coercionScheme: Object,
@@ -106,6 +106,7 @@ var DatasourceDescription_scheme = Schema({
     lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
+    replacement: {type: Boolean, default: false},
     firstImport: {type: Number, integer: true, default: 1},
     // 0: false, not first import
     // 1: Source tab
@@ -568,9 +569,9 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
         })
         .lean()
         .exec(function (err, descriptions) {
-    
 
-        
+
+
             // if (!descriptions) return fn(null,[]);
             descriptions = descriptions.filter(function (description) {
                 if (description._team !== null) {

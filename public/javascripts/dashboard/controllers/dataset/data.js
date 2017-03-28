@@ -30,11 +30,12 @@ angular.module('arraysApp')
             }
 
             dataset.firstImport = $scope.checkIfFirstImport(dataset.firstImport);
+
             // primary actions
             // NOTE dashboard.dataset.process also contains logic
             // to progress or not based on firstImport
             var _nextTab = function() {
-                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' : 
+                var nextState = ($scope.$parent.$parent.dataset.dirty ) ? 'dashboard.dataset.process' :
                 ($scope.team.isEnterprise ) ? 'dashboard.dataset.settings' : 'dashboard.dataset.views';
                 $state.transitionTo(nextState, {id: dataset._id}, {
                     reload: true,
@@ -68,7 +69,7 @@ angular.module('arraysApp')
 
                     $scope.formValidity = validity;
 
-        
+
                     if (dataset.connection || $scope.team.isEnterprise == true) {
 
                         $scope.primaryAction.disabled = false;
@@ -96,8 +97,8 @@ angular.module('arraysApp')
                     };
                 } else {
                     // $scope.primaryAction.disabled = false;
-                    $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
-                    $scope.primaryAction.do = dataset.firstImport ? _nextTab : _viewViz;
+                    $scope.primaryAction.text = dataset.firstImport || dataset.replacement ? 'Next' : 'View';
+                    $scope.primaryAction.do = dataset.firstImport || dataset.replacement ? _nextTab : _viewViz;
                 }
 
                 $scope.secondaryAction.disabled = !dirty;
@@ -122,7 +123,6 @@ angular.module('arraysApp')
                     $scope.$parent.$parent.dataset.dirty = number;
                 }
             };
-
 
             var joinDataCols = [];
 
