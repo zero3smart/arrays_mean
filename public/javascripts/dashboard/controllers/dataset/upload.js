@@ -76,7 +76,7 @@ angular.module('arraysApp')
             };
 
             var _viewViz = function() {
-                var url = ($scope.team.isEnterprise) ? viewUrlService.getViewUrl($scope.subdomain, dataset, $scope.team.subdomain, false) :
+                var url = ($scope.team.isEnterprise) ? viewUrlService.getViewUrl($scope.subdomain, dataset, null, false) :
                 viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
 
                 $window.open(url, '_blank');

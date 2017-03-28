@@ -192,7 +192,7 @@ module.exports.approvalRequest = function(req,res) {
             } else {
                 if (!dataset.author.isSuperAdmin()) {
                     nodemailer.notifyVizApprovalAction(dataset,done);
-                }
+                } else done();
 
             }
         })
@@ -646,7 +646,6 @@ module.exports.save = function (req, res) {
                 }
             },
             function(doc,makeCopy,updateStatement,callback) {
-
                 if (updateStatement !== null && makeCopy == false) {
                     var datasetId = mongoose.Types.ObjectId(doc._id);
 
@@ -688,6 +687,11 @@ module.exports.save = function (req, res) {
                     copy.master_id = datasetId;
 
                     copy.fe_views = updateStatement.$set.fe_views;
+                    // if there's something other than views to update, update it
+                    delete updateStatement.$set.fe_views;
+                    datasource_description.findByIdAndUpdate(datasetId, updateStatement, function (err) {
+                        if (err) callback (err)
+                    })
 
                     //find the copy, if not create one
                     datasource_description.findOneAndUpdate(findQuery,copy,{upsert:true,new:true},

@@ -89,7 +89,7 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field, na
                 case edgeDateResult[0]:
                     dateFormatString = edgeDateResult[1];
                     break;
-                case ISODateResult[0]: 
+                case ISODateResult[0]:
                     dateFormatString = ISODateResult[1];
                     break;
                 default:
@@ -139,7 +139,7 @@ var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
     } else if (opName == "ToInteger" || opName == "ToFloat") {
         return value.toString();
     } else if (opName == "ToDate") {
-     
+
         var date = value;
         var dateFormatString = field.format;
         if (dateFormatString == "" || dateFormatString == null || typeof dateFormatString === 'undefined') {
@@ -162,7 +162,7 @@ var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
 
 }
 //
-// Public: 
+// Public:
 module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValue, columnName) {
     var operationName = coercionSchemeForKey.operation;
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
@@ -241,7 +241,7 @@ var _isDate = function(sample) {
     for(var i = 0; i < known_date_formats.length; i++) {
         if (moment(sample, known_date_formats[i], true).isValid()) {
             return [true, known_date_formats[i]];
-        } 
+        }
     }
     return [false, null];
 };
