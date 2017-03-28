@@ -17,7 +17,8 @@ var team_scheme = Schema({
     superTeam: Boolean,
     admin: { type: Schema.Types.ObjectId, ref: 'User' },
     datasourceDescriptions: [{ type: Schema.Types.ObjectId, ref: 'DatasourceDescription' }],
-    subscription: Object
+    subscription: Object,
+    isEnterprise: Boolean //if true, means it has custom view
 }, { timestamps: true });
 
 
@@ -27,7 +28,7 @@ team_scheme.plugin(integerValidator);
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
-team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy'] });
+team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy', 'datasourceDescriptions.createdAt'] });
 
 
 team_scheme.pre('save',function(next) {
@@ -68,19 +69,26 @@ team.GetTeams = function(fn) {
 };
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
+    if (process.env.NODE_ENV == 'enterprise') {
+        teamQuery = {subdomain: process.env.subdomain};
+    }
+
 
     team.find(teamQuery)
         .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
             populate: {
                 'datasourceDescriptions': {
                     match: datasetQuery,
-                    select: 'description uid urls title importRevision updatedAt updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
+                    select: 'description uid urls title importRevision updatedAt createdAt updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
                 },
                 'datasourceDescriptions.updatedBy': {
                     select: 'firstName lastName'
                 },
                 'datasourceDescriptions.author': {
                     select: 'firstName lastName'
+                },
+                'datasourceDescriptions.createdAt': {
+                    select: 'createdAt'
                 }
             }
         })
@@ -98,6 +106,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
     function nonLoginUserQuery (cb) {
         var publicAndImportedDataset = {isPublic: true,imported:true,fe_visible:true,state:'approved'};
         var publicAndConnectedDataset = {isPublic:true,connection:{$ne:null}, fe_listed:true, fe_visible:true};
+        if (process.env.NODE_ENV == 'enterprise') delete publicAndImportedDataset.state;
         getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true}, { 'subscription.state': 'active' } ] }, {$or: [publicAndImportedDataset,publicAndConnectedDataset]}, cb);
     }
 
@@ -108,13 +117,17 @@ team.GetTeamsAndDatasources = function(userId, fn) {
             .exec(function(err, foundUser) {
                 if (err) return fn(err);
                 if (!foundUser) return nonLoginUserQuery(fn);
+
                 var importedDataset = {imported:true,fe_visible:true,state: 'approved'};
                 var connectedDataset = {connection:{$ne:null}, fe_listed:true,fe_visible:true};
+
+                 if (process.env.NODE_ENV == 'enterprise') delete importedDataset.state;
 
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({}, {$or:[importedDataset,connectedDataset] } , fn);
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
+
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true};
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
@@ -164,8 +177,8 @@ team.GetTeamBySubdomain = function(req, fn) {
 
     function getPublishedDataset (cb) {
         var publishedImportedDataset = {isPublic:true,imported:true,fe_listed:true,fe_visible:true,
-            'fe_views.views': {$exists:true}, 'fe_views.default_view': {$exists: true}};
-        var publishedConnectedDataset = {isPublic:true,fe_listed:true,fe_visible:true};
+            firstImport:0};
+        var publishedConnectedDataset = {isPublic:true,fe_listed:true,fe_visible:true, connection: {$ne:null}};
         getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true },
          { 'subscription.state': 'active' } ] }, {$or: [publishedImportedDataset,publishedConnectedDataset]},
           cb);
@@ -177,6 +190,9 @@ team.GetTeamBySubdomain = function(req, fn) {
             .populate('_team')
             .populate('defaultLoginTeam')
             .exec(function(err, foundUser) {
+                if (err) return fn(err);
+                if (!foundUser) return  getPublishedDataset(fn);
+
                 for (var i = 0; i < foundUser._team.length; i++) {
                     if (team_key === foundUser._team[i].subdomain) {
                         userIsPartOfThisTeam = true;
@@ -184,11 +200,9 @@ team.GetTeamBySubdomain = function(req, fn) {
                     }
                     userIsPartOfThisTeam = false;
                 }
-                var importedDataset = {imported: true, 'fe_views.views': {$exists:true}, 'fe_views.default_view': {$exists: true}};
-                var connectedDataset = {imported: true, connection: {$ne: null}};
+                var importedDataset = {imported: true, firstImport:0, fe_listed: true};
+                var connectedDataset = {connection: {$ne: null}, firstImport:0, fe_listed: true};
 
-
-                if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key }, {$or:[connectedDataset,importedDataset] } , fn);
 
@@ -200,8 +214,6 @@ team.GetTeamBySubdomain = function(req, fn) {
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] },
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
-
-
 
                 } else if (userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser.defaultLoginTeam._id;
@@ -270,7 +282,6 @@ team.UpdateSubscription = function(userId, responseData, callback) {
                                     }
 
                                 }
-
 
 
 

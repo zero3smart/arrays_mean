@@ -80,8 +80,10 @@ function _getSampleDescriptionAndDuplicate(id, user, createdTeam, callback) {
                 duplicatedDescription.imported = false;
                 // don't allow publishing of sample dataset
                 duplicatedDescription.fe_listed = false;
-                duplicatedDescription.fe_visible = false;
+                duplicatedDescription.fe_visible = true;
                 duplicatedDescription.isPublic = false;
+                // set scraped image to false
+                duplicatedDescription.fe_image.scraped = false;
                 // loop through all the mixed fields and save to empty objects if they're not already set then mark modified so they save into db
                 for(var i = 0; i < mixedFields.length; i++) {
                     if(!duplicatedDescription[mixedFields[i]]) {

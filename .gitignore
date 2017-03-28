@@ -46,6 +46,12 @@ bower_components
 .bower-registry
 .bower-tmp
 
+##userFolder
+user/*
+
+
+##userfolder
+user/*
 
 ### SublimeText ###
 # cache files for sublime text
@@ -108,6 +114,8 @@ Temporary Items
 ## csv files ##
 *.csv
 
+## userFolder
+user/*
 
 #dump
 dump/

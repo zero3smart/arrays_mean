@@ -16,6 +16,8 @@ var ctrlBillingAccount = require('../controllers/api/billing/account');
 var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
 var ctrlPlans = require('../controllers/api/billing/plans');
 var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
+var ctrlAdjustments = require('../controllers/api/billing/adjustments');
+var ctrlJob = require('../controllers/api/job')
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -23,7 +25,8 @@ var auth = ejwt({
 }).unless({
     path: [/\/api\/user/i,
         /\/api\/team/i,
-        /\/api\/view/i
+        /\/api\/view/i,
+        /\/api\/job/i
     ]
 });
 
@@ -39,6 +42,9 @@ router.use('/',auth, function (err, req, res, next) {
         return next();
     }
 });
+
+router.get('/job/:id', ctrlJob.getJob)
+router.get('/job/:id/log', ctrlJob.getJobLog)
 
 
 //admin functions
@@ -78,10 +84,10 @@ router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoe
 router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import
-router.get('/dataset/preImport/:id', ctrlDataset.preImport);;
+router.get('/dataset/preImport/:id', ctrlDataset.preImport);
 router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
 router.get('/dataset/postImport/:id', ctrlDataset.postImport);
-router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
+router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages);
 
 router.post('/dataset/connect/:id',ctrlConnection.connect);
 router.post('/dataset/colsForJoinTables/:id',ctrlConnection.getColumnsForFieldMapping);
@@ -99,6 +105,7 @@ router.post('/user/:id', ctrlUsers.save);
 router.delete('/user/:id', ctrlUsers.delete);
 router.get('/user/getAll/:teamId',ctrlUsers.getAll);
 router.put('/user/defaultLoginTeam/:teamId',ctrlUsers.defaultLoginTeam);
+router.put('/user/sampleImported/:teamId',ctrlUsers.sampleImported);
 
 //views
 router.get('/view', ctrlView.getAll);
@@ -119,7 +126,7 @@ router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
 router.delete('/team/:id',ctrlTeam.delete);
 
-// billing, account & subscriptions settings
+// billing, account & subscriptions
 router.post('/billing/account', ctrlBillingAccount.create);
 router.get('/billing/account', ctrlBillingAccount.get);
 router.post('/billing/billinginfo', ctrlBillingInfo.create);
@@ -132,6 +139,8 @@ router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
 router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);
 router.put('/billing/subscriptions/:subscrId/cancel', ctrlSubscriptions.cancel);
 router.put('/billing/subscriptions/:subscrId/reactivate', ctrlSubscriptions.reactivate);
+router.get('/billing/adjustments', ctrlAdjustments.getAll);
+router.post('/billing/trial', ctrlSubscriptions.createTrial);
 
 
 module.exports = router;

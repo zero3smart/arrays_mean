@@ -6,7 +6,7 @@
             <div layout="row" layout-xs="column">
 
                 <md-input-container flex-gt-xs="30" ng-if="plan.display_quantity._ === 'true'">
-                    <label>Number of users</label>
+                    <label>Number of seats</label>
                     <input name="quantity" required type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" />
                     <div ng-messages="billing_info.quantity.$error">
                         <div ng-message="min">Must be greater than 0.</div>
@@ -18,8 +18,8 @@
                 </div>
 
                 <p flex-gt-xs="50">
-                    {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}<br />
-                    {{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }} Per user, per month<br />
+                    {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Seat' : 'Seats' }}<br />
+                    {{ plan.unit_amount_in_cents.USD._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }} Per seat, per month<br />
                     <span><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 / plan.plan_interval_length._ | currency : $ : 0 }}</span>
                 </p>
             </div>
@@ -137,11 +137,11 @@
         <md-card-actions ng-if="!billing.exists" layout="row" layout-align="end center">
 
             <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
-                <span class="btn-label">Start Trial</span>
+                <span class="btn-label">Submit</span>
             </md-button>
 
             <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo(plan.plan_code, subscription.quantity._)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
-                <span class="btn-label">Start Trial</span>
+                <span class="btn-label">Submit</span>
             </md-button>
 
             <md-button class="md-dashboard" ui-sref="dashboard.account.billing">

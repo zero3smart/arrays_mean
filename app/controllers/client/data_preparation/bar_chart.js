@@ -179,7 +179,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
 
-
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
@@ -428,11 +427,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }

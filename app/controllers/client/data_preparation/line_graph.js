@@ -188,11 +188,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }
@@ -357,20 +359,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var finalizedButNotCoalesced_groupedResults = [];
                         _groupedResults.forEach(function (el, i, arr) {
-                            var displayableVal;
+                            var displayableLabel;
 
                             if (groupBy_isDate) {
-                                displayableVal = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription);
+                                displayableLabel = func.formatCoercedField(groupBy_realColumnName, el.label, dataSourceDescription);
 
                             } else {
-                                displayableVal = func.ValueToExcludeByOriginalKey(
+                                displayableLabel = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
-                                if (!displayableVal) return;
+                                if (!displayableLabel) return;
                             }
 
                             finalizedButNotCoalesced_groupedResults.push({
                                 value: el.value,
-                                label: displayableVal
+                                label: displayableLabel
                             });
                         });
                         var summedValuesByLowercasedLabels = {};
@@ -477,19 +479,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 };
 
 
-                console.log(JSON.stringify(aggregationOperators))
-
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }

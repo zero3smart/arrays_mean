@@ -29,7 +29,6 @@ require('../../../libs/import/queue-worker');
 var kue = require('kue');
 
 
-
 function getAllDatasetsWithQuery(query, res) {
 
     if (query.master_id) { //getting the preview copy
@@ -40,6 +39,8 @@ function getAllDatasetsWithQuery(query, res) {
             return res.status(200).json({datasets: dataset});
         })
     } else {
+
+    
         datasource_description.find({$and: [{master_id: {$exists:false},schema_id: {$exists: false}}, query]}, {
             _id: 1,
             uid: 1,
@@ -593,7 +594,7 @@ module.exports.save = function (req, res) {
             function(callback) {
                 datasource_description.findById(req.body._id)
                 .lean()
-                .populate('schema_id')
+                .populate('schema_id _team')
                 .populate('author')
                 .exec(function(err,doc) {
                     if (err) callback(err);
@@ -610,6 +611,8 @@ module.exports.save = function (req, res) {
                 }
                 var update = {$set:{}};
                 var makeCopy = false;
+
+    
 
                 _.forOwn(req.body,function(value,key) {
         
@@ -637,7 +640,7 @@ module.exports.save = function (req, res) {
                 if (Object.keys(update.$set).length == 0) { //nothing to update
                     callback(null,doc,false,null);
                 } else {
-                    if (!doc.imported || doc.imported == false || doc.imported == null) {
+                    if (!doc.imported || doc.imported == false || doc.imported == null || doc._team.isEnterprise) {
                         callback(null,doc,false,update);
                     } else callback(null,doc,makeCopy,update); 
                 }
@@ -801,7 +804,7 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
     var rowObjects = []
 
     var readStream = fileReadStream
-        .pipe(es.split())
+        .pipe(es.split(/\n|\r/))
         .pipe(es.mapSync(function (line) {
                 readStream.pause();
 

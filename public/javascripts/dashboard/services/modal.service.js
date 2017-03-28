@@ -84,19 +84,19 @@ angular
             })
 		}
 
-		var openImageScrapingDialog = function (data) {
+		// var openImageScrapingDialog = function (data) {
 
-			return $mdDialog.show({
-                controller: 'ImageScrapingDialogCtrl',
-                controllerAs: 'dialog',
-                templateUrl: 'templates/blocks/data.imagescraping.html',
-                clickOutsideToClose: true,
-                fullscreen: true, // Only for -xs, -sm breakpoints.
-                locals: {
-                    dataset: data.dataset
-                }
-            })
-		}
+		// 	return $mdDialog.show({
+  //               controller: 'ImageScrapingDialogCtrl',
+  //               controllerAs: 'dialog',
+  //               templateUrl: 'templates/blocks/data.imagescraping.html',
+  //               clickOutsideToClose: true,
+  //               fullscreen: true, // Only for -xs, -sm breakpoints.
+  //               locals: {
+  //                   dataset: data.dataset
+  //               }
+  //           })
+		// }
 		
 
 		this.openDialog = function(type,data) {
@@ -108,10 +108,10 @@ angular
 				return openFabricatedFilterDialog(data);
 			} else if (type == 'join') {
 				return openJoinDialog(data);
-			} else if (type == 'joinTables') {
+			} else if (type == 'joinTable') {
 				return openJoinTableDialog(data);
-			} else if (type == 'imageScraping') {
-				return openImageScrapingDialog(data);
+			// } else if (type == 'imageScraping') {
+				// return openImageScrapingDialog(data);
 			}
 
 		}

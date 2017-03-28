@@ -291,11 +291,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }
@@ -303,8 +305,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
-
-             
 
                 //
                 var data =

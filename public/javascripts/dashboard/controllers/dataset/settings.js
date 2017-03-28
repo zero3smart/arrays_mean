@@ -7,9 +7,17 @@ angular.module('arraysApp')
                 $scope.submitForm();
             };
             var _viewViz = function() {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                var url;
+                if ($scope.team.isEnterprise) {
+                    url = viewUrlService.getViewUrl($scope.subdomain, dataset,null, false);
+                } else {
+                    url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                }
+
                 $window.open(url, '_blank');
             };
+
+
 
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
@@ -157,6 +165,9 @@ angular.module('arraysApp')
                 DatasetService.save(finalizedDataset).then(function (response) {
 
                     if (response.status == 200) {
+
+                        dataset.uid = $filter('datasourceUIDFromTitle')(dataset.title);
+
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Visualization updated!')

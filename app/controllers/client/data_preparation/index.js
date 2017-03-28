@@ -24,18 +24,21 @@ module.exports.BindData = function (req, callback) {
 
         var user = null;
         if (req.user) {
-            User.findById(req.user, function(err, doc) {
-                if (err) return callback(err);
-                user = doc;
+            User.findById(req.user)
+                .populate('defaultLoginTeam')
+                .exec(function(err, doc) {
+                    if (err) return callback(err);
+                    user = doc;
 
-                var data = {
-                    env: process.env,
-                    user: user,
-                    sources: datasetArray
-                };
+                    var data = {
+                        env: process.env,
+                        user: user,
+                        sources: datasetArray
+                    };
 
-                callback(err, data);
-            });
+                    callback(err, data);
+
+                });
         } else {
             var data = {
                 env: process.env,
@@ -55,6 +58,16 @@ module.exports.BindData = function (req, callback) {
         
         subdomain = description._team.subdomain;
 
+        var default_customView;
+
+
+        if (description._team.isEnterprise) {
+
+
+            default_customView = subdomain;
+        }
+
+
         raw_source_documents.Model.findOne({
             primaryKey: description._id
         }, function (err, doc) {
@@ -67,10 +80,13 @@ module.exports.BindData = function (req, callback) {
                 if (description.fe_filters.default) {
                     default_filterJSON = queryString.stringify(description.fe_filters.default || {});
                 }
-                var default_view = 'gallery';
-                if (description.fe_views.default_view) {
+
+                var default_view = (default_customView) ? default_customView : 'gallery';
+                if (typeof description.fe_views.default_view !== 'undefined') {
                     default_view = description.fe_views.default_view;
                 }
+            
+
 
 
                 var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
@@ -84,6 +100,7 @@ module.exports.BindData = function (req, callback) {
                     key:  description.uid + '-r' + description.importRevision,
                     sourceDoc: doc,
                     updatedAt: description.updatedAt,
+                    createdAt: description.createdAt,
                     title: description.title,
                     brandColor: description.brandColor,
                     description: description.description,

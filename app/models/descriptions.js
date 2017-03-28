@@ -32,13 +32,12 @@ var DatasourceDescription_scheme = Schema({
     format: String, //csv, tsv, json
     connection: Object,
     title: String,
-    brandColor: String,
+    brandColor: {type: String, default: "#feb600"},
     urls: Array,
     description: String,
     fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: false},
-
-    useCustomView: {type: Boolean, default: false},
+    
     fileName: String,
 
     raw_rowObjects_coercionScheme: Object,
@@ -366,7 +365,7 @@ function getDescriptionsAndPopulateTeam(teamQuery, datasetQuery, callback) {
         .populate({
             path: '_team',
             match: teamQuery,
-            select: 'subdomain admin _id title'
+            select: 'subdomain admin _id title isEnterprise'
         })
         .sort({"createdAt": "desc"})
         .exec(function (err, datasets) {
@@ -562,13 +561,17 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
     }
 
    var self = this;
-    self.find({uid: uid, importRevision: revision, fe_visible: true})
+    self.find({uid: uid, importRevision: revision})
         .populate({
             path: '_team',
             match: subdomainQuery
         })
         .lean()
         .exec(function (err, descriptions) {
+    
+
+        
+            // if (!descriptions) return fn(null,[]);
             descriptions = descriptions.filter(function (description) {
                 if (description._team !== null) {
                     return description
@@ -607,7 +610,6 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
-
     imported_data_preparation.DataSourceDescriptionWithPKey(false,sourceKey)
        .then(function(datasourceDescription) {
 

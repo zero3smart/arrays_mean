@@ -97,13 +97,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
            
-            var aggregateBy = urlQuery.aggregateBy? urlQuery.aggregateBy : dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
 
-            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            var aggregateBy_realColumnName = aggregateBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy, dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            if (!defaultAggregateByColumnName_humanReadable) {
+                defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
+            }
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
@@ -170,7 +173,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     var doneFn = function(err, _coordDocs) {
                         if (err) return done(err);
-                        coordRadiusValue = aggregateBy;
+                        coordRadiusValue = aggregateBy_realColumnName;
                         var coordValue;
                         var clustering = require('density-clustering');
                         var dbscan = new clustering.DBSCAN();
@@ -404,11 +407,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
-                    User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
-                        user = doc;
-                        done();
-                    })
+                    User.findById(req.user)
+                        .populate('defaultLoginTeam')
+                        .exec(function(err, doc) {
+                            if (err) return done(err);
+                            user = doc;
+                            done();
+                        });
                 } else {
                     done();
                 }

@@ -319,6 +319,11 @@ body.md-toast-animating {
     padding: 8px 0;
 }
 
+/* Billing */
+.plans-form {
+    margin-top: 25px;
+}
+
 /* Lists */
 
 .dashboard-list {
@@ -855,6 +860,27 @@ md-dialog-actions {
     margin: 0;
     border: 1px solid white;
     border-radius: 4px;
+}
+
+.md-button-wide {
+    width: 100%;
+}
+
+md-radio-button {
+    margin-bottom: 2px;
+}
+
+.radio-group {
+    margin: 20px 0 16px;
+}
+
+.num-seats {
+    margin-top: 50px;
+    margin-bottom: -12px;
+}
+
+md-card {
+    box-shadow: none;
 }
 
 .md-button.md-dashboard-icon {

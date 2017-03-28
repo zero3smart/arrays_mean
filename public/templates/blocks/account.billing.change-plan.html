@@ -11,7 +11,7 @@
 
     <md-dialog-content layout-padding ng-if="subscription.state !== 'expired'">
         <md-content>
-            <p>Are you sure you want to change your plan to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
+            <p>Are you sure you want to change your plan to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Seat' : 'Seats' }}</strong>?
             Your account will be charged during the next billing cycle.</p>
 
             <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
@@ -30,7 +30,7 @@
 
     <md-dialog-content layout-padding ng-if="subscription.state === 'expired'">
         <md-content>
-            <p>Are you sure you want to start a subscription to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'User' : 'Users' }}</strong>?
+            <p>Are you sure you want to start a subscription to <strong>{{ plan.name }}</strong> billed <strong ng-if="plan.plan_interval_length._ === '1'">Monthly</strong><strong ng-if="plan.plan_interval_length._ === '12'">Annually</strong> with <strong>{{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Seat' : 'Seats' }}</strong>?
             Your account will be charged during the next billing cycle.</p>
 
             <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>

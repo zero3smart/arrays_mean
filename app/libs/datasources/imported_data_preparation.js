@@ -15,7 +15,7 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
             reject();
         });
     }
-
+    
     var subdomain = process.env.NODE_ENV !== 'enterprise'? split[0]: null;
     var uid = process.env.NODE_ENV !== 'enterprise'? split[1] : split[0];
     var revision = process.env.NODE_ENV !== 'enterprise'? split[2].substring(1): split[1].substring(1);
@@ -23,6 +23,8 @@ var _dataSourceDescriptionWithPKey = function (preview,source_pKey) {
 
     return new Promise(function (resolve, reject) {
         var dataSourceDescriptions = require('../../models/descriptions');
+
+     
 
         dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(preview,subdomain,uid, revision, function (err, data) {
             if (err) reject(err);
@@ -189,10 +191,9 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
         available_keys.push(humanReadable_key);
     });
 
-    if (field == 'fieldsNotAvailableAsAggregateByColumns' && (dataSourceDescription.fe_views.views[field] == undefined || dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1)) {
+    if (field == 'fieldsNotAvailableAsAggregateByColumns' && (dataSourceDescription.fe_views.views[viewType][field] == undefined || dataSourceDescription.fe_views.views[viewType][field].indexOf('Number of Items') == -1)) {
         available_keys.push("Number of Items");
     }
-
     return available_keys;
 }
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;

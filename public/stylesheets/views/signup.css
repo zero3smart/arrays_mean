@@ -37,3 +37,7 @@ div.signup_btn_group {
 button.signupstep {
 	min-width:100px;
 }
+
+.span-tos {
+	margin-left: 8px;
+}

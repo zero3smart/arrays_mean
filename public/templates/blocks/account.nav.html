@@ -4,4 +4,6 @@
     <md-nav-item md-nav-sref="dashboard.account.password" name="password" value="password" ng-if="user.provider === 'local'">Password</md-nav-item>
 
     <md-nav-item ng-hide="team.superTeam" md-nav-sref="dashboard.account.billing" name="billing" value="billing" ng-if="user.role === 'admin' || user.role === 'superAdmin'">Billing</md-nav-item>
+
+    <md-nav-item ng-hide="team.superTeam || !user.defaultLoginTeam.subscription" md-nav-sref="dashboard.account.payments" name="payments" value="payments" ng-if="user.role === 'admin' || user.role === 'superAdmin'">Payments</md-nav-item>
 </md-nav-bar>

@@ -11,6 +11,86 @@ var recurly = new Recurly(recurlyConfig);
 
 var moment = require('moment');
 
+module.exports.createTrial = function(req, res) {
+
+    var userId = req.user._id;
+
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function (err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+                var trial_started_at = moment().toISOString();
+                var trial_ends_at = moment().add(1, 'month').toISOString();
+                // fake the response/subscription data
+                // then call
+                // or change update subscription to handle team data
+                var fakeSubscription = {
+                    data: {
+                        subscription: {
+                            activated_at: {
+                                _: trial_started_at
+                            },
+                            canceled_at: {
+                                _: undefined
+                            },
+                            current_period_ends_at: {
+                                _: trial_ends_at
+                            },
+                            current_period_started_at: {
+                                _: trial_started_at
+                            },
+                            expires_at: {
+                                _: undefined
+                            },
+                            plan: {
+                                name: 'Arrays Pro',
+                                plan_code: 'pro-annual'
+                            },
+                            quantity: {
+                                _: 10
+                            },
+                            remaining_billing_cycles: {
+                                _: undefined
+                            },
+                            state: 'active',
+                            total_billing_cycles: {
+                                _: undefined
+                            },
+                            trial_days_left: undefined,
+                            trial_ends_at: {
+                                _: trial_ends_at
+                            },
+                            trial_started_at: {
+                                _: trial_started_at
+                            },
+                            uuid: undefined
+                        }
+                    },
+                    statusCode: 200
+
+                }
+                Team.UpdateSubscription(userId, fakeSubscription, function (status, err, response) {
+                    if (err) {
+                        res.status(status).send(err);
+                    } else {
+                        res.status(status).send(response)
+                    }
+                })
+
+            }
+        })
+}
+
 module.exports.create = function(req, res) {
 
     var userId = req.user._id;

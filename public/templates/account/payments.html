@@ -1,0 +1,22 @@
+<div class="array-content users">
+    <h4>Payments</h4>
+
+    <ul class="dashboard-list user-list" ng-cloak>
+
+        <li ng-if="adjustments.length > 0" layout="row" layout-align="none center">
+            
+            <span flex="50"><strong>Description</strong></span>
+            <span flex><strong>Created On</strong></span>
+            <span flex class="text-right"><strong>Amount</strong></span>
+
+        </li>
+
+        <li ng-repeat="adjustment in adjustments" layout="row" layout-align="none center">
+            
+            <span flex="50">{{ adjustment.description }}</span>
+            <span flex>{{ adjustment.created_at._ | date }}</span>
+            <span flex class="text-right">{{ adjustment.total_in_cents._ / 100 | currency : '$' : 2 }} USD</span>
+
+        </li>
+    </ul>
+</div>

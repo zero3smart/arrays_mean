@@ -1,12 +1,15 @@
 $(window).load(function () {
 
+    if (mixpanel) {
+        trackEvent("page load");
 
-    trackEvent("page load");
+        trackEvent('page viewed', {
+            'page name': document.title,
+            'url': window.location.pathname
+        });
 
-    trackEvent('page viewed', {
-        'page name': document.title,
-        'url': window.location.pathname
-    });
+
+    }
 
     /**
      * Add class to body to prevent weird page width transitions
@@ -49,19 +52,21 @@ $(document).ready(function () {
             return word.toLowerCase();
         }).join('-');
 
-         var href;
 
 
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
 
-            href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
+
+            href = baseUrl + '/' +  sourceKey;
             window.location.href = href;
         } else {
             href = '/' + sourceKey + '/' + default_view_url;
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
                 href += "?" + default_filterJSON;
             }
-            window.location.href = baseUrl + href;
+            // window.location.href = ;
+            var viewTab = window.open(baseUrl + href, '_blank');
+            viewTab.focus();
 
          }
     });

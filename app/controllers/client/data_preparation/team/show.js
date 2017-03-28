@@ -12,6 +12,12 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var team = _.omit(teamDescription, 'datasourceDescriptions');
     var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
+    var default_customView;
+
+    if (team.isEnterprise) {
+        default_customView = team.subdomain;
+    }
+
 
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
@@ -21,15 +27,13 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
         if (dataSourceDescription.connection) {
 
-            var default_view = 'gallery';
+            var default_view = (default_customView) ? default_customView : 'gallery';
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
-
-
+ 
             var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
             var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
-
 
             var sourceDescription = {
 
@@ -64,10 +68,11 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
-                var default_view = 'gallery';
+                var default_view = (default_customView) ? default_customView : 'gallery';
                 if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                     default_view = dataSourceDescription.fe_views.default_view;
                 }
+            
                 var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
                 var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
 
@@ -76,6 +81,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                     sourceDoc: doc,
                     updatedAt: dataSourceDescription.updatedAt,
+                    createdAt: dataSourceDescription.createdAt,
                     title: dataSourceDescription.title,
                     brandColor: dataSourceDescription.brandColor || '#FEB600',
                     description: dataSourceDescription.description,
@@ -86,7 +92,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     default_view: default_view,
                     banner: dataSourceDescription.banner
                 };
-
 
                 cb(err, sourceDescription);
             });
@@ -121,11 +126,13 @@ module.exports.BindData = function (req, teamDescription, callback) {
         };
 
         if (req.user) {
-            User.findById(req.user, function(err, user) {
-                if (err) return callback(err);
-                data.user = user;
-                callback(err, data);
-            });
+            User.findById(req.user)
+                .populate('defaultLoginTeam')
+                .exec(function(err, user) {
+                    if (err) return callback(err);
+                    data.user = user;
+                    callback(err, data);
+                });
         } else {
             callback(err, data);
         }

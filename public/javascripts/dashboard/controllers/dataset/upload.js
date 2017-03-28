@@ -15,7 +15,8 @@ angular.module('arraysApp')
              *  until database is a public option and JSON is supported
              *  ['csv', 'json', 'database']
              */
-            $scope.addingSourceType = ($scope.env.node_env == 'enterprise') ? '' : 'csv';
+            // $scope.addingSourceType = ($scope.env.node_env == 'enterprise') ? '' : 'csv';
+            $scope.addingSourceType = '';
 
             $scope.tables = [];
             if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.tableName) {
@@ -24,15 +25,19 @@ angular.module('arraysApp')
 
 
             $scope.addSourceType = function(type) {
-                if (type == 'database') {
+                if (type == 'database' && $scope.env.node_env == 'enterprise') {
                     if (!dataset.connection) {
                         dataset.connection = {};
                         dataset.connection.type = 'hadoop'; //default
                     }
+                } else if (type == 'csv') {
+                    $scope.addingSourceType = 'csv';
+                    delete dataset.connection;
                 } else {
+                    $scope.addingSourceType = '';
                     delete dataset.connection;
                 }
-                return $scope.addingSourceType = type;
+                return $scope.addingSourceType;
             };
 
             $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
@@ -71,7 +76,9 @@ angular.module('arraysApp')
             };
 
             var _viewViz = function() {
-                var url = viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+                var url = ($scope.team.isEnterprise) ? viewUrlService.getViewUrl($scope.subdomain, dataset, $scope.team.subdomain, false) :
+                viewUrlService.getViewUrl($scope.subdomain, dataset, dataset.fe_views.default_view, false);
+
                 $window.open(url, '_blank');
             };
 
