@@ -45,7 +45,7 @@ function logScale(currentBreak, numBreaks, maxValue, minValue) {
         logMax = maxValue + logOffset,
         logMin = isCoordMap ? minValue + logOffset : 1;
     // The result should be between 1 an topValue
-    minv = Math.log(logMin); 
+    minv = Math.log(logMin);
     maxv = Math.log(logMax);
 
     // calculate adjustment factor
@@ -109,7 +109,7 @@ var map = new mapboxgl.Map({
 */
 function convertIntegerToReadable(prop) {
     if (typeof prop == 'number') {
-        var splitNum = prop.toString().split('.'); 
+        var splitNum = prop.toString().split('.');
         var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         var decimal = splitNum[1] ? '.' + splitNum[1] : '';
 
@@ -173,12 +173,15 @@ map.on('load', function () {
     } else {
 
         for (i = 0; i < numBreaks; i++) {
-           
+
 
             if (i < numBreaks - 1) {
                 filteruse = ['all', ['>=', metric, breaks[i] - logOffset], ['<', metric, breaks[i + 1] - logOffset]];
             } else {
                 filteruse = ['>=', metric, breaks[i] - logOffset];
+            }
+            if (radii[i] < 1) {
+                radii[i] = 0.7;
             }
 
             if (isCoordMap) {
@@ -189,7 +192,7 @@ map.on('load', function () {
                     filter: filteruse,
                     paint: {
 
-                    
+
 
                         'circle-radius': {
                             "stops": [
@@ -217,7 +220,7 @@ map.on('load', function () {
                         'circle-opacity': 0.5
                     }
                 });
-            } else {            
+            } else {
               map.addLayer({
                   id: names[i],
                   type: 'fill',
@@ -268,7 +271,7 @@ map.on('load', function () {
             popup.setLngLat(e.lngLat)
                 .setHTML('<span class="popup-key">' + feature.properties.name + '</span>')
                 .addTo(map);
-        } else {            
+        } else {
             popup.setLngLat(e.lngLat)
                 .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
                 .addTo(map);
@@ -312,4 +315,3 @@ map.on('load', function () {
         mapContainer.style.height = window.innerHeight - offsetY + "px";
     });
 });
-
