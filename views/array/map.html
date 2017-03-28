@@ -73,7 +73,7 @@
                                 }}
                             </nav>
 
-                            <nav style="display: {{ 'none' if !isCoordMap else 'block' }};" class="sort-bar-left pull-left" role="navigation">
+                            <nav style="display: {{ 'none' if not isCoordMap else 'block' }};" class="sort-bar-left pull-left" role="navigation">
                                 {{
                                 dropdown.sortbar(
                                     'Display By',
