@@ -21,7 +21,7 @@ angular.module('arraysApp')
                 $scope.$parent.$parent.dataset.fe_views = $scope.previewCopy.fe_views;
                 $scope.primaryAction.text = '';
             }
-            var keywordsChanged = false;
+            $scope.keywordsChanged = false;
 
             // never needs to be disabled--if it is not needed, it is hidden
             $scope.secondaryAction.disabled = false;
@@ -54,7 +54,7 @@ angular.module('arraysApp')
             $scope.$watch('previewCopy', function(previewExist) {
                 $scope.setRemindUserUnsavedChanges(previewExist);
                 // logic for wordCloud keywords
-                if (keywordsChanged) {
+                if ($scope.keywordsChanged) {
                     $scope.primaryAction.disabled = false;
                     $scope.primaryAction.text = 'Save';
                     $scope.primaryAction.do = $scope.submitForm;
@@ -262,9 +262,10 @@ angular.module('arraysApp')
                             savedDataset.fe_views.views[data.name].visible = true;
                             if (data.name == "wordCloud") {
                                 if (reImportKeywordsCache(savedDataset.fe_views.views[data.name].keywords)) {
-                                    keywordsChanged = true;
+                                    $scope.keywordsChanged = true;
                                     savedDataset.dirty = 3;
                                     savedDataset.firstImport = 3;
+                                    $scope.tutorial.message = "Click \'Save\' to implement changes made to word cloud"
                                 }
                             }
                             $scope.$parent.$parent.dataset = savedDataset;
@@ -341,10 +342,10 @@ angular.module('arraysApp')
                                 $scope.previewCopy = null;
                                 $scope.$parent.$parent.dataset.fe_views = response.data.finalView;
 
-                                if (keywordsChanged) {
+                                if ($scope.keywordsChanged) {
                                     dataset.firstImport = 0;
                                     dataset.dirty = 0;
-                                    keywordsChanged = false;
+                                    $scope.keywordsChanged = false;
                                     $state.transitionTo('dashboard.dataset.process', {id: $scope.$parent.$parent.dataset._id}, {
                                         reload: true,
                                         inherit: false,
