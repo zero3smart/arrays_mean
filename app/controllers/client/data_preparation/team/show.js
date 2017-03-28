@@ -32,10 +32,8 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
  
-
             var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
             var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
-
 
             var sourceDescription = {
 
@@ -83,6 +81,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                     key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                     sourceDoc: doc,
                     updatedAt: dataSourceDescription.updatedAt,
+                    createdAt: dataSourceDescription.createdAt,
                     title: dataSourceDescription.title,
                     brandColor: dataSourceDescription.brandColor || '#FEB600',
                     description: dataSourceDescription.description,

@@ -28,7 +28,7 @@ team_scheme.plugin(integerValidator);
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
-team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy'] });
+team_scheme.plugin(deepPopulate, { whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy', 'datasourceDescriptions.createdAt'] });
 
 
 team_scheme.pre('save',function(next) {
@@ -79,13 +79,16 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
             populate: {
                 'datasourceDescriptions': {
                     match: datasetQuery,
-                    select: 'description uid urls title importRevision updatedAt updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
+                    select: 'description uid urls title importRevision updatedAt createdAt updatedBy author brandColor fe_views.default_view fe_filters.default banner connection'
                 },
                 'datasourceDescriptions.updatedBy': {
                     select: 'firstName lastName'
                 },
                 'datasourceDescriptions.author': {
                     select: 'firstName lastName'
+                },
+                'datasourceDescriptions.createdAt': {
+                    select: 'createdAt'
                 }
             }
         })

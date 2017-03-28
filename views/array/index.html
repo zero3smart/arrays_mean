@@ -23,7 +23,7 @@
                             </div><!-- .row -->
                         </header>
 
-                        {% for source in sources | sort(reverse=true,attribute='updatedAt') %}
+                        {% for source in sources | sort(reverse=true,attribute='createdAt') %}
                         
                             {% include "../partials/tile.html" %}
 
