@@ -1027,9 +1027,12 @@ module.exports.upload = function (req, res) {
                     // Store columnNames and firstRecords for latter call on dashboard pages
                     if (!req.session.columns) req.session.columns = {};
 
-                    if(replacement && columns.length > _.size(description.fe_excludeFields)) {
-                        description.fe_excludeFields = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFields)
-                        description.fe_excludeFieldsObjDetail = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFieldsObjDetail)
+                    if(replacement) {
+                        description.firstImport = 1;
+                        if(columns.length > _.size(description.fe_excludeFields)) {
+                            description.fe_excludeFields = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFields)
+                            description.fe_excludeFieldsObjDetail = reimport.addNewColumnsToFE_ExcludeFields(columns, description.fe_excludeFieldsObjDetail)
+                        }
                     }
                     // TODO: Do we need to save the columns for the additional datasource,
                     // since it should be same as the master datasource???
@@ -1075,6 +1078,7 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
+                console.log(description)
                 datasource_description.findByIdAndUpdate(description._id, description, function (err, updatedDesc) {
                     if(err) {
                         winston.error("❌  Error saving the dataset raw row coercion update into the database, UID:  " + description.uid + " (" + err.message + ")");
@@ -1114,7 +1118,7 @@ module.exports.upload = function (req, res) {
         if (err) {
             return res.end(JSON.stringify({error: err.message}));
         }
-        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, replacement: replacement, fe_excludeFields: description.fe_excludeFields, fe_excludeFieldsObjDetail: description.fe_excludeFieldsObjDetail}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid, raw_rowObjects_coercionScheme: description.raw_rowObjects_coercionScheme, fe_excludeFields: description.fe_excludeFields, fe_excludeFieldsObjDetail: description.fe_excludeFieldsObjDetail}));
     });
 };
 
