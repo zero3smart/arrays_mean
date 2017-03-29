@@ -264,7 +264,6 @@ angular.module('arraysApp')
                                 if (reImportKeywordsCache(savedDataset.fe_views.views[data.name].keywords)) {
                                     $scope.keywordsChanged = true;
                                     savedDataset.dirty = 3;
-                                    savedDataset.firstImport = 3;
                                     $scope.tutorial.message = "You have unprocessed changes. \'Save\' to process."
                                 }
                             }
