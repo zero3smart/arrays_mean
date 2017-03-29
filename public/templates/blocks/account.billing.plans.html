@@ -5,7 +5,7 @@
         <md-button ng-click="startTrialSubscription()" class="md-dashboard md-button-wide confirm" ng-disabled="plans[0].display_quantity._ === 'false' && newPlan.quantity > 1 || plans_form.quantity.$invalid">
             <span class="btn-label">Start Your 30-Day Free Trial</span>
         </md-button>
-        
+
     </div>
     <hr ng-if="!plan">
 
@@ -23,7 +23,7 @@
             <!-- This is needed for updating existing plans -->
             <md-input-container class="num-seats" ng-if="plan">
                 <label>Number of Seats</label>
-                <input name="quantity" required type="number" min="{{ users.length + 1 }}" ng-min="{{ users.length + 1 }}" step="1" ng-model="newPlan.quantity" />
+                <input name="quantity" required type="number" min="{{ users.length }}" ng-min="{{ users.length }}" step="1" ng-model="newPlan.quantity" />
                 <div ng-messages="plans_form.quantity.$error" ng-if="users.length < 1">
 
                     <div ng-message="min">Must be greater than 0.</div>
@@ -71,10 +71,10 @@
             </div>
 
             <div ng-if="planItem.plan_code === plan.plan_code && (subscription.state === 'active' || subscription.state === 'canceled')" layout="row">
-                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="!plans_form.quantity.$dirty || plans_form.quantity.$invalid">
+                <md-button ng-click="openBillingDialog($event, planItem.plan_code, newPlan.quantity)" class="md-dashboard confirm md-button" ng-disabled="(!plans_form.quantity.$dirty || plans_form.quantity.$invalid) || (planItem.plan_code === 'light-annual' && plan.plan_code === 'light-annual')">
 
-                    <span ng-if="!plans_form.quantity.$dirty" class="btn-label">My Plan</span>
-                    <span ng-if="plans_form.quantity.$dirty" class="btn-label">Update Plan</span>
+                    <span ng-if="!plans_form.quantity.$dirty || planItem.plan_code === 'light-annual'" class="btn-label">My Plan</span>
+                    <span ng-if="plans_form.quantity.$dirty && planItem.plan_code === 'pro-annual'" class="btn-label">Update Plan</span>
                 </md-button>
             </div>
             <br>
