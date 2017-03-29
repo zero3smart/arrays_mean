@@ -242,10 +242,16 @@ angular.module('arraysApp')
                     });
                 }
 
+                // //Send notification to Intercom when dataset is imported
+                // window.Intercom('trackEvent', 'Visualization Imported', {
+                //    viz_title: datasource.title,
+                //    sample: datasource.sample || false
+                // });
+
                 //Send notification to Intercom when dataset is imported
-                window.Intercom('trackEvent', 'Visualization Imported', {
-                   viz_title: datasource.title,
-                   sample: datasource.sample || false
+                userengage('event.vizImported', {
+                    viz_title: dataset.title,
+                    sample: datasource.sample || false
                 });
 
                 var id = datasource._id;
