@@ -49,7 +49,7 @@ var _mountRoutes_ensureWWW = function (app) {
 //
 
 function isNotRootDomain (subdomains) {
-        
+
     if (subdomains.length == 1 && subdomains[0] !== 'www' && subdomains[0] !== 'app') { // pattern: subdomain.arrays.co
         return true;
     }  else {
@@ -79,7 +79,7 @@ var urlRegexForDataset;
 var _mountRoutes_subdomainRedirect = function(app) {
     Promise.all([_defaultViewRoutes])
     .then(function(values) {
-        urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)(-r\\d)\/(getData|[0-9a-f]{24}" + values[0] + ")",'g');  
+        urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)(-r\\d)\/(getData|[0-9a-f]{24}" + values[0] + ")",'g');
 
     })
 }
@@ -120,7 +120,7 @@ var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
 
-   
+
 
 
 
@@ -149,7 +149,7 @@ var _mountRoutes_endPoints = function (app) {
 
             } else { //www.arrays.co or app.arrays.co
 
-          
+
                 if (isRouteForDataset || req.subdomains.length == 0) {
                     return res.redirect(rootDomain +'/');
                 } else {
@@ -161,10 +161,10 @@ var _mountRoutes_endPoints = function (app) {
 
         }
         next();
-      
+
     });
 
-    app.use('/', require('./homepage'));  
+    app.use('/', require('./homepage'));
     app.use('/s', require('./shared_pages'));
     app.use('/' + apiVersion, require('./jsonAPI_share'));
     app.use('/auth', require('./auth'));
@@ -184,7 +184,7 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/account',require('./account'));
     app.use('/', require('./views'));
 
-    
+
 };
 
 module.exports.MountRoutes = function(app) {
@@ -195,7 +195,8 @@ module.exports.MountRoutes = function(app) {
             node_env: process.env.NODE_ENV,
             host: host,
             s3Bucket: process.env.AWS_S3_BUCKET,
-            intercomAppId: process.env.INTERCOM_APP_ID ? process.env.INTERCOM_APP_ID : ''
+            // intercomAppId: process.env.INTERCOM_APP_ID ? process.env.INTERCOM_APP_ID : ''
+            userEngageAPIKey: process.env.USERENGAGE_API_KEY ? process.env.USERENGAGE_API_KEY : ''
         };
         return res.json(obj);
     });
