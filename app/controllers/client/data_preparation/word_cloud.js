@@ -105,13 +105,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Obtain grouped results
             batch.push(function (done) {
 
-                var groupBy_realColumnName = groupBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
-                (dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName == "Object Title") ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName,dataSourceDescription) : 
+                var groupBy_realColumnName = groupBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+                (dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName == "Object Title") ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName,dataSourceDescription) :
                 dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
 
 
 
-            
+
                 //
                 var aggregationOperators = [];
                 if (isSearchActive) {
@@ -191,8 +191,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }));
                 //
 
-              
-
                 var data =
                 {
                     env: process.env,
@@ -231,7 +229,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-                    isPreview: askForPreview
+                    isPreview: askForPreview,
+                    defaultView: config.formatDefaultView(dataSourceDescription.fe_views.default_view),
                 };
                 callback(err, data);
             });
