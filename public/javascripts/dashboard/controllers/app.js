@@ -163,7 +163,10 @@ angular
                     name: $scope.user.defaultLoginTeam.title,
                     created_at: new Date($scope.user.defaultLoginTeam.createdAt).getTime() / 1000,
                     plan: $scope.user.defaultLoginTeam.subscription ? $scope.user.defaultLoginTeam.subscription.plan.plan_code : ''
-                }
+                },
+                team_title: $scope.user.defaultLoginTeam.title, // String
+                subdomain: $scope.user.defaultLoginTeam.subdomain, // String
+                sample_viz_created: $scope.user.sampleImported // Boolean
               }
               console.log(options);
 
