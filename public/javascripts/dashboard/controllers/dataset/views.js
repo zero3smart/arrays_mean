@@ -258,7 +258,8 @@ angular.module('arraysApp')
                     })
                         .then(function (savedDataset) {
 
-                            /** If user saves changes to a view, make it visible */
+                            /** If user saves changes to a view, make it visible for what's being saved and also on the dataset copy */
+                            dataset.fe_views.views[data.name] = {visible: true};
                             savedDataset.fe_views.views[data.name].visible = true;
                             if (data.name == "wordCloud") {
                                 if (reImportKeywordsCache(savedDataset.fe_views.views[data.name].keywords)) {
