@@ -21,7 +21,7 @@ angular
                 window.Intercom('update');
 
                 // Update UserEngage state
-                UE.pageHit();
+                UE.pageHit({apiKey: $scope.env.userEngageAPIKey});
             });
 
             /**
@@ -174,7 +174,7 @@ angular
                 subdomain: $scope.user.defaultLoginTeam.subdomain, // String
                 sample_viz_created: $scope.user.sampleImported // Boolean
               }
-
+              console.log(optionsUE)
               UE.pageHit(optionsUE);
 
 
@@ -194,9 +194,9 @@ angular
                 "Subdomain": $scope.user.defaultLoginTeam.subdomain, // String
                 "Sample Viz Created": $scope.user.sampleImported, // Boolean
             };
-            console.log(options);
-            console.log('-------$scope.user---------')
-            console.log($scope.user);
+            // console.log(options);
+            // console.log('-------$scope.user---------')
+            // console.log($scope.user);
             /**
              * Start Intercom support widget
              */
