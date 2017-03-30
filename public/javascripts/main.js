@@ -58,7 +58,9 @@ $(document).ready(function () {
 
 
             href = baseUrl + '/' +  sourceKey;
-            window.location.href = href;
+            // window.location.href = href;
+            var viewTab = window.open(href, '_blank');
+            viewTab.focus();
         } else {
             href = '/' + sourceKey + '/' + default_view_url;
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
