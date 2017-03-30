@@ -164,13 +164,19 @@ var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
 }
 
 module.exports.create = function (req, res) {
+
+
     User.create(req.body, function (err, user) {
+
         if (err) {
             res.status(500).send(err);
         } else {
             res.status(200).json(user);
         }
     })
+
+
+
 }
 
 //reset password
@@ -292,69 +298,159 @@ module.exports.update = function (req, res) {
     var team = req.body._team;
     var teamId = req.body._team._id;
 
+
+
     if (!teamId) { // admin/owner of the team signing up
-        team.admin = req.body._id;
-        if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise' || req.body.email.indexOf('@schemadesign.com') >= 0 ||
-            req.body.email.indexOf('@arrays.co') >= 0) {
 
-            team.superTeam = true;
-        }
+        var batch = new Batch();
+        batch.concurrency(1);
+        var t;
+        var u;
 
-        Team.create(team, function (err, createdTeam) {
-            if (err) {
-                res.send(err);
-            }
-            else {
-                teamId = createdTeam._id;
-                User.findById(req.body._id, function (err, user) {
-                    if (err) {
-                        res.send(err);
-                    } else if (!user) {
-                        res.status(404).send('User not found');
-                    } else {
-                        // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
-                        // also if we're creating sampleTeam for the first time
-                        if(process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !== 'sampleTeam' &&
-                            process.env.NODE_ENV !== 'enterprise') {
-                            // create sample dataset
-                            sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
-                                if (err) {
-                                    res.send({error: err})
-                                }
-                            });
-                        }
-                        user.firstName = req.body.firstName;
-                        user.lastName = req.body.lastName;
-                        if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {
-                            user.setPassword(req.body.password);
-                        }
-                        user._team = [teamId];
-                        user.defaultLoginTeam = teamId;
-                        user.save(function (err, savedUser) {
-                            if (err) {
-                                res.send(err);
-                            }
-                            else {
-                                createdTeam.notifyNewTeamCreation();
-
-                                if (user.activated) {
-                                    res.json(savedUser);
-                                } else {
-                                    mailer.sendActivationEmail(savedUser, function (err) {
-                                        if (err) {
-                                            res.status(500).send('Cannot send activation email');
-                                        } else {
-                                            res.json(savedUser);
-                                        }
-                                    })
-                                }
-
-                            }
-                        })
-                    }
+        batch.push(function(done) {
+            if (process.env.NODE_ENV == 'enterprise' && process.env.subdomain) {
+                Team.findOne({subdomain: process.env.subdomain},function(err,sub) {
+                    if (sub) t = sub;
+                    done(err);
                 })
-            }
+            } else done();
         })
+
+        batch.push(function(done) {
+            if (!t) {
+                team.admin = req.body._id;
+                if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise' || req.body.email.indexOf('@schemadesign.com') >= 0 ||
+                    req.body.email.indexOf('@arrays.co') >= 0) {
+
+                    team.superTeam = true;
+                }
+                Team.create(team,function(err,createdTeam) {
+                    if (createdTeam) t = createdTeam;
+                    done(err);
+                })
+
+            } else done();
+
+
+        })
+
+        batch.push(function(done) {
+
+            User.findById(req.body._id,function(err,user) {
+                if (!err && user) {
+                    if(process.env.HOST !== 'local.arrays.co:9080' && t.title !== 'sampleTeam' &&
+                        process.env.NODE_ENV !== 'enterprise') {
+                        // create sample dataset
+                        sample_dataset.delegateDatasetDuplicationTasks(user, t, function (err) {
+                            console.log(err);
+                        });
+                    }
+                    user.firstName = req.body.firstName;
+                    user.lastName = req.body.lastName;
+                    if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {
+                        user.setPassword(req.body.password);
+                    }
+                    user._team = [t._id];
+                    user.defaultLoginTeam = t._id;
+                    u = user;
+                    done();
+
+                } else done(err);
+
+            })
+
+        })
+
+        batch.push(function(done) {
+            u.save(function (err, savedUser) {
+                done(err);
+                u = savedUser;
+                done();
+
+
+            })
+
+        })
+
+        batch.end(function(err) {
+            if (err) res.send(err);
+            else {
+                if (process.env.NODE_ENV !== 'enterprise') {
+                    t.notifyNewTeamCreation();
+                }
+                if (u.activated) {
+                    res.json(u);
+                } else {
+                     mailer.sendActivationEmail(u, function (err) {
+                        if (err) {
+                            res.status(500).send('Cannot send activation email');
+                        } else {
+                            res.json(u);
+                        }
+                    })
+
+                }
+
+            }
+
+        })
+
+        // Team.create(team, function (err, createdTeam) {
+        //     if (err) {
+        //         res.send(err);
+        //     }
+        //     else {
+        //         teamId = createdTeam._id;
+        //         User.findById(req.body._id, function (err, user) {
+        //             if (err) {
+        //                 res.send(err);
+        //             } else if (!user) {
+        //                 res.status(404).send('User not found');
+        //             } else {
+        //                 // this will be a pain to have in dev if ever someone wants to wipe their local db, setting to production only for now
+        //                 // also if we're creating sampleTeam for the first time
+        //                 if(process.env.HOST !== 'local.arrays.co:9080' && createdTeam.title !== 'sampleTeam' &&
+        //                     process.env.NODE_ENV !== 'enterprise') {
+        //                     // create sample dataset
+        //                     sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
+        //                         if (err) {
+        //                             res.send({error: err})
+        //                         }
+        //                     });
+        //                 }
+        //                 user.firstName = req.body.firstName;
+        //                 user.lastName = req.body.lastName;
+        //                 if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {
+        //                     user.setPassword(req.body.password);
+        //                 }
+        //                 user._team = [teamId];
+        //                 user.defaultLoginTeam = teamId;
+        //                 user.save(function (err, savedUser) {
+        //                     if (err) {
+        //                         res.send(err);
+        //                     }
+        //                     else {
+        //                         createdTeam.notifyNewTeamCreation();
+
+        //                         if (user.activated) {
+        //                             res.json(savedUser);
+        //                         } else {
+        //                             mailer.sendActivationEmail(savedUser, function (err) {
+        //                                 if (err) {
+        //                                     res.status(500).send('Cannot send activation email');
+        //                                 } else {
+        //                                     res.json(savedUser);
+        //                                 }
+        //                             })
+        //                         }
+
+        //                     }
+        //                 })
+        //             }
+        //         })
+        //     }
+        // })
+
     } else { //invited people, no need to send email
         User.findById(req.body._id, function (err, user) {
             if (err) {

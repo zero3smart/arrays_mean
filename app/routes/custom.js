@@ -57,7 +57,7 @@ router.get('/dashboard',function(req,res) {
             env: process.env,
             user: req.user
         });
-        
+
     } else { //redirect to main domain
 
         var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
@@ -76,10 +76,11 @@ router.get('/env',function(req,res) {
             node_env: process.env.NODE_ENV,
             host: host,
             s3Bucket: process.env.AWS_S3_BUCKET,
-            authProtocol: process.env.AUTH_PROTOCOL
+            authProtocol: process.env.AUTH_PROTOCOL,
+            subdomain: process.env.subdomain
         }
         return res.json(obj);
-        
+
     } else { //redirect to main domain
 
         var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
@@ -134,12 +135,12 @@ router.get('/',function(req,res) {
             };
             return res.render('team/show', data);
         }
- 
+
         if (err && err.message != 'No SubDomain Asked!') {
             winston.error("❌  Error getting bind data during authorizing : ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
         }
-    
+
         team_show_controller.BindData(req, teamDescriptions[0], function (err, bindData) {
             if (err) {
                 winston.error("❌  Error getting bind data for Team show: ", err);

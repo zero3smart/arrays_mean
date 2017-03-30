@@ -39,11 +39,19 @@
 		// $scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
 
-
 			if (!$scope.user._team || $scope.user._team.length == 0){
 				$scope.user._team = {};
+
+				if ($scope.env.node_env == 'enterprise' && $scope.env.subdomain) {
+					$scope.user._team = {
+						subdomain: $scope.env.subdomain
+					}
+					$scope.hideTeam = true;
+
+				}
+
 			} else {
-				$scope.infoForm.subdomain.$setValidity('subdomainAvailable',false);
+				if ($scope.infoForm.subdomain) $scope.infoForm.subdomain.$setValidity('subdomainAvailable',false);
 				$scope.invitedUser = true;
 				$scope.user._team = $scope.user._team[0];
 			}

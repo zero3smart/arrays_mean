@@ -36,7 +36,7 @@ var updateSubscriptionInfo = function(user, callback) {
 
                 return callback();
             });
-        
+
         }
         return callback();
 
@@ -70,24 +70,24 @@ if (process.env.NODE_ENV !== 'enterprise') {
                     req.logIn(user, function(err) {
                         if (err) return next(err);
 
-                        
+
                         // Update subscription info from Recurly
                         updateSubscriptionInfo(user, function(err) {
                             if (err) return next(err);
 
                             return res.redirect(req.session.returnTo || '/dashboard');
                         });
-                        
+
                     });
                 }
             }
         })(req, res, next);
     });
 
-} 
+}
 
 router.post('/login', function(req, res, next) {
-    
+
     passport.authenticate('local', function(err, user, info) {
 
         if (err) return next(err);
@@ -115,8 +115,8 @@ router.post('/login', function(req, res, next) {
                     });
 
                 }
-                
-                
+
+
             });
         }
     })(req, res, next);
@@ -124,8 +124,8 @@ router.post('/login', function(req, res, next) {
 
 router.get('/login', function(req, res) {
     if (req.user) {
-        User.findById(req.user, function(err, user) {
 
+        User.findById(req.user, function(err, user) {
 
             if (user) {
                 if (!user.defaultLoginTeam || user._team.length === 0) {
