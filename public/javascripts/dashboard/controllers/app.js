@@ -174,7 +174,7 @@ angular
                 subdomain: $scope.user.defaultLoginTeam.subdomain, // String
                 sample_viz_created: $scope.user.sampleImported // Boolean
               }
-              console.log(optionsUE)
+              // console.log(optionsUE)
               UE.pageHit(optionsUE);
 
 
