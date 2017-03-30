@@ -258,14 +258,12 @@ angular.module('arraysApp')
                     })
                         .then(function (savedDataset) {
 
-                            /** If user saves changes to a view, make it visible for what's being saved and also on the dataset copy */
-                            dataset.fe_views.views[data.name] = {visible: true};
+                            /** If user saves changes to a view, make it visible */
                             savedDataset.fe_views.views[data.name].visible = true;
                             if (data.name == "wordCloud") {
                                 if (reImportKeywordsCache(savedDataset.fe_views.views[data.name].keywords)) {
                                     $scope.keywordsChanged = true;
                                     savedDataset.dirty = 3;
-                                    savedDataset.firstImport = 3;
                                     $scope.tutorial.message = "You have unprocessed changes. \'Save\' to process."
                                 }
                             }
