@@ -608,7 +608,7 @@ angular.module('arraysApp')
                 };
 
                 $scope.AppendNumberOfItems = function(menu, cols) {
-                    if (menu == 'Aggregate By') {
+                    if (menu == 'Aggregate By' || menu == 'Y Axis') {
                         cols.push('Number of Items');
                     }
                     return cols;
