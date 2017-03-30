@@ -242,11 +242,11 @@ angular.module('arraysApp')
                     });
                 }
 
-                // //Send notification to Intercom when dataset is imported
-                // window.Intercom('trackEvent', 'Visualization Imported', {
-                //    viz_title: datasource.title,
-                //    sample: datasource.sample || false
-                // });
+                //Send notification to Intercom when dataset is imported
+                window.Intercom('trackEvent', 'Visualization Imported', {
+                   viz_title: datasource.title,
+                   sample: datasource.sample || false
+                });
 
                 //Send notification to Intercom when dataset is imported
                 userengage('event.vizImported', {

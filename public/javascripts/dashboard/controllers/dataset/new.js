@@ -11,9 +11,9 @@ angular.module('arraysApp')
             $scope.submitForm = function(isValid) {
 
                 //Send notification to Intercom when new visualization is submitted
-                // window.Intercom('trackEvent', 'New Viz Created', {
-                //    viz_title: dataset.title,
-                // });
+                window.Intercom('trackEvent', 'New Viz Created', {
+                   viz_title: dataset.title,
+                });
 
                 //Send notification to Intercom when new visualization is submitted
                 userengage('event.newVizCreated', {viz_title: dataset.title});

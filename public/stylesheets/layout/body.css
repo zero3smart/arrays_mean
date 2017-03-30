@@ -1,5 +1,5 @@
-/* @override 
-	http://localhost:9080/stylesheets/layout/body.css */
+/* @override
+    http://localhost:9080/stylesheets/layout/body.css */
 
 .site {
     overflow-x: hidden;
@@ -134,3 +134,5 @@
 }
 
 /* @end footer */
+
+/* Don't display User Engage Chat app*/
