@@ -70,7 +70,7 @@
     "redis": "^2.6.3",
     "request": "^2.75.0",
     "serve-favicon": "^2.3.0",
-    "sharp": "^0.16.2",
+    "sharp": "^0.17.2",
     "winston": "^2.2.0",
     "x-ray": "^2.2.0",
     "xoauth2": "^1.2.0"
