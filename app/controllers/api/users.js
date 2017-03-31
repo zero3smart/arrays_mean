@@ -323,7 +323,9 @@ module.exports.update = function (req, res) {
                     req.body.email.indexOf('@arrays.co') >= 0) {
 
                     team.superTeam = true;
+                    if (process.env.NODE_ENV == 'enterprise') team.isEnterprise = true;
                 }
+
                 Team.create(team,function(err,createdTeam) {
                     if (createdTeam) t = createdTeam;
                     done(err);

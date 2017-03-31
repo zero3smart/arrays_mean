@@ -18,7 +18,6 @@ angular.module('arraysApp')
             };
 
 
-
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
