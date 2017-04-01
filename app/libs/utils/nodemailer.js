@@ -63,7 +63,8 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
         link = protocol + team.subdomain + '.' + rootDomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + default_view;
         linkMsg = 'Use the following link to view your visualization:';
     } else {
-        link = protocol + 'app.' + rootDomain +  '/dashboard/dataset/views/' + dataset._id;
+
+        link = protocol + (process.env.NODE_ENV !== 'enterprise') ? 'app.' : '' + rootDomain +  '/dashboard/dataset/views/' + dataset._id;
         linkMsg = 'Use the following link to continue editing your visualization:';
     }
 
