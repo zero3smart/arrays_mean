@@ -58,7 +58,7 @@ module.exports = function (nunjucks_env,env) {
     })
 
     nunjucks_env.addFilter('displayValueForCol',function(displayTitleOverridesMap,col) {
-   
+
 
         if (typeof displayTitleOverridesMap !== 'undefined' && displayTitleOverridesMap[col]) {
             return displayTitleOverridesMap[col]
@@ -118,11 +118,11 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
         if (Array.isArray(array)) {
             var indexOfNullType = array.indexOf(null);
-     
+
             if (indexOfNullType >= 0) {
                 array.splice(indexOfNullType,1);
             }
-        
+
             return array.toString()
         }
     })
@@ -131,7 +131,7 @@ module.exports = function (nunjucks_env,env) {
         if (!colName) return '';
         return colName.replace(/\./g, "_");
     });
-    
+
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
 
@@ -266,7 +266,7 @@ module.exports = function (nunjucks_env,env) {
 
     nunjucks_env.addFilter('removeComma',function(val,field,datatypes) {
 
-        if (typeof datatypes !== 'undefined' && datatypes[field] && 
+        if (typeof datatypes !== 'undefined' && datatypes[field] &&
             (datatypes[field].operation == 'ToInteger' || datatypes[field].operation == 'ToFloat')) {
             return val.replace(',','');
         }
@@ -327,7 +327,7 @@ module.exports = function (nunjucks_env,env) {
             return substring;
         }
         return srcDocPKey;
-   
+
     })
 
     // Object Row Coercion Data Type
@@ -337,7 +337,7 @@ module.exports = function (nunjucks_env,env) {
 
     nunjucks_env.addFilter('formatIntegerWithCommas', function(field) {
         if (typeof field == 'number') {
-            var splitNum = field.toString().split('.'); 
+            var splitNum = field.toString().split('.');
             var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             var decimal = splitNum[1] ? '.' + splitNum[1] : '';
             return number + decimal;
@@ -346,7 +346,6 @@ module.exports = function (nunjucks_env,env) {
 
     });
 
-
     nunjucks_env.addFilter('extractPreviewFromBasePath',function(url) {
         var field = 'preview';
         var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
@@ -354,7 +353,7 @@ module.exports = function (nunjucks_env,env) {
 
         if (string && string.length > 0) return string[1];
         return;
-    })
+    });
 
     var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
     var host = env.HOST? env.HOST: 'localhost:9080';
@@ -370,11 +369,11 @@ module.exports = function (nunjucks_env,env) {
     if (env.NODE_ENV == 'production') {
         marketingPage += "www.";
     }
-    exploreURL += host 
+    exploreURL += host
     marketingPage += host;
-   
 
-   
+
+
 
 
     nunjucks_env.addGlobal('siteBaseURL',protocol + host);
@@ -392,16 +391,16 @@ module.exports = function (nunjucks_env,env) {
         var key = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + subdomain + '/datasets/' +
         datasetId + '/assets/'
         if (type == 'banner') {
-            key += 'banner/' + relativePath; 
-        } 
+            key += 'banner/' + relativePath;
+        }
 
-        
+
         return key;
 
     })
 
     nunjucks_env.addGlobal('retrieveImageURLFromDoc',function(subdomain,docPKey,datasetId,viewType) {
-    
+
 
         var key = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + subdomain + '/datasets/' +
         datasetId + '/assets/images/';

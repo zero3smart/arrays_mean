@@ -1,5 +1,5 @@
-/* @override 
-	http://localhost:9080/stylesheets/module/array-create.css */
+/* @override
+    http://localhost:9080/stylesheets/module/array-create.css */
 
 .array-create {
     background-color: var(--color-background);
@@ -112,7 +112,11 @@
 .source-link,
 .source-link:hover,
 .source-link:focus,
-.source-link:active {
+.source-link:active,
+.team-link,
+.team-link:hover,
+.team-link:focus,
+.team-link:active {
     color: var(--color-text-light);
 }
 
@@ -140,24 +144,24 @@
 }
 
 /*.form-source input[type="radio"]:checked + .panel-source {
-	border-color: #9b9b9b;
+    border-color: #9b9b9b;
 }*/
 
 /*.form-source input[type="radio"]:checked + .panel-source:after {
-	position: absolute;
-	top: 15px;
-	right: 15px;
-	display: block;
-	padding-top: 4px;
-	width: 30px;
-	height: 30px;
-	border-radius: 100%;
-	background-color: #9b9b9b;
-	color: white;
-	content: "\e013";
-	text-align: center;
-	font-size: 16px;
-	font-family: "Glyphicons Halflings";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: block;
+    padding-top: 4px;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    background-color: #9b9b9b;
+    color: white;
+    content: "\e013";
+    text-align: center;
+    font-size: 16px;
+    font-family: "Glyphicons Halflings";
 }*/
 
 /**
@@ -258,6 +262,7 @@
     left: 0px;
     width: 100%;
     font-weight: 600;
+    line-height: normal;
 }
 
 .explore-tile-meta span {
@@ -307,23 +312,33 @@
     }
 }
 
-.source-underline {
+.team-underline {
+    color: #FFF;
+    font-weight: 600;
+}
+
+.source-underline,
+.source-updated {
     color: #FFF;
     font-weight: 200;
 }
 
 .source-underline:hover,
-.source-underline:focus {
+.source-underline:focus,
+.team-underline:hover,
+.team-underline:focus {
     color: #FFF;
     text-decoration: none;
 }
 
-.source-underline:hover:before {
+.source-underline:hover:before,
+.team-underline:hover:before {
     transform: scaleX(1);
     visibility: visible;
 }
 
-.source-underline:before {
+.source-underline:before,
+.team-underline:before {
     content: '';
     position: absolute;
     width: 100%;
