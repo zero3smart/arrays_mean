@@ -18,10 +18,14 @@ $(window).load(function () {
 });
 
 $(document).ready(function () {
-    /**
-     * Truncate team title and vis title if Browser is not webkit
-     */
+
+    setOriginalTextAttribute('.explore-tile-header h2');
+    setOriginalTextAttribute('.team-link');
     var isWebkit = 'WebkitAppearance' in document.documentElement.style
+
+    /**
+     * Truncate team title and vis title if webkit browser
+     */
     if (!isWebkit) {
         loopThroughTileElement('.explore-tile-header h2', 28);
         loopThroughTileElement('.team-link', 16);
@@ -481,16 +485,16 @@ function trackEvent(eventName, eventPayload) {
     mixpanel.track(eventName, eventPayload);
 }
 
+function setOriginalTextAttribute(element) {
+    $(element).each(function (index, currentElement) {
+        $(currentElement).attr("originalText", currentElement.innerText);
+    })
+}
+
 function loopThroughTileElement(element, fontSize) {
     var containerWidth = $('.explore-tile-header').width();
     $(element).each(function (index, currentElement) {
-        var text;
-        var textLength = currentElement.innerText.length;
-        if (currentElement.innerText.substring(textLength - 3, textLength) === '...') {
-            text = currentElement.innerText.substring(0, textLength - 3);
-        } else {
-            text = currentElement.innerText;
-        }
+        var text = $(currentElement).attr("originalText");
         currentElement.innerText = truncate(containerWidth, text, fontSize);
 
     })
@@ -502,9 +506,11 @@ function truncate(containerWidth, text, fontSize) {
     // // so if the length of the title * 28 > the width of the explore tile container * 2, it needs to be truncated
     var textSize = fontSize * text.length;
     var containerMax = containerWidth * 2;
-    if (textSize > containerMax) {
+
+    if (textSize/2 > containerMax) {
         var difference = parseInt((textSize - containerMax)/fontSize);
-        var maxLength = (text.length - difference) * 2;
+        var maxLength = (text.length - 3 - difference) * 2;
+        // console.log(maxLength)
         // remove the difference from the end of the string
         truncatedText = text.substring(0, maxLength);
         truncatedText += "...";
