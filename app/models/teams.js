@@ -70,7 +70,7 @@ team.GetTeams = function(fn) {
 
 function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
     if (process.env.NODE_ENV == 'enterprise') {
-        teamQuery = {subdomain: process.env.subdomain};
+        teamQuery = {subdomain: process.env.SUBDOMAIN};
     }
 
 

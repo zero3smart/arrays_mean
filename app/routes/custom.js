@@ -77,7 +77,7 @@ router.get('/env',function(req,res) {
             host: host,
             s3Bucket: process.env.AWS_S3_BUCKET,
             authProtocol: process.env.AUTH_PROTOCOL,
-            subdomain: process.env.subdomain
+            subdomain: process.env.SUBDOMAIN
         }
         return res.json(obj);
 
@@ -105,8 +105,8 @@ router.get('/:source_key', ensureAuthorized, function(req,res) {
 router.get('/:source_key/getData',ensureAuthorized,function(req,res) {
 
     var team = req.subdomains[0];
-    if (!team && process.env.subdomain) {
-        team = process.env.subdomain;
+    if (!team && process.env.SUBDOMAIN) {
+        team = process.env.SUBDOMAIN;
     }
     var controller = require('../../user/' + team + '/src/controller');
     controller.BindData(req,function(err,bindData) {
@@ -129,7 +129,7 @@ router.get('/',function(req,res) {
             var data = {
                 env: process.env,
                 team: {
-                    title: process.env.subdomain
+                    title: process.env.SUBDOMAIN
                 }
 
             };

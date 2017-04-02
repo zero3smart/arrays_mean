@@ -308,8 +308,8 @@ module.exports.update = function (req, res) {
         var u;
 
         batch.push(function(done) {
-            if (process.env.NODE_ENV == 'enterprise' && process.env.subdomain) {
-                Team.findOne({subdomain: process.env.subdomain},function(err,sub) {
+            if (process.env.NODE_ENV == 'enterprise' && process.env.SUBDOMAIN) {
+                Team.findOne({subdomain: process.env.SUBDOMAIN},function(err,sub) {
                     if (sub) t = sub;
                     done(err);
                 })

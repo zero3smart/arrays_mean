@@ -81,7 +81,7 @@ if (process.env.NODE_ENV !== 'enterprise') {
     if (process.env.AUTH_PROTOCOL == 'LDAP') {
 
          var SamlStrategy = require('passport-saml').Strategy;
-         var configPath = '../user/' + (process.env.subdomain) + '/src/config.json';
+         var configPath = '../user/' + (process.env.SUBDOMAIN) + '/src/config.json';
          var authConfig = require(configPath);
 
          var samlStrategy = new SamlStrategy({
@@ -92,7 +92,7 @@ if (process.env.NODE_ENV !== 'enterprise') {
          },function(profile,done) {
             if (!profile.email) {
                 return done(new Error("No email found"),{message: 'No email found'});
-            } 
+            }
             var findQuery = {email: profile.email};
             var insertQuery = {
                 email: profile.email,

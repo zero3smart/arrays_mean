@@ -79,9 +79,9 @@
             </md-menu>
         </div>
 
-        <md-button ng-show="dataset.connection" class="md-dashboard" ng-click="openJoinTablesDialog()">
+   <!--      <md-button ng-show="dataset.connection" class="md-dashboard" ng-click="openJoinTablesDialog()">
             <span class="btn-label">Join Tables</span>
-        </md-button>
+        </md-button> -->
 
         <div layout="row" layout-align="space-between center" class="no-padding">
             <h4>We found these fields in your data source:</h4>
@@ -101,7 +101,7 @@
             <li ng-repeat="field in data.fields" ng-class="{'custom': field.custom}"
                 layout="row" layout-align="space-between center">
 
-                <span class="order dashboard-list-icon" ng-hide="dataset.connection || 
+                <span class="order dashboard-list-icon" ng-hide="dataset.connection ||
                 team.isEnterprise" aa-tooltip="Drag to re-order" flex="10">
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
@@ -154,7 +154,7 @@
                     ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex,
                     null,$index)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
-                    
+
                 </span>
 
             </li>

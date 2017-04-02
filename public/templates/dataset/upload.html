@@ -5,19 +5,20 @@
             <h4 class="no-padding" ng-if="dataset.fileName">Data Source</h4>
             <!-- <h4 class="no-padding" ng-if="dataset.fileName">Data Source(s)</h4> -->
 
-            <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
+
+             <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Add a data source from the options below.</p>
                 <ul class="dashboard-list">
                     <!-- inline cursor styling until the functionality is implemented -->
                     <li><a class="pointer" ng-click="addSourceType('csv')">Upload a spreadsheet</a> <span class="sample">(CSV, TSV)</span></li>
                     <li><a class="pointer" style="cursor:help" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Upload a JSON file</a></li>
-               <!--      <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li> -->
+                    <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="addSourceType('database')">Connect to a database</a></li>
                     <li><a class="pointer" ng-click="addSourceType('database')"><span ng-if="env.node_env !== 'enterprise' " aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature" style="cursor:help">Import from database</span></a></li>
                     <li><a class="pointer" style="cursor: help" aa-tooltip="Please contact support@arrays.co to upgrade your plan and add support for this feature">Import from API</a></li>
                 </ul>
             </div>
 
-             <div ng-if="addingSourceType=='database' || dataset.connection">
+             <div ng-if="addingSourceType=='database'">
 
                 <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
 
@@ -59,7 +60,7 @@
 
 
 
-            <div ng-if="addingSourceType == 'csv'" ng-hide="dataset.fileName" class="aa-file-select no-padding">
+           <!--  <div ng-if="addingSourceType == 'csv'" ng-hide="dataset.fileName" class="aa-file-select no-padding">
                 <label>Upload spreadsheet</label>
                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
 
@@ -98,9 +99,8 @@
                     <md-button class="md-block md-dashboard cancel" style="margin-top: 11px;" ng-click="item.cancel()">
                         <span class="btn-label">Cancel</span>
                     </md-button>
-
                 </div>
-            </div>
+            </div> -->
 
 
             <ul class="dashboard-list user-list no-padding" ng-cloak>
@@ -115,6 +115,11 @@
                         ng-click="removeSourceDialog(dataset, removeSource, $event)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
+
+                    <!-- <md-button class="md-block md-dashboard">
+                        <span class="btn-label">Update</span>
+                    </md-button> -->
+
                 </li>
             </ul>
 
@@ -139,10 +144,13 @@
                 <ul class="dashboard-list user-list" ng-if="!additionalDatasource._id" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
                     <li>
                         <div ng-hide="additionalDatasource.uploader.isUploading">
+
                             <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
                                 <li><a class="pointer" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
                                 <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
+                                <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="additionalDatasource.setSourceType('database')">Connect to a database</a></li>
                             </ul>
+
                             <div ng-if="additionalDatasource.sourceType == 'csv'">
                                 <label>Upload spreadsheet</label>
                                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
@@ -164,6 +172,55 @@
 
                                 <p class="aa-file-select-close"><a class="pointer" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
                             </div>
+
+                            <div ng-if="additionalDatasource.sourceType == 'database' ">
+
+                                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
+
+                                    <md-option value="hadoop">
+                                       Hadoop
+                                    </md-option>
+
+                                </md-select>
+
+                                <md-input-container layout="row" flex="80" md-no-float>
+                                    <input ng-model="dataset.connection.url"
+                                    aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
+                                </md-input-container>
+
+                                <md-input-container ng-show="dataset.connection.tableName || isConnecting == false" layout="row" flex="80" md-no-float>
+
+                                    <md-select ng-model="dataset.connection.tableName" aria-label="Dataset Connection Table Name"
+                                        placeholder="Table Name">
+                                        <md-option ng-repeat="tab in tables" value="{{tab.tab_name}}">
+                                            {{tab.tab_name}}
+                                        </md-option>
+                                    </md-select>
+
+
+                                </md-input-container>
+
+
+                                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
+                                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0" ng-hide="isConnecting==false"
+                                    ng-disabled="isConnecting || !dataset.connection.type ">
+                                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
+                                </md-button>
+
+                                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p>
+
+
+                            </div>
+
+
+
+
+
+
+
+
+
+
                         </div>
 
                         <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-show="additionalDatasource.uploader.isUploading">
@@ -191,48 +248,7 @@
                 </ul>
                 <!-- </div> -->
             </div>
-        <!--  -->
-        <div ng-hide="!dataset.fileName" class="aa-file-select no-padding">
 
-            <div ng-hide="uploader.isUploading">
-                <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
-
-                <div layout="row" layout-align="start center">
-                    <label for="datafile" class="md-button md-dashboard" ng-hide="!uploadForm.$valid || uploader.queue.length > 0" >
-                        <span aa-tooltip="Make sure you include the same columns from your original data source.">Replace data source</span>
-                    </label>
-                    <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name }}</span>
-                </div>
-
-                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploadNewDatasource()"
-                    ng-if="uploader.queue.length > 0 && dataset.fileName"
-                    ng-hide="uploader.isUploading || !uploadForm.$valid">
-                    <span class="btn-label">Upload Data</span>
-                </md-button>
-
-                <p class="aa-file-select-close" ng-show="env.node_env == 'enterprise'"><a class="pointer" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
-            </div>
-            <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
-
-                <div layout="row" layout-align="space-between center">
-                    <span flex="45">
-                        <span class="dashboard-list-name">{{ item.file.name }}</span>
-                    </span>
-
-                    <div flex="5"></div>
-
-
-                    <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
-                        <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
-                    </div>
-                </div>
-                <md-button class="md-block md-dashboard cancel" style="margin-top: 11px;" ng-click="item.cancel()">
-                    <span class="btn-label">Cancel</span>
-                </md-button>
-
-            </div>
-        </div>
-        <!--  -->
 
         <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && dataset.fileName && !addingAdditionalDatasource">
             <md-input-container>

@@ -57,7 +57,7 @@
                 <div>
                     <button id="login-submit" class="btn btn-primary" type="submit">Login</button>
 
-                    {% if env.NODE_ENV !== 'production' %}
+                    {% if env.NODE_ENV !== 'production' and env.NODE_ENV !== 'enterprise' %}
                     <span>or</span>
                      <a href="/signup/email" class="signup-link"> create an account </a>
                     {% endif %}
@@ -103,7 +103,7 @@
                 <div class="row socialButtons">
                    <div class="col-xs-6 col-xs-offset-3">
                       <a href="/auth/{{env.AUTH_PROTOCOL | lower}}" class="btn btn-block btn-custom">
-                        {{env.AUTH_PROTOCOL}}
+                        Use your {{env.ENTERPRISE_CLIENT}} Account
                       </a>
                    </div>
                 </div>
