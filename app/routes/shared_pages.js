@@ -15,6 +15,7 @@ var scatterplot_controller = require('../controllers/client/data_preparation/sca
 var pie_chart_controller = require('../controllers/client/data_preparation/pie_chart');
 var pie_set_controller = require('../controllers/client/data_preparation/pie_set');
 var bar_chart_controller = require('../controllers/client/data_preparation/bar_chart');
+var globe_controller = require('../controllers/client/data_preparation/globe');
 
 var controllers = {
     object_details: object_details_controller,
@@ -26,7 +27,8 @@ var controllers = {
     map: map_controller,
     scatterplot: scatterplot_controller,
     pieSet: pie_set_controller,
-    barChart: bar_chart_controller
+    barChart: bar_chart_controller,
+    globe: globe_controller
 };
 
 router.get('/:shared_page_id', function (req, res) {
@@ -59,7 +61,7 @@ router.get('/:shared_page_id', function (req, res) {
             var viewType = doc.viewType;
             var query = doc.query || {};
 
-            var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'pie-set', 'bar-chart'];
+            var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'pie-set', 'bar-chart', 'globe'];
             if (viewTypes.indexOf(viewType) !== -1) {
                 query.source_key = source_key;
                 var camelCaseViewType = viewType.replace(/-([a-z])/ig, function (all, letter) {

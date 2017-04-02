@@ -1,33 +1,78 @@
-{% if user %}
-    <!-- start UserEngage widget -->
-<script data-cfasync="false" type="text/javascript">
-window.civchat = {
-  apiKey: "{{ env.USERENGAGE_API_KEY }}",
-  name: "{{ user.firstName }} {{ user.lastName }}", // Full name
-  email: "{{ user.email }}", // Email address
-  created_at: {{ user.createdAt | unixTimestamp }}, // Signup date as a Unix timestamp
-  {% if user.defaultLoginTeam %}
-   company: {
-        name: "{{ user.defaultLoginTeam.title }}",
-        created_at: {{ user.defaultLoginTeam.createdAt | unixTimestamp }},
-        plan: "{{ user.defaultLoginTeam.subscription.plan.plan_code }}",
-   },
-   team_title: "{{ user.defaultLoginTeam.title }}",
-   subdomain: "{{ user.defaultLoginTeam.subdomain }}", // String
-   sample_viz_created: {{ user.sampleImported }}
-   {% endif %}
-};
+<div class="explore-tile col-md-4 col-sm-6 col-xs-12">
+    <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
+    <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
+    <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
+    {% if baseUrl %}
+        <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
+    {% else %}
+        <input type="hidden" name="subdomainUrl" value="{{source.baseUrl}}" class="hidden">
+    {% endif %}
 
-</script>
-<script data-cfasync="false" type="text/javascript" src="https://widget.userengage.io/widget.js"></script>
-    <!-- end UserEngage widget -->
-{% else %}
-    <!-- start UserEngage widget -->
-<script data-cfasync="false" type="text/javascript">
-window.civchat = {
-  apiKey: 'xzCdbCnOf7Cdgov2le7b8XMwXvMBlz6ooivSJgrCqCKGtaPs1I0NhqSlrMcunjph',
-};
-</script>
-<script data-cfasync="false" type="text/javascript" src="https://widget.userengage.io/widget.js"></script>
-    <!-- end UserEngage widget -->
-{% endif %}
+    <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array mobile-max-width">
+        {% if source.brandColor %}
+        <style scoped>
+            .source-{{ source.key }} .explore-tile-header {
+                background-color: {{ source.brandColor }};
+            }
+
+            {% if source.description %}
+            .source-{{ source.key }}:hover .explore-tile-description-container {
+                max-height: 100%;
+                transition: max-height 300ms ease;
+            }
+            {% endif %}
+        </style>
+        {% endif %}
+
+        <div class="explore-tile-body">
+            <div class="explore-tile-header">
+                <h2>{{ source.title }}</h2>
+                {{ source.default_view }}
+                <div class="explore-tile-meta-wrapper">
+                    <div class="explore-tile-meta">
+                        <span><a href="{{ source.baseUrl }}" class="team-link team-underline"> {{ source.author }}</a></span>
+                    </div>
+                    <div class="explore-tile-meta hidden-xs">
+                        {% set comma = joiner() %}
+                        {% for url in source.urls -%}
+                          {{ comma() }} <span><a href="{{ url }}" class="source-link source-underline" target="_blank">Source</a></span>
+                          <span>|</span>
+                        {%- endfor %}
+                    <!-- </div> -->
+                        <span class="source-updated">{{ source.createdAt | dateFormattedAs_monthDayYear_array }}</span>
+                    <!-- <div class="explore-tile-meta"> -->
+
+                    </div>
+                </div>
+            </div>
+
+
+            {% if source.banner and team.subdomain%}
+            <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,team.subdomain,source._id,'banner')}}')">
+            {% elif source.banner and source.subdomain %}
+            <div class="explore-tile-banner-image" style="background-image:url('{{ makeURLfrom_relativePath(source.banner,source.subdomain,source._id,'banner')}}')">
+            {% else %}
+            <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}">
+            {% endif %}
+                {% if source.description %}
+                <div class="explore-tile-description-container team-tile-description">
+                    <div class="explore-tile-description">
+                    {% if source.description.length > 300 %}
+                    {% set space = source.description.indexOf(' ', 290) %}
+                        {% if space %}
+                            {{ source.description.slice(0,space) + '...' }}
+                        {% elif source.description.length > 325 %}
+                            {{ source.description.slice(0,300) + '...' }}
+                        {% else %}
+                            {{ source.description }}
+                        {% endif %}
+                    {% else %}
+                        {{ source.description }}
+                    {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div><!-- .panel -->
+</div>

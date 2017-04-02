@@ -29,9 +29,9 @@ router.post('/share', function (req, res) {
         return matches[1];
     }
 
-    var urlRegEx = /^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
+    var urlRegEx = /^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart|globe)/g;
 
-    if (/^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
+    if (/^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart|globe)/g.test(pathname) == true) {
         pageType = "array_view";
         //
         if (/^\/.*\/gallery/g.test(pathname) == true) {
@@ -52,6 +52,8 @@ router.post('/share', function (req, res) {
             viewType_orNull = "pie-set";
         } else if (/^\/.*\/bar-chart/g.test(pathname) == true) {
             viewType_orNull = "bar-chart";
+        } else if (/^\/.*\/globe/g.test(pathname) == true) {
+            viewType_orNull = "globe";
         }
         //
         source_key = _stringFromPathNameWithRegEx(urlRegEx);

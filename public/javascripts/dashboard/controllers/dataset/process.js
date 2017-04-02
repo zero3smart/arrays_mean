@@ -336,9 +336,9 @@ angular.module('arraysApp')
                 });
 
 
-            $scope.dirty = dataset.connection && !dataset.fileName ? 0 : $scope.$parent.$parent.dataset.dirty;
+            $scope.dirty = (dataset.connection && !dataset.fileName) ? 0 : $scope.$parent.$parent.dataset.dirty;
 
-            $scope.imported =  dataset.connection && !dataset.fileName ? true : $scope.$parent.$parent.dataset.imported;
+            $scope.imported =  (dataset.connection && !dataset.fileName) ? true : $scope.$parent.$parent.dataset.imported;
 
 
             $scope.additionalDatasources.forEach(function(datasource) {

@@ -219,12 +219,6 @@
 
 
 
-
-
-
-
-
-
                         </div>
 
                         <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-show="additionalDatasource.uploader.isUploading">
@@ -254,7 +248,7 @@
             </div>
 
 
-        <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && dataset.fileName && !addingAdditionalDatasource">
+        <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && (dataset.fileName || dataset.connection) && !addingAdditionalDatasource">
             <md-input-container>
                 <md-button class="md-dashboard" ng-click="addNewDatasource()">
                     <span class="btn-label">Combine with another data source</span></md-button>
