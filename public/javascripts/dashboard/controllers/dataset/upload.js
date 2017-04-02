@@ -22,6 +22,16 @@ angular.module('arraysApp')
                 $scope.tables = $scope.$parent.$parent.dataset.tables;
             }
 
+            $scope.resetAdditionalSource = function(additonalSrc) {
+                if (!dataset.connection) {
+                    additonalSrc.uploader.removeAndReset(additonalSrc.uploader.queue[0]);
+                } else {
+                    additonalSrc.setSourceType("");
+                    delete dataset.connection;
+                }
+
+            }
+
 
             $scope.addSourceType = function(type) {
                 if (type == 'database' && $scope.env.node_env == 'enterprise') {
@@ -29,6 +39,8 @@ angular.module('arraysApp')
                         dataset.connection = {};
                         dataset.connection.type = 'hadoop'; //default
                     }
+                    $scope.addingSourceType = 'database';
+
                 } else if (type == 'csv') {
                     $scope.addingSourceType = 'csv';
                     delete dataset.connection;
@@ -36,8 +48,11 @@ angular.module('arraysApp')
                     $scope.addingSourceType = '';
                     delete dataset.connection;
                 }
+
                 return $scope.addingSourceType;
             };
+
+
 
             $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
 
@@ -86,6 +101,16 @@ angular.module('arraysApp')
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);
             });
+
+            if (dataset.connection && dataset.fileName) {
+
+
+                $scope.additionalDatasources.push({});
+
+                $scope.additionalDatasources[0].sourceType = 'database';
+                // $scope.additionalDatasources[0].uploader.isUploading = true;
+            }
+
 
             $scope.connectToDB = function() {
                 $scope.isConnecting = true;

@@ -19,6 +19,7 @@
                 </ul>
             </div>
 
+
              <div ng-if="addingSourceType=='database'">
 
                 <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
@@ -144,6 +145,7 @@
 
                 <ul class="dashboard-list user-list" ng-if="!additionalDatasource._id" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
                     <li>
+
                         <div ng-hide="additionalDatasource.uploader.isUploading">
 
                             <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
@@ -171,7 +173,7 @@
                                     <span class="btn-label">Upload Data</span>
                                 </md-button>
 
-                                <p class="aa-file-select-close"><a class="pointer" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
+                                <p class="aa-file-select-close"><a class="pointer" ng-click="resetAdditionalSource(additionalDatasource)">Go back</a></p>
                             </div>
 
                             <div ng-if="additionalDatasource.sourceType == 'database' ">
@@ -208,7 +210,8 @@
                                     <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
                                 </md-button>
 
-                                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p>
+                         <!--        <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p> -->
+                               <p class="aa-file-select-close"><a class="pointer" ng-click="resetAdditionalSource(additionalDatasource)">Go back</a></p>
 
 
                             </div>

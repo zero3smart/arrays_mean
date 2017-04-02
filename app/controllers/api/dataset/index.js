@@ -359,53 +359,55 @@ module.exports.get = function (req, res) {
 
             if (description.connection) { //remote, read cols
 
-                if (req.session[req.params.id] && req.session[req.params.id].tables && req.session[req.params.id].columns &&
-                    req.session[req.params.id] && req.session[req.params.id].columns[description.connection.tableName]) {
-                    description.columns =  req.session[req.params.id].columns[description.connection.tableName];
-                    description.tables = req.session[req.params.id].tables;
-                    return res.status(200).json({dataset: description});
-                }
+               return res.status(200).json({dataset: description});
 
-                if (description.connection.type == 'hadoop') {
+                // if (req.session[req.params.id] && req.session[req.params.id].tables && req.session[req.params.id].columns &&
+                //     req.session[req.params.id] && req.session[req.params.id].columns[description.connection.tableName]) {
+                //     description.columns =  req.session[req.params.id].columns[description.connection.tableName];
+                //     description.tables = req.session[req.params.id].tables;
+                //     return res.status(200).json({dataset: description});
+                // }
 
-                    var batch = new Batch();
-                    batch.concurrency(1);
+                // if (description.connection.type == 'hadoop') {
 
-                    if (!req.session[req.params.id] || !req.session[req.params.id].tables) {
-                        if (!req.session[req.params.id]) req.session[req.params.id] = {};
+                //     var batch = new Batch();
+                //     batch.concurrency(1);
 
-                        batch.push(function(done) {
-                            hadoop.initConnection({url:description.connection.url},function(err,tables) {
-                                if (err) return done(err);
-                                req.session[req.params.id].tables = tables;
-                                done();
+                //     if (!req.session[req.params.id] || !req.session[req.params.id].tables) {
+                //         if (!req.session[req.params.id]) req.session[req.params.id] = {};
 
-                            })
-                        })
-                    }
+                //         batch.push(function(done) {
+                //             hadoop.initConnection({url:description.connection.url},function(err,tables) {
+                //                 if (err) return done(err);
+                //                 req.session[req.params.id].tables = tables;
+                //                 done();
 
-                    batch.push(function(done) {
+                //             })
+                //         })
+                //     }
 
-                        hadoop.readColumnsAndSample({url:description.connection.url},description.connection.tableName,function(err,data) {
-                            if (err) return done(err);
-                            if (!req.session[req.params.id].columns) req.session[req.params.id].columns = {};
-                            req.session[req.params.id].columns[description.connection.tableName] = data;
-                            done();
-                        })
-                    })
+                //     batch.push(function(done) {
 
-
-                    batch.end(function(err) {
-
-
-                        if (err) return res.status(500).json(err);
-                        description.columns = req.session[req.params.id].columns[description.connection.tableName];
-                        description.tables = req.session[req.params.id].tables;
-                        return res.status(200).json({dataset: description});
-                    })
+                //         hadoop.readColumnsAndSample({url:description.connection.url},description.connection.tableName,function(err,data) {
+                //             if (err) return done(err);
+                //             if (!req.session[req.params.id].columns) req.session[req.params.id].columns = {};
+                //             req.session[req.params.id].columns[description.connection.tableName] = data;
+                //             done();
+                //         })
+                //     })
 
 
-                }
+                //     batch.end(function(err) {
+
+
+                //         if (err) return res.status(500).json(err);
+                //         description.columns = req.session[req.params.id].columns[description.connection.tableName];
+                //         description.tables = req.session[req.params.id].tables;
+                //         return res.status(200).json({dataset: description});
+                //     })
+
+
+                // }
 
 
             } else {
