@@ -248,12 +248,6 @@ angular.module('arraysApp')
                    sample: datasource.sample || false
                 });
 
-                //Send notification to Intercom when dataset is imported
-                userengage('event.vizImported', {
-                    viz_title: dataset.title,
-                    sample: datasource.sample || false
-                });
-
                 var id = datasource._id;
 
 
@@ -304,7 +298,7 @@ angular.module('arraysApp')
             $scope.primaryAction.do = angular.noop(); // overwrite with noop, just in case
 
             $scope.$watch('dirty', function(dirty) {
-                if(dirty && !$scope.inProgress && !dataset.connection) {
+                if(dirty && !$scope.inProgress && dataset.fileName) {
                     $scope.importData();
                 }
             });
@@ -313,6 +307,7 @@ angular.module('arraysApp')
             $scope.toggleShowAdvanced = function() {
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
             };
+
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;
@@ -340,9 +335,10 @@ angular.module('arraysApp')
                     });
                 });
 
-            $scope.dirty = dataset.connection ? 0 : $scope.$parent.$parent.dataset.dirty;
 
-            $scope.imported =  dataset.connection ? true : $scope.$parent.$parent.dataset.imported;
+            $scope.dirty = dataset.connection && !dataset.fileName ? 0 : $scope.$parent.$parent.dataset.dirty;
+
+            $scope.imported =  dataset.connection && !dataset.fileName ? true : $scope.$parent.$parent.dataset.imported;
 
 
             $scope.additionalDatasources.forEach(function(datasource) {
@@ -402,7 +398,7 @@ angular.module('arraysApp')
 
             $scope.importData = function() {
                 // datasourceIndex = -1;
-                if (!$scope.$parent.$parent.dataset.connection) {
+                if ($scope.$parent.$parent.dataset.fileName) {
                     $scope.inProgress = true;
                     $scope.jobs = [];
                     importDatasource($scope.$parent.$parent.dataset);
