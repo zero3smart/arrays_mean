@@ -35,8 +35,8 @@ var db;
 
 function _readColumnsAndSample(url,tableName,fn) {
 
-    return fn(null,[{name:'colA',sample:'123',sourceType:'database',
-sourceName: url}, {name: 'colB',sample:'stringjiwji24',sourceType:'database',sourceName: url}]);
+    //return fn(null,[{name:'colA',sample:'123',sourceType:'database',
+    //    sourceName: url}, {name: 'colB',sample:'stringjiwji24',sourceType:'database',sourceName: url}]);
 
     db.reserve(function(err,connObj) {
 
@@ -169,7 +169,7 @@ function _readAllTables(fn) {
 }
 
 function _initConnection(url,callback) {
-    return callback(null);
+    //return callback(null);
 
 
     winston.info("ready to init a new connection.");
@@ -196,7 +196,7 @@ function _initConnection(url,callback) {
 
 module.exports.initConnection = function(body,callback) {
 
-    return callback(null,[{tab_name:'a'},{tab_name:'b'}]);
+    //return callback(null,[{tab_name:'a'},{tab_name:'b'}]);
 
 
 
