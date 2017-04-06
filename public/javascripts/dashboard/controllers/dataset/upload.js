@@ -3,6 +3,7 @@ angular.module('arraysApp')
         function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, $window, viewUrlService) {
 
             $scope.$parent.$parent.dataset = dataset;
+
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
@@ -16,8 +17,11 @@ angular.module('arraysApp')
              */
             // $scope.addingSourceType = ($scope.env.node_env == 'enterprise') ? '' : 'csv';
             $scope.addingSourceType = '';
+            $scope.connectAction = {};
+            $scope.connection = {};
 
-            $scope.tables = [];
+
+            $scope.tables = undefined;
             if ($scope.$parent.$parent.dataset.connection && $scope.$parent.$parent.dataset.connection.tableName) {
                 $scope.tables = $scope.$parent.$parent.dataset.tables;
             }
@@ -29,24 +33,20 @@ angular.module('arraysApp')
                     additonalSrc.setSourceType("");
                     delete dataset.connection;
                 }
-
             }
 
 
             $scope.addSourceType = function(type) {
                 if (type == 'database' && $scope.env.node_env == 'enterprise') {
-                    if (!dataset.connection) {
-                        dataset.connection = {};
-                        dataset.connection.type = 'hadoop'; //default
-                    }
+                    if (!$scope.connection) $scope.connection = {};
+                    $scope.connection.type = 'hadoop';
                     $scope.addingSourceType = 'database';
-
                 } else if (type == 'csv') {
                     $scope.addingSourceType = 'csv';
-                    delete dataset.connection;
+                    $scope.connection = {};
                 } else {
                     $scope.addingSourceType = '';
-                    delete dataset.connection;
+                    $scope.connection = {};
                 }
 
                 return $scope.addingSourceType;
@@ -64,6 +64,12 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
 
+            $scope.$watch('connection.connected',function(connected) {
+                if (connected == true) {
+                    $scope.connectAction.text = "Save";
+                } else $scope.connectAction.text = "Connect";
+            })
+
             $scope.tutorial.message = 'Here you can add your data source.\nIn this example, a spreadsheet has already been uploaded.';
 
             $scope.$watch('dataset.connection.tableName', function(hasTable) {
@@ -72,12 +78,19 @@ angular.module('arraysApp')
                 }
             });
 
+
+
+
             var _save = function() {
+
+
+
                 if (dataset.firstImport == 1) dataset.firstImport = 2;
 
                 var finalizedDataset = angular.copy(dataset);
                 delete finalizedDataset.columns;
                 delete finalizedDataset.__v;
+
 
                 DatasetService.save(finalizedDataset)
                     .then(function() {
@@ -111,16 +124,83 @@ angular.module('arraysApp')
                 // $scope.additionalDatasources[0].uploader.isUploading = true;
             }
 
+            $scope.saveConnection = function(datasource,additional) {
 
-            $scope.connectToDB = function() {
+                 if (!$scope.connection.url || !$scope.connection.type || $scope.connection.url.indexOf('://') == -1 ||
+                    !$scope.connection.tableName) {
+                    $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Please make sure you have fill in all information')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    return;
+
+                }
+
+                var finalizedDataset = angular.copy(datasource);
+                finalizedDataset.connection = $scope.connection;
+                if (additional) finalizedDataset.schema_id = dataset._id;
+                delete finalizedDataset.connection.connected;
+                delete finalizedDataset.columns;
+                delete finalizedDataset.__v;
+
+                DatasetService.save(finalizedDataset)
+                    .then(function(response) {
+
+
+                        if (additional) {
+
+                            datasource._id = response.data.id;
+                            datasource.connection = $scope.connection;
+
+                        } else {
+                            dataset.connection = $scope.connection;
+                            $scope.connection = {};
+                            $scope.addingSourceType = '';
+
+                        }
+
+
+
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Remote datasource connection saved!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+
+
+                    });
+
+            }
+
+
+            $scope.connectToDB = function(datasource,add) {
+                if ($scope.connectAction.text == "Save") return $scope.saveConnection(datasource,add);
+
+
+                if (!$scope.connection.url || !$scope.connection.type || $scope.connection.url.indexOf('://') == -1) {
+                    $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Error in connection settings, please review again')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    return;
+
+                }
+
                 $scope.isConnecting = true;
 
-                DatasetService.connectToRemoteDatasource(dataset._id, dataset.connection)
+                DatasetService.connectToRemoteDatasource(datasource._id, $scope.connection)
                     .then(function(response) {
 
 
                         if (response.status == 200 && !response.data.error) {
                             $scope.isConnecting = false;
+                            $scope.connection.connected = true;
                             $scope.tables = response.data;
 
                             $mdToast.show(
@@ -144,6 +224,7 @@ angular.module('arraysApp')
                     });
             };
 
+            $scope.connectAction.do = ($scope.connectAction.text == "Save") ? $scope.saveConnection: $scope.connectToDB;
 
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
@@ -218,8 +299,10 @@ angular.module('arraysApp')
                 };
 
                 additionalDatasource.sourceType =  ($scope.env.node_env=='enterprise' )? '' : 'csv'; // force csv until JSON is ready
+                if (additionalDatasource.connection) additionalDatasource.sourceType = 'database';
                 additionalDatasource.setSourceType = function(type) {
                     additionalDatasource.sourceType = type;
+                    if (type == 'database') $scope.connection.type = 'hadoop';
                 };
 
                 additionalDatasource.uploader = uploader;
@@ -308,7 +391,8 @@ angular.module('arraysApp')
             };
 
             $scope.addNewDatasource = function () {
-                if (!dataset.fileName) {
+                if ( !dataset.fileName && !dataset.connection) {
+
                     $mdDialog.show(
                         $mdDialog.alert()
                             .clickOutsideToClose(true)
@@ -326,36 +410,48 @@ angular.module('arraysApp')
             };
 
             $scope.removeSource = function(dataset, notify) {
-                DatasetService.deleteSource(dataset._id)
-                    .then(function(response) {
 
-                        if (response.status == 200) {
-                            var toastFileName = dataset.fileName;
-                            dataset.fileName = null;
-                            dataset.raw_rowObjects_coercionScheme = {};
-                            $scope.uploader.queue = [];
-                            if(notify) {
-                                $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(toastFileName + ' removed.')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
-                            }
+
+                 DatasetService.deleteSource(dataset._id)
+                .then(function(response) {
+
+                    if (response.status == 200) {
+                        var toastFileName = (dataset.connection)? 'Remote datasource connection' : dataset.fileName;
+
+                        if  (dataset.connection) {
+                            $scope.addingSourceType = '';
+                            delete dataset.connection;
+                        } else dataset.fileName = null;
+
+
+                        dataset.raw_rowObjects_coercionScheme = {};
+                        $scope.uploader.queue = [];
+                        if(notify) {
+                            $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(toastFileName + ' removed.')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
                         }
+                    }
 
 
-                    });
+                });
+
+
+
 
             };
 
             $scope.removeAdditionalDatasource = function (additionalDatasource, notify) {
                 if (additionalDatasource._id) {
                     DatasetService.removeSubdataset(additionalDatasource._id).then(function () {
+                        var file_n = (additionalDatasource.connection)? 'Remote datasource connection' : additionalDatasource.fileName;
                         if(notify) {
                             $mdToast.show(
                                     $mdToast.simple()
-                                        .textContent(additionalDatasource.fileName + ' removed.')
+                                        .textContent( file_n + ' removed.')
                                         .position('top right')
                                         .hideDelay(3000)
                                 );
@@ -385,6 +481,8 @@ angular.module('arraysApp')
                     // },
                     controller: function($scope, $mdDialog) {
                         $scope.title = datasource.fileName;
+                        $scope.connection = (datasource.connection) ? true: false;
+                        $scope.url = (datasource.connection)? datasource.connection.url: '';
                         $scope.hide = function() {
                             $mdDialog.hide();
                         };

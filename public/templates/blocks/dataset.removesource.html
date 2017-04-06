@@ -5,7 +5,8 @@
         <md-content layout="column">
             <p>
                 Are you sure you want to remove the data source
-                <span><strong>{{ title }}</strong></span>?
+                <span ng-if="!connection"><strong>{{ title }}</strong></span>
+                <span ng-if="connection"><strong>connection {{url}} </strong></span>?
             </p>
         </md-content>
 

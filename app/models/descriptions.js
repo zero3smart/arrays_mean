@@ -55,7 +55,7 @@ var DatasourceDescription_scheme = Schema({
         overwrite: {type: Boolean, default: false},
         scraped: {type: Boolean,default: false},
         selector : String //optional
-    },
+    } ,
 
     fe_fieldDisplayOrder: Array,
     fe_filters: {
@@ -106,7 +106,6 @@ var DatasourceDescription_scheme = Schema({
     lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
-    replacement: {type: Boolean, default: false},
     firstImport: {type: Number, integer: true, default: 1},
     // 0: false, not first import
     // 1: Source tab
@@ -132,6 +131,7 @@ var DatasourceDescription_scheme = Schema({
     //approved
     //disapproved, maybe notify the user about this
     includeEmptyFields: {type: Boolean, default: true}
+
 
 
 
@@ -249,19 +249,23 @@ var _consolidate_descriptions_hasSchema = function (description) {
     var schemaDesc = description.schema_id;
     desc.schemaId = schemaDesc._id;
     for (var attrname in schemaDesc) {
-        if (desc[attrname]) {
-            if (Array.isArray(desc[attrname])) {
-                desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
+        if (attrname !== 'connection') {
 
-            } else if (typeof desc[attrname] == 'string') {
+            if (desc[attrname]) {
+                if (Array.isArray(desc[attrname])) {
+                    desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
 
-            } else if (typeof desc[attrname] == 'object') {
-                desc[attrname] = _mergeObject(schemaDesc[attrname], desc[attrname]);
+                } else if (typeof desc[attrname] == 'string') {
 
+                } else if (typeof desc[attrname] == 'object') {
+                    desc[attrname] = _mergeObject(schemaDesc[attrname], desc[attrname]);
+
+                }
+            } else {
+                desc[attrname] = schemaDesc[attrname]
             }
-        } else {
-            desc[attrname] = schemaDesc[attrname]
         }
+
     }
 
     return desc;

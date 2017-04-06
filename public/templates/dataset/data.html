@@ -21,7 +21,7 @@
             <md-select name="image field" aria-label="Item title"
                        ng-model="data.fe_image.field" ng-change="updateOverwrite()">
                 <md-option value=""></md-option>
-                <md-option ng-repeat="column in dataset.columns | filter: {data_type: 'Text'} track by column.name " value="{{column.name}}">
+                <md-option ng-repeat="column in dataset.columns| filter: {data_type: 'Text'} track by column.name " value="{{column.name}}">
                     {{column.name}}
                 </md-option>
             </md-select>
@@ -86,6 +86,17 @@
         <div layout="row" layout-align="space-between center" class="no-padding">
             <h4>We found these fields in your data source:</h4>
         </div>
+
+        <div style="cursor:pointer;" layout="row" layout-align="space-between center" class="no-padding">
+            <div><a ng-click="changeSourceNameFilter(dataset.fileName,'spreadSheet')">Master [{{dataset.fileName}}] </a></div>
+            <div ng-repeat="otherSource in additionalDatasources">
+                <a ng-if="otherSource.fileName" ng-click="changeSourceNameFilter(otherSource.fileName,'spreadSheet')">{{otherSource.fileName}}</a>
+                <a ng-if="otherSource.connection" ng-click="changeSourceNameFilter(otherSource.connection.url,'database')">{{otherSource.connection.url}}</a>
+            </div>
+        </div>
+
+
+
         <div layout="row" ng-hide="dataset.connection || team.isEnterprise " layout-align="space-between center" class="no-padding">
             <md-button class="md-dashboard" ng-click="toggleExclude(excludeAll)">
                 {{ excludeAll ? 'Exclude' : 'Include' }} all fields
@@ -98,7 +109,7 @@
 
         <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
 
-            <li ng-repeat="field in data.fields" ng-class="{'custom': field.custom}"
+            <li ng-repeat="field in data.fields | filter: {sourceName: fieldFilter.sourceName, sourceType: fieldFilter.sourceType } " ng-class="{'custom': field.custom}"
                 layout="row" layout-align="space-between center">
 
                 <span class="order dashboard-list-icon" ng-hide="dataset.connection ||
@@ -117,8 +128,8 @@
                              ></md-checkbox>
                 </span>
 
-                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex, null, $index)">
-                    {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
+                <span flex ng-if="!dataset.connection" ng-click="openFieldDialog(field.name, field.sample, field.custom, field.customFieldIndex, null, $index,field.sourceName)">
+                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
                         <span ng-if="!field.custom">(Sample: {{ field.sample | limitTo:35 }})</span>
                         <!-- <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray">{{mergeField}}<span ng-if="!$last">,</span>)</span> -->

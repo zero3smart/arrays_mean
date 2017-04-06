@@ -2,7 +2,7 @@
     <md-content layout-padding md-no-ink>
 
             <h2>Select Your Data Source</h2>
-            <h4 class="no-padding" ng-if="dataset.fileName">Data Source</h4>
+            <h4 class="no-padding" ng-if="dataset.fileName || dataset.connection">Data Source</h4>
             <!-- <h4 class="no-padding" ng-if="dataset.fileName">Data Source(s)</h4> -->
 
 
@@ -22,7 +22,7 @@
 
              <div ng-if="addingSourceType=='database'">
 
-                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
+                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="connection.type">
 
                     <md-option value="hadoop">
                        Hadoop
@@ -31,30 +31,37 @@
                 </md-select>
 
                 <md-input-container layout="row" flex="80" md-no-float>
-                    <input ng-model="dataset.connection.url"
+                    <input ng-model="connection.url"
                     aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
                 </md-input-container>
 
-                <md-input-container ng-show="dataset.connection.tableName || isConnecting == false" layout="row" flex="80" md-no-float>
+                <md-input-container layout="row" flex="100" md-no-float>
 
-                    <md-select ng-model="dataset.connection.tableName" aria-label="Dataset Connection Table Name"
-                        placeholder="Table Name">
-                        <md-option ng-repeat="tab in tables" value="{{tab.tab_name}}">
-                            {{tab.tab_name}}
-                        </md-option>
-                    </md-select>
+                    <div  flex="60" >
+                        <md-select ng-model="connection.tableName" aria-label="Dataset Connection Table Name"
+                            placeholder="Table Name">
+                            <md-option ng-repeat="tab in tables" value="{{tab.tab_name}}">
+                                {{tab.tab_name}}
+                            </md-option>
+                        </md-select>
+                    </div>
+                    <span flex="5"></span>
 
+                    <md-button class="md-dashboard confirm" style="margin-top: 11px;" ng-click="connectAction.do(dataset)"
+                        ng-hide="!connection"
+                        ng-disabled="connectAction.disabled">
+                        <span class="btn-label"> {{connectAction.text}} </span>
+                    </md-button>
 
                 </md-input-container>
 
+                <md-input-container layout="row">
 
-                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
-                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0" ng-hide="isConnecting==false"
-                    ng-disabled="isConnecting || !dataset.connection.type ">
-                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
-                </md-button>
 
-                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p>
+
+                    <p ng-show="isConnecting!==false " class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p>
+
+                </md-input-container>
 
 
             </div>
@@ -123,16 +130,50 @@
                     </md-button> -->
 
                 </li>
+
+                 <li layout="row" ng-if="dataset.connection" layout-align="space-between center">
+                     <span flex="50">
+                        <span class="dashboard-list-name"><strong>Type:</strong> {{ dataset.connection.type}},</span>
+                        <span class="dashboard-list-name"><strong>URL:</strong> {{ dataset.connection.url}},</span>
+                        <span class="dashboard-list-name"><strong>Table: </strong>{{ dataset.connection.tableName}}</span>
+                    </span>
+
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(dataset, removeSource, $event)">
+                        <i class="fa fa-remove" aria-hidden="true"></i>
+                    </span>
+
+                </li>
+
             </ul>
 
 
-            <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources" class="no-padding">
+
+
+
+
+
+
+            <div ng-if="dataset.fileName || dataset.connection" ng-repeat="additionalDatasource in additionalDatasources" class="no-padding">
+
 
                 <ul class="dashboard-list user-list" ng-if="additionalDatasource._id" ng-cloak>
-                    <li layout="row" layout-align="space-between center">
+                    <li layout="row" ng-if="additionalDatasource.fileName" layout-align="space-between center">
 
                         <span flex="50">
                             <span class="dashboard-list-name">{{ additionalDatasource.fileName }}</span>
+                        </span>
+
+                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(additionalDatasource, removeAdditionalDatasource, $event)">
+                            <i class="fa fa-remove" aria-hidden="true"></i>
+                        </span>
+
+                    </li>
+
+                    <li layout="row" ng-if="additionalDatasource.connection" layout-align="space-between center">
+                         <span flex="50">
+                            <span class="dashboard-list-name"><strong>Type:</strong> {{ additionalDatasource.connection.type}},</span>
+                            <span class="dashboard-list-name"><strong>URL:</strong> {{ additionalDatasource.connection.url}},</span>
+                            <span class="dashboard-list-name"><strong>Table: </strong>{{ additionalDatasource.connection.tableName}}</span>
                         </span>
 
                         <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(additionalDatasource, removeAdditionalDatasource, $event)">
@@ -147,11 +188,10 @@
                     <li>
 
                         <div ng-hide="additionalDatasource.uploader.isUploading">
-
                             <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
                                 <li><a class="pointer" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
                                 <!-- <li><a class="pointer" ng-click="">Upload a JSON file</a></li> -->
-                                <li><a class="pointer" ng-show="env.node_env == 'enterprise'" ng-click="additionalDatasource.setSourceType('database')">Connect to a database</a></li>
+                                <li><a class="pointer" ng-show="env.node_env == 'enterprise' && !dataset.connection " ng-click="additionalDatasource.setSourceType('database')">Connect to a database</a></li>
                             </ul>
 
                             <div ng-if="additionalDatasource.sourceType == 'csv'">
@@ -178,7 +218,7 @@
 
                             <div ng-if="additionalDatasource.sourceType == 'database' ">
 
-                                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
+                                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="connection.type">
 
                                     <md-option value="hadoop">
                                        Hadoop
@@ -187,28 +227,35 @@
                                 </md-select>
 
                                 <md-input-container layout="row" flex="80" md-no-float>
-                                    <input ng-model="dataset.connection.url"
+                                    <input ng-model="connection.url"
                                     aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
                                 </md-input-container>
 
-                                <md-input-container ng-show="dataset.connection.tableName || isConnecting == false" layout="row" flex="80" md-no-float>
 
-                                    <md-select ng-model="dataset.connection.tableName" aria-label="Dataset Connection Table Name"
-                                        placeholder="Table Name">
-                                        <md-option ng-repeat="tab in tables" value="{{tab.tab_name}}">
-                                            {{tab.tab_name}}
-                                        </md-option>
-                                    </md-select>
+                                 <md-input-container layout="row" flex="100" md-no-float>
 
+                                    <div flex="60">
+                                        <md-select ng-model="connection.tableName" aria-label="Dataset Connection Table Name"
+                                            placeholder="Table Name">
+                                            <md-option ng-repeat="tab in tables" value="{{tab.tab_name}}">
+                                                {{tab.tab_name}}
+                                            </md-option>
+                                        </md-select>
+                                    </div>
+                                    <span flex="5"></span>
+
+                                    <md-button class="md-dashboard confirm" style="margin-top: 11px;" ng-click="connectAction.do(additionalDatasource,true)"
+                                        ng-hide="!connection"
+                                        ng-disabled="connectAction.disabled">
+                                        <span class="btn-label"> {{connectAction.text}} </span>
+                                    </md-button>
 
                                 </md-input-container>
 
 
-                                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
-                                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0" ng-hide="isConnecting==false"
-                                    ng-disabled="isConnecting || !dataset.connection.type ">
-                                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
-                                </md-button>
+
+
+
 
                          <!--        <p ng-show="isConnecting!==false" class="aa-file-select-close"><a class="pointer" ng-click="addSourceType('')">Go back</a></p> -->
                                <p class="aa-file-select-close"><a class="pointer" ng-click="resetAdditionalSource(additionalDatasource)">Go back</a></p>
@@ -248,7 +295,7 @@
             </div>
 
 
-        <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && (dataset.fileName || dataset.connection) && !addingAdditionalDatasource">
+        <div ng-if="( user.role=='superAdmin' || team.customAccess.indexOf('combineDatasource') > -1 ) && (dataset.fileName || ( dataset.connection && dataset.connection.tableName)) && !addingAdditionalDatasource">
             <md-input-container>
                 <md-button class="md-dashboard" ng-click="addNewDatasource()">
                     <span class="btn-label">Combine with another data source</span></md-button>

@@ -48,9 +48,9 @@ module.exports.sendVizFinishProcessingEmail = function(user,dataset,team,cb) {
     var datasetRevision = dataset.importRevision;
 
     if (dataset.schema_id && !(datasetTitle || datasetUID || datasetRevision)) {
-        datasetTitle = dataset.schema_id.title;
-        datasetUID = dataset.schema_id.uid;
-        datasetRevision = dataset.schema_id.importRevision;
+        datasetTitle = dataset.schema_id.title || datasetTitle;
+        datasetUID = dataset.schema_id.uid || datasetUID;
+        datasetRevision = dataset.schema_id.importRevision || datasetRevision;
         default_view = dataset.schema_id.fe_views.default_view;
     }
 
