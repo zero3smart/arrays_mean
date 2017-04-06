@@ -20,18 +20,15 @@ $(window).load(function () {
 $(document).ready(function () {
 
     setOriginalTextAttribute('.explore-tile-header h2');
-    setOriginalTextAttribute('.team-link');
     var isWebkit = 'WebkitAppearance' in document.documentElement.style
 
     /**
-     * Truncate team title and vis title if webkit browser
+     * Truncate vis title if not webkit browser
      */
     if (!isWebkit) {
         loopThroughTileElement('.explore-tile-header h2', 28);
-        loopThroughTileElement('.team-link', 16);
         $(window).on('resize', function() {
             loopThroughTileElement('.explore-tile-header h2', 28);
-            loopThroughTileElement('.team-link', 16);
         })
     }
 

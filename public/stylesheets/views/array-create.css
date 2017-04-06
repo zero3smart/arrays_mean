@@ -120,6 +120,18 @@
     color: var(--color-text-light);
 }
 
+.explore-tile-meta span {
+    width: 100%;
+}
+
+.team-link {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: inherit;
+  display: inline-block;
+}
+
 .source-divider:before {
     padding-right: 0.25em;
     padding-left: 0.25em;
@@ -271,6 +283,7 @@
 
 .explore-tile-meta span {
     position: relative;
+    display: inline-block;
 }
 
 .explore-tile-banner-image {
