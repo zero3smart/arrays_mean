@@ -55,7 +55,7 @@ var DatasourceDescription_scheme = Schema({
         overwrite: {type: Boolean, default: false},
         scraped: {type: Boolean,default: false},
         selector : String //optional
-    } ,
+    },
 
     fe_fieldDisplayOrder: Array,
     fe_filters: {
@@ -106,6 +106,7 @@ var DatasourceDescription_scheme = Schema({
     lastImportInitiatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
+    replacement: {type: Boolean, default: false},
     firstImport: {type: Number, integer: true, default: 1},
     // 0: false, not first import
     // 1: Source tab
@@ -131,7 +132,6 @@ var DatasourceDescription_scheme = Schema({
     //approved
     //disapproved, maybe notify the user about this
     includeEmptyFields: {type: Boolean, default: true}
-
 
 
 

@@ -39,6 +39,7 @@ angular.module('arraysApp')
                     }
                 }
             }
+
             // save the sample dataset image field - will check the final dataset image field against this one and only initiate image scraping if it changes. Otherwise, we don't want a bunch of copies of the sample images.
             if (dataset.sample) {
                 $scope.sampleImageField = dataset.fe_image.field;
@@ -112,12 +113,13 @@ angular.module('arraysApp')
             $scope.$watch('vm.dataForm.$dirty', function(dirty) {
                 $scope.setRemindUserUnsavedChanges(dirty);
 
-                if (dirty) {
+                if (dirty || dataset.replacement) {
                     // $scope.primaryAction.disabled = false;
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'Save';
                     $scope.primaryAction.do = function() {
                         $scope.submitForm($scope.formValidity);
                     };
+
                 } else {
                     // $scope.primaryAction.disabled = false;
                     $scope.primaryAction.text = dataset.firstImport ? 'Next' : 'View';
@@ -146,7 +148,6 @@ angular.module('arraysApp')
                     $scope.$parent.$parent.dataset.dirty = number;
                 }
             };
-
 
             var joinDataCols = [];
 
@@ -442,6 +443,7 @@ angular.module('arraysApp')
                 });
 
 
+
                 $scope.$parent.$parent.additionalDatasources.map(function(datasource) {
                     $scope.data.fields = $scope.data.fields.concat(datasource.columns);
                 })
@@ -465,6 +467,8 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
+                $scope.$parent.$parent.dataset.replacement = false;
+
                 $scope.$parent.$parent.dataset.objectTitle = $scope.data.objectTitle;
 
                 $scope.$parent.$parent.dataset.includeEmptyFields = $scope.dataset.includeEmptyFields;

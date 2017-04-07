@@ -3,7 +3,7 @@ var _ = require('lodash');
 var datatypes = require('./datatypes')
 
 
-var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, replacement, callback) {
+var _mapColumnsOrErr = function(sourceName,columns, samples, rowObjectsFromCoercionScheme, replacement, callback) {
     var newColumnsLength = columns.length;
     var oldColumnsLength = _.size(rowObjectsFromCoercionScheme);
     var isDifference = false;
@@ -25,6 +25,8 @@ var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, 
             }
         }
         var rowObject = datatypes.intuitDatatype(columnName, sample);
+        rowObject.sourceName = sourceName;
+        rowObject.sourceType = 'spreadSheet';
         rowObjects.push(rowObject);
     }
     if(numberOfInconsistentColumns == 0 && replacement) {

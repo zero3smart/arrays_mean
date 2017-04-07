@@ -196,7 +196,8 @@ module.exports.MountRoutes = function(app) {
             host: host,
             s3Bucket: process.env.AWS_S3_BUCKET,
             intercomAppId: process.env.INTERCOM_APP_ID ? process.env.INTERCOM_APP_ID : '',
-            subdomain: process.env.SUBDOMAIN
+            subdomain: process.env.SUBDOMAIN,
+            userEngageAPIKey: process.env.USERENGAGE_API_KEY ? process.env.USERENGAGE_API_KEY : ''
         };
         return res.json(obj);
     });

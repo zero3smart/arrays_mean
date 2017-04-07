@@ -248,6 +248,12 @@ angular.module('arraysApp')
                    sample: datasource.sample || false
                 });
 
+                //Send notification to Intercom when dataset is imported
+                userengage('event.vizImported', {
+                    viz_title: dataset.title,
+                    sample: datasource.sample || false
+                });
+
                 var id = datasource._id;
 
 
@@ -307,7 +313,6 @@ angular.module('arraysApp')
             $scope.toggleShowAdvanced = function() {
                 $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
             };
-
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.currentWorkingDataset;
@@ -337,6 +342,7 @@ angular.module('arraysApp')
 
 
             $scope.dirty = (dataset.connection && !dataset.fileName) ? 0 : $scope.$parent.$parent.dataset.dirty;
+
 
             $scope.imported =  (dataset.connection && !dataset.fileName) ? true : $scope.$parent.$parent.dataset.imported;
 
