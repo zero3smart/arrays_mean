@@ -31,17 +31,16 @@
                     <div class="explore-tile-meta">
                         <span><a href="{{ source.baseUrl }}" class="team-link team-underline"> {{ source.author }}</a></span>
                     </div>
-                    <div class="explore-tile-meta hidden-xs">
-                        {% set comma = joiner() %}
-                        {% for url in source.urls -%}
-                          {{ comma() }} <span><a href="{{ url }}" class="source-link source-underline" target="_blank">Source</a></span>
-                          <span>|</span>
-                        {%- endfor %}
-                    <!-- </div> -->
-                        <span class="source-updated">{{ source.createdAt | dateFormattedAs_monthDayYear_array }}</span>
-                    <!-- <div class="explore-tile-meta"> -->
-
-                    </div>
+                </div>
+                <div class="explore-tile-meta-sub hidden-xs">
+                    {% set comma = joiner() %}
+                    {% for url in source.urls -%}
+                      {{ comma() }} <span><a href="{{ url }}" class="source-link source-underline" target="_blank">Source</a></span>
+                      <span>|</span>
+                    {%- endfor %}
+                <!-- </div> -->
+                    <span class="source-updated">{{ source.createdAt | dateFormattedAs_monthDayYear_array }}</span>
+                <!-- <div class="explore-tile-meta"> -->
                 </div>
             </div>
 

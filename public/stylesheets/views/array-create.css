@@ -272,17 +272,35 @@
 }
 
 .explore-tile-meta-wrapper {
-    padding: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 15px;
     position: absolute;
-    bottom: 0px;
+    bottom: 20px;
     left: 0px;
     max-width: 100%;
     font-weight: 600;
     line-height: normal;
 }
 
+.explore-tile-meta-sub {
+    margin-left: 15px;
+    position: absolute;
+    bottom: 15px;
+    left: 0px;
+}
+
+.explore-tile-meta-sub a {
+    width: 100%;
+    position: relative;
+}
+
 .explore-tile-meta span {
     position: relative;
+}
+
+.explore-tile-meta-sub span {
+    display: inline-block;
 }
 
 .explore-tile-banner-image {
