@@ -13,6 +13,7 @@ View.getAllBuiltInViews(function(err,defaultViews) {
     } else {
         defaultViews.forEach(function(view) {
             router.get('/:source_key/' + view.name, ensureAuthorized, function(req,res,next) {
+
                 var source_key = req.params.source_key;
                 if (source_key == null || typeof source_key == 'undefined' || source_key == "") {
                     return res.status(403).send("Bad Request - source_key missing");
@@ -21,8 +22,6 @@ View.getAllBuiltInViews(function(err,defaultViews) {
                 var query = queryString.parse(req.url.replace(/^.*\?/,''));
                 query.source_key = source_key;
                 var camelCaseViewType = view.name.replace('-','_');
-
-
 
                 require('../controllers/client/data_preparation/' + camelCaseViewType).BindData(req,query,function(err,bindData) {
                     if (err) {
@@ -65,15 +64,17 @@ var object_details_controller = require('../controllers/client/data_preparation/
 
 
 //object detail page
-router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
+router.get(/(\/[a-z_\d-]+)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
 
-    var source_key = req.params[0] + req.params[1];
+
+
+    var source_key = req.params[0];
     source_key = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + source_key.substring(1) : source_key.substring(1);
 
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");
     }
-    var object_id = req.params[2];
+    var object_id = req.params[1];
     if (object_id == null || typeof object_id === 'undefined' || object_id == "") {
         return res.status(403).send("Bad Request - object_id missing");
     }

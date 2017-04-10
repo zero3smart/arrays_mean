@@ -7,17 +7,20 @@ module.exports.ensureAuthorized = function(req, res, next) {
 
     var sourceKey;
 
+
+
     if (typeof req.params.source_key == 'undefined') {
 
-    	sourceKey = req.params[0] + req.params[1];
-      
+        sourceKey = req.params[0];
+
 
         sourceKey = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + sourceKey.substring(1) : sourceKey.substring(1)
+
+
 
     } else {
         sourceKey = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + req.params.source_key : req.params.source_key;
     }
-
 
     datasourceDescriptions.GetDatasourceByUserAndKey(req.user, sourceKey, function(err, datasource) {
         if (err) {

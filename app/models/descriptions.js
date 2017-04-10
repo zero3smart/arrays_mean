@@ -249,23 +249,19 @@ var _consolidate_descriptions_hasSchema = function (description) {
     var schemaDesc = description.schema_id;
     desc.schemaId = schemaDesc._id;
     for (var attrname in schemaDesc) {
-        if (attrname !== 'connection') {
+        if (desc[attrname]) {
+            if (Array.isArray(desc[attrname])) {
+                desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
 
-            if (desc[attrname]) {
-                if (Array.isArray(desc[attrname])) {
-                    desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
+            } else if (typeof desc[attrname] == 'string') {
 
-                } else if (typeof desc[attrname] == 'string') {
+            } else if (typeof desc[attrname] == 'object') {
+                desc[attrname] = _mergeObject(schemaDesc[attrname], desc[attrname]);
 
-                } else if (typeof desc[attrname] == 'object') {
-                    desc[attrname] = _mergeObject(schemaDesc[attrname], desc[attrname]);
-
-                }
-            } else {
-                desc[attrname] = schemaDesc[attrname]
             }
+        } else {
+            desc[attrname] = schemaDesc[attrname]
         }
-
     }
 
     return desc;
@@ -566,6 +562,9 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (preview,subdom
     }
 
    var self = this;
+   // console.log(uid);
+   // console.log(revision);
+
     self.find({uid: uid, importRevision: revision})
         .populate({
             path: '_team',
