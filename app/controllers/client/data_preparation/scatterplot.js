@@ -24,7 +24,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var askForPreview = false;
     if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
- 
+
     importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -227,7 +227,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
                 return false;
             }
-            
+
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
@@ -250,6 +250,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     user: user,
 
+                    arrayTitle: dataSourceDescription.title,
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
 
                     documents: documents,
@@ -293,6 +294,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     })
 }
-
 
 
