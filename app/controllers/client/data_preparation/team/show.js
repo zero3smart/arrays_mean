@@ -27,19 +27,17 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
         if (dataSourceDescription.connection) {
 
-
             var default_view = (default_customView) ? default_customView : 'gallery';
-            if (typeof dataSourceDescription.fe_views.default_view !== 'undefined' && !default_customView) {
+            if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
-
 
             var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + ' ' + dataSourceDescription.updatedBy.lastName;
             var authorDisplayName = dataSourceDescription.author.firstName + ' ' + dataSourceDescription.author.lastName;
 
             var sourceDescription = {
 
-                key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
+                key: dataSourceDescription.uid,
                 title: dataSourceDescription.title,
                 brandColor: dataSourceDescription.brandColor,
                 description: dataSourceDescription.description,
@@ -80,7 +78,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
                 var sourceDescription = {
                     _id: dataSourceDescription._id,
-                    key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
+                    key: dataSourceDescription.uid,
                     sourceDoc: doc,
                     updatedAt: dataSourceDescription.updatedAt,
                     createdAt: dataSourceDescription.createdAt,

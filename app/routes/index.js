@@ -79,7 +79,7 @@ var urlRegexForDataset;
 var _mountRoutes_subdomainRedirect = function(app) {
     Promise.all([_defaultViewRoutes])
     .then(function(values) {
-        urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)\/(getData|[0-9a-f]{24}" + values[0] + ")$",'gm');
+        urlRegexForDataset = new RegExp("^(\\/[a-z_\\d-]+)\/(getData$|[0-9a-f]{24}$" + values[0] + ")",'gm');
         //console.log(urlRegexForDataset)
 
     })
@@ -157,7 +157,7 @@ var _mountRoutes_endPoints = function (app) {
 
                 if (isRouteForDataset || req.subdomains.length == 0) {
 
-                    console.log(isRouteForDataset);
+                    //console.log(isRouteForDataset);
 
                     return res.redirect(rootDomain +'/');
                 } else {

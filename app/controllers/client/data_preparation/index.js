@@ -55,7 +55,7 @@ module.exports.BindData = function (req, callback) {
 
         var err = null;
         if (!description._team) return cb(null);
-        
+
         subdomain = description._team.subdomain;
 
         var default_customView;
@@ -85,7 +85,7 @@ module.exports.BindData = function (req, callback) {
                 if (typeof description.fe_views.default_view !== 'undefined') {
                     default_view = description.fe_views.default_view;
                 }
-            
+
 
 
 
@@ -97,7 +97,7 @@ module.exports.BindData = function (req, callback) {
 
                 var reformattedDataset = {
                     _id: description._id,
-                    key:  description.uid + '-r' + description.importRevision,
+                    key:  description.uid,
                     sourceDoc: doc,
                     updatedAt: description.updatedAt,
                     createdAt: description.createdAt,

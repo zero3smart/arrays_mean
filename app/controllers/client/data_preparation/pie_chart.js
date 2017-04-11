@@ -25,6 +25,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var askForPreview = false;
     if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
+
+
     importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -46,13 +48,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
 
 
-            var defaultGroupByColumnName_humanReadable = 
-            dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultGroupByColumnName] || 
+            var defaultGroupByColumnName_humanReadable =
+            dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultGroupByColumnName] ||
             chartViewSettings.defaultGroupByColumnName;
 
 
 
-            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             (chartViewSettings.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartViewSettings.defaultGroupByColumnName,dataSourceDescription) :
              chartViewSettings.defaultGroupByColumnName;
 
@@ -89,7 +91,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof chartViewSettings.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             chartViewSettings.defaultAggregateByColumnName;
-            
+
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
 
@@ -229,7 +231,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         var label = el.label;
                         var value = el.value;
 
-                       
+
 
 
                         var label_toLowerCased = label.toString().toLowerCase();
@@ -269,7 +271,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         } else {
                             reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                         }
-                       
+
                         var result = {
                             value: summedValue,
                             label: reconstitutedDisplayableTitle,

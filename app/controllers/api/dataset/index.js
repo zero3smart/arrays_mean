@@ -217,22 +217,13 @@ module.exports.deleteSource = function(req,res) {
     datasource_description.findById(req.params.id)
     .populate('_team')
     .exec(function(err,description) {
-        if (description.connection && description.connection.url) {
-            description.connection = undefined;
-            description.markModified('connection');
+        var key = description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + description.uid + '_v' + description.importRevision;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            description.fileName = null;
             description.save();
-            return res.status(200).send();
-        } else {
-            var key = description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + description.uid + '_v' + description.importRevision;
-            datasource_file_service.deleteObject(key,function(err,result) {
-                if (err) return res.status(500).json(err);
-                description.fileName = null;
-                description.save();
-                return res.status(200).json(result);
-            })
-
-
-        }
+            return res.status(200).json(result);
+        })
 
     })
 
@@ -369,8 +360,6 @@ module.exports.get = function (req, res) {
 
             if (description.connection) { //remote, read cols
 
-               // return res.status(200).json({dataset: description});
-
                 if (req.session[req.params.id] && req.session[req.params.id].tables && req.session[req.params.id].columns &&
                     req.session[req.params.id] && req.session[req.params.id].columns[description.connection.tableName]) {
                     description.columns =  req.session[req.params.id].columns[description.connection.tableName];
@@ -384,7 +373,6 @@ module.exports.get = function (req, res) {
                     batch.concurrency(1);
 
                     if (!req.session[req.params.id] || !req.session[req.params.id].tables) {
-                        if (!req.session[req.params.id]) req.session[req.params.id] = {};
 
                         batch.push(function(done) {
                             hadoop.initConnection({url:description.connection.url},function(err,tables) {
@@ -503,109 +491,13 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
             if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
-            var s = sources;
-
-            async.forEachOf(sources,function(source,index,callback) {
-
-                 if (!source.connection) {
-
-                        source = datasource_description.Consolidate_descriptions_hasSchema(source);
-
-                        if (source.fileName && !req.session.columns[source._id]) {
-
-                            _readDatasourceColumnsAndSampleRecords(false,source, datasource_file_service.getDatasource(source).createReadStream(), function (err, columns) {
-
-
-                                if (!err) {
-                                    req.session.columns[source._id] = columns;
-                                    source.columns = columns;
-                                    s[index] = source;
-
-                                    callback();
-                                }
-
-                            });
-
-                        } else {
-
-                            if (req.session.columns[source._id]) source.columns = req.session.columns[source._id];
-                             s[index] = source;
-
-                            callback();
-                        }
-
-
-                    } else {
-
-                        if ( req.session[source._id] && req.session[source._id].tables && req.session[source._id].columns &&
-                            req.session[source._id] && req.session[source._id].columns[source.connection.tableName] ) {
-                            source.columns = req.session[source._id].columns[source.connection.tableName];
-                        } else {
-
-                            if (source.connection.type == 'hadoop') {
-
-                                var batch = new Batch();
-                                batch.concurrency(1);
-
-
-                                if (!req.session[source._id] || !req.session[source._id].tables) {
-
-                                    if (!req.session[source._id]) req.session[source._id] = {};
-
-
-                                    batch.push(function(done) {
-                                        hadoop.initConnection({url:source.connection.url},function(err,tables) {
-                                            if (err) return done(err);
-
-                                            req.session[source._id].tables = tables;
-                                            done();
-
-                                        })
-                                    })
-                                }
-
-                                batch.push(function(done) {
-
-                                    hadoop.readColumnsAndSample({url:source.connection.url},source.connection.tableName,function(err,data) {
-                                        if (err) return done(err);
-                                        if (!req.session[source._id].columns) req.session[source._id].columns = {};
-                                        req.session[source._id].columns[source.connection.tableName] = data;
-                                        done();
-                                    })
-                                })
-
-
-                                batch.end(function(err) {
-
-
-                                    source.columns = req.session[source._id].columns[source.connection.tableName];
-                                    source.tables = req.session[source._id].tables;
-
-                                })
-
-
-                            }
-
-                        }
-                        s[index] = source;
-                        callback();
-
-
-                    }
-
-            },function() {
-                return res.status(200).json({
-                    sources: s
-                });
-
-            })
-
+            return res.status(200).json({
+                sources: sources.map(function (source) {
+                    return datasource_description.Consolidate_descriptions_hasSchema(source);
+                })
+            });
         });
-
 };
-
-
-
 
 
 
@@ -670,16 +562,12 @@ module.exports.save = function (req, res) {
 
         async.waterfall([
             function(callback){
-
                 datasource_description.create(req.body,function(err,doc) {
                     if (err) callback(err);
                     else callback(null,doc._id);
                 })
             },
             function(mainDatasetId,callback) {
-                if (req.body.schema_id) {
-                    return callback(null,mainDatasetId);
-                }
                 Team.findById(req.body._team,function(err,team) {
                     if (err) callback(err);
                     else {
@@ -714,7 +602,6 @@ module.exports.save = function (req, res) {
                     else callback(null,doc);
                 })
             },
-
             function(doc,callback) {
                 var description = doc, description_title = doc.title;
                 if (doc.schema_id) {
@@ -726,7 +613,9 @@ module.exports.save = function (req, res) {
                 var makeCopy = false;
 
 
+
                 _.forOwn(req.body,function(value,key) {
+
                     if (key !='author' && key !== '_team'
                         && key!='createdAt' && key != '_id' && ( (!doc.schema_id && !twoAreEqual(value, doc[key]))
                         || (doc.schema_id && !twoAreEqual(value, description[key])))) {
@@ -755,10 +644,6 @@ module.exports.save = function (req, res) {
                         callback(null,doc,false,update);
                     } else callback(null,doc,makeCopy,update);
                 }
-
-
-
-
             },
             function(doc,makeCopy,updateStatement,callback) {
                 if (updateStatement !== null && makeCopy == false) {
@@ -920,8 +805,7 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
     var countOfLines = 0;
     var cachedLines = '';
     var columns = [];
-    var rowObjects = [];
-    var sourceName = description.fileName;
+    var rowObjects = []
 
     var readStream = fileReadStream
         .pipe(es.split(/\n|\r/))
@@ -957,12 +841,11 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                                     numberOfEmptyFields++;
                                     e = "Field" + numberOfEmptyFields;
                                 }
-                                return {sourceName: sourceName, name: e.replace(/\./g, '_')};
+                                return {name: e.replace(/\./g, '_')};
                             });
                             readStream.resume();
 
                         } else if (countOfLines == 2) {
-
 
                             reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, replacement, function (err, newColumns, equal) {
                                 if (err) {
@@ -974,7 +857,6 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                                     next(null, [])
                                 }
                                 columns = newColumns;
-
                             });
 
                             readStream.resume();
@@ -1280,7 +1162,7 @@ module.exports.download = function (req, res) {
 module.exports.preImport = function (req, res) {
     var importedBy = req.user._id;
 
-    console.log(importedBy);
+    //console.log(importedBy);
 
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {
@@ -1357,30 +1239,17 @@ module.exports.removeSubdataset = function(req, res) {
             winston.error("❌  Error encountered during find description : ", err);
            return res.status(500).send(err);
         }
-        if (doc.connection) {
-             doc.remove(function(err) {
+        var key = doc.schema_id._team.subdomain + '/datasets/' + doc.schema_id._id + '/datasources/' + doc.fileName;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            doc.remove(function(err) {
                 if (err) {
                     winston.error("❌  Error encountered during remove description : ", err);
                     return res.status(500).send(err);
                 }
                 return res.status(200).send('ok');
             })
-
-        } else {
-            var key = doc.schema_id._team.subdomain + '/datasets/' + doc.schema_id._id + '/datasources/' + doc.fileName;
-            datasource_file_service.deleteObject(key,function(err,result) {
-                if (err) return res.status(500).json(err);
-                doc.remove(function(err) {
-                    if (err) {
-                        winston.error("❌  Error encountered during remove description : ", err);
-                        return res.status(500).send(err);
-                    }
-                    return res.status(200).send('ok');
-                })
-            })
-
-
-        }
+        })
 
 
     })
