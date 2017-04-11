@@ -902,7 +902,7 @@ module.exports.upload = function (req, res) {
             .exec(function (err, doc) {
 
                 if (err) return done(err);
-                if (doc.fileName) {
+                if (doc.fileName && !child) {
                     oldFileName = doc.fileName;
                     replacement = true;
                 }
@@ -1162,7 +1162,7 @@ module.exports.download = function (req, res) {
 module.exports.preImport = function (req, res) {
     var importedBy = req.user._id;
 
-    //console.log(importedBy);
+    console.log(importedBy);
 
     datasource_description.findByIdAndUpdate(req.params.id,{$set: {lastImportInitiatedBy: importedBy}})
     .exec(function(err) {

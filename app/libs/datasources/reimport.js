@@ -14,7 +14,6 @@ var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, 
     for (var i = 0; i < columns.length; i++) {
         var columnName = columns[i].name;
         var sample = samples[i];
-        var sourceName = columns[i].sourceName;
         // the columns in raw row objects coercion scheme is in the opposite order
         if (replacement) {
             if (!checkForContinutity(columnName, rowObjectsFromCoercionScheme)) {
@@ -26,8 +25,6 @@ var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, 
             }
         }
         var rowObject = datatypes.intuitDatatype(columnName, sample);
-        rowObject.sourceName = sourceName;
-        rowObject.sourceType = 'spreadSheet';
         rowObjects.push(rowObject);
     }
     if(numberOfInconsistentColumns == 0 && replacement) {
@@ -52,7 +49,8 @@ module.exports.addNewColumnsToFE_ExcludeFields = _addNewColumnsToFE_ExcludeField
 
 
 var checkForContinutity = function(name, rowObjects) {
-    if (rowObjects.hasOwnProperty(name)) {
+
+    if (rowObjects && rowObjects.hasOwnProperty(name)) {
         return true;
     } else {
         return false;
