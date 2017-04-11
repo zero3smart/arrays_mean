@@ -11,7 +11,7 @@
         };
 
         var remove = function(id) {
-            return $http.post('api/dataset/remove', {id: id});         
+            return $http.post('api/dataset/remove', {id: id});
         };
 
         var update = function(id,update) {
@@ -28,7 +28,7 @@
             if (!id) return {
                 urls: []
             };
-           
+
             return $http.get('api/dataset/get/' + id)
             .then(function(response) {
                 return response.data.dataset;
@@ -52,11 +52,13 @@
             return $http.get('api/dataset' + formURL);
         }
 
- 
+
         var getAdditionalSources = function(id) {
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
             .then(function(response) {
+                console.log(response);
+
                 return response.data.sources;
             }).catch(function(err) {
                 console.log(err);
@@ -136,7 +138,7 @@
        };
 
        var getReimportDatasets = function(id) {
-    
+
             return $http.get('api/dataset/reimportDatasets/' + id)
             .then(function(response) {
                 var data = response.data;

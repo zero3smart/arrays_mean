@@ -503,34 +503,39 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
             if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
+            var s = sources;
 
-            return res.status(200).json({
-                sources: sources.map(function (source) {
+            async.forEachOf(sources,function(source,index,callback) {
 
-                    if (!source.connection) {
+                 if (!source.connection) {
 
                         source = datasource_description.Consolidate_descriptions_hasSchema(source);
 
                         if (source.fileName && !req.session.columns[source._id]) {
 
-                            _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(source).createReadStream(), function (err, columns) {
+                            _readDatasourceColumnsAndSampleRecords(false,source, datasource_file_service.getDatasource(source).createReadStream(), function (err, columns) {
+
+
                                 if (!err) {
                                     req.session.columns[source._id] = columns;
                                     source.columns = columns;
-                                    return source;
+                                    s[index] = source;
+
+                                    callback();
                                 }
+
                             });
 
                         } else {
 
                             if (req.session.columns[source._id]) source.columns = req.session.columns[source._id];
+                             s[index] = source;
 
-                            return source;
+                            callback();
                         }
 
 
                     } else {
-
 
                         if ( req.session[source._id] && req.session[source._id].tables && req.session[source._id].columns &&
                             req.session[source._id] && req.session[source._id].columns[source.connection.tableName] ) {
@@ -582,14 +587,18 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
                             }
 
                         }
+                        s[index] = source;
+                        callback();
 
-                        return source;
+
                     }
 
-                })
-            });
+            },function() {
+                return res.status(200).json({
+                    sources: s
+                });
 
-
+            })
 
         });
 

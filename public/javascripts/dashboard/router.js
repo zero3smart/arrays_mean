@@ -234,7 +234,6 @@ angular.module('arraysApp')
                                 DatasetService.getAdditionalSources($stateParams.id)
                                 .then(function(additionalDatasets) {
 
-                                    //console.log(additionalDatasets);
 
                                     if (additionalDatasets.length > 0) {
                                         additionalDatasets.map(function(dataset) {
