@@ -57,7 +57,7 @@
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
             .then(function(response) {
-                console.log(response);
+                //console.log(response);
 
                 return response.data.sources;
             }).catch(function(err) {
