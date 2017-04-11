@@ -955,7 +955,7 @@ function _readDatasourceColumnsAndSampleRecords(replacement, description, fileRe
                         } else if (countOfLines == 2) {
 
 
-                            reimport.mapColumnsOrErr(e.sourceName,columns, output[0], description.raw_rowObjects_coercionScheme, replacement, function (err, newColumns, equal) {
+                            reimport.mapColumnsOrErr(columns, output[0], description.raw_rowObjects_coercionScheme, replacement, function (err, newColumns, equal) {
                                 if (err) {
                                     readStream.destroy();
                                     next(err);

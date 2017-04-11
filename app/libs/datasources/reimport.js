@@ -3,7 +3,7 @@ var _ = require('lodash');
 var datatypes = require('./datatypes')
 
 
-var _mapColumnsOrErr = function(sourceName,columns, samples, rowObjectsFromCoercionScheme, replacement, callback) {
+var _mapColumnsOrErr = function(columns, samples, rowObjectsFromCoercionScheme, replacement, callback) {
     var newColumnsLength = columns.length;
     var oldColumnsLength = _.size(rowObjectsFromCoercionScheme);
     var isDifference = false;
@@ -14,6 +14,7 @@ var _mapColumnsOrErr = function(sourceName,columns, samples, rowObjectsFromCoerc
     for (var i = 0; i < columns.length; i++) {
         var columnName = columns[i].name;
         var sample = samples[i];
+        var sourceName = columns[i].sourceName;
         // the columns in raw row objects coercion scheme is in the opposite order
         if (replacement) {
             if (!checkForContinutity(columnName, rowObjectsFromCoercionScheme)) {
