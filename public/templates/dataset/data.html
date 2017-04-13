@@ -87,7 +87,7 @@
             <h4>We found these fields in your data source:</h4>
         </div>
 
-        <div style="cursor:pointer;" layout="row" layout-align="space-between center" class="no-padding">
+        <div ng-if="additionalDatasources.length > 0" style="cursor:pointer;" layout="row" layout-align="space-between center" class="no-padding">
             <div><a ng-click="changeSourceNameFilter(dataset.fileName,'spreadSheet')">Master [{{dataset.fileName}}] </a></div>
             <div ng-repeat="otherSource in additionalDatasources">
                 <a ng-if="otherSource.fileName" ng-click="changeSourceNameFilter(otherSource.fileName,'spreadSheet')">{{otherSource.fileName}}</a>
