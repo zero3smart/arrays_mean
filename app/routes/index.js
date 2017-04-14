@@ -79,7 +79,7 @@ var urlRegexForDataset;
 var _mountRoutes_subdomainRedirect = function(app) {
     Promise.all([_defaultViewRoutes])
     .then(function(values) {
-        urlRegexForDataset = new RegExp("^(\\/[a-z_\\d-]+)\/(getData$|[0-9a-f]{24}$" + values[0] + ")",'gm');
+        urlRegexForDataset = new RegExp("^(\\/[a-z_\\d-]+)\/(getData$|[0-9a-f]{24}" + values[0] + ")",'gm');
         //console.log(urlRegexForDataset)
 
     })
@@ -204,6 +204,7 @@ module.exports.MountRoutes = function(app) {
             host: host,
             s3Bucket: process.env.AWS_S3_BUCKET,
             intercomAppId: process.env.INTERCOM_APP_ID ? process.env.INTERCOM_APP_ID : '',
+            subdomain: process.env.SUBDOMAIN,
             userEngageAPIKey: process.env.USERENGAGE_API_KEY ? process.env.USERENGAGE_API_KEY : ''
         };
         return res.json(obj);

@@ -588,7 +588,7 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
 
-                        // _nextTab();
+                        _nextTab();
 
                     };
 
