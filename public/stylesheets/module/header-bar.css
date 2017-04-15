@@ -1,132 +1,132 @@
 /* @override
-	http://localhost:9080/stylesheets/module/header-bar.css */
+  http://localhost:9080/stylesheets/module/header-bar.css */
 
 .container-fluid.container-full-width {
-	padding-right: 15px;
-	padding-left: 0;
-	max-width: 100%;
+  padding-right: 15px;
+  padding-left: 0;
+  max-width: 100%;
 }
 
 .navbar-default {
-	min-height: var(--navbar-height-mobile);
-	height: var(--navbar-height-mobile);
-	border-bottom-style: none;
-	font-size: 18px;
+  min-height: var(--navbar-height-mobile);
+  height: var(--navbar-height-mobile);
+  border-bottom-style: none;
+  font-size: 18px;
 }
 
 @media (min-width: 768px) {
-	.navbar-default {
-		height: var(--navbar-height-tablet);
-		font-size: 24px;
-	}
+  .navbar-default {
+    height: var(--navbar-height-tablet);
+    font-size: 24px;
+  }
 }
 
 #page .navbar-default {
-	transition: width 400ms ease-in-out, left 400ms ease-in-out, background-color 400ms ease-in-out, box-shadow 400ms ease-in-out;
+  transition: width 400ms ease-in-out, left 400ms ease-in-out, background-color 400ms ease-in-out, box-shadow 400ms ease-in-out;
 }
 
 .header-shadow {
-	box-shadow: var(--box-shadow);
+  box-shadow: var(--box-shadow);
 }
 
 .background-color-bg {
-	background-color: var(--color-background);
+  background-color: var(--color-background);
 }
 
 /* @group Navbar Brand */
 
 .navbar-default .navbar-brand-container {
-	position: absolute;
-	top: 0;
-	left: 0;
-	display: block;
-	overflow: hidden;
-	width: 100%;
-	height: var(--navbar-height-mobile);
-	text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: var(--navbar-height-mobile);
+  text-align: center;
 }
 
 @media (min-width: 768px) {
-	.navbar-default .navbar-brand-container {
-		height: var(--navbar-height-tablet);
-	}
+  .navbar-default .navbar-brand-container {
+    height: var(--navbar-height-tablet);
+  }
 }
 
 .navbar-default .navbar-brand {
-	display: inline-block;
-	float: none;
-	margin-right: 0;
-	/*margin-left: 15px !important;*/
-	margin-left: 0px !important;
-	padding: 15px 0;
-	max-width: calc(100% - (42px * 4)); /* width of 2 icons on each side of header */
-	font-weight: 600;
-	transition: transform 400ms ease-in-out;
+  display: inline-block;
+  float: none;
+  margin-right: 0;
+  /*margin-left: 15px !important;*/
+  margin-left: 0px !important;
+  padding: 15px 0;
+  max-width: calc(100% - (42px * 4)); /* width of 2 icons on each side of header */
+  font-weight: 600;
+  transition: transform 400ms ease-in-out;
 }
 
 .navbar-default .navbar-brand-arrays {
-	height: var(--navbar-height-mobile);
-	text-transform: capitalize;
-	font-size: 17px;
+  height: var(--navbar-height-mobile);
+  text-transform: capitalize;
+  font-size: 17px;
 }
 
 .navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo {
-	padding-top: 0px;
-	padding-bottom: 0px;
-	margin-left: 5px !important;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: 5px !important;
 }
 
 .navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
-	position: relative;
-	fill: #000;
-	top: 13px;
-	width: 22px;
-	height: 24px;
+  position: relative;
+  fill: #000;
+  top: 13px;
+  width: 22px;
+  height: 24px;
 }
 
 .light-text .navbar-brand-arrays.navbar-brand-stacked-logo svg {
-	fill: #FFF;
+  fill: #FFF;
 }
 
 @media (min-width: 768px) {
-	.navbar-default .navbar-brand {
-		padding-top: 22px;
-		padding-bottom: 22px;
-		height: var(--navbar-height-tablet);
-		font-size: 20px;
-	}
+  .navbar-default .navbar-brand {
+    padding-top: 22px;
+    padding-bottom: 22px;
+    height: var(--navbar-height-tablet);
+    font-size: 20px;
+  }
 
-	.navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
-		top: 17px;
-		width: 27.5px;
-		height: 30px;
-	}
+  .navbar-default .navbar-brand-arrays.navbar-brand-stacked-logo svg {
+    top: 17px;
+    width: 27.5px;
+    height: 30px;
+  }
 }
 
 /* Truncate array title with gradient not working well */
 /*.navbar-default .navbar-brand-array-title::after {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	display: block;
-	width: 25px;
-	background: linear-gradient(to right, rgba(249, 250, 249, 0) 0%, #f9faf9 100%);
-	content: "";
-	opacity: 0;
-	transition: opacity 400ms ease-in-out;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  width: 25px;
+  background: linear-gradient(to right, rgba(249, 250, 249, 0) 0%, #f9faf9 100%);
+  content: "";
+  opacity: 0;
+  transition: opacity 400ms ease-in-out;
 }
 
 .array-controls-pinned .navbar-default .navbar-brand-array-title::after {
-	opacity: 1;
+  opacity: 1;
 }*/
 
 .navbar-default .navbar-brand-array-title {
-	overflow: hidden;
-	height: auto;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	transform: translate(0, 100%);
+  overflow: hidden;
+  height: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: translate(0, 100%);
 }
 
 /* @end Navbar Brand */
@@ -134,24 +134,24 @@
 /* @group Pinned */
 
 .array-controls-pinned .navbar-default {
-	background-color: var(--color-background);
-	box-shadow: var(--box-shadow);
+  background-color: var(--color-background);
+  box-shadow: var(--box-shadow);
 }
 
 .array-controls-pinned .navbar-brand-arrays {
-	transform: translate(0, -100%);
+  transform: translate(0, -100%);
 }
 
 .array-controls-pinned .navbar-brand-array-title {
-	transform: translate(0, -100%);
+  transform: translate(0, -100%);
 }
 
 .array-controls-pinned .navbar-default .navbar-nav > .open > a,
 .array-controls-pinned .navbar-default .navbar-nav > .open > a:hover,
 .array-controls-pinned .navbar-default .navbar-nav > .open > a:focus {
-	background-color: transparent;
-	color: #000000;
-	transition: color 400ms ease-in-out;
+  background-color: transparent;
+  color: #000000;
+  transition: color 400ms ease-in-out;
 }
 
 /* @end pinned */
@@ -160,41 +160,41 @@
 
 /* why is this here? */
 /*.sidebar-filter-active {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	display: block;
-	width: 11px;
-	height: 11px;
-	border-width: 2px;
-	border-style: solid;
-	border-radius: 1000px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: block;
+  width: 11px;
+  height: 11px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 1000px;
 }*/
 
 /*@media (min-width: 768px) {
-	.sidebar-filter-active {
-		top: 11px;
-		right: 23px;
-		border-width: 3px;
-		height: 13px;
-		width: 13px;
-	}
+  .sidebar-filter-active {
+    top: 11px;
+    right: 23px;
+    border-width: 3px;
+    height: 13px;
+    width: 13px;
+  }
 }*/
 
 .light-text .active .sidebar-filter-active {
-	border-color: #FFFFFF;
+  border-color: #FFFFFF;
 }
 
 .array-controls-pinned #navbar .active .sidebar-filter-active,
 .active .sidebar-filter-active {
-	background-color: transparent;
-	border-color: #000000;
+  background-color: transparent;
+  border-color: #000000;
 }
 
 .array-controls-pinned .active .sidebar-filter-slide-toggle {
-	background-color: transparent;
-	color: #000000;
-	transition: color 400ms ease-in-out;
+  background-color: transparent;
+  color: #000000;
+  transition: color 400ms ease-in-out;
 }
 
 /* @end Filter active*/
@@ -202,59 +202,59 @@
 /* @group Dropdown */
 
 #page .dropdown-menu {
-	border-radius: 4px;
-	box-shadow: var(--box-shadow);
+  border-radius: 4px;
+  box-shadow: var(--box-shadow);
 }
 
 #page .navbar .dropdown-menu {
-	margin-top: 6px;
+  margin-top: 6px;
 }
 
 .navbar-nav > li > a {
-	padding: 15px 10px;
+  padding: 15px 10px;
 }
 
 .navbar-nav > li > a [class^="icon-"] {
-	font-size: 18px;
+  font-size: 18px;
 }
 
 .navbar-nav > li > a .user {
-	padding-right: 10px;
-	font-size: 18px;
+  padding-right: 10px;
+  font-size: 18px;
 }
 
 @media (min-width: 768px) {
-	.navbar-nav > li > a {
-		padding: 20px;
-	}
+  .navbar-nav > li > a {
+    padding: 20px;
+  }
 
-	.navbar-nav > li > a [class^="icon-"] {
-		font-size: 24px;
-	}
+  .navbar-nav > li > a [class^="icon-"] {
+    font-size: 24px;
+  }
 }
 
 .navbar-nav .open .dropdown-menu > li > a {
-	padding: 13px 20px;
-	font-size: 20px;
+  padding: 13px 20px;
+  font-size: 20px;
 }
 
 .navbar-nav .open .dropdown-menu > li > a [class^="icon-"] {
-	position: relative;
-	top: 1px;
-	margin-right: 15px;
+  position: relative;
+  top: 1px;
+  margin-right: 15px;
 }
 
 .navbar-default .navbar-nav > .open > a,
 .navbar-default .navbar-nav > .open > a:hover,
 .navbar-default .navbar-nav > .open > a:focus {
-	color: #000000;
+  color: #000000;
 }
 
 /*
 body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a,
 body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a:hover,
 body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a:focus {
-	color: #ffffff;
+  color: #ffffff;
 }
 */
 
@@ -262,7 +262,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .navbar-nav .open .dropdown-menu > li > a:focus .color-brand,
 .navbar-nav .open .dropdown-menu > li > a:active .color-brand,
 .navbar-nav .open .dropdown-menu > li.active > a .color-brand {
-	color: #ffffff;
+  color: #ffffff;
 }
 
 /* @end Dropdown */
@@ -270,18 +270,18 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 /* @group Back button */
 
 .navbar-nav > li > a.navbar-back {
-	color: var(--color-text-med);
+  color: var(--color-text-med);
 }
 
 .navbar-back-label {
-	position: relative;
-	bottom: 2px;
-	display: inline-block;
-	margin-left: 5px;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	font-weight: 600;
-	font-size: 18px;
+  position: relative;
+  bottom: 2px;
+  display: inline-block;
+  margin-left: 5px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 /* @end back button */
@@ -289,14 +289,14 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 /* @group Team Logo */
 
 #page .navbar-brand-team-logo {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	height: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: 100%;
 }
 
 .navbar-brand-team-logo img {
-	display: inline;
-	max-height: 100%;
+  display: inline;
+  max-height: 100%;
 }
 
 /* @end Team Logo */
@@ -310,33 +310,39 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 .user-initial {
-	display: block;
-	position: absolute;
-	background-color: #000;
-	vertical-align: middle;
-	text-align: center;
+  display: block;
+  position: absolute;
+  background-color: #000;
+  vertical-align: middle;
+  text-align: center;
     height: 32px;
     width: 32px;
     line-height: 32px;
     bottom: 16px;
-	left: 0px;
-	border-radius: 100%;
-	font-size: 18px;
+  left: 0px;
+  border-radius: 100%;
+  font-size: 18px;
+}
+
+@media (max-width: 767px) {
+  .user-initial {
+    bottom: 22px;
+  }
 }
 
 .light-text .dropdown .dropdown-toggle .user-initial {
-	background-color: #FFF;
-	color: #000;
+  background-color: #FFF;
+  color: #000;
 }
 
 .array-controls-pinned .dropdown .dropdown-toggle .user-initial,
 .array-controls-pinned .dropdown.open .dropdown-toggle .user-initial {
-	background-color: #000;
-	color: #FFF;
+  background-color: #000;
+  color: #FFF;
 }
 
 .navbar-nav .dropdown > a .user-initial {
-	color: #FFF;
+  color: #FFF;
 }
 
 
@@ -370,7 +376,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 .w-bottom-shadow {
-	box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.2);
+  box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.2);
 }
 
 .w-container {
@@ -411,24 +417,24 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 .array-burger .w-burger-menu {
-	line-height: 50px;
-	height: 50px;
-	background-color: transparent;
-	padding-left: 10px;
-	padding-right: 10px;
-	color: #000;
+  line-height: 50px;
+  height: 50px;
+  background-color: transparent;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #000;
 }
 
 .light-text .array-burger .w-burger-menu {
-	color: #FFF;
+  color: #FFF;
 }
 
 .array-controls-pinned .array-burger .w-burger-menu {
-	color: #000;
+  color: #000;
 }
 
 .array-controls-pinned .array-burger .w-burger-menu.open {
-	color: #FFF;
+  color: #FFF;
 }
 
 .w-burger-menu:focus,
@@ -457,7 +463,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 .w-nav-overlay.array-nav-overlay {
-	top: 50px;
+  top: 50px;
 }
 
 .w-nav-overlay .mobile-nav-menu {
@@ -497,7 +503,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 .navbar .hide-mobile,
 .w-container .hide-mobile {
-  	display: none;
+    display: none;
   }
 
 @media (min-width: 768px) {
@@ -546,243 +552,243 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
   .w-login-container,
   .w-signup-container {
-  	padding: 0;
-  	height: 64px;
+    padding: 0;
+    height: 64px;
   }
 
   .w-signup-container {
-  	padding-left: 7px;
+    padding-left: 7px;
   }
 
  .w-login-container {
-  	padding-left: 14px;
+    padding-left: 14px;
   }
 
    .w-login-container a,
   .w-signup-container a {
-  	position: relative;
-  	top: 50%;
-  	transform: translateY(-50%);
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
 
   .navbar .hide-mobile,
   .w-container .hide-mobile {
-  	display: block;
+    display: block;
   }
 }
 
 
 /* Signup footer */
 .signup-footer {
-	position: fixed;
-	height: 64px;
-	width: 100%;
-	bottom: -70px;
-	border-top: 2px solid #FEB600;
-	background-color: #FFF;
-	z-index: 1000;
+  position: fixed;
+  height: 64px;
+  width: 100%;
+  bottom: -70px;
+  border-top: 2px solid #FEB600;
+  background-color: #FFF;
+  z-index: 1000;
 }
 
 .signup-footer a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .signup-footer ul {
-	float: right;
-	line-height: 64px;
-	vertical-align: middle;
-	list-style: none;
-	font-family: 'Calibre', sans-serif;
+  float: right;
+  line-height: 64px;
+  vertical-align: middle;
+  list-style: none;
+  font-family: 'Calibre', sans-serif;
 }
 
 .signup-footer ul li {
-	display: inline-block;
-	padding-left: 30px;
-	font-size: 16px;
-	color: #333;
+  display: inline-block;
+  padding-left: 30px;
+  font-size: 16px;
+  color: #333;
 }
 
 .signup-footer .arrays-logo img {
-	width: 168px;
-	height: 28px;
+  width: 168px;
+  height: 28px;
 }
 
 .signup-footer .signup-description {
-	display: none;
+  display: none;
 }
 
 @media (max-width: 767px) {
-	.signup-footer .signup-link {
-		position: relative;
-		right: 40px;
-	}
+  .signup-footer .signup-link {
+    position: relative;
+    right: 40px;
+  }
 }
 
 @media (min-width: 768px) {
-	.signup-footer .arrays-logo img {
-		width: 210px;
-		height: 35px;
-	}
+  .signup-footer .arrays-logo img {
+    width: 210px;
+    height: 35px;
+  }
 
-	.signup-footer .signup-description {
-		display: inline-block;
-	}
+  .signup-footer .signup-description {
+    display: inline-block;
+  }
 }
 
 .pill-link,
 .w-signup-container .pill-link,
 .w-login-container .pill-link {
-	font-size: 18px;
-	padding: 4px 16px;
-	padding-bottom: 6px;
-	border: 1px solid #FEB600;
-	text-decoration: none;
-	cursor: pointer;
-	border-radius: 20px;
+  font-size: 18px;
+  padding: 4px 16px;
+  padding-bottom: 6px;
+  border: 1px solid #FEB600;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 20px;
 }
 
 .pill-link:hover,
 .pill-link:focus {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .pill-hollow {
-	background-color: #FFF;
-	color: #333;
-	transition: color 200ms ease-in-out, background-color 200ms ease-in-out;
+  background-color: #FFF;
+  color: #333;
+  transition: color 200ms ease-in-out, background-color 200ms ease-in-out;
 }
 
 .pill-hollow:hover,
 .pill-hollow:focus {
-	background-color: #FEB600;
-	color: #FFF;
-	transition: color 200ms ease-in-out, background-color 200ms ease-in-out;
+  background-color: #FEB600;
+  color: #FFF;
+  transition: color 200ms ease-in-out, background-color 200ms ease-in-out;
 }
 
 .pill-filled {
-	background-color: #FEB600;
-	color: #333;
-	transition: color 200ms ease-in-out;
+  background-color: #FEB600;
+  color: #333;
+  transition: color 200ms ease-in-out;
 }
 
 .pill-filled:hover,
 .pill-filled:focus {
-	color: #FFF;
-	transition: color 200ms ease-in-out;
+  color: #FFF;
+  transition: color 200ms ease-in-out;
 }
 
 #close-signup-footer {
-	position: absolute;
-	top: 5px;
-	right: 10px;
-	color: #9B9B9B;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  color: #9B9B9B;
 }
 
 #close-signup-footer:hover,
 #close-signup-footer:focus {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .signup-footer.show-signup-footer {
-	bottom: 0;
-	transition: bottom 250ms linear;
+  bottom: 0;
+  transition: bottom 250ms linear;
 }
 
 .signup-footer.close-signup-footer {
-	bottom: -70px;
-	transition: bottom 250ms linear;
+  bottom: -70px;
+  transition: bottom 250ms linear;
 }
 
 .arrays-logo {
-	line-height: 64px;
+  line-height: 64px;
 }
 
 .arrays-logo img {
-	position: relative;
-	left: -6px;
+  position: relative;
+  left: -6px;
 }
 
 .mono-link {
-	padding-right: 15px;
+  padding-right: 15px;
 }
 .array-controls-pinned li.mono-link .pill-link,
 .mono-link .pill-link {
-	color: #000;
-	border-color: #000;
-	background: transparent;
-	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
-	padding: 4px 16px;
-	font-size: 16px;
+  color: #000;
+  border-color: #000;
+  background: transparent;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  padding: 4px 16px;
+  font-size: 16px;
 }
 
 .light-text .mono-link .pill-link {
-	color: #FFF;
-	border-color: #FFF;
-	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  color: #FFF;
+  border-color: #FFF;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 .navbar-default.light-text li.mono-link .pill-link:hover,
 .navbar-default.light-text li.mono-link .pill-link:focus {
-	background-color: #FFF;
-	color: #000;
-	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  background-color: #FFF;
+  color: #000;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 .array-controls-pinned .navbar-default li.mono-link .pill-link:hover,
 .array-controls-pinned .navbar-default li.mono-link .pill-link:focus,
 .navbar-default li.mono-link .pill-link:hover,
 .navbar-default li.mono-link .pill-link:focus {
-	background-color: #000;
-	color: #FFF;
-	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  background-color: #000;
+  color: #FFF;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 .light-text .mono-link .pill-link.pill-filled {
-	background-color: #FFF;
-	border-color: #FFF;
-	color: #000;
+  background-color: #FFF;
+  border-color: #FFF;
+  color: #000;
 }
 
 .array-controls-pinned .mono-link .pill-link.pill-filled,
 .mono-link .pill-link.pill-filled {
-	background-color: #000;
-	border-color: #000;
-	color: #FFF;
+  background-color: #000;
+  border-color: #000;
+  color: #FFF;
 }
 
 .navbar-right {
-	height: 64px;
+  height: 64px;
 }
 
 .vert-center {
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .navbar-default .navbar-right .collapsable-links {
-	max-width: 340px;
-	transition: max-width 400ms ease-in;
-	overflow: hidden;
-	white-space: nowrap;
-	font-size: 16px;
+  max-width: 340px;
+  transition: max-width 400ms ease-in;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 16px;
 }
 
 .array-controls-pinned .navbar-default .navbar-right .collapsable-links,
 .sidebar-filter-in .navbar-default .navbar-right .collapsable-links {
-	max-width: 0px;
-	transition: max-width 10ms;
+  max-width: 0px;
+  transition: max-width 10ms;
 }
 
 .navbar .navbar-right .collapsable-links a {
-	color: #000;
-	font-size: 16px;
-	display: inline-block;
+  color: #000;
+  font-size: 16px;
+  display: inline-block;
 }
 
 .light-text .navbar-right .collapsable-links a {
-	color: #FFF;
+  color: #FFF;
 }
 
 .light-text .navbar-nav .dropdown > a,
@@ -809,13 +815,13 @@ li.active > .sidebar-filter-slide-toggle span {
     color: #FFF;
 }
 li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
-	border-color: #FFF;
+  border-color: #FFF;
 }
 .light-text li.active > .sidebar-filter-slide-toggle span {
-	color: #000;
+  color: #000;
 }
 .light-text li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
-	border-color: #000;
+  border-color: #000;
 }
 
 .navbar-right .collapsable-links .link-underline {
@@ -825,7 +831,7 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 
 .light-text .collapsable-links .link-underline:hover,
 .light-text .collapsable-links .link-underline:focus {
-	color: #FFF;
+  color: #FFF;
 }
 
 .link-underline:before {
@@ -841,36 +847,36 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 }
 
 .w-nav-link.link-underline:before {
-	bottom: 1px;
+  bottom: 1px;
 }
 
 
 .light-text .link-underline:before {
-	background-color: #FFF;
+  background-color: #FFF;
 }
 
 .array-controls-pinned .link-underline:before,
 .link-underline:before {
-	background-color: #000;
+  background-color: #000;
 }
 
 .link-underline:hover:before,
 .active-page.link-underline:before {
-	transform: scaleX(1);
+  transform: scaleX(1);
     visibility: visible;
 }
 
 .header-blank-right .link-underline-container {
-	height: 64px;
+  height: 64px;
 }
 
 .header-blank-right .link-underline-container .w-nav-link {
-	padding: 0;
-	cursor: pointer;
-	margin: 0 20px;
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
+  padding: 0;
+  cursor: pointer;
+  margin: 0 20px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .header-blank-right li.open a,
@@ -878,51 +884,51 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 .header-blank-right li a:hover,
 .header-blank-right li.open a:hover,
 .header-blank-right li.open a:focus {
-	background-color: transparent;
+  background-color: transparent;
 }
 
 .header-blank-right .w-signup-container a:hover,
 .header-blank-right .w-signup-container a:focus,
 .header-blank-right .w-login-container a:hover,
 .header-blank-right .w-login-container a:focus {
-	color: #FFF;
-	background-color: #FEB600;
-	transition: all 200ms ease;
+  color: #FFF;
+  background-color: #FEB600;
+  transition: all 200ms ease;
 }
 
 .header-blank-right .w-signup-container {
-	margin-right: 16px;
+  margin-right: 16px;
 }
 
 .header-blank-right li.open .dropdown-menu {
-	margin-top: 6px;
+  margin-top: 6px;
 }
 
 .header-blank-link {
-	font-size: 18px;
-	color: #000;
-	transition: color 200ms ease;
+  font-size: 18px;
+  color: #000;
+  transition: color 200ms ease;
 }
 
 .header-blank-link.current-page {
-	color: #FEB600;
+  color: #FEB600;
 }
 
 .header-blank-link:hover,
 .header-blank-link:focus {
-	color: #FEB600;
-	transition: color 200ms ease;
+  color: #FEB600;
+  transition: color 200ms ease;
 }
 
 /* #000 && #555 */
 
 .light-text .dropdown .dropdown-toggle .icon-menu,
 .light-text .dropdown .dropdown-toggle span {
-	color: #FFF;
+  color: #FFF;
 }
 .light-text .dropdown.open .dropdown-toggle .icon-menu,
 .light-text .dropdown.open .dropdown-toggle span {
-	color: #000;
+  color: #000;
 }
 
 .dropdown .dropdown-toggle .icon-menu,
@@ -931,30 +937,30 @@ li.active > .sidebar-filter-slide-toggle .sidebar-filter-active {
 .dropdown .dropdown-toggle span,
 .array-controls-pinned .dropdown .dropdown-toggle span,
 .array-controls-pinned .dropdown.open .dropdown-toggle span {
-	color: #000;
+  color: #000;
 }
 .dropdown.open .dropdown-toggle .icon-menu,
 .dropdown.open .dropdown-toggle span {
-	color: #FFF;
+  color: #FFF;
 }
 
 .navbar-brand-team-logo .team-logo-circle {
-	background-size: cover;
-	background-position: center;
-	height: 36px;
-	width: 36px;
-	border-radius: 18px;
-	position: relative;
-	bottom: 3px;
+  background-size: cover;
+  background-position: center;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+  position: relative;
+  bottom: 3px;
 }
 
 @media (min-width: 768px) {
-	.navbar-brand-team-logo .team-logo-circle {
-		background-size: cover;
-		background-position: center;
-		height: 44px;
-		width: 44px;
-		border-radius: 22px;
-		bottom: 0px;
-	}
+  .navbar-brand-team-logo .team-logo-circle {
+    background-size: cover;
+    background-position: center;
+    height: 44px;
+    width: 44px;
+    border-radius: 22px;
+    bottom: 0px;
+  }
 }
