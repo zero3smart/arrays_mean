@@ -158,6 +158,13 @@
       <a id="close-signup-footer" href="#"><span class="icon-close-big" aria-hidden="true"></span></a>
     </div>
 
+    <!--Prevent Inertercom Chat Launcher from covering up the banner exit icon"-->
+    <style>
+        #intercom-container .intercom-launcher-frame {
+            bottom: 74px!important;
+        }
+    </style>
+
     {% endif %}
 
 </header>
