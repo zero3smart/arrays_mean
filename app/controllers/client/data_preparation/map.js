@@ -62,7 +62,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
-            var mapBy = urlQuery.mapBy; 
+            var mapBy = urlQuery.mapBy;
             // the human readable col name - real col name derived below
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
@@ -96,7 +96,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
 
 
-           
+
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
             dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
@@ -179,7 +179,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         var dbscan = new clustering.DBSCAN();
                         var dataset = [];
 
-                
+
 
                         coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
@@ -237,7 +237,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         var clusters = dbscan.run(dataset, 5, 2);
                         winston.info("📡  Noise level:" + dbscan.noise.length);
                         noiseLevel = dbscan.noise.length;
-        
+
                         done();
                     }
                     // Potentially change to cursor function to optimize
@@ -370,7 +370,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     ]);
 
-                return aggregationOperators            
+                return aggregationOperators
             }
 
             var aggNotByNumberOfItems = function (aggregationOperators, coordTitle) {
@@ -386,7 +386,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     mapBy: "$" + "rowParams." + coordTitle,
                                     lngField: "$" + "rowParams." + lngField,
                                     latField: "$" + "rowParams." + latField,
-                                    coordRadiusValue: "$" + "rowParams." + aggregateBy_realColumnName 
+                                    coordRadiusValue: "$" + "rowParams." + aggregateBy_realColumnName
                                 }
                             }
                         },
@@ -401,7 +401,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         }
 
                     ]);
-                return aggregationOperators            
+                return aggregationOperators
             }
 
             var user = null;
@@ -428,7 +428,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     env: process.env,
 
                     user: user,
-          
+
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
@@ -439,6 +439,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     brandColor: brandColor,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.map.description : "",
                     //

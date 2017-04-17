@@ -69,7 +69,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat;
             }
-            
+
             //
             var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName;
             //
@@ -515,6 +515,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.lineGraph.description ? dataSourceDescription.fe_views.views.lineGraph.description : "",
                     //

@@ -178,14 +178,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     });
                     done();
                 };
-                
+
                 if (aggregationOperators.length > 0) {
                     processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
                 } else {
                     processedRowObjects_mongooseModel.find({}).exec(doneFn);
                 }
             });
-            
+
 
             var user = null;
             batch.push(function(done) {
@@ -221,6 +221,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.globe.description ? dataSourceDescription.fe_views.views.globe.description : "",
                     flightPathsCollection: flightPaths,

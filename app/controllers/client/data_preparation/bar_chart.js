@@ -182,7 +182,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
-                        
+
                         aggregationOperators = aggregationOperators.concat(
                             [
                                 {$unwind: "$" + "rowParams." + groupBy_realColumnName},
@@ -251,7 +251,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                             groupBy: "$" + "rowParams." + groupBy_realColumnName,
                                             stackBy: "$" + "rowParams." + stackBy_realColumnName
                                         },
-                                        value: {$addToSet: "$_id"} 
+                                        value: {$addToSet: "$_id"}
                                     }
                                 },
                                 {
@@ -459,6 +459,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.barChart.description ? dataSourceDescription.fe_views.views.barChart.description : "",
                     // Group By

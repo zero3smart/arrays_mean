@@ -16,13 +16,37 @@
 {% block content %}
     <section class="array">
 
-
         <header class="array-header header-shadow">
-            <h1 class="array-title">{{ arrayTitle }}{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</h1>
-            <div class="array-meta">
-                {% if team.subdomain | length %}<a class="array-meta-about color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a>{% endif %}{% if sourceDocURL %} <span class="array-meta-divider"> <a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a>{% endif %} <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-count hidden-xs">{{ sourceDoc.numberOfRows | comma }} Item{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</span>
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</h1>
+                <div class="array-meta">
+                    {% if team.subdomain | length %}<a class="array-meta-about color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a>{% endif %}
+                    <span class="array-meta-divider toggle-info-header"><a data-toggle="modal" data-target="#headerModal" class="array-meta-about color-brand">Info</a>
+                </div>
             </div>
         </header><!-- .array-header -->
+
+        <!-- Array Header Modal -->
+        <div class="modal header-modal fade" id="headerModal" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h1 class="array-title">{{ arrayTitle }}{% if isPreview %}<span class="preview-indicator"> (preview)</span>{% endif %}</h1>
+              </div>
+
+              <div class="modal-body">
+                {% if team.subdomain | length %}<h3><a class="color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a></h3>{% endif %}
+                  {% if sourceDocURL %} <h4><a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">{{ sourceDocURL }}</a></h4>{% endif %}
+                  <p class="array-meta-updated">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</p>
+                  <p>{{ sourceDoc.numberOfRows | comma }} Item{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</p>
+                  <p>{{description}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {% if view_description %}
            <div class="array-description-wrapper">

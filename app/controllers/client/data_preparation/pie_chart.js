@@ -25,8 +25,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var askForPreview = false;
     if (urlQuery.preview && urlQuery.preview == 'true') askForPreview = true;
 
-
-
     importedDataPreparation.DataSourceDescriptionWithPKey(askForPreview,collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -324,6 +322,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.pieChart.description ? dataSourceDescription.fe_views.views.pieChart.description : "",
                     //

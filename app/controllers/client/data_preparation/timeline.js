@@ -292,7 +292,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
 
                 // Show all if groupSize is -1
                 if (groupSize === -1) {
-                    
+
                     aggregationOperators = aggregationOperators.concat(
                         [
                             projects,
@@ -387,7 +387,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                         });
                         el.results = results;
                         groupedResults.push(el);
-                        
+
                     });
 
                     done();
@@ -497,7 +497,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     user: user,
 
                     datasetId: dataSourceDescription._id,
-           
+
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
@@ -506,6 +506,7 @@ module.exports.BindData = function(req, urlQuery, callback) {
                     brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
+                    description: dataSourceDescription.description ? dataSourceDescription.description : "",
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : '',
                     viewAllLinkTo: dataSourceDescription.fe_views.views.gallery ? 'gallery' : 'timeline',
