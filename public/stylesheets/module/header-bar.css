@@ -156,6 +156,17 @@
 
 /* @end pinned */
 
+/* Header Info Modal */
+.header-modal .modal-body h3 {
+  margin-top: 0px;
+}
+
+.header-modal .modal-header .close {
+    margin-top: -5px;
+    margin-right: -10px;
+}
+
+
 /* @group Filter active */
 
 /* why is this here? */
