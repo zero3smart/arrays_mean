@@ -35,11 +35,18 @@
               </div>
 
               <div class="modal-body">
-                {% if team.subdomain | length %}<h3><a class="color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a></h3>{% endif %}
-                  {% if sourceDocURL %} <h4><a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">{{ sourceDocURL }}</a></h4>{% endif %}
-                  <p class="array-meta-updated">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</p>
-                  <p>{{ sourceDoc.numberOfRows | comma }} Item{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</p>
-                  <p>{{description}}</p>
+                <ul>
+                  {% if team.subdomain | length %}<li class="modal-header-label">Team</li>
+                  <li><a class="color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a></li>{% endif %}
+                  <li class="modal-header-label">Source</li>
+                  {% if sourceDocURL %}<li><a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">{{ sourceDocURL }}</a></li>{% endif %}
+                  <li class="modal-header-label">Last Updated</li>
+                  <li class="array-meta-updated">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</li>
+                  <li class="modal-header-label">Number of Items</li>
+                  <li>{{ sourceDoc.numberOfRows | comma }}</li>
+                  <li class="modal-header-label">Description</li>
+                  <li><p>{{description}}</p></li>
+                </ul>
               </div>
             </div>
           </div>

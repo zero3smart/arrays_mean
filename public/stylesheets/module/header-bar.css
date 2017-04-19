@@ -166,6 +166,26 @@
     margin-right: -10px;
 }
 
+.header-modal p,
+.header-modal li {
+  font-size: 20px;
+}
+
+.header-modal p {
+  line-height: 20px;
+  margin-top: 2px;  /* To make consistent with other <li>;Compensate for line-height */
+}
+
+.header-modal li.modal-header-label {
+  margin-bottom: -10px;
+  font-weight: 600;
+}
+
+.header-modal ul {
+  list-style: none;
+  padding: 0;
+}
+
 
 /* @group Filter active */
 
