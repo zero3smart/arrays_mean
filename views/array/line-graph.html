@@ -38,14 +38,14 @@
                 <ul>
                   {% if team.subdomain | length %}<li class="modal-header-label">Team</li>
                   <li><a class="color-brand" href="{{ addSubdomain(team.subdomain) }}">{{ team.title }}</a></li>{% endif %}
-                  <li class="modal-header-label">Source</li>
-                  {% if sourceDocURL %}<li><a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">{{ sourceDocURL }}</a></li>{% endif %}
+                  {% if sourceDocURL %}<li class="modal-header-label">Source</li>
+                  <li><a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">{{ sourceDocURL }}</a></li>{% endif %}
                   <li class="modal-header-label">Last Updated</li>
                   <li class="array-meta-updated">Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear_array }}</li>
                   <li class="modal-header-label">Number of Items</li>
                   <li>{{ sourceDoc.numberOfRows | comma }}</li>
-                  <li class="modal-header-label">Description</li>
-                  <li><p>{{description}}</p></li>
+                  {% if description %}<li class="modal-header-label">Description</li>
+                  <li><p>{{description}}</p></li>{% endif %}
                 </ul>
               </div>
             </div>
